@@ -1,24 +1,32 @@
-# Site settings
 title: Frank Xue
-email: your.email@example.com
+author:
+  name: Frank Xue
+  email: fengxiang.xue@gmail.com
+email: fengxiang.xue@gmail.com
 description: >-
-  Welcome to my personal website. I'm a software engineer passionate about
-  technology, innovation, and building great products.
+  Personal site of Frank Xue — software engineer. Notes, work, and ways to get in touch.
 baseurl: ""
 url: "https://www.frankxue.dev"
+lang: en
 
-# Build settings
 markdown: kramdown
-theme: minima
+permalink: pretty
+
 plugins:
   - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
 
-# Social media links
 github_username: frankxue831
-# linkedin_username: your-linkedin
-# twitter_username: your-twitter
+# linkedin_username:
+# twitter_username:
 
-# Exclude from processing
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
 exclude:
   - .sass-cache/
   - .jekyll-cache/
@@ -26,7 +34,5 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - node_modules/
-  - vendor/bundle/
-  - vendor/cache/
-  - vendor/gems/
-  - vendor/ruby/
+  - vendor/
+  - README.md

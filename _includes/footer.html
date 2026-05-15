@@ -1,0 +1,38 @@
+<footer class="site-footer">
+    <div class="site-footer__inner">
+        <div class="site-footer__col site-footer__col--brand">
+            <p class="site-footer__name"><em>{{ site.title }}</em></p>
+            <p class="site-footer__tag">{{ site.description }}</p>
+        </div>
+
+        <div class="site-footer__col">
+            <p class="site-footer__heading">Elsewhere</p>
+            <ul class="site-footer__list">
+                {% if site.github_username %}
+                <li><a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></li>
+                {% endif %}
+                {% if site.linkedin_username %}
+                <li><a href="https://linkedin.com/in/{{ site.linkedin_username }}" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a></li>
+                {% endif %}
+                {% if site.twitter_username %}
+                <li><a href="https://twitter.com/{{ site.twitter_username }}" rel="noopener noreferrer">Twitter <span aria-hidden="true">↗</span></a></li>
+                {% endif %}
+                {% if site.email %}
+                <li><a href="mailto:{{ site.email }}">Email</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="site-footer__col">
+            <p class="site-footer__heading">Colophon</p>
+            <p class="site-footer__detail">Set in <em>EB Garamond</em> &amp; IBM Plex Mono.</p>
+            <p class="site-footer__detail">Built with Jekyll. Hosted on GitHub&nbsp;Pages.</p>
+        </div>
+    </div>
+    <div class="site-footer__rule"></div>
+    <p class="site-footer__bottom">
+        <span>&copy; {{ 'now' | date: "%Y" }} {{ site.title }}</span>
+        <span aria-hidden="true">/</span>
+        <span>Last built <time datetime="{{ site.time | date_to_xmlschema }}">{{ site.time | date: "%Y-%m-%d" }}</time></span>
+    </p>
+</footer>
