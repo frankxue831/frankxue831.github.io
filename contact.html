@@ -14,82 +14,32 @@ alternate: /zh/contact/
         <em>touch.</em>
     </h1>
     <p class="page-header__lede">
-        Email is fastest. The form below works too — it'll land in the
-        same inbox.
+        Right now <em>GitHub</em> is the most direct way to reach me.
+        Email and a proper contact form are coming back online soon.
     </p>
 </section>
 
 <section class="section wrap">
-    <div class="contact-grid">
-        <div class="contact-intro">
-            <p>
-                I read every message. If you've got a project, a question,
-                or just want to say hello — I'd like to hear it.
-            </p>
+    <div class="contact-intro" style="max-width: 64ch;">
+        <p>
+            Project ideas, questions, or just a hello — all welcome.
+            An issue or discussion on any of my repos lands with me
+            the same as a direct message.
+        </p>
 
-            <dl class="contact-direct">
-                <dt>Email</dt>
-                <dd>
-                    <a href="mailto:{{ site.email }}">{{ site.email }}</a>
-                </dd>
-                <dt>GitHub</dt>
-                <dd>
-                    <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>
-                </dd>
-                <dt>Response time</dt>
-                <dd style="font-family:var(--mono);font-size:var(--text-sm);color:var(--fg-muted);">
-                    Usually within a few days.
-                </dd>
-            </dl>
-        </div>
-
-        <!--
-          The form uses a mailto: action by default so it works on GitHub
-          Pages without any backend — submitting opens the visitor's mail
-          client with the fields pre-filled.
-
-          To upgrade to a real form handler (recommended), sign up at
-          https://formspree.io and replace the action with:
-              action="https://formspree.io/f/YOUR_FORM_ID"
-              method="POST"
-          (and remove enctype="text/plain").
-        -->
-        <form class="form"
-              action="mailto:{{ site.email }}"
-              method="POST"
-              enctype="text/plain">
-            <div class="field">
-                <label class="field__label" for="name">Name <span class="req" aria-hidden="true">*</span></label>
-                <input class="field__input" type="text" id="name" name="name" required autocomplete="name">
-            </div>
-
-            <div class="field">
-                <label class="field__label" for="email">Email <span class="req" aria-hidden="true">*</span></label>
-                <input class="field__input" type="email" id="email" name="email" required autocomplete="email">
-            </div>
-
-            <div class="field">
-                <label class="field__label" for="subject">Subject</label>
-                <input class="field__input" type="text" id="subject" name="subject">
-            </div>
-
-            <div class="field">
-                <label class="field__label" for="message">Message <span class="req" aria-hidden="true">*</span></label>
-                <textarea class="field__textarea" id="message" name="message" rows="5" required></textarea>
-            </div>
-
-            <!-- Honeypot anti-spam -->
-            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
-
-            <button class="btn" type="submit">
-                Send
-                <span class="btn__arrow" aria-hidden="true">→</span>
-            </button>
-
-            <p class="form__note">
-                Required fields marked <span style="color:var(--accent);">*</span>.
-                I'll only use your email to reply.
-            </p>
-        </form>
+        <dl class="contact-direct">
+            <dt>GitHub</dt>
+            <dd>
+                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>
+            </dd>
+            <dt>Issues &amp; discussions</dt>
+            <dd>
+                <a href="https://github.com/{{ site.github_username }}?tab=repositories" rel="noopener noreferrer">Any of my repos</a>
+            </dd>
+            <dt>Email &amp; contact form</dt>
+            <dd style="font-family:var(--mono);font-size:var(--text-sm);color:var(--fg-muted);">
+                Coming back soon.
+            </dd>
+        </dl>
     </div>
 </section>

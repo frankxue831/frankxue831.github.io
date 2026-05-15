@@ -4,7 +4,7 @@
 
 en:
   html_lang: "en"
-  tagline: "Personal site of Frank Xue — software engineer. Notes, work, and ways to get in touch."
+  tagline: "Personal site of Frank Xue — software engineer. Notes and selected work."
   nav:
     home: "Index"
     about: "About"
@@ -22,7 +22,7 @@ en:
 
 zh:
   html_lang: "zh-CN"
-  tagline: "软件工程师 Frank Xue 的个人主页 — 作品、记录、联系方式。"
+  tagline: "Frank Xue 的个人主页。软件工程师，记一些笔记，放几个项目。"
   nav:
     home: "首页"
     about: "关于"

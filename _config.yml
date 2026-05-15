@@ -2,10 +2,12 @@ title: Frank Xue
 tagline: Software engineer.
 author:
   name: Frank Xue
-  email: fengxiang.xue@gmail.com
-email: fengxiang.xue@gmail.com
+# Email intentionally omitted from public site for now.
+# When re-enabling, restore `email:` and `author.email:` below;
+# the footer link, hero meta, contact form action, and any
+# `mailto:` hrefs in the page templates will pick it up.
 description: >-
-  Personal site of Frank Xue — software engineer. Notes, work, and ways to get in touch.
+  Personal site of Frank Xue — software engineer. Notes and selected work.
 baseurl: ""
 url: "https://www.frankxue.dev"
 lang: en

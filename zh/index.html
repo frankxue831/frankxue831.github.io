@@ -1,41 +1,42 @@
 ---
 layout: default
 title: 个人主页
-description: 软件工程师 Frank Xue 的个人主页 — 作品、记录、联系方式。
+description: Frank Xue 的个人主页。软件工程师,记一些笔记,放几个项目。
 permalink: /zh/
 lang: zh
 alternate: /
 ---
 
 <section class="hero wrap">
-    <p class="hero__eyebrow">Frank Xue — 软件工程师</p>
+    <p class="hero__eyebrow">Frank Xue / 软件工程师</p>
 
     <h1 class="hero__title">
-        造东西，
-        <em>写下来。</em>
+        做点东西,
+        <em>顺手写下来。</em>
     </h1>
 
     <p class="hero__lede">
-        我写软件，工作中也好，闲暇时也好。这里把我做过的小东西和正在做的大东西放在一起。
+        工作时写软件,闲下来也写。这里放着一些做过的小东西,
+        和正在做的大东西。
     </p>
 
     <dl class="hero__meta">
         <div>
-            <dt>目前</dt>
-            <dd>写 Rust — 密码学、Agent 工具、CLI</dd>
+            <dt>在做</dt>
+            <dd>Rust 居多——密码学、Agent 工具、CLI</dd>
         </div>
         <div>
             <dt>开源</dt>
             <dd><a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a></dd>
         </div>
         <div>
-            <dt>联系</dt>
-            <dd><a href="mailto:{{ site.email }}">{{ site.email }}</a></dd>
+            <dt>最近</dt>
+            <dd>在收尾 <em>gm-crypto-rs</em> v0.7</dd>
         </div>
     </dl>
 
     <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
-        看看我在做什么
+        看看在做什么
         <span class="hero__cta__arrow" aria-hidden="true">→</span>
     </a>
 </section>
@@ -44,16 +45,16 @@ alternate: /
     <header class="section__head">
         <p class="section__num">(01)  关于</p>
         <h2 id="about-h" class="section__title">
-            一句话版本，<em>给没耐心的人。</em>
+            一句话版本,<em>给懒得读长版的。</em>
         </h2>
     </header>
 
     <div class="preview">
-        <p class="preview__label">简单说</p>
+        <p class="preview__label">一句话</p>
         <div class="preview__body">
             <p>
-                我是一名软件工程师，在乎<em>清晰</em>——代码里的清晰、
-                界面上的清晰、团队讨论的清晰。
+                我是个软件工程师,挺<em>较真"清楚"</em>这件事——
+                代码要清楚,界面要清楚,跟人讲话也要清楚。
             </p>
             <a href="{{ '/zh/about/' | relative_url }}" class="preview__link">
                 看长一点的版本 <span aria-hidden="true">→</span>
@@ -66,7 +67,7 @@ alternate: /
     <header class="section__head">
         <p class="section__num">(02)  作品</p>
         <h2 id="work-h" class="section__title">
-            项目，<em>主要是 Rust。</em>
+            几个项目,<em>大多用 Rust 写。</em>
         </h2>
     </header>
 
@@ -113,12 +114,12 @@ alternate: /
     </header>
 
     <div class="preview">
-        <p class="preview__label">直接联系</p>
+        <p class="preview__label">联系</p>
         <div class="preview__body">
             <p>
-                邮件最快——
-                <a href="mailto:{{ site.email }}"><em>{{ site.email }}</em></a>。
-                每一条都会看,即使回复偶尔慢一点。
+                目前最直接的方式是 <em>GitHub</em>——
+                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>。
+                在任意一个仓库里开 issue 或 discussion 也都会到我这儿。
             </p>
             <a href="{{ '/zh/contact/' | relative_url }}" class="preview__link">
                 其他联系方式 <span aria-hidden="true">→</span>

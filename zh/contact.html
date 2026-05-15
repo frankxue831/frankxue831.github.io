@@ -10,73 +10,36 @@ alternate: /contact/
 <section class="page-header wrap">
     <p class="page-header__eyebrow">(03)  联系</p>
     <h1 class="page-header__title">
-        保持
-        <em>联系。</em>
+        打个
+        <em>招呼。</em>
     </h1>
     <p class="page-header__lede">
-        邮件最快。下面的表单也可以——会落到同一个邮箱。
+        目前最直接的方式是 <em>GitHub</em>。
+        邮件和留言表单稍后会再开。
     </p>
 </section>
 
 <section class="section wrap">
-    <div class="contact-grid">
-        <div class="contact-intro">
-            <p>
-                每一条消息我都会读。
-                无论是项目想法、问题,还是单纯打个招呼——我都很乐意听到。
-            </p>
+    <div class="contact-intro" style="max-width: 64ch;">
+        <p>
+            想聊项目、提问,或者只是想打个招呼,都欢迎。
+            在任意一个仓库里开 issue 或者 discussion,
+            和直接发消息给我效果是一样的。
+        </p>
 
-            <dl class="contact-direct">
-                <dt>邮件</dt>
-                <dd>
-                    <a href="mailto:{{ site.email }}">{{ site.email }}</a>
-                </dd>
-                <dt>GitHub</dt>
-                <dd>
-                    <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>
-                </dd>
-                <dt>回复时间</dt>
-                <dd style="font-family:var(--mono);font-size:var(--text-sm);color:var(--fg-muted);">
-                    一般在几天内回复。
-                </dd>
-            </dl>
-        </div>
-
-        <form class="form"
-              action="mailto:{{ site.email }}"
-              method="POST"
-              enctype="text/plain">
-            <div class="field">
-                <label class="field__label" for="name">姓名 <span class="req" aria-hidden="true">*</span></label>
-                <input class="field__input" type="text" id="name" name="name" required autocomplete="name">
-            </div>
-
-            <div class="field">
-                <label class="field__label" for="email">邮件 <span class="req" aria-hidden="true">*</span></label>
-                <input class="field__input" type="email" id="email" name="email" required autocomplete="email">
-            </div>
-
-            <div class="field">
-                <label class="field__label" for="subject">主题</label>
-                <input class="field__input" type="text" id="subject" name="subject">
-            </div>
-
-            <div class="field">
-                <label class="field__label" for="message">信息 <span class="req" aria-hidden="true">*</span></label>
-                <textarea class="field__textarea" id="message" name="message" rows="5" required></textarea>
-            </div>
-
-            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
-
-            <button class="btn" type="submit">
-                发送
-                <span class="btn__arrow" aria-hidden="true">→</span>
-            </button>
-
-            <p class="form__note">
-                标 <span style="color:var(--accent);">*</span> 的为必填项。
-                我只会用你的邮件回复。
-            </p>
-        </form>
+        <dl class="contact-direct">
+            <dt>GitHub</dt>
+            <dd>
+                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>
+            </dd>
+            <dt>提 issue / 开 discussion</dt>
+            <dd>
+                <a href="https://github.com/{{ site.github_username }}?tab=repositories" rel="noopener noreferrer">在任意仓库都行</a>
+            </dd>
+            <dt>邮件 / 留言表单</dt>
+            <dd style="font-family:var(--mono);font-size:var(--text-sm);color:var(--fg-muted);">
+                稍后再开。
+            </dd>
+        </dl>
     </div>
 </section>

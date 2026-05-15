@@ -10,12 +10,12 @@ alternate: /projects/
 <section class="page-header wrap">
     <p class="page-header__eyebrow">(02)  作品</p>
     <h1 class="page-header__title">
-        精选
-        <em>作品。</em>
+        项目
+        <em>选辑。</em>
     </h1>
     <p class="page-header__lede">
-        一份精简的清单,刻意保持简短。等到能诚实地写出来,再加新条目——
-        大部分用 Rust,大部分在开发者工具与底层系统之间。
+        清单不长,故意的。等到能写得诚实点再添新条目——
+        基本都是用 Rust 写的,做的事也基本都在开发者工具和底层系统之间。
     </p>
 </section>
 
@@ -30,17 +30,16 @@ alternate: /projects/
             </a>
             <p class="work-list__note">
                 国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK
-                (GB/T 32905&nbsp;/&nbsp;32918&nbsp;/&nbsp;32907)。
-                核心差异点是<em>常量时间设计</em>的实现,
-                由 CI 中的 <code>dudect-bencher</code> 泄漏回归门控守护——
-                <code>sm4-bitsliced-simd</code> 特性下 15 个目标,
+                (对应 GB/T 32905、32918、32907)。和其他 SM 实现比,
+                主要不一样的地方是<em>关键路径都按常量时间设计</em>,
+                CI 里挂了 <code>dudect-bencher</code> 做泄漏回归门控——
+                <code>sm4-bitsliced-simd</code> 特性下覆盖 15 个目标,
                 <code>|τ|&nbsp;&lt;&nbsp;0.20</code>。
-                当前发布 <strong>v0.6.0</strong>(2026-05-14),
-                v0.7.0 密码模式开发中;下一站 v0.8 AEAD(SM4-GCM + SM4-CCM)。
-                已发布到
-                <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io</a>,
-                名为 <code>gmcrypto-core</code>。
-                <a href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}" class="work-list__more">继续阅读 →</a>
+                目前 <strong>v0.6.0</strong> 已发(2026-05-14),
+                v0.7.0 在收尾,下一站是 v0.8 AEAD(SM4-GCM 和 SM4-CCM)。
+                已经上 <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io</a>,
+                叫 <code>gmcrypto-core</code>。
+                <a href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}" class="work-list__more">继续读 →</a>
             </p>
         </li>
 
@@ -53,12 +52,12 @@ alternate: /projects/
                 <span class="work-list__tags">Rust · MCP · Agent 工具</span>
             </a>
             <p class="work-list__note">
-                为 AI 编程 Agent 提供的仓库记忆与上下文层。
-                把仓库扫描成结构化的"包",
-                通过 MCP server(26 个工具)暴露,
-                再配上一个类型化、按指数衰减的记忆图谱,
-                让 Agent 不必每次都从零开始。
-                目标不是替你写代码——而是给 Agent 一份对项目<em>持久的心智模型</em>。
+                <em>给 AI 编程 Agent 用</em>的仓库记忆和上下文层。
+                把仓库扫成一个结构化的"包",通过 MCP server 暴露 26 个工具,
+                再配上一个按时间慢慢淡化的类型化记忆图。
+                目标不是替你写代码,
+                是让 Agent 对项目有<em>稳定的理解</em>——
+                不必每开一个 session 都从零看起。
             </p>
         </li>
 
@@ -72,11 +71,12 @@ alternate: /projects/
             </a>
             <p class="work-list__note">
                 macOS 上 GitHub Actions self-hosted runner 的只读观测 CLI。
-                一次调用便能展示 launchd domain、PID、进程树、日志尾、
-                (可选)GitHub API 状态——
-                起因是我花了一个小时调试 Mac Studio 上的第二个 runner 安装,
-                确认我想要的工具并不存在。
-                <em>设计文档与实施计划已就绪,实现进行中。</em>
+                一条命令就能看到 launchd domain、PID、进程树、日志尾,
+                需要的话还能附上 GitHub API 的状态。
+                起因俗气得很——
+                有次在 Mac Studio 上装第二个 runner 调了一个小时,
+                才发觉想要的工具压根没有,索性自己写一个。
+                <em>设计和实施计划已就绪,代码还在写。</em>
             </p>
         </li>
     </ul>
