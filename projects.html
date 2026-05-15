@@ -3,6 +3,8 @@ layout: default
 title: Work
 permalink: /projects/
 description: Selected projects by Frank Xue — Rust cryptography, agent tooling, developer infrastructure.
+lang: en
+alternate: /zh/projects/
 ---
 
 <section class="page-header wrap">
@@ -22,8 +24,7 @@ description: Selected projects by Frank Xue — Rust cryptography, agent tooling
     <ul class="work-list">
         <li class="work-list__item">
             <a class="work-list__row"
-               href="https://github.com/frankxue831/gm-crypto-rs"
-               rel="noopener noreferrer">
+               href="{{ '/projects/gm-crypto-rs/' | relative_url }}">
                 <span class="work-list__year">2025 — now</span>
                 <span class="work-list__title"><em>gm-crypto-rs</em></span>
                 <span class="work-list__tags">Rust · Cryptography · no_std</span>
@@ -33,9 +34,14 @@ description: Selected projects by Frank Xue — Rust cryptography, agent tooling
                 Chinese national crypto standards (GB/T 32905&nbsp;/ 32918&nbsp;/ 32907).
                 The differentiator is a <em>constant-time-designed</em> implementation
                 guarded by an in-CI <code>dudect-bencher</code> leak-regression harness —
-                twelve gates at <code>|τ|&nbsp;&lt;&nbsp;0.20</code>. Published on
+                fifteen targets at <code>|τ|&nbsp;&lt;&nbsp;0.20</code> under the
+                <code>sm4-bitsliced-simd</code> feature.
+                Current release <strong>v0.6.0</strong> (2026-05-14), v0.7.0 cipher
+                modes in flight; next milestone is v0.8 AEAD (SM4-GCM + SM4-CCM).
+                Published on
                 <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io</a>
                 as <code>gmcrypto-core</code>.
+                <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}" class="work-list__more">Read more →</a>
             </p>
         </li>
 

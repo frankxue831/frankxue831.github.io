@@ -1,8 +1,34 @@
-<a class="skip-link" href="#main">Skip to content</a>
+{%- assign lang = page.lang | default: 'en' -%}
+{%- assign t = site.data.i18n[lang] -%}
+{%- assign base = '' -%}{% if lang == 'zh' %}{% assign base = '/zh' %}{% endif %}
+{%- assign root_href = base | append: '/' -%}
+
+{%- comment -%}
+  Compute the counterpart page in the other language. Only set
+  show_switcher = true when the counterpart definitely exists —
+  either declared via `page.alternate`, or this page is a locale
+  root (/ and /zh/ always mirror each other). Pages without a
+  counterpart (e.g. 404) skip the switcher rather than link to
+  a non-existent URL.
+{%- endcomment -%}
+{%- assign show_switcher = false -%}
+{%- assign other_url = '' -%}
+{%- if page.alternate -%}
+  {%- assign other_url = page.alternate -%}
+  {%- assign show_switcher = true -%}
+{%- elsif page.url == '/' -%}
+  {%- assign other_url = '/zh/' -%}
+  {%- assign show_switcher = true -%}
+{%- elsif page.url == '/zh/' -%}
+  {%- assign other_url = '/' -%}
+  {%- assign show_switcher = true -%}
+{%- endif -%}
+
+<a class="skip-link" href="#main">{% if lang == 'zh' %}跳到正文{% else %}Skip to content{% endif %}</a>
 
 <header class="site-header">
     <div class="site-header__inner">
-        <a href="{{ '/' | relative_url }}" class="site-mark" aria-label="{{ site.title | escape }} — home">
+        <a href="{{ base | append: '/' | relative_url }}" class="site-mark" aria-label="{{ site.title | escape }} — {{ t.nav.home }}">
             <span class="site-mark__glyph">f</span>
             <span class="site-mark__name">{{ site.title }}</span>
         </a>
@@ -10,23 +36,35 @@
         <button class="nav-toggle" type="button"
                 aria-controls="primary-nav"
                 aria-expanded="false"
-                aria-label="Menu">
+                aria-label="{% if lang == 'zh' %}菜单{% else %}Menu{% endif %}">
             <span class="nav-toggle__bar"></span>
             <span class="nav-toggle__bar"></span>
             <span class="nav-toggle__bar"></span>
         </button>
 
         <nav class="primary-nav" id="primary-nav" aria-label="Primary">
-            {% assign here = page.url | default: '/' %}
+            {%- assign here = page.url | default: '/' -%}
+            {%- assign nav_items =
+              t.nav.home  | append: '|' | append: base | append: '/' | append: '||' |
+              append: t.nav.about   | append: '|' | append: base | append: '/about/'    | append: '||' |
+              append: t.nav.work    | append: '|' | append: base | append: '/projects/' | append: '||' |
+              append: t.nav.contact | append: '|' | append: base | append: '/contact/'
+              | split: '||' -%}
             <ol class="primary-nav__list">
-                {% assign nav_items = "Index,/|About,/about/|Work,/projects/|Contact,/contact/" | split: "|" %}
-                {% for entry in nav_items %}
-                    {% assign parts = entry | split: "," %}
-                    {% assign label = parts[0] %}
-                    {% assign href = parts[1] %}
-                    {% assign is_current = false %}
-                    {% if href == '/' and here == '/' %}{% assign is_current = true %}{% endif %}
-                    {% if href != '/' and here contains href %}{% assign is_current = true %}{% endif %}
+                {%- for entry in nav_items -%}
+                    {%- assign parts = entry | split: '|' -%}
+                    {%- assign label = parts[0] -%}
+                    {%- assign href = parts[1] -%}
+                    {%- assign is_current = false -%}
+                    {%- if href == root_href -%}
+                        {%- if here == root_href -%}{%- assign is_current = true -%}{%- endif -%}
+                    {%- else -%}
+                        {%- if here == href -%}
+                            {%- assign is_current = true -%}
+                        {%- elsif here contains href -%}
+                            {%- assign is_current = true -%}
+                        {%- endif -%}
+                    {%- endif -%}
                     <li class="primary-nav__item">
                         <a href="{{ href | relative_url }}"
                            class="primary-nav__link"
@@ -35,7 +73,18 @@
                             <span class="primary-nav__label">{{ label }}</span>
                         </a>
                     </li>
-                {% endfor %}
+                {%- endfor -%}
+                {%- if show_switcher -%}
+                <li class="primary-nav__item primary-nav__item--switch">
+                    <a href="{{ other_url | relative_url }}"
+                       class="primary-nav__link primary-nav__link--switch"
+                       hreflang="{% if lang == 'en' %}zh-CN{% else %}en{% endif %}"
+                       aria-label="{{ t.switcher.aria }}">
+                        <span class="primary-nav__num" aria-hidden="true">⇄</span>
+                        <span class="primary-nav__label">{{ t.switcher.label }}</span>
+                    </a>
+                </li>
+                {%- endif -%}
             </ol>
         </nav>
     </div>

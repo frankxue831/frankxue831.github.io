@@ -1,0 +1,73 @@
+---
+layout: default
+title: 关于
+permalink: /zh/about/
+description: 关于 Frank Xue — 软件工程师。
+lang: zh
+alternate: /about/
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(01)  关于</p>
+    <h1 class="page-header__title">
+        关于,
+        <em>简单说说。</em>
+    </h1>
+    <p class="page-header__lede">
+        一份草稿。说得少一些但诚实一些,比说得多但含糊要好。
+    </p>
+</section>
+
+<section class="section wrap">
+    <div class="prose">
+        <p>
+            我是 Frank — 一名软件工程师,主要写 Rust,
+            主要工作在开发者工具与底层系统之间的接缝。
+        </p>
+        <p>
+            最近做的三件事:用纯 Rust 实现国密 SM2 / SM3 / SM4 的 SDK,
+            关键路径<em>常量时间设计</em>、并在 CI 中用 dudect 守护;
+            为 AI 编程 Agent 做一个仓库记忆层,带类型化、按指数衰减的记忆图谱,
+            通过 MCP 暴露;以及一个小型 macOS CLI,
+            只是为了让"调试 self-hosted runner"这件事不再要花一小时。
+        </p>
+        <p>
+            把它们串起来的,是对工作里不那么"亮眼"的部分的偏爱——
+            <em>清晰的命名</em>、能在发布前抓到泄漏的回归门控、
+            终于把"为什么"解释清楚的那行注释。<em>有立场的</em>那些东西。
+        </p>
+        <p>
+            这个网站会随着我陆续发布更多内容慢慢填起来。
+            <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">GitHub</a>
+            是看我在做什么最诚实的快照,
+            <a href="mailto:{{ site.email }}">邮件</a>是联系我最快的方式。
+        </p>
+    </div>
+
+    <ul class="facts" aria-label="一览">
+        <li>
+            <span>领域</span>
+            <span>软件工程,主要是 Rust</span>
+        </li>
+        <li>
+            <span>兴趣</span>
+            <span>密码学、Agent 工具、CLI</span>
+        </li>
+        <li>
+            <span>写作</span>
+            <span>即将开始</span>
+        </li>
+        <li>
+            <span>开源</span>
+            <span><a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer" style="color:inherit;border-bottom:1px solid var(--accent);">@{{ site.github_username }}</a></span>
+        </li>
+        <li>
+            <span>crates.io</span>
+            <span><a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer" style="color:inherit;border-bottom:1px solid var(--accent);">gmcrypto-core</a></span>
+        </li>
+        <li>
+            <span>联系</span>
+            <span><a href="mailto:{{ site.email }}" style="color:inherit;border-bottom:1px solid var(--accent);">{{ site.email }}</a></span>
+        </li>
+    </ul>
+</section>

@@ -1,63 +1,62 @@
 ---
 layout: default
-title: Frank Xue
-description: Personal site of Frank Xue — software engineer. Notes, work, and ways to get in touch.
-lang: en
-alternate: /zh/
+title: 个人主页
+description: 软件工程师 Frank Xue 的个人主页 — 作品、记录、联系方式。
+permalink: /zh/
+lang: zh
+alternate: /
 ---
 
 <section class="hero wrap">
-    <p class="hero__eyebrow">Frank Xue — Software engineer</p>
+    <p class="hero__eyebrow">Frank Xue — 软件工程师</p>
 
     <h1 class="hero__title">
-        Building things,
-        <em>writing about them.</em>
+        造东西，
+        <em>写下来。</em>
     </h1>
 
     <p class="hero__lede">
-        I write software for a living and for fun. This is where I keep the
-        small things I make and the longer things I'm working on.
+        我写软件，工作中也好，闲暇时也好。这里把我做过的小东西和正在做的大东西放在一起。
     </p>
 
     <dl class="hero__meta">
         <div>
-            <dt>Currently</dt>
-            <dd>Writing Rust — crypto, agent tooling, CLIs</dd>
+            <dt>目前</dt>
+            <dd>写 Rust — 密码学、Agent 工具、CLI</dd>
         </div>
         <div>
-            <dt>Open source</dt>
+            <dt>开源</dt>
             <dd><a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a></dd>
         </div>
         <div>
-            <dt>Reach me</dt>
+            <dt>联系</dt>
             <dd><a href="mailto:{{ site.email }}">{{ site.email }}</a></dd>
         </div>
     </dl>
 
-    <a href="{{ '/projects/' | relative_url }}" class="hero__cta">
-        See what I'm working on
+    <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
+        看看我在做什么
         <span class="hero__cta__arrow" aria-hidden="true">→</span>
     </a>
 </section>
 
 <section class="section wrap" aria-labelledby="about-h">
     <header class="section__head">
-        <p class="section__num">(01)  About</p>
+        <p class="section__num">(01)  关于</p>
         <h2 id="about-h" class="section__title">
-            A short version, <em>for the impatient.</em>
+            一句话版本，<em>给没耐心的人。</em>
         </h2>
     </header>
 
     <div class="preview">
-        <p class="preview__label">In a sentence</p>
+        <p class="preview__label">简单说</p>
         <div class="preview__body">
             <p>
-                I'm a software engineer who cares about <em>clarity</em> —
-                in code, in interfaces, in the way teams talk about the
-                things they're building.
+                我是一名软件工程师，在乎<em>清晰</em>——代码里的清晰、
+                界面上的清晰、团队讨论的清晰。
             </p>
-            <a href="{{ '/about/' | relative_url }}" class="preview__link">
-                Read the longer version <span aria-hidden="true">→</span>
+            <a href="{{ '/zh/about/' | relative_url }}" class="preview__link">
+                看长一点的版本 <span aria-hidden="true">→</span>
             </a>
         </div>
     </div>
@@ -65,29 +64,28 @@ alternate: /zh/
 
 <section class="section wrap" aria-labelledby="work-h">
     <header class="section__head">
-        <p class="section__num">(02)  Selected work</p>
+        <p class="section__num">(02)  作品</p>
         <h2 id="work-h" class="section__title">
-            Projects, <em>mostly in Rust.</em>
+            项目，<em>主要是 Rust。</em>
         </h2>
     </header>
 
     <ul class="work-list">
         <li class="work-list__item">
             <a class="work-list__row"
-               href="https://github.com/frankxue831/gm-crypto-rs"
-               rel="noopener noreferrer">
-                <span class="work-list__year">2025 — now</span>
+               href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}">
+                <span class="work-list__year">2025 — 至今</span>
                 <span class="work-list__title"><em>gm-crypto-rs</em></span>
-                <span class="work-list__tags">Rust · Cryptography</span>
+                <span class="work-list__tags">Rust · 密码学</span>
             </a>
         </li>
         <li class="work-list__item">
             <a class="work-list__row"
                href="https://github.com/frankxue831/repolens-rs"
                rel="noopener noreferrer">
-                <span class="work-list__year">2025 — now</span>
+                <span class="work-list__year">2025 — 至今</span>
                 <span class="work-list__title"><em>RepoLens</em></span>
-                <span class="work-list__tags">Rust · MCP · Agents</span>
+                <span class="work-list__tags">Rust · MCP · Agent</span>
             </a>
         </li>
         <li class="work-list__item">
@@ -101,29 +99,29 @@ alternate: /zh/
         </li>
     </ul>
 
-    <a href="{{ '/projects/' | relative_url }}" class="preview__link" style="margin-top: var(--space-8);">
-        See all work <span aria-hidden="true">→</span>
+    <a href="{{ '/zh/projects/' | relative_url }}" class="preview__link" style="margin-top: var(--space-8);">
+        看全部作品 <span aria-hidden="true">→</span>
     </a>
 </section>
 
 <section class="section wrap" aria-labelledby="contact-h">
     <header class="section__head">
-        <p class="section__num">(03)  Contact</p>
+        <p class="section__num">(03)  联系</p>
         <h2 id="contact-h" class="section__title">
-            Say <em>hello.</em>
+            打个 <em>招呼。</em>
         </h2>
     </header>
 
     <div class="preview">
-        <p class="preview__label">Direct</p>
+        <p class="preview__label">直接联系</p>
         <div class="preview__body">
             <p>
-                Best way to reach me is email —
-                <a href="mailto:{{ site.email }}"><em>{{ site.email }}</em></a>.
-                I read everything, even if the reply is slow.
+                邮件最快——
+                <a href="mailto:{{ site.email }}"><em>{{ site.email }}</em></a>。
+                每一条都会看,即使回复偶尔慢一点。
             </p>
-            <a href="{{ '/contact/' | relative_url }}" class="preview__link">
-                Other ways to reach me <span aria-hidden="true">→</span>
+            <a href="{{ '/zh/contact/' | relative_url }}" class="preview__link">
+                其他联系方式 <span aria-hidden="true">→</span>
             </a>
         </div>
     </div>

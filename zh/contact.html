@@ -1,21 +1,20 @@
 ---
 layout: default
-title: Contact
-permalink: /contact/
-description: Get in touch with Frank Xue.
-lang: en
-alternate: /zh/contact/
+title: 联系
+permalink: /zh/contact/
+description: 联系 Frank Xue。
+lang: zh
+alternate: /contact/
 ---
 
 <section class="page-header wrap">
-    <p class="page-header__eyebrow">(03)  Contact</p>
+    <p class="page-header__eyebrow">(03)  联系</p>
     <h1 class="page-header__title">
-        Get in
-        <em>touch.</em>
+        保持
+        <em>联系。</em>
     </h1>
     <p class="page-header__lede">
-        Email is fastest. The form below works too — it'll land in the
-        same inbox.
+        邮件最快。下面的表单也可以——会落到同一个邮箱。
     </p>
 </section>
 
@@ -23,12 +22,12 @@ alternate: /zh/contact/
     <div class="contact-grid">
         <div class="contact-intro">
             <p>
-                I read every message. If you've got a project, a question,
-                or just want to say hello — I'd like to hear it.
+                每一条消息我都会读。
+                无论是项目想法、问题,还是单纯打个招呼——我都很乐意听到。
             </p>
 
             <dl class="contact-direct">
-                <dt>Email</dt>
+                <dt>邮件</dt>
                 <dd>
                     <a href="mailto:{{ site.email }}">{{ site.email }}</a>
                 </dd>
@@ -36,59 +35,47 @@ alternate: /zh/contact/
                 <dd>
                     <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>
                 </dd>
-                <dt>Response time</dt>
+                <dt>回复时间</dt>
                 <dd style="font-family:var(--mono);font-size:var(--text-sm);color:var(--fg-muted);">
-                    Usually within a few days.
+                    一般在几天内回复。
                 </dd>
             </dl>
         </div>
 
-        <!--
-          The form uses a mailto: action by default so it works on GitHub
-          Pages without any backend — submitting opens the visitor's mail
-          client with the fields pre-filled.
-
-          To upgrade to a real form handler (recommended), sign up at
-          https://formspree.io and replace the action with:
-              action="https://formspree.io/f/YOUR_FORM_ID"
-              method="POST"
-          (and remove enctype="text/plain").
-        -->
         <form class="form"
               action="mailto:{{ site.email }}"
               method="POST"
               enctype="text/plain">
             <div class="field">
-                <label class="field__label" for="name">Name <span class="req" aria-hidden="true">*</span></label>
+                <label class="field__label" for="name">姓名 <span class="req" aria-hidden="true">*</span></label>
                 <input class="field__input" type="text" id="name" name="name" required autocomplete="name">
             </div>
 
             <div class="field">
-                <label class="field__label" for="email">Email <span class="req" aria-hidden="true">*</span></label>
+                <label class="field__label" for="email">邮件 <span class="req" aria-hidden="true">*</span></label>
                 <input class="field__input" type="email" id="email" name="email" required autocomplete="email">
             </div>
 
             <div class="field">
-                <label class="field__label" for="subject">Subject</label>
+                <label class="field__label" for="subject">主题</label>
                 <input class="field__input" type="text" id="subject" name="subject">
             </div>
 
             <div class="field">
-                <label class="field__label" for="message">Message <span class="req" aria-hidden="true">*</span></label>
+                <label class="field__label" for="message">信息 <span class="req" aria-hidden="true">*</span></label>
                 <textarea class="field__textarea" id="message" name="message" rows="5" required></textarea>
             </div>
 
-            <!-- Honeypot anti-spam -->
             <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
 
             <button class="btn" type="submit">
-                Send
+                发送
                 <span class="btn__arrow" aria-hidden="true">→</span>
             </button>
 
             <p class="form__note">
-                Required fields marked <span style="color:var(--accent);">*</span>.
-                I'll only use your email to reply.
+                标 <span style="color:var(--accent);">*</span> 的为必填项。
+                我只会用你的邮件回复。
             </p>
         </form>
     </div>

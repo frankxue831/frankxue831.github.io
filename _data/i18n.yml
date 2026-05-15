@@ -1,0 +1,39 @@
+# Internationalization strings.
+# Page front matter sets `lang: en` or `lang: zh`; includes pull
+# the matching block.
+
+en:
+  html_lang: "en"
+  tagline: "Personal site of Frank Xue — software engineer. Notes, work, and ways to get in touch."
+  nav:
+    home: "Index"
+    about: "About"
+    work: "Work"
+    contact: "Contact"
+  switcher:
+    label: "中文"
+    aria: "Switch to Chinese"
+  footer:
+    elsewhere: "Elsewhere"
+    colophon: "Colophon"
+    set_in: "Set in"
+    built_with: "Built with Jekyll. Hosted on GitHub Pages."
+    last_built: "Last built"
+
+zh:
+  html_lang: "zh-CN"
+  tagline: "软件工程师 Frank Xue 的个人主页 — 作品、记录、联系方式。"
+  nav:
+    home: "首页"
+    about: "关于"
+    work: "作品"
+    contact: "联系"
+  switcher:
+    label: "EN"
+    aria: "切换为英文"
+  footer:
+    elsewhere: "其他平台"
+    colophon: "字体说明"
+    set_in: "字体使用"
+    built_with: "Jekyll 构建，托管于 GitHub Pages。"
+    last_built: "最近构建"

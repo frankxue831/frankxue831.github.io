@@ -1,0 +1,112 @@
+---
+layout: default
+title: "gm-crypto-rs"
+description: A pure-Rust SDK for the Chinese national cryptography standards (SM2, SM3, SM4), with constant-time-designed secret-handling paths guarded by an in-CI dudect leak-regression harness.
+permalink: /projects/gm-crypto-rs/
+lang: en
+alternate: /zh/projects/gm-crypto-rs/
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(02)  Work / Detail</p>
+    <h1 class="page-header__title">
+        <em>gm-crypto-rs</em>
+    </h1>
+    <p class="page-header__lede">
+        A pure-Rust SDK for the Chinese national cryptography standards
+        — SM2, SM3, SM4 — with constant-time-designed secret-handling
+        paths guarded by an in-CI leak-regression harness.
+    </p>
+</section>
+
+<section class="section wrap">
+    <article class="project-detail prose">
+        <h2>What it is</h2>
+        <p>
+            <code>gm-crypto-rs</code> implements GB/T 32905 (SM3 hash),
+            GB/T 32918 (SM2 public-key sign / verify / encrypt / decrypt),
+            and GB/T 32907 (SM4 block cipher) in pure Rust. The crate
+            graph is <code>no_std + alloc</code>, builds on
+            <code>wasm32-unknown-unknown</code>, and ships RustCrypto-trait
+            fits for <code>digest</code>, <code>mac</code>, and <code>cipher</code>.
+        </p>
+
+        <h2>What's different about it</h2>
+        <p>
+            Other Rust SM2 crates exist — RustCrypto's <code>sm2</code> is the most
+            established, and it <em>aims for constant-time secret-dependent
+            operations in its design</em>. The differentiator here isn't
+            design intent in isolation. It's an <em>in-CI regression gate</em>
+            that catches a timing leak the moment it shows up, instead of
+            relying on review to assert its absence.
+        </p>
+        <p>
+            Fifteen secret-touching code paths run under a
+            <code>dudect-bencher</code> harness on every CI run, gated at
+            <code>|τ| &lt; 0.20</code>. SM2 sign, SM2 decrypt, SM4 key
+            schedule, SM4 encrypt (under both the default linear-scan and
+            the bitsliced SIMD S-box), HMAC-SM3, encrypted-PKCS#8 decrypt,
+            and direct <code>Fn::invert</code> / <code>Fp::invert</code>
+            diagnostics. The harness reports <em>detection events</em> — low
+            <code>|τ|</code> means the test couldn't detect a leak with the
+            budget given, not that no leak exists. Language taken directly
+            from <code>dudect-bencher</code>'s own docs.
+        </p>
+
+        <h2>Safety posture</h2>
+        <ul>
+            <li><code>#![forbid(unsafe_code)]</code> on <code>gmcrypto-core</code>.</li>
+            <li>All SIMD <code>unsafe</code> quarantined to the sibling crate <code>gmcrypto-simd</code>, opt-in via the <code>sm4-bitsliced-simd</code> feature.</li>
+            <li>Constant-time arithmetic via <code>subtle</code> and <code>crypto-bigint</code> 0.7.</li>
+            <li>Secret material zeroized on drop via <code>zeroize</code>.</li>
+        </ul>
+
+        <h2>Where the throughput came from</h2>
+        <p>
+            v0.5 → v0.6 was an SIMD arc. v0.5.0 shipped the scaffolding;
+            v0.5.1 added an AVX2 <code>sbox_x8</code>; v0.6.0 widened that
+            to <code>sbox_x32</code> on AVX2 and added a NEON
+            <code>sbox_x16</code> on aarch64, with a CBC-decrypt fanout that
+            keeps the per-block latency hidden behind the parallel S-box.
+            v0.7 (now in flight) builds the first <em>user-callable cipher
+            modes</em> on top of that.
+        </p>
+
+        <h2>Status</h2>
+        <dl class="version-grid">
+            <dt>v0.6.0</dt>
+            <dd>Shipped 2026-05-14 — AVX2 <code>sbox_x32</code>, NEON <code>sbox_x16</code>, CBC-decrypt fanout.</dd>
+
+            <dt>v0.7.0</dt>
+            <dd>In flight — cipher modes. Five PRs stacked; ship target 2026-05-15.</dd>
+
+            <dt>v0.8.0</dt>
+            <dd>Planned — AEAD: SM4-GCM and SM4-CCM, per <code>docs/v0.7-aead-scope.md</code>.</dd>
+
+            <dt>v0.9+</dt>
+            <dd>Research — pinned dudect runner, streaming AEAD, AVX-512 16-way <code>sbox_x64</code>, RustCrypto 0.11 / 0.5 / 0.6 trait migrations.</dd>
+        </dl>
+
+        <h2>What it isn't</h2>
+        <ul>
+            <li>Not a TLS/TLCP implementation.</li>
+            <li>Not SM9, ZUC, or post-quantum.</li>
+            <li>Not an HSM / SDF / SKF integration.</li>
+            <li>Not a certified cryptographic module.</li>
+            <li>Not constant-time on CPUs with data-dependent multiply latencies (some older x86, some embedded).</li>
+        </ul>
+
+        <p>
+            Personal project. Not affiliated with, endorsed by, sponsored
+            by, or certified by any upstream cryptography project, payment
+            gateway, standards body, or vendor.
+        </p>
+
+        <div class="project-detail__links">
+            <a href="https://github.com/frankxue831/gm-crypto-rs" rel="noopener noreferrer">Source ↗</a>
+            <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io ↗</a>
+            <a href="https://docs.rs/gmcrypto-core" rel="noopener noreferrer">docs.rs ↗</a>
+            <a href="{{ '/projects/' | relative_url }}">← All work</a>
+        </div>
+    </article>
+</section>

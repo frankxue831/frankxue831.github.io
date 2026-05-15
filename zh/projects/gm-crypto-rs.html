@@ -1,0 +1,110 @@
+---
+layout: default
+title: "gm-crypto-rs"
+description: 国密 SM2 / SM3 / SM4 的纯 Rust SDK,关键路径常量时间设计,由 CI 中的 dudect 泄漏回归门控守护。
+permalink: /zh/projects/gm-crypto-rs/
+lang: zh
+alternate: /projects/gm-crypto-rs/
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(02)  作品 / 详情</p>
+    <h1 class="page-header__title">
+        <em>gm-crypto-rs</em>
+    </h1>
+    <p class="page-header__lede">
+        国密 SM2、SM3、SM4 的纯 Rust SDK,
+        关键路径<em>常量时间设计</em>、由 CI 中的泄漏回归门控守护。
+    </p>
+</section>
+
+<section class="section wrap">
+    <article class="project-detail prose">
+        <h2>是什么</h2>
+        <p>
+            <code>gm-crypto-rs</code> 用纯 Rust 实现
+            GB/T 32905(SM3 哈希)、
+            GB/T 32918(SM2 公钥签名 / 验签 / 加密 / 解密)、
+            GB/T 32907(SM4 分组密码)。
+            crate 图为 <code>no_std + alloc</code>,
+            可在 <code>wasm32-unknown-unknown</code> 上构建,
+            并提供 RustCrypto 的 <code>digest</code> / <code>mac</code> / <code>cipher</code> trait 适配。
+        </p>
+
+        <h2>有什么不同</h2>
+        <p>
+            社区里已有不错的 Rust SM2 实现——RustCrypto 的 <code>sm2</code> 比较成熟,
+            其设计<em>意在做到关键路径常量时间</em>。
+            这里的差异点不在"设计意图"本身,
+            而在 CI 中的<em>回归门控</em>:
+            一旦有泄漏出现,门控会立即拦截,
+            而不是依赖人工评审去断言"目前没有泄漏"。
+        </p>
+        <p>
+            每次 CI 中,15 个涉及秘密的代码路径都会在 <code>dudect-bencher</code> 下跑一遍,
+            门槛为 <code>|τ| &lt; 0.20</code>。
+            覆盖 SM2 签名、SM2 解密、SM4 密钥扩展、SM4 加密
+            (默认线性扫描与位切片 SIMD S-box 两种都跑)、HMAC-SM3、
+            加密 PKCS#8 解密,以及 <code>Fn::invert</code> / <code>Fp::invert</code> 的直接诊断。
+            harness 报告的是<em>检测事件</em>——
+            <code>|τ|</code> 低只意味着在给定预算下未能检测到泄漏,
+            <em>并不</em>证明常量时间。
+            措辞直接借用 <code>dudect-bencher</code> 自身的文档。
+        </p>
+
+        <h2>安全姿态</h2>
+        <ul>
+            <li><code>gmcrypto-core</code> 启用 <code>#![forbid(unsafe_code)]</code>。</li>
+            <li>SIMD <code>unsafe</code> 全部隔离到 sibling crate <code>gmcrypto-simd</code>,通过 <code>sm4-bitsliced-simd</code> 特性按需启用。</li>
+            <li>常量时间算术依赖 <code>subtle</code> 与 <code>crypto-bigint</code> 0.7。</li>
+            <li>秘密材料在 drop 时通过 <code>zeroize</code> 清零。</li>
+        </ul>
+
+        <h2>吞吐量从哪儿来</h2>
+        <p>
+            v0.5 → v0.6 是一条 SIMD 演进线。
+            v0.5.0 搭好脚手架,
+            v0.5.1 加上 AVX2 的 <code>sbox_x8</code>,
+            v0.6.0 把它拓宽到 AVX2 上的 <code>sbox_x32</code>,
+            并在 aarch64 上加了 NEON 的 <code>sbox_x16</code>,
+            CBC 解密做了 fanout,让单块延迟藏在并行 S-box 后面。
+            v0.7(开发中)在此之上做出<em>第一批用户可调用的密码模式</em>。
+        </p>
+
+        <h2>状态</h2>
+        <dl class="version-grid">
+            <dt>v0.6.0</dt>
+            <dd>已发布 2026-05-14 — AVX2 <code>sbox_x32</code>、NEON <code>sbox_x16</code>、CBC 解密 fanout。</dd>
+
+            <dt>v0.7.0</dt>
+            <dd>开发中 — 密码模式。5 个 PR 串接;目标 2026-05-15 发布。</dd>
+
+            <dt>v0.8.0</dt>
+            <dd>规划中 — AEAD:SM4-GCM 与 SM4-CCM,见 <code>docs/v0.7-aead-scope.md</code>。</dd>
+
+            <dt>v0.9+</dt>
+            <dd>研究 — 隔离环境的 dudect runner、流式 AEAD、AVX-512 16 路 <code>sbox_x64</code>、RustCrypto 0.11 / 0.5 / 0.6 trait 迁移。</dd>
+        </dl>
+
+        <h2>它不是什么</h2>
+        <ul>
+            <li>不是 TLS / TLCP 实现。</li>
+            <li>不包括 SM9、ZUC、后量子算法。</li>
+            <li>不是 HSM / SDF / SKF 集成。</li>
+            <li>不是经过认证的密码模块。</li>
+            <li>在某些有"数据相关乘法延迟"的 CPU 上(部分老 x86、部分嵌入式)不保证常量时间。</li>
+        </ul>
+
+        <p>
+            个人项目。不隶属于、不被支持于、不被赞助于、
+            也不被任何上游密码学项目、支付网关、标准机构或厂商所认证。
+        </p>
+
+        <div class="project-detail__links">
+            <a href="https://github.com/frankxue831/gm-crypto-rs" rel="noopener noreferrer">源码 ↗</a>
+            <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io ↗</a>
+            <a href="https://docs.rs/gmcrypto-core" rel="noopener noreferrer">docs.rs ↗</a>
+            <a href="{{ '/zh/projects/' | relative_url }}">← 全部作品</a>
+        </div>
+    </article>
+</section>

@@ -1,5 +1,6 @@
+{%- assign lang = page.lang | default: 'en' -%}
 {% include head.html %}
-<body class="page page--{{ page.slug | default: 'home' }}">
+<body class="page page--{{ page.slug | default: 'home' }} lang-{{ lang }}">
     <div class="grain" aria-hidden="true"></div>
 
     {% include nav.html %}
