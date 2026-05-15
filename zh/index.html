@@ -1,0 +1,129 @@
+---
+layout: default
+title: 个人主页
+description: Frank Xue 的个人主页。软件工程师,记一些笔记,放几个项目。
+permalink: /zh/
+lang: zh
+alternate: /
+---
+
+<section class="hero wrap">
+    <p class="hero__eyebrow">Frank Xue / 软件工程师</p>
+
+    <h1 class="hero__title">
+        做点东西,
+        <em>顺手写下来。</em>
+    </h1>
+
+    <p class="hero__lede">
+        工作时写软件,闲下来也写。这里放着一些做过的小东西,
+        和正在做的大东西。
+    </p>
+
+    <dl class="hero__meta">
+        <div>
+            <dt>在做</dt>
+            <dd>Rust 居多——密码学、Agent 工具、CLI</dd>
+        </div>
+        <div>
+            <dt>开源</dt>
+            <dd><a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a></dd>
+        </div>
+        <div>
+            <dt>最近</dt>
+            <dd>在收尾 <em>gm-crypto-rs</em> v0.7</dd>
+        </div>
+    </dl>
+
+    <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
+        看看在做什么
+        <span class="hero__cta__arrow" aria-hidden="true">→</span>
+    </a>
+</section>
+
+<section class="section wrap" aria-labelledby="about-h">
+    <header class="section__head">
+        <p class="section__num">(01)  关于</p>
+        <h2 id="about-h" class="section__title">
+            一句话版本,<em>给懒得读长版的。</em>
+        </h2>
+    </header>
+
+    <div class="preview">
+        <p class="preview__label">一句话</p>
+        <div class="preview__body">
+            <p>
+                我是个软件工程师,挺<em>较真"清楚"</em>这件事——
+                代码要清楚,界面要清楚,跟人讲话也要清楚。
+            </p>
+            <a href="{{ '/zh/about/' | relative_url }}" class="preview__link">
+                看长一点的版本 <span aria-hidden="true">→</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section wrap" aria-labelledby="work-h">
+    <header class="section__head">
+        <p class="section__num">(02)  作品</p>
+        <h2 id="work-h" class="section__title">
+            几个项目,<em>大多用 Rust 写。</em>
+        </h2>
+    </header>
+
+    <ul class="work-list">
+        <li class="work-list__item">
+            <a class="work-list__row"
+               href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}">
+                <span class="work-list__year">2025 — 至今</span>
+                <span class="work-list__title"><em>gm-crypto-rs</em></span>
+                <span class="work-list__tags">Rust · 密码学</span>
+            </a>
+        </li>
+        <li class="work-list__item">
+            <a class="work-list__row"
+               href="https://github.com/frankxue831/repolens-rs"
+               rel="noopener noreferrer">
+                <span class="work-list__year">2025 — 至今</span>
+                <span class="work-list__title"><em>RepoLens</em></span>
+                <span class="work-list__tags">Rust · MCP · Agent</span>
+            </a>
+        </li>
+        <li class="work-list__item">
+            <a class="work-list__row"
+               href="https://github.com/frankxue831/ghrunners"
+               rel="noopener noreferrer">
+                <span class="work-list__year">2026</span>
+                <span class="work-list__title"><em>ghrunners</em></span>
+                <span class="work-list__tags">Rust · CLI · macOS</span>
+            </a>
+        </li>
+    </ul>
+
+    <a href="{{ '/zh/projects/' | relative_url }}" class="preview__link" style="margin-top: var(--space-8);">
+        看全部作品 <span aria-hidden="true">→</span>
+    </a>
+</section>
+
+<section class="section wrap" aria-labelledby="contact-h">
+    <header class="section__head">
+        <p class="section__num">(03)  联系</p>
+        <h2 id="contact-h" class="section__title">
+            打个 <em>招呼。</em>
+        </h2>
+    </header>
+
+    <div class="preview">
+        <p class="preview__label">联系</p>
+        <div class="preview__body">
+            <p>
+                目前最直接的方式是 <em>GitHub</em>——
+                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>。
+                在任意一个仓库里开 issue 或 discussion 也都会到我这儿。
+            </p>
+            <a href="{{ '/zh/contact/' | relative_url }}" class="preview__link">
+                其他联系方式 <span aria-hidden="true">→</span>
+            </a>
+        </div>
+    </div>
+</section>

@@ -1,103 +1,45 @@
 ---
-layout: page
+layout: default
 title: Contact
 permalink: /contact/
+description: Get in touch with Frank Xue.
+lang: en
+alternate: /zh/contact/
 ---
 
-<!-- Page Header -->
-<section class="page-header">
-    <div class="container">
-        <h1>Get In Touch</h1>
-        <p>I'd love to hear from you. Let's discuss your next project or opportunity.</p>
-    </div>
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(03)  Contact</p>
+    <h1 class="page-header__title">
+        Get in
+        <em>touch.</em>
+    </h1>
+    <p class="page-header__lede">
+        Right now <em>GitHub</em> is the most direct way to reach me.
+        Email and a proper contact form are coming back online soon.
+    </p>
 </section>
 
-<!-- Contact Section -->
-<section class="contact-section">
-    <div class="container">
-        <div class="contact-grid">
-            <div class="contact-info">
-                <h2>Let's Connect</h2>
-                <p>
-                    Whether you have a project in mind, want to collaborate, or just want to 
-                    say hello, I'm always open to new conversations and opportunities.
-                </p>
-                
-                <div class="contact-methods">
-                    <div class="contact-method">
-                        <h3>Email</h3>
-                        <p>
-                            <a href="mailto:{{ site.email }}">{{ site.email }}</a>
-                        </p>
-                    </div>
-                    
-                    <div class="contact-method">
-                        <h3>Response Time</h3>
-                        <p>I typically respond within 24-48 hours</p>
-                    </div>
-                    
-                    <div class="contact-method">
-                        <h3>Location</h3>
-                        <p>Available for remote work worldwide</p>
-                    </div>
-                </div>
+<section class="section wrap">
+    <div class="contact-intro" style="max-width: 64ch;">
+        <p>
+            Project ideas, questions, or just a hello — all welcome.
+            An issue or discussion on any of my repos lands with me
+            the same as a direct message.
+        </p>
 
-                <div class="social-contact">
-                    <h3>Find Me Online</h3>
-                    <div class="social-links-contact">
-                        {% if site.github_username %}
-                        <a href="https://github.com/{{ site.github_username }}" target="_blank" class="social-link">
-                            <span>GitHub</span>
-                        </a>
-                        {% endif %}
-                        {% if site.linkedin_username %}
-                        <a href="https://linkedin.com/in/{{ site.linkedin_username }}" target="_blank" class="social-link">
-                            <span>LinkedIn</span>
-                        </a>
-                        {% endif %}
-                        {% if site.twitter_username %}
-                        <a href="https://twitter.com/{{ site.twitter_username }}" target="_blank" class="social-link">
-                            <span>Twitter</span>
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <div class="contact-form-container">
-                <form class="contact-form" action="#" method="POST">
-                    <h3>Send a Message</h3>
-                    <p class="form-description">
-                        Fill out the form below and I'll get back to you as soon as possible.
-                    </p>
-                    
-                    <div class="form-group">
-                        <label for="name">Name *</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email *</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="subject">Subject *</label>
-                        <input type="text" id="subject" name="subject" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="message">Message *</label>
-                        <textarea id="message" name="message" rows="6" required placeholder="Tell me about your project or just say hello!"></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-full">Send Message</button>
-                    
-                    <p class="form-note">
-                        * Required fields. I respect your privacy and will never share your information.
-                    </p>
-                </form>
-            </div>
-        </div>
+        <dl class="contact-direct">
+            <dt>GitHub</dt>
+            <dd>
+                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>
+            </dd>
+            <dt>Issues &amp; discussions</dt>
+            <dd>
+                <a href="https://github.com/{{ site.github_username }}?tab=repositories" rel="noopener noreferrer">Any of my repos</a>
+            </dd>
+            <dt>Email &amp; contact form</dt>
+            <dd style="font-family:var(--mono);font-size:var(--text-sm);color:var(--fg-muted);">
+                Coming back soon.
+            </dd>
+        </dl>
     </div>
 </section>

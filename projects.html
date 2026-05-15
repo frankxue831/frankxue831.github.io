@@ -1,158 +1,86 @@
 ---
-layout: page
-title: Projects
+layout: default
+title: Work
 permalink: /projects/
+description: Selected projects by Frank Xue — Rust cryptography, agent tooling, developer infrastructure.
+lang: en
+alternate: /zh/projects/
 ---
 
-<!-- Page Header -->
-<section class="page-header">
-    <div class="container">
-        <h1>My Projects</h1>
-        <p>A collection of projects that showcase my skills and passion for building great software</p>
-    </div>
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(02)  Work</p>
+    <h1 class="page-header__title">
+        Selected
+        <em>work.</em>
+    </h1>
+    <p class="page-header__lede">
+        A short, honest list. Things I'm building in the open — mostly in
+        Rust, mostly at the seam between developer tools and the systems
+        they sit on top of.
+    </p>
 </section>
 
-<!-- Projects Section -->
-<section class="projects-section">
-    <div class="container">
-        <div class="projects-grid-detailed">
-            <div class="project-card-detailed">
-                <div class="project-header">
-                    <h3>E-Commerce Platform</h3>
-                    <div class="project-links">
-                        <a href="#" class="project-link">Live Demo</a>
-                        <a href="#" class="project-link">GitHub</a>
-                    </div>
-                </div>
-                <p class="project-description">
-                    A full-stack e-commerce platform built with React and Node.js. Features include 
-                    user authentication, product catalog, shopping cart, payment integration, and 
-                    admin dashboard for inventory management.
-                </p>
-                <div class="project-features">
-                    <h4>Key Features:</h4>
-                    <ul>
-                        <li>Responsive design with modern UI/UX</li>
-                        <li>Secure payment processing with Stripe</li>
-                        <li>Real-time inventory tracking</li>
-                        <li>Admin dashboard with analytics</li>
-                        <li>Search and filtering functionality</li>
-                    </ul>
-                </div>
-                <div class="project-tech">
-                    <span class="tech-tag">React</span>
-                    <span class="tech-tag">Node.js</span>
-                    <span class="tech-tag">Express</span>
-                    <span class="tech-tag">MongoDB</span>
-                    <span class="tech-tag">Stripe API</span>
-                    <span class="tech-tag">JWT</span>
-                </div>
-            </div>
+<section class="section wrap">
+    <ul class="work-list">
+        <li class="work-list__item">
+            <a class="work-list__row"
+               href="{{ '/projects/gm-crypto-rs/' | relative_url }}">
+                <span class="work-list__year">2025 — now</span>
+                <span class="work-list__title"><em>gm-crypto-rs</em></span>
+                <span class="work-list__tags">Rust · Cryptography · no_std</span>
+            </a>
+            <p class="work-list__note">
+                Pure-Rust SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 SDK for the
+                Chinese national crypto standards (GB/T 32905&nbsp;/ 32918&nbsp;/ 32907).
+                The differentiator is a <em>constant-time-designed</em> implementation
+                guarded by an in-CI <code>dudect-bencher</code> leak-regression harness —
+                fifteen targets at <code>|τ|&nbsp;&lt;&nbsp;0.20</code> under the
+                <code>sm4-bitsliced-simd</code> feature.
+                Current release <strong>v0.6.0</strong> (2026-05-14), v0.7.0 cipher
+                modes in flight; next milestone is v0.8 AEAD (SM4-GCM + SM4-CCM).
+                Published on
+                <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io</a>
+                as <code>gmcrypto-core</code>.
+                <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}" class="work-list__more">Read more →</a>
+            </p>
+        </li>
 
-            <div class="project-card-detailed">
-                <div class="project-header">
-                    <h3>Task Management App</h3>
-                    <div class="project-links">
-                        <a href="#" class="project-link">Live Demo</a>
-                        <a href="#" class="project-link">GitHub</a>
-                    </div>
-                </div>
-                <p class="project-description">
-                    A collaborative task management application with real-time updates, team 
-                    collaboration features, and advanced project tracking capabilities. Built 
-                    with Vue.js and Firebase for real-time synchronization.
-                </p>
-                <div class="project-features">
-                    <h4>Key Features:</h4>
-                    <ul>
-                        <li>Real-time collaboration and updates</li>
-                        <li>Drag-and-drop task organization</li>
-                        <li>Team member assignment and notifications</li>
-                        <li>Progress tracking and reporting</li>
-                        <li>File attachments and comments</li>
-                    </ul>
-                </div>
-                <div class="project-tech">
-                    <span class="tech-tag">Vue.js</span>
-                    <span class="tech-tag">Firebase</span>
-                    <span class="tech-tag">Vuex</span>
-                    <span class="tech-tag">CSS3</span>
-                    <span class="tech-tag">PWA</span>
-                </div>
-            </div>
+        <li class="work-list__item">
+            <a class="work-list__row"
+               href="https://github.com/frankxue831/repolens-rs"
+               rel="noopener noreferrer">
+                <span class="work-list__year">2025 — now</span>
+                <span class="work-list__title"><em>RepoLens</em></span>
+                <span class="work-list__tags">Rust · MCP · Agent tooling</span>
+            </a>
+            <p class="work-list__note">
+                A repository memory and context layer for AI coding agents.
+                Scans a repo into structured "packs," exposes them through
+                an MCP server (26 tools), and pairs them with a typed,
+                exponentially-decaying memory graph so agents don't start
+                each session cold. The goal isn't to write code for you —
+                it's to give the agent a <em>durable mental model</em> of the
+                project.
+            </p>
+        </li>
 
-            <div class="project-card-detailed">
-                <div class="project-header">
-                    <h3>Weather Dashboard</h3>
-                    <div class="project-links">
-                        <a href="#" class="project-link">Live Demo</a>
-                        <a href="#" class="project-link">GitHub</a>
-                    </div>
-                </div>
-                <p class="project-description">
-                    A comprehensive weather dashboard that provides current weather conditions, 
-                    forecasts, and weather maps. Features location-based weather data, favorite 
-                    locations, and weather alerts.
-                </p>
-                <div class="project-features">
-                    <h4>Key Features:</h4>
-                    <ul>
-                        <li>Current weather and 7-day forecast</li>
-                        <li>Interactive weather maps</li>
-                        <li>Location search and geolocation</li>
-                        <li>Favorite locations management</li>
-                        <li>Weather alerts and notifications</li>
-                    </ul>
-                </div>
-                <div class="project-tech">
-                    <span class="tech-tag">JavaScript</span>
-                    <span class="tech-tag">Weather API</span>
-                    <span class="tech-tag">Charts.js</span>
-                    <span class="tech-tag">CSS Grid</span>
-                    <span class="tech-tag">Responsive Design</span>
-                </div>
-            </div>
-
-            <div class="project-card-detailed">
-                <div class="project-header">
-                    <h3>Blog Platform</h3>
-                    <div class="project-links">
-                        <a href="#" class="project-link">Live Demo</a>
-                        <a href="#" class="project-link">GitHub</a>
-                    </div>
-                </div>
-                <p class="project-description">
-                    A modern blog platform built with Django and PostgreSQL. Features include 
-                    a rich text editor, comment system, tag-based categorization, and SEO 
-                    optimization for better search engine visibility.
-                </p>
-                <div class="project-features">
-                    <h4>Key Features:</h4>
-                    <ul>
-                        <li>Rich text editor with image uploads</li>
-                        <li>Comment system with moderation</li>
-                        <li>Tag-based post categorization</li>
-                        <li>SEO-optimized URLs and meta tags</li>
-                        <li>Social media sharing integration</li>
-                    </ul>
-                </div>
-                <div class="project-tech">
-                    <span class="tech-tag">Python</span>
-                    <span class="tech-tag">Django</span>
-                    <span class="tech-tag">PostgreSQL</span>
-                    <span class="tech-tag">Bootstrap</span>
-                    <span class="tech-tag">Docker</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Call to Action -->
-<section class="projects-cta">
-    <div class="container">
-        <h2>Interested in Working Together?</h2>
-        <p>I'm always open to discussing new opportunities and interesting projects.</p>
-        <a href="{{ '/contact' | relative_url }}" class="btn btn-primary">Get In Touch</a>
-    </div>
+        <li class="work-list__item">
+            <a class="work-list__row"
+               href="https://github.com/frankxue831/ghrunners"
+               rel="noopener noreferrer">
+                <span class="work-list__year">2026</span>
+                <span class="work-list__title"><em>ghrunners</em></span>
+                <span class="work-list__tags">Rust · CLI · macOS</span>
+            </a>
+            <p class="work-list__note">
+                A read-only observability CLI for GitHub Actions self-hosted
+                runners on macOS. Surfaces launchd domain, PID, process tree,
+                log tails, and (optionally) GitHub API status in one
+                invocation — built after an hour of debugging a second
+                runner install on my Mac Studio convinced me the tool I
+                wanted didn't exist. <em>Design and plan shipped; implementation
+                in progress.</em>
+            </p>
+        </li>
+    </ul>
 </section>

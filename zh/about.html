@@ -1,0 +1,79 @@
+---
+layout: default
+title: 关于
+permalink: /zh/about/
+description: 关于 Frank Xue,软件工程师。
+lang: zh
+alternate: /about/
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(01)  关于</p>
+    <h1 class="page-header__title">
+        关于,
+        <em>简单说说。</em>
+    </h1>
+    <p class="page-header__lede">
+        草稿一份。话不多,但都是真话。
+    </p>
+</section>
+
+<section class="section wrap">
+    <div class="prose">
+        <p>
+            我叫 Frank,软件工程师。Rust 写得多一些,
+            做的事大多卡在开发者工具和底层系统中间这一块。
+        </p>
+        <p>
+            最近主要在做三样东西。
+            一是国密 SM2 / SM3 / SM4 的纯 Rust SDK,
+            涉及秘密的路径全部按<em>常量时间</em>来设计,
+            CI 里有 dudect 在守着。
+            二是给 AI 编程 Agent 做一个仓库记忆层——
+            把项目里的事结构化地记下来、按时间慢慢淡化,
+            走 MCP 暴露给 Agent 用。
+            三是一个小工具,专门看 macOS 上 self-hosted runner 的状态;
+            起因俗气得很:有次在 Mac Studio 上装第二个 runner 调了一个小时,
+            才发现想要的工具压根没有。
+        </p>
+        <p>
+            把这几件事串起来的,
+            是我对那些<em>不太显眼</em>的部分的偏好——
+            把名字起清楚,门控在出问题之前拦住,
+            注释里终于把"为什么"讲明白。
+            <em>有立场</em>的那些东西。
+        </p>
+        <p>
+            这个网站会慢慢填起来。想知道我最近在做什么,
+            <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">GitHub</a>
+            最直接。
+        </p>
+    </div>
+
+    <ul class="facts" aria-label="一览">
+        <li>
+            <span>领域</span>
+            <span>软件工程,主要写 Rust</span>
+        </li>
+        <li>
+            <span>兴趣</span>
+            <span>密码学、Agent 工具、CLI</span>
+        </li>
+        <li>
+            <span>写作</span>
+            <span>还没动笔</span>
+        </li>
+        <li>
+            <span>开源</span>
+            <span><a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer" style="color:inherit;border-bottom:1px solid var(--accent);">@{{ site.github_username }}</a></span>
+        </li>
+        <li>
+            <span>crates.io</span>
+            <span><a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer" style="color:inherit;border-bottom:1px solid var(--accent);">gmcrypto-core</a></span>
+        </li>
+        <li>
+            <span>最近</span>
+            <span>在收尾 gm-crypto-rs v0.7</span>
+        </li>
+    </ul>
+</section>

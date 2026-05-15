@@ -1,123 +1,130 @@
 ---
 layout: default
+title: Frank Xue
+description: Personal site of Frank Xue — software engineer. Notes and selected work.
+lang: en
+alternate: /zh/
 ---
 
-<!-- Navigation -->
-<nav class="navbar">
-    <div class="nav-container">
-        <a href="{{ '/' | relative_url }}" class="nav-logo">{{ site.title }}</a>
-        <div class="nav-menu">
-            <a href="{{ '/' | relative_url }}" class="nav-link">Home</a>
-            <a href="{{ '/about' | relative_url }}" class="nav-link">About</a>
-            <a href="{{ '/projects' | relative_url }}" class="nav-link">Projects</a>
-            <a href="{{ '/contact' | relative_url }}" class="nav-link">Contact</a>
-        </div>
-    </div>
-</nav>
+<section class="hero wrap">
+    <p class="hero__eyebrow">Frank Xue — Software engineer</p>
 
-<!-- Hero Section -->
-<section class="hero">
-    <div class="hero-container">
-        <div class="hero-content">
-            <h1 class="hero-title">Hello, I'm <span class="highlight">Frank Xue</span></h1>
-            <p class="hero-subtitle">Software Engineer & Technology Enthusiast</p>
-            <p class="hero-description">
-                I'm passionate about building innovative solutions and creating exceptional digital experiences. 
-                Welcome to my corner of the internet where I share my journey in technology.
+    <h1 class="hero__title">
+        Building things,
+        <em>writing about them.</em>
+    </h1>
+
+    <p class="hero__lede">
+        I write software for a living and for fun. This is where I keep the
+        small things I make and the longer things I'm working on.
+    </p>
+
+    <dl class="hero__meta">
+        <div>
+            <dt>Currently</dt>
+            <dd>Writing Rust — crypto, agent tooling, CLIs</dd>
+        </div>
+        <div>
+            <dt>Open source</dt>
+            <dd><a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a></dd>
+        </div>
+        <div>
+            <dt>Lately</dt>
+            <dd>Wrapping up <em>gm-crypto-rs</em> v0.7</dd>
+        </div>
+    </dl>
+
+    <a href="{{ '/projects/' | relative_url }}" class="hero__cta">
+        See what I'm working on
+        <span class="hero__cta__arrow" aria-hidden="true">→</span>
+    </a>
+</section>
+
+<section class="section wrap" aria-labelledby="about-h">
+    <header class="section__head">
+        <p class="section__num">(01)  About</p>
+        <h2 id="about-h" class="section__title">
+            A short version, <em>for the impatient.</em>
+        </h2>
+    </header>
+
+    <div class="preview">
+        <p class="preview__label">In a sentence</p>
+        <div class="preview__body">
+            <p>
+                I'm a software engineer who cares about <em>clarity</em> —
+                in code, in interfaces, in the way teams talk about the
+                things they're building.
             </p>
-            <div class="hero-buttons">
-                <a href="{{ '/projects' | relative_url }}" class="btn btn-primary">View My Work</a>
-                <a href="{{ '/contact' | relative_url }}" class="btn btn-secondary">Get In Touch</a>
-            </div>
+            <a href="{{ '/about/' | relative_url }}" class="preview__link">
+                Read the longer version <span aria-hidden="true">→</span>
+            </a>
         </div>
     </div>
 </section>
 
-<!-- About Preview Section -->
-<section class="about-preview">
-    <div class="container">
-        <h2>About Me</h2>
-        <p>
-            I'm a software engineer with a passion for creating clean, efficient code and solving complex problems. 
-            My experience spans across various technologies and I'm always eager to learn new things.
-        </p>
-        <a href="{{ '/about' | relative_url }}" class="btn btn-outline">Learn More</a>
-    </div>
+<section class="section wrap" aria-labelledby="work-h">
+    <header class="section__head">
+        <p class="section__num">(02)  Selected work</p>
+        <h2 id="work-h" class="section__title">
+            Projects, <em>mostly in Rust.</em>
+        </h2>
+    </header>
+
+    <ul class="work-list">
+        <li class="work-list__item">
+            <a class="work-list__row"
+               href="https://github.com/frankxue831/gm-crypto-rs"
+               rel="noopener noreferrer">
+                <span class="work-list__year">2025 — now</span>
+                <span class="work-list__title"><em>gm-crypto-rs</em></span>
+                <span class="work-list__tags">Rust · Cryptography</span>
+            </a>
+        </li>
+        <li class="work-list__item">
+            <a class="work-list__row"
+               href="https://github.com/frankxue831/repolens-rs"
+               rel="noopener noreferrer">
+                <span class="work-list__year">2025 — now</span>
+                <span class="work-list__title"><em>RepoLens</em></span>
+                <span class="work-list__tags">Rust · MCP · Agents</span>
+            </a>
+        </li>
+        <li class="work-list__item">
+            <a class="work-list__row"
+               href="https://github.com/frankxue831/ghrunners"
+               rel="noopener noreferrer">
+                <span class="work-list__year">2026</span>
+                <span class="work-list__title"><em>ghrunners</em></span>
+                <span class="work-list__tags">Rust · CLI · macOS</span>
+            </a>
+        </li>
+    </ul>
+
+    <a href="{{ '/projects/' | relative_url }}" class="preview__link" style="margin-top: var(--space-8);">
+        See all work <span aria-hidden="true">→</span>
+    </a>
 </section>
 
-<!-- Featured Projects Section -->
-<section class="featured-projects">
-    <div class="container">
-        <h2>Featured Projects</h2>
-        <div class="projects-grid">
-            <div class="project-card">
-                <h3>Project One</h3>
-                <p>A description of your first project and the technologies used.</p>
-                <div class="project-tech">
-                    <span class="tech-tag">React</span>
-                    <span class="tech-tag">Node.js</span>
-                    <span class="tech-tag">MongoDB</span>
-                </div>
-            </div>
-            <div class="project-card">
-                <h3>Project Two</h3>
-                <p>A description of your second project and what makes it special.</p>
-                <div class="project-tech">
-                    <span class="tech-tag">Python</span>
-                    <span class="tech-tag">Django</span>
-                    <span class="tech-tag">PostgreSQL</span>
-                </div>
-            </div>
-            <div class="project-card">
-                <h3>Project Three</h3>
-                <p>A description of your third project and its impact.</p>
-                <div class="project-tech">
-                    <span class="tech-tag">Vue.js</span>
-                    <span class="tech-tag">Express</span>
-                    <span class="tech-tag">MySQL</span>
-                </div>
-            </div>
-        </div>
-        <div class="text-center">
-            <a href="{{ '/projects' | relative_url }}" class="btn btn-primary">View All Projects</a>
+<section class="section wrap" aria-labelledby="contact-h">
+    <header class="section__head">
+        <p class="section__num">(03)  Contact</p>
+        <h2 id="contact-h" class="section__title">
+            Say <em>hello.</em>
+        </h2>
+    </header>
+
+    <div class="preview">
+        <p class="preview__label">Direct</p>
+        <div class="preview__body">
+            <p>
+                <em>GitHub</em> is the most direct way right now —
+                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>.
+                An issue or discussion on any of my repos reaches me too.
+            </p>
+            <a href="{{ '/contact/' | relative_url }}" class="preview__link">
+                Other ways to get in touch <span aria-hidden="true">→</span>
+            </a>
         </div>
     </div>
 </section>
-
-<!-- Footer -->
-<footer class="footer">
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-info">
-                <h3>{{ site.title }}</h3>
-                <p>{{ site.description }}</p>
-            </div>
-            <div class="footer-links">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="{{ '/' | relative_url }}">Home</a></li>
-                    <li><a href="{{ '/about' | relative_url }}">About</a></li>
-                    <li><a href="{{ '/projects' | relative_url }}">Projects</a></li>
-                    <li><a href="{{ '/contact' | relative_url }}">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-social">
-                <h4>Connect</h4>
-                <div class="social-links">
-                    {% if site.github_username %}
-                    <a href="https://github.com/{{ site.github_username }}" target="_blank">GitHub</a>
-                    {% endif %}
-                    {% if site.linkedin_username %}
-                    <a href="https://linkedin.com/in/{{ site.linkedin_username }}" target="_blank">LinkedIn</a>
-                    {% endif %}
-                    {% if site.twitter_username %}
-                    <a href="https://twitter.com/{{ site.twitter_username }}" target="_blank">Twitter</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; {{ 'now' | date: "%Y" }} {{ site.title }}. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
