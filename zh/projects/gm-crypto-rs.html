@@ -31,10 +31,22 @@ alternate: /projects/gm-crypto-rs/
             也给出了 RustCrypto 的 <code>digest</code> / <code>mac</code> / <code>cipher</code> trait 适配。
         </p>
 
+        <h2>已经发布了什么</h2>
+        <p>
+            v0.5 到 v0.6 是一条 SIMD 演进线。
+            v0.5.0 先搭好脚手架;
+            v0.5.1 加上 AVX2 的 <code>sbox_x8</code>;
+            v0.6.0 把它拓到 AVX2 上的 <code>sbox_x32</code>,
+            又在 aarch64 上加了 NEON 的 <code>sbox_x16</code>,
+            CBC 解密做了 fanout,让单块延迟藏在并行 S-box 后面。
+            v0.7.0 就在这之上,
+            做出<em>第一批用户能直接调用的密码模式</em>。
+        </p>
+
         <h2>跟其他实现差在哪儿</h2>
         <p>
             Rust 里也有别的 SM 系列实现,RustCrypto 的 <code>sm2</code> 是用得最多的——
-            <em>它在设计上就奔着"秘密相关操作走常量时间"去的</em>。
+            <em>它在设计上就奔着"秘密相关操作按常量时间设计"去的</em>。
             这里的差异不在"设计意图"本身,
             而在 CI 里多了一道<em>回归门控</em>:
             一旦冒出时序泄漏,门控立刻拦住,
@@ -54,40 +66,23 @@ alternate: /projects/gm-crypto-rs/
             <em>并不</em>等于"常量时间"。
             这段措辞是直接借用 <code>dudect-bencher</code> 自己的文档。
         </p>
-
-        <h2>安全设定</h2>
         <ul>
             <li><code>gmcrypto-core</code> 开了 <code>#![forbid(unsafe_code)]</code>。</li>
             <li>所有 SIMD 的 <code>unsafe</code> 都隔离到 sibling crate <code>gmcrypto-simd</code>,通过 <code>sm4-bitsliced-simd</code> 特性按需启用。</li>
-            <li>常量时间算术用 <code>subtle</code> 配 <code>crypto-bigint</code> 0.7。</li>
+            <li>按常量时间设计的算术用 <code>subtle</code> 配 <code>crypto-bigint</code> 0.7。</li>
             <li>秘密材料在 drop 的时候由 <code>zeroize</code> 清零。</li>
         </ul>
 
-        <h2>吞吐量是怎么上去的</h2>
-        <p>
-            v0.5 到 v0.6 是一条 SIMD 演进线。
-            v0.5.0 先搭好脚手架;
-            v0.5.1 加上 AVX2 的 <code>sbox_x8</code>;
-            v0.6.0 把它拓到 AVX2 上的 <code>sbox_x32</code>,
-            又在 aarch64 上加了 NEON 的 <code>sbox_x16</code>,
-            CBC 解密做了 fanout,让单块延迟藏在并行 S-box 后面。
-            v0.7(正在写)就在这之上,
-            做出<em>第一批用户能直接调用的密码模式</em>。
-        </p>
-
-        <h2>状态</h2>
+        <h2>下一步</h2>
         <dl class="version-grid">
             <dt>v0.6.0</dt>
             <dd>已发布 2026-05-14 — AVX2 <code>sbox_x32</code>、NEON <code>sbox_x16</code>、CBC 解密 fanout。</dd>
 
             <dt>v0.7.0</dt>
-            <dd>在收尾 — 密码模式。5 个 PR 串成一摞;目标 2026-05-15 发出。</dd>
+            <dd>已公开发布 — 批量分组 API、单次 SM4-CTR、流式 SM4-CTR,以及 <code>ct_sm4_ctr_encrypt</code> dudect 目标。</dd>
 
-            <dt>v0.8.0</dt>
-            <dd>规划中 — AEAD:SM4-GCM 和 SM4-CCM,见 <code>docs/v0.7-aead-scope.md</code>。</dd>
-
-            <dt>v0.9+</dt>
-            <dd>研究中 — 隔离环境的 dudect runner、流式 AEAD、AVX-512 16 路 <code>sbox_x64</code>、RustCrypto 0.11 / 0.5 / 0.6 trait 迁移。</dd>
+            <dt>下一步</dt>
+            <dd>AEAD — SM4-GCM 和 SM4-CCM,再加 GHASH 工作和专门的泄漏检测回归目标。这是下一步,不是已发布功能。</dd>
         </dl>
 
         <h2>它不是什么</h2>
