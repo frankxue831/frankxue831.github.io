@@ -20,6 +20,7 @@ trusting the snapshot below:
 ```sh
 git -C ../gm-crypto-rs ls-remote --tags origin
 git -C ../gm-crypto-rs ls-remote origin HEAD refs/heads/main
+curl -I -L https://github.com/frankxue831/gm-crypto-rs
 git -C ../repolens-rs ls-remote --tags origin
 git -C ../repolens-rs ls-remote origin HEAD refs/heads/main
 curl -I -L https://github.com/frankxue831/repolens-rs
@@ -30,9 +31,13 @@ git ls-remote https://github.com/frankxue831/ghrunners.git HEAD refs/heads/main 
 Discovery snapshot on 2026-05-16:
 
 - `gm-crypto-rs`: latest public tag is `v0.7.0`; public `origin/main` points at
-  the same commit. If a newer public tag exists at implementation time, use the
-  newer public tag. Any untagged `v0.8` work may appear only as next work around
-  AEAD, SM4-GCM, and SM4-CCM.
+  the same commit, but unauthenticated visitor access to
+  `https://github.com/frankxue831/gm-crypto-rs` returns HTTP 404 from this
+  environment. Use the public release/crate/docs facts, but omit the GitHub
+  source link and set `public_source: false` unless visitor web access becomes
+  reachable at implementation time. If a newer public tag exists at
+  implementation time, use the newer public tag. Any untagged `v0.8` work may
+  appear only as next work around AEAD, SM4-GCM, and SM4-CCM.
 - `repolens-rs`: authenticated `origin/main` exists and carries the shipped
   CLI/MCP surfaces, but unauthenticated visitor access to
   `https://github.com/frankxue831/repolens-rs` returns HTTP 404. Treat it as
@@ -98,12 +103,12 @@ Example shape:
   status: released
   release: v0.7.0
   release_source: public_tag
-  repo_url: https://github.com/frankxue831/gm-crypto-rs
+  repo_url:
   crate_url: https://crates.io/crates/gmcrypto-core
   docs_url: https://docs.rs/gmcrypto-core
   detail_url: /projects/gm-crypto-rs/
   zh_detail_url: /zh/projects/gm-crypto-rs/
-  public_source: true
+  public_source: false
 
 - slug: repolens-rs
   title: RepoLens
@@ -223,7 +228,7 @@ Implementation should verify:
   `_site/zh/projects/repolens-rs/index.html`, and
   `_site/zh/projects/ghrunners/index.html` exist after build.
 - No public page links to unreachable private GitHub URLs:
-  `! rg -n "github\\.com/frankxue831/(ghrunners|repolens-rs)" _site`.
+  `! rg -n "github\\.com/frankxue831/(gm-crypto-rs|ghrunners|repolens-rs)" _site`.
 - Security-sensitive overclaims are absent from project pages:
   `! rg -n "\\b(production-ready|guaranteed|secure)\\b" _site/projects _site/zh/projects`.
 - `gm-crypto-rs` next-version language is explicitly labeled as next/planned
@@ -262,7 +267,9 @@ must avoid implying that visitors can inspect the source.
 
 `gm-crypto-rs` may ship another public tag before implementation starts. The
 implementation must re-run the source-of-truth check rather than treating this
-spec's discovery snapshot as current.
+spec's discovery snapshot as current. If the GitHub web URL still returns 404
+for unauthenticated visitors, the detail pages must omit the source link even
+when the release tag and crate/docs pages are public.
 
 `RepoLens` is visible through authenticated git but not visitor-public GitHub
 access. The implementation must use the `Private pre-release` label, omit

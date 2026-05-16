@@ -64,11 +64,12 @@ Run:
 ```bash
 git -C ../gm-crypto-rs ls-remote --tags origin
 git -C ../gm-crypto-rs ls-remote origin HEAD refs/heads/main
+curl -I -L https://github.com/frankxue831/gm-crypto-rs
 ```
 
-Expected on 2026-05-16: latest public tag is `v0.7.0`, and public `origin/main` points at the `v0.7.0` commit.
+Expected on 2026-05-16: latest public tag is `v0.7.0`, public `origin/main` points at the `v0.7.0` commit, and unauthenticated visitor access to the GitHub web URL returns HTTP 404 from this environment.
 
-If a newer public tag appears, update all `gm-crypto-rs` metadata and copy to that newer tag. Only mention untagged newer work under `Next` / `下一步`.
+If a newer public tag appears, update all `gm-crypto-rs` metadata and copy to that newer tag. Only mention untagged newer work under `Next` / `下一步`. If the GitHub web URL still returns HTTP 404 for visitors, keep `repo_url` empty, set `public_source: false`, and omit the detail-page source link while retaining public crate/docs links.
 
 - [ ] **Step 3: Verify repolens-rs main state and visitor visibility**
 
@@ -128,12 +129,12 @@ Use this exact shape if Task 1 results match the 2026-05-16 snapshot:
     zh: "已发布"
   release: "v0.7.0"
   release_source: public_tag
-  repo_url: "https://github.com/frankxue831/gm-crypto-rs"
+  repo_url:
   crate_url: "https://crates.io/crates/gmcrypto-core"
   docs_url: "https://docs.rs/gmcrypto-core"
   detail_url: "/projects/gm-crypto-rs/"
   zh_detail_url: "/zh/projects/gm-crypto-rs/"
-  public_source: true
+  public_source: false
 
 - slug: repolens-rs
   title: RepoLens
@@ -407,10 +408,12 @@ In `projects/gm-crypto-rs.html`, update the Status `<dl class="version-grid">` s
 <dd>Shipped publicly — public batch APIs, single-shot SM4-CTR, streaming SM4-CTR, and the <code>ct_sm4_ctr_encrypt</code> dudect target.</dd>
 
 <dt>Next</dt>
-<dd>AEAD — SM4-GCM and SM4-CCM, plus GHASH work and dedicated detectable-leak regression targets. This is next work, not shipped site copy.</dd>
+<dd>AEAD — SM4-GCM and SM4-CCM, plus GHASH work and dedicated detectable-leak regression targets. This is planned work, not part of v0.7.0.</dd>
 ```
 
-Remove any wording that says `v0.7.0` is still in flight.
+Remove any wording that says `v0.7.0` is still in flight. If Task 1 still
+shows the GitHub web URL returning HTTP 404, omit the public source link from
+the detail-page link list.
 
 - [ ] **Step 2: Ensure English gm-crypto-rs has the five editorial sections**
 
