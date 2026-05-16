@@ -118,8 +118,8 @@ Use this exact shape if Task 1 results match the 2026-05-16 snapshot:
 - slug: gm-crypto-rs
   title: gm-crypto-rs
   years:
-    en: "2025 - now"
-    zh: "2025 - 至今"
+    en: "2025 — now"
+    zh: "2025 — 至今"
   tags:
     en: ["Rust", "Cryptography", "no_std"]
     zh: ["Rust", "密码学", "no_std"]
@@ -139,8 +139,8 @@ Use this exact shape if Task 1 results match the 2026-05-16 snapshot:
 - slug: repolens-rs
   title: RepoLens
   years:
-    en: "2025 - now"
-    zh: "2025 - 至今"
+    en: "2025 — now"
+    zh: "2025 — 至今"
   tags:
     en: ["Rust", "MCP", "Agent tooling"]
     zh: ["Rust", "MCP", "Agent 工具"]
