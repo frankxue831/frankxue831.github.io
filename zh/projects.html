@@ -21,63 +21,40 @@ alternate: /projects/
 
 <section class="section wrap">
     <ul class="work-list">
+        {% for project in site.data.projects %}
         <li class="work-list__item">
             <a class="work-list__row"
-               href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}">
-                <span class="work-list__year">2025 — 至今</span>
-                <span class="work-list__title"><em>gm-crypto-rs</em></span>
-                <span class="work-list__tags">Rust · 密码学 · no_std</span>
+               href="{{ project.zh_detail_url | relative_url }}">
+                <span class="work-list__year">{{ project.years.zh }}</span>
+                <span class="work-list__title"><em>{{ project.title }}</em></span>
+                <span class="work-list__tags">{{ project.tags.zh | join: ' · ' }}</span>
             </a>
             <p class="work-list__note">
+                {% case project.slug %}
+                {% when 'gm-crypto-rs' %}
                 国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK
-                (对应 GB/T 32905、32918、32907)。和其他 SM 实现比,
-                主要不一样的地方是<em>关键路径都按常量时间设计</em>,
-                CI 里挂了 <code>dudect-bencher</code> 做泄漏回归门控——
-                <code>sm4-bitsliced-simd</code> 特性下覆盖 15 个目标,
-                <code>|τ|&nbsp;&lt;&nbsp;0.20</code>。
-                目前 <strong>v0.6.0</strong> 已发(2026-05-14),
-                v0.7.0 在收尾,下一站是 v0.8 AEAD(SM4-GCM 和 SM4-CCM)。
+                (对应 GB/T 32905、32918、32907)。公开版
+                <strong>{{ project.release }}</strong> 新增了用户可直接调用的
+                SM4 分组密码模式接口；下一步是 AEAD 的 SM4-GCM 和 SM4-CCM。
                 已经上 <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io</a>,
                 叫 <code>gmcrypto-core</code>。
-                <a href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}" class="work-list__more">继续读 →</a>
-            </p>
-        </li>
-
-        <li class="work-list__item">
-            <a class="work-list__row"
-               href="https://github.com/frankxue831/repolens-rs"
-               rel="noopener noreferrer">
-                <span class="work-list__year">2025 — 至今</span>
-                <span class="work-list__title"><em>RepoLens</em></span>
-                <span class="work-list__tags">Rust · MCP · Agent 工具</span>
-            </a>
-            <p class="work-list__note">
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                {% when 'repolens-rs' %}
                 <em>给 AI 编程 Agent 用</em>的仓库记忆和上下文层。
-                把仓库扫成一个结构化的"包",通过 MCP server 暴露 26 个工具,
-                再配上一个按时间慢慢淡化的类型化记忆图。
-                目标不是替你写代码,
-                是让 Agent 对项目有<em>稳定的理解</em>——
-                不必每开一个 session 都从零看起。
-            </p>
-        </li>
-
-        <li class="work-list__item">
-            <a class="work-list__row"
-               href="https://github.com/frankxue831/ghrunners"
-               rel="noopener noreferrer">
-                <span class="work-list__year">2026</span>
-                <span class="work-list__title"><em>ghrunners</em></span>
-                <span class="work-list__tags">Rust · CLI · macOS</span>
-            </a>
-            <p class="work-list__note">
+                它通过 MCP 暴露 26 个工具,把结构化仓库上下文和会随时间衰减的
+                类型化记忆连在一起,让 Agent 能跨 session 保留对项目的稳定理解。
+                状态: <strong>{{ project.status_label.zh }}</strong>,
+                <code>{{ project.release }}</code>。
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                {% when 'ghrunners' %}
                 macOS 上 GitHub Actions self-hosted runner 的只读观测 CLI。
                 一条命令就能看到 launchd domain、PID、进程树、日志尾,
-                需要的话还能附上 GitHub API 的状态。
-                起因俗气得很——
-                有次在 Mac Studio 上装第二个 runner 调了一个小时,
-                才发觉想要的工具压根没有,索性自己写一个。
-                <em>设计和实施计划已就绪,代码还在写。</em>
+                需要的话还能附上 GitHub API 的状态。当前版本是
+                <code>{{ project.release }}</code>; 目前源码仍是本地/私有。
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                {% endcase %}
             </p>
         </li>
+        {% endfor %}
     </ul>
 </section>
