@@ -70,18 +70,19 @@ Expected on 2026-05-16: latest public tag is `v0.7.0`, and public `origin/main` 
 
 If a newer public tag appears, update all `gm-crypto-rs` metadata and copy to that newer tag. Only mention untagged newer work under `Next` / `下一步`.
 
-- [ ] **Step 3: Verify repolens-rs public main and milestone tags**
+- [ ] **Step 3: Verify repolens-rs main state and visitor visibility**
 
 Run:
 
 ```bash
 git -C ../repolens-rs ls-remote --tags origin
 git -C ../repolens-rs ls-remote origin HEAD refs/heads/main
+curl -I -L https://github.com/frankxue831/repolens-rs
 ```
 
-Expected on 2026-05-16: public `origin/main` exists, public tags are milestone tags rather than semver releases, and the main SHA short label is `afd7a6b`.
+Expected on 2026-05-16: authenticated `origin/main` exists, tags are milestone tags rather than semver releases, the main SHA short label is `afd7a6b`, and unauthenticated visitor access to the GitHub URL returns HTTP 404.
 
-If a semver release tag exists by implementation time, use `status: released` and `release_source: public_tag`. Otherwise use `status: public-pre-release`, `release_source: public_main`, and `release: "origin/main @ <7-char-sha>"`.
+If a semver release tag exists and the repository is visitor-public by implementation time, use `status: released` and `release_source: public_tag`. If the repository becomes visitor-public without a semver release tag, use `status: public-pre-release`, `release_source: public_main`, the public repo URL, and `public_source: true`. Otherwise use `status: private-pre-release`, `release_source: private_main`, `release: "origin/main @ <7-char-sha>"`, empty `repo_url`, and `public_source: false`.
 
 - [ ] **Step 4: Verify ghrunners local/private state**
 
@@ -142,18 +143,18 @@ Use this exact shape if Task 1 results match the 2026-05-16 snapshot:
   tags:
     en: ["Rust", "MCP", "Agent tooling"]
     zh: ["Rust", "MCP", "Agent 工具"]
-  status: public-pre-release
+  status: private-pre-release
   status_label:
-    en: "Public pre-release"
-    zh: "公开预发布"
+    en: "Private pre-release"
+    zh: "私有预发布"
   release: "origin/main @ afd7a6b"
-  release_source: public_main
-  repo_url: "https://github.com/frankxue831/repolens-rs"
+  release_source: private_main
+  repo_url:
   crate_url:
   docs_url:
   detail_url: "/projects/repolens-rs/"
   zh_detail_url: "/zh/projects/repolens-rs/"
-  public_source: true
+  public_source: false
 
 - slug: ghrunners
   title: ghrunners
@@ -516,13 +517,14 @@ alternate: /zh/projects/repolens-rs/
 
         <h2>What is shipped</h2>
         <p>
-            Public pre-release snapshot: <code>origin/main @ afd7a6b</code>
-            unless Task 1 verifies a newer public snapshot. The shipped
-            surface includes repo scanning, 26 MCP tools, tiered summaries,
-            convention extraction, pack comparison, grounded long-term memory
-            recall, <code>repolens init</code>, <code>brief</code>,
-            <code>remember</code>, <code>eval list/start</code>, and
-            warnings-only <code>validate-plan</code>.
+            Private pre-release snapshot: <code>origin/main @ afd7a6b</code>
+            unless Task 1 verifies a newer private snapshot or visitor-public
+            repository. The shipped surface includes repo scanning, 26 MCP
+            tools, tiered summaries, convention extraction, pack comparison,
+            grounded long-term memory recall, <code>repolens init</code>,
+            <code>brief</code>, <code>remember</code>,
+            <code>eval list/start</code>, and warnings-only
+            <code>validate-plan</code>.
         </p>
 
         <h2>What's different about it</h2>
@@ -540,7 +542,7 @@ alternate: /zh/projects/repolens-rs/
             richer memory types such as hypotheses, constraints, failed
             attempts, and friction findings, plus explicit confidence labels.
             Those pieces should be described as planned until they ship in a
-            public release or public main snapshot.
+            visitor-public release or verified main snapshot.
         </p>
 
         <h2>What it isn't</h2>
@@ -553,14 +555,13 @@ alternate: /zh/projects/repolens-rs/
         </ul>
 
         <div class="project-detail__links">
-            <a href="https://github.com/frankxue831/repolens-rs" rel="noopener noreferrer">Source ↗</a>
             <a href="{{ '/projects/' | relative_url }}">← All work</a>
         </div>
     </article>
 </section>
 ```
 
-If Task 1 verifies a different public `origin/main` short SHA, replace `afd7a6b` before committing.
+If Task 1 verifies a different authenticated `origin/main` short SHA, replace `afd7a6b` before committing.
 
 - [ ] **Step 2: Create Chinese RepoLens detail page**
 
@@ -596,8 +597,8 @@ alternate: /projects/repolens-rs/
 
         <h2>已经发布了什么</h2>
         <p>
-            公开预发布快照:<code>origin/main @ afd7a6b</code>,
-            除非 Task 1 验证到更新的公开快照。已经可用的表面包括仓库扫描、
+            私有预发布快照:<code>origin/main @ afd7a6b</code>,
+            除非 Task 1 验证到更新的私有快照或访客可访问的公开仓库。已经可用的表面包括仓库扫描、
             26 个 MCP 工具、分层摘要、约定提取、pack 对比、有 grounding
             状态的长期记忆召回,以及 <code>repolens init</code>、
             <code>brief</code>、<code>remember</code>、
@@ -616,8 +617,8 @@ alternate: /projects/repolens-rs/
         <p>
             v0.1 的方向是 Agent 可读性和记忆安全:更丰富的记忆类型,
             比如 hypothesis、constraint、failed attempt、friction finding,
-            以及明确的 confidence 标签。这些在公开 release 或公开 main
-            快照落地之前,都应该写成规划中。
+            以及明确的 confidence 标签。这些在访客可访问的公开 release
+            或已验证 main 快照落地之前,都应该写成规划中。
         </p>
 
         <h2>它不是什么</h2>
@@ -630,7 +631,6 @@ alternate: /projects/repolens-rs/
         </ul>
 
         <div class="project-detail__links">
-            <a href="https://github.com/frankxue831/repolens-rs" rel="noopener noreferrer">源码 ↗</a>
             <a href="{{ '/zh/projects/' | relative_url }}">← 全部作品</a>
         </div>
     </article>
@@ -645,10 +645,11 @@ Run:
 bundle exec jekyll build
 test -f _site/projects/repolens-rs/index.html
 test -f _site/zh/projects/repolens-rs/index.html
-rg -n 'Public pre-release|公开预发布|origin/main @' _site/projects/repolens-rs/index.html _site/zh/projects/repolens-rs/index.html
+rg -n 'Private pre-release|私有预发布|origin/main @' _site/projects/repolens-rs/index.html _site/zh/projects/repolens-rs/index.html
+! rg -n "github\\.com/frankxue831/repolens-rs" _site/projects/repolens-rs/index.html _site/zh/projects/repolens-rs/index.html
 ```
 
-Expected: both files exist and both pages show the public-pre-release label.
+Expected: both files exist, both pages show the private-pre-release label, and neither page shows a public RepoLens source link.
 
 - [ ] **Step 4: Commit RepoLens pages**
 
@@ -822,7 +823,7 @@ Run:
 bundle exec jekyll build
 test -f _site/projects/ghrunners/index.html
 test -f _site/zh/projects/ghrunners/index.html
-! rg -n "github\\.com/frankxue831/ghrunners" _site
+! rg -n "github\\.com/frankxue831/(ghrunners|repolens-rs)" _site
 rg -n 'local tag v0\\.1\\.1|本地/私有' _site/projects/ghrunners/index.html _site/zh/projects/ghrunners/index.html
 ```
 
@@ -884,7 +885,8 @@ rg -n 'Next|下一步|v0\\.8|AEAD|SM4-GCM|SM4-CCM' _site/projects/gm-crypto-rs/i
 ```
 
 Expected:
-- No generated `ghrunners` public source link while the repo is private.
+- No generated `ghrunners` or `repolens-rs` public source link while those
+  repos are private.
 - No forbidden broad claims in project pages.
 - Any `v0.8`, `AEAD`, `SM4-GCM`, or `SM4-CCM` occurrences are visibly under `Next` / `下一步`.
 
@@ -929,11 +931,13 @@ Expected: no commit is created if Task 8 required no edits.
   - `_data/projects.yml` schema: Task 2.
   - Home and project index summaries: Tasks 3 and 4.
   - `gm-crypto-rs` shipped/next correction: Task 5.
-  - RepoLens detail pages: Task 6.
+  - RepoLens detail pages without public source link while private: Task 6.
   - ghrunners detail pages without public source link: Task 7.
   - Build, existence, unreachable-link, overclaim, and next-section checks: Task 8.
 - Placeholder scan: this plan contains no unresolved placeholder markers or unspecified implementation steps.
 - Type consistency:
   - Metadata fields match the design spec: `slug`, `title`, `years`, `tags`, `status`, `status_label`, `release`, `release_source`, `repo_url`, `crate_url`, `docs_url`, `detail_url`, `zh_detail_url`, `public_source`.
-  - `status` values are `released`, `public-pre-release`, and `private-local`.
-  - `release_source` values are `public_tag`, `public_main`, and `local_tag`.
+  - `status` values are `released`, `public-pre-release`,
+    `private-pre-release`, and `private-local`.
+  - `release_source` values are `public_tag`, `public_main`, `private_main`,
+    and `local_tag`.

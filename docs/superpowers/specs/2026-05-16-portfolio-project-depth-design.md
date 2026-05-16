@@ -7,20 +7,22 @@ Status: Approved for implementation planning
 
 Make the portfolio section credible and current without changing the site's
 visual identity. The work should raise the three featured projects to a
-comparable level of detail while keeping every public claim tied to a public
-or tagged source of truth.
+comparable level of detail while keeping every public claim tied to a verified
+source of truth and never presenting private source as visitor-inspectable.
 
 ## Source Of Truth
 
-The site must describe public/tagged release state, not untagged local branch
-state. Before implementation, re-verify each project instead of trusting the
-snapshot below:
+The site must describe verified release or snapshot state, not untagged local
+branch state, and it must distinguish visitor-public source from authenticated
+private source. Before implementation, re-verify each project instead of
+trusting the snapshot below:
 
 ```sh
 git -C ../gm-crypto-rs ls-remote --tags origin
 git -C ../gm-crypto-rs ls-remote origin HEAD refs/heads/main
 git -C ../repolens-rs ls-remote --tags origin
 git -C ../repolens-rs ls-remote origin HEAD refs/heads/main
+curl -I -L https://github.com/frankxue831/repolens-rs
 git -C ../ghrunners tag --sort=-creatordate
 git ls-remote https://github.com/frankxue831/ghrunners.git HEAD refs/heads/main refs/heads/master
 ```
@@ -31,10 +33,13 @@ Discovery snapshot on 2026-05-16:
   the same commit. If a newer public tag exists at implementation time, use the
   newer public tag. Any untagged `v0.8` work may appear only as next work around
   AEAD, SM4-GCM, and SM4-CCM.
-- `repolens-rs`: public `origin/main` exists and carries the shipped CLI/MCP
-  surfaces. Public tags are milestone tags, not semver releases. Label the site
-  status as `Public pre-release` and cite the public `origin/main` short SHA or
-  current public milestone label; do not call it a `v0.1` release.
+- `repolens-rs`: authenticated `origin/main` exists and carries the shipped
+  CLI/MCP surfaces, but unauthenticated visitor access to
+  `https://github.com/frankxue831/repolens-rs` returns HTTP 404. Treat it as
+  private pre-release source: label the site status as `Private pre-release`,
+  cite the authenticated `origin/main` short SHA, use `private_main`, omit
+  `repo_url`, and do not show a public source link unless the repository is
+  visitor-public at implementation time. Do not call it a `v0.1` release.
 - `ghrunners`: local tags include `v0.1.0` and `v0.1.1`, but its GitHub
   repository is not publicly reachable from this environment. If it remains
   private at implementation time, describe it as a local/private tagged tool
@@ -69,11 +74,14 @@ Add `_data/projects.yml` for repeated metadata only. Field meanings:
 - `title`: display title.
 - `years`: display year range, e.g. `2025 — now`.
 - `tags`: array of display technology tags, not VCS tags.
-- `status`: one of `released`, `public-pre-release`, or `private-local`.
+- `status`: one of `released`, `public-pre-release`,
+  `private-pre-release`, or `private-local`.
 - `release`: display release label or snapshot label, e.g. `v0.7.0`,
   `origin/main @ afd7a6b`, or `local tag v0.1.1`.
-- `release_source`: one of `public_tag`, `public_main`, or `local_tag`.
-- `repo_url`: public source URL, or omitted/null when not public.
+- `release_source`: one of `public_tag`, `public_main`, `private_main`, or
+  `local_tag`.
+- `repo_url`: public source URL, or omitted/null when visitors cannot inspect
+  the source.
 - `crate_url`: public crate/package URL, or omitted/null.
 - `docs_url`: public documentation URL, or omitted/null.
 - `detail_url`: English detail page URL.
@@ -101,15 +109,15 @@ Example shape:
   title: RepoLens
   years: "2025 — now"
   tags: ["Rust", "MCP", "Agent tooling"]
-  status: public-pre-release
+  status: private-pre-release
   release: "origin/main @ afd7a6b"
-  release_source: public_main
-  repo_url: https://github.com/frankxue831/repolens-rs
+  release_source: private_main
+  repo_url:
   crate_url:
   docs_url:
   detail_url: /projects/repolens-rs/
   zh_detail_url: /zh/projects/repolens-rs/
-  public_source: true
+  public_source: false
 
 - slug: ghrunners
   title: ghrunners
@@ -167,8 +175,9 @@ Project-specific emphasis:
   constant-time-designed secret paths, and in-CI `dudect-bencher`
   leak-regression gates.
 - `RepoLens`: agent-facing repository packs, MCP tools, typed decaying memory,
-  shipped workspace CLI surfaces from public `origin/main`, status labeled
-  `Public pre-release`, and clear boundaries between shipped and planned
+  shipped workspace CLI surfaces from authenticated private `origin/main`,
+  status labeled `Private pre-release`, no public source link while the visitor
+  GitHub URL returns 404, and clear boundaries between shipped and planned
   memory-safety work.
 - `ghrunners`: one-shot read-only macOS GitHub Actions runner observability,
   typed findings, partial output as a deliberate design, and no public source
@@ -186,8 +195,8 @@ Project-specific emphasis:
   absence of leaks.
 - Do not use broad claims such as `production-ready`, `secure`, `guaranteed`,
   or absolute `constant-time`.
-- Use public links only. Omit `ghrunners` GitHub links until the repo is
-  publicly reachable.
+- Use public links only. Omit `repolens-rs` and `ghrunners` GitHub links until
+  each repo is publicly reachable by visitors.
 - Detail pages should contain the five editorial sections from the Content
   Model in the same order. Section titles may be localized.
 
@@ -213,8 +222,8 @@ Implementation should verify:
   `_site/projects/ghrunners/index.html`,
   `_site/zh/projects/repolens-rs/index.html`, and
   `_site/zh/projects/ghrunners/index.html` exist after build.
-- No public page links to an unreachable `ghrunners` GitHub URL:
-  `! rg -n "github\\.com/frankxue831/ghrunners" _site`.
+- No public page links to unreachable private GitHub URLs:
+  `! rg -n "github\\.com/frankxue831/(ghrunners|repolens-rs)" _site`.
 - Security-sensitive overclaims are absent from project pages:
   `! rg -n "\\b(production-ready|guaranteed|secure)\\b" _site/projects _site/zh/projects`.
 - `gm-crypto-rs` next-version language is explicitly labeled as next/planned
@@ -229,8 +238,9 @@ Implementation should verify:
 - `gm-crypto-rs` reflects the latest public tag verified at implementation
   time, with newer untagged work only as next/planned work.
 - `RepoLens` has English and Chinese detail pages with shipped/planned
-  boundaries kept explicit and status labeled `Public pre-release` unless a
-  public release tag exists by implementation time.
+  boundaries kept explicit and status labeled `Private pre-release` unless a
+  visitor-public repository or public release tag exists by implementation
+  time.
 - `ghrunners` has English and Chinese detail pages, no broken public GitHub
   link, and status marked as local/private using the latest local tag unless
   the repository is public by implementation time.
@@ -254,6 +264,7 @@ must avoid implying that visitors can inspect the source.
 implementation must re-run the source-of-truth check rather than treating this
 spec's discovery snapshot as current.
 
-`RepoLens` has public milestone tags but no semver release tag. The
-implementation must use the `Public pre-release` label unless that changes
+`RepoLens` is visible through authenticated git but not visitor-public GitHub
+access. The implementation must use the `Private pre-release` label, omit
+`repo_url`, and avoid public source links unless the repository is visitor-public
 before implementation.
