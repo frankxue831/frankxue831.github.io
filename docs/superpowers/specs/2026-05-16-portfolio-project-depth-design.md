@@ -38,7 +38,7 @@ Discovery snapshot on 2026-05-16:
   reachable at implementation time. If a newer public tag exists at
   implementation time, use the newer public tag. Any untagged `v0.8` work may
   appear only as next work around AEAD, SM4-GCM, and SM4-CCM.
-- `repolens-rs`: authenticated `origin/main` exists and carries the shipped
+- `repolens-rs`: authenticated `origin/main` exists and carries current private
   CLI/MCP surfaces, but unauthenticated visitor access to
   `https://github.com/frankxue831/repolens-rs` returns HTTP 404. Treat it as
   private pre-release source: label the site status as `Private pre-release`,
@@ -168,7 +168,7 @@ pages or over-template the writing.
 Each detail page should use the same editorial shape:
 
 1. What it is.
-2. What is shipped.
+2. What is shipped, or current private/local snapshot for non-public projects.
 3. What is different about it.
 4. What it is not.
 5. Links.
@@ -180,9 +180,9 @@ Project-specific emphasis:
   constant-time-designed secret paths, and in-CI `dudect-bencher`
   leak-regression gates.
 - `RepoLens`: agent-facing repository packs, MCP tools, typed decaying memory,
-  shipped workspace CLI surfaces from authenticated private `origin/main`,
+  current private-snapshot CLI/MCP surfaces from authenticated private `origin/main`,
   status labeled `Private pre-release`, no public source link while the visitor
-  GitHub URL returns 404, and clear boundaries between shipped and planned
+  GitHub URL returns 404, and clear boundaries between private-snapshot and planned
   memory-safety work.
 - `ghrunners`: one-shot read-only macOS GitHub Actions runner observability,
   typed findings, partial output as a deliberate design, and no public source
@@ -242,7 +242,7 @@ Implementation should verify:
 - `/projects/` presents all three projects at a comparable level of credibility.
 - `gm-crypto-rs` reflects the latest public tag verified at implementation
   time, with newer untagged work only as next/planned work.
-- `RepoLens` has English and Chinese detail pages with shipped/planned
+- `RepoLens` has English and Chinese detail pages with private-snapshot/planned
   boundaries kept explicit and status labeled `Private pre-release` unless a
   visitor-public repository or public release tag exists by implementation
   time.
@@ -253,7 +253,7 @@ Implementation should verify:
   the Content Model in order, with localized section titles allowed.
 - Home and project-index summaries use `_data/projects.yml` for repeated facts
   and do not contradict the detail pages.
-- English and Chinese pages carry the same shipped/planned boundary, release
+- English and Chinese pages carry the same shipped/current/planned boundary, release
   label, public-source status, and links.
 - All Testing checks pass, including `bundle exec jekyll doctor`,
   `bundle exec jekyll build`, generated-page existence checks, unreachable-link

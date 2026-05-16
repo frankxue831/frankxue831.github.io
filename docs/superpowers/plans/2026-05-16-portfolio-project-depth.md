@@ -307,8 +307,9 @@ In `projects.html`, keep the page header. Replace the `<ul class="work-list">...
     <p class="work-list__note">
         Agent-facing repository memory and context layer. It scans repos into
         structured packs, exposes 26 MCP tools, and pairs them with typed,
-        decaying memory. Status: {{ project.release }}; shipped surfaces are
-        real, while some memory-safety schema work remains planned.
+        decaying memory. Status: {{ project.release }}; current
+        private-snapshot surfaces are real, while some memory-safety schema
+        work remains planned.
         <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
     </p>
     {% when 'ghrunners' %}
@@ -518,11 +519,11 @@ alternate: /zh/projects/repolens-rs/
             cold.
         </p>
 
-        <h2>What is shipped</h2>
+        <h2>Current private snapshot</h2>
         <p>
             Private pre-release snapshot: <code>origin/main @ afd7a6b</code>
             unless Task 1 verifies a newer private snapshot or visitor-public
-            repository. The shipped surface includes repo scanning, 26 MCP
+            repository. That private snapshot includes repo scanning, 26 MCP
             tools, tiered summaries, convention extraction, pack comparison,
             grounded long-term memory recall, <code>repolens init</code>,
             <code>brief</code>, <code>remember</code>,
@@ -544,7 +545,7 @@ alternate: /zh/projects/repolens-rs/
             The planned v0.1 direction is agent legibility and memory safety:
             richer memory types such as hypotheses, constraints, failed
             attempts, and friction findings, plus explicit confidence labels.
-            Those pieces should be described as planned until they ship in a
+            Those pieces should be described as planned until they appear in a
             visitor-public release or verified main snapshot.
         </p>
 
@@ -598,10 +599,10 @@ alternate: /projects/repolens-rs/
             它不是替 Agent 写代码,而是给 Agent 一个更稳定的项目理解起点。
         </p>
 
-        <h2>已经发布了什么</h2>
+        <h2>当前私有快照</h2>
         <p>
             私有预发布快照:<code>origin/main @ afd7a6b</code>,
-            除非 Task 1 验证到更新的私有快照或访客可访问的公开仓库。已经可用的表面包括仓库扫描、
+            除非 Task 1 验证到更新的私有快照或访客可访问的公开仓库。这个私有快照包括仓库扫描、
             26 个 MCP 工具、分层摘要、约定提取、pack 对比、有 grounding
             状态的长期记忆召回,以及 <code>repolens init</code>、
             <code>brief</code>、<code>remember</code>、
@@ -707,11 +708,11 @@ alternate: /zh/projects/ghrunners/
             table or JSON, with typed findings when something looks wrong.
         </p>
 
-        <h2>What is shipped</h2>
+        <h2>Current local snapshot</h2>
         <p>
             Local/private status: <code>local tag v0.1.1</code>, unless
             Task 1 verifies a newer local tag or a newly public repository.
-            The shipped CLI includes <code>status</code>, <code>describe</code>,
+            The current CLI includes <code>status</code>, <code>describe</code>,
             and <code>logs</code>; API enrichment is opt-in via
             <code>--api</code>.
         </p>
@@ -728,7 +729,7 @@ alternate: /zh/projects/ghrunners/
         <p>
             Public source link comes after the repository is reachable. Control
             verbs such as start, stop, and restart are outside the current
-            shipped scope.
+            local/private scope.
         </p>
 
         <h2>What it isn't</h2>
@@ -781,10 +782,10 @@ alternate: /projects/ghrunners/
             也可以是 JSON;异常会落成类型化 findings。
         </p>
 
-        <h2>已经发布了什么</h2>
+        <h2>当前本地快照</h2>
         <p>
             本地/私有状态:<code>local tag v0.1.1</code>,
-            除非 Task 1 验证到更新的本地 tag 或公开仓库。已经有的 CLI 包括
+            除非 Task 1 验证到更新的本地 tag 或公开仓库。当前 CLI 包括
             <code>status</code>、<code>describe</code> 和 <code>logs</code>;
             GitHub API 增强通过 <code>--api</code> 显式开启。
         </p>
@@ -799,7 +800,7 @@ alternate: /projects/ghrunners/
         <h2>下一步</h2>
         <p>
             等仓库可以公开访问以后再加源码链接。start、stop、restart
-            这类控制命令不属于当前已发布范围。
+            这类控制命令不属于当前本地/私有范围。
         </p>
 
         <h2>它不是什么</h2>
