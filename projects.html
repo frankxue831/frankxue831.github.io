@@ -14,73 +14,51 @@ alternate: /zh/projects/
         <em>work.</em>
     </h1>
     <p class="page-header__lede">
-        A short, honest list. Things I'm building in the open — mostly in
-        Rust, mostly at the seam between developer tools and the systems
+        A short, honest list. Things I'm building and documenting — mostly
+        in Rust, mostly at the seam between developer tools and the systems
         they sit on top of.
     </p>
 </section>
 
 <section class="section wrap">
     <ul class="work-list">
+        {% for project in site.data.projects %}
         <li class="work-list__item">
             <a class="work-list__row"
-               href="{{ '/projects/gm-crypto-rs/' | relative_url }}">
-                <span class="work-list__year">2025 — now</span>
-                <span class="work-list__title"><em>gm-crypto-rs</em></span>
-                <span class="work-list__tags">Rust · Cryptography · no_std</span>
+               href="{{ project.detail_url | relative_url }}">
+                <span class="work-list__year">{{ project.years.en }}</span>
+                <span class="work-list__title"><em>{{ project.title }}</em></span>
+                <span class="work-list__tags">{{ project.tags.en | join: ' · ' }}</span>
             </a>
             <p class="work-list__note">
+                {% case project.slug %}
+                {% when 'gm-crypto-rs' %}
                 Pure-Rust SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 SDK for the
                 Chinese national crypto standards (GB/T 32905&nbsp;/ 32918&nbsp;/ 32907).
-                The differentiator is a <em>constant-time-designed</em> implementation
-                guarded by an in-CI <code>dudect-bencher</code> leak-regression harness —
-                fifteen targets at <code>|τ|&nbsp;&lt;&nbsp;0.20</code> under the
-                <code>sm4-bitsliced-simd</code> feature.
-                Current release <strong>v0.6.0</strong> (2026-05-14), v0.7.0 cipher
-                modes in flight; next milestone is v0.8 AEAD (SM4-GCM + SM4-CCM).
+                Public <strong>{{ project.release }}</strong> adds a user-callable
+                SM4 cipher-mode surface; next is AEAD with SM4-GCM and SM4-CCM.
                 Published on
                 <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io</a>
                 as <code>gmcrypto-core</code>.
-                <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}" class="work-list__more">Read more →</a>
-            </p>
-        </li>
-
-        <li class="work-list__item">
-            <a class="work-list__row"
-               href="https://github.com/frankxue831/repolens-rs"
-               rel="noopener noreferrer">
-                <span class="work-list__year">2025 — now</span>
-                <span class="work-list__title"><em>RepoLens</em></span>
-                <span class="work-list__tags">Rust · MCP · Agent tooling</span>
-            </a>
-            <p class="work-list__note">
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                {% when 'repolens-rs' %}
                 A repository memory and context layer for AI coding agents.
-                Scans a repo into structured "packs," exposes them through
-                an MCP server (26 tools), and pairs them with a typed,
-                exponentially-decaying memory graph so agents don't start
-                each session cold. The goal isn't to write code for you —
-                it's to give the agent a <em>durable mental model</em> of the
-                project.
-            </p>
-        </li>
-
-        <li class="work-list__item">
-            <a class="work-list__row"
-               href="https://github.com/frankxue831/ghrunners"
-               rel="noopener noreferrer">
-                <span class="work-list__year">2026</span>
-                <span class="work-list__title"><em>ghrunners</em></span>
-                <span class="work-list__tags">Rust · CLI · macOS</span>
-            </a>
-            <p class="work-list__note">
+                It exposes 26 MCP tools and pairs structured repository context
+                with typed, decaying memory so agents can keep a durable model
+                of a project across sessions. Status:
+                <strong>{{ project.status_label.en }}</strong>,
+                <code>{{ project.release }}</code>.
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                {% when 'ghrunners' %}
                 A read-only observability CLI for GitHub Actions self-hosted
-                runners on macOS. Surfaces launchd domain, PID, process tree,
-                log tails, and (optionally) GitHub API status in one
-                invocation — built after an hour of debugging a second
-                runner install on my Mac Studio convinced me the tool I
-                wanted didn't exist. <em>Design and plan shipped; implementation
-                in progress.</em>
+                runners on macOS, surfacing launchd domain, PID, process tree,
+                log tails, and optional GitHub API status in one invocation.
+                Current state: <code>{{ project.release }}</code>; source is
+                private/local for now.
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                {% endcase %}
             </p>
         </li>
+        {% endfor %}
     </ul>
 </section>

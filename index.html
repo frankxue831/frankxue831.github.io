@@ -30,7 +30,7 @@ alternate: /zh/
         </div>
         <div>
             <dt>Lately</dt>
-            <dd>Wrapping up <em>gm-crypto-rs</em> v0.7</dd>
+            <dd>Released <em>gm-crypto-rs</em> v0.7.0</dd>
         </div>
     </dl>
 
@@ -72,33 +72,17 @@ alternate: /zh/
     </header>
 
     <ul class="work-list">
+        {% assign projects = site.data.projects %}
+        {% for project in projects %}
         <li class="work-list__item">
             <a class="work-list__row"
-               href="https://github.com/frankxue831/gm-crypto-rs"
-               rel="noopener noreferrer">
-                <span class="work-list__year">2025 — now</span>
-                <span class="work-list__title"><em>gm-crypto-rs</em></span>
-                <span class="work-list__tags">Rust · Cryptography</span>
+               href="{{ project.detail_url | relative_url }}">
+                <span class="work-list__year">{{ project.years.en }}</span>
+                <span class="work-list__title"><em>{{ project.title }}</em></span>
+                <span class="work-list__tags">{{ project.tags.en | join: ' · ' }}</span>
             </a>
         </li>
-        <li class="work-list__item">
-            <a class="work-list__row"
-               href="https://github.com/frankxue831/repolens-rs"
-               rel="noopener noreferrer">
-                <span class="work-list__year">2025 — now</span>
-                <span class="work-list__title"><em>RepoLens</em></span>
-                <span class="work-list__tags">Rust · MCP · Agents</span>
-            </a>
-        </li>
-        <li class="work-list__item">
-            <a class="work-list__row"
-               href="https://github.com/frankxue831/ghrunners"
-               rel="noopener noreferrer">
-                <span class="work-list__year">2026</span>
-                <span class="work-list__title"><em>ghrunners</em></span>
-                <span class="work-list__tags">Rust · CLI · macOS</span>
-            </a>
-        </li>
+        {% endfor %}
     </ul>
 
     <a href="{{ '/projects/' | relative_url }}" class="preview__link" style="margin-top: var(--space-8);">

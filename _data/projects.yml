@@ -1,0 +1,62 @@
+- slug: gm-crypto-rs
+  title: gm-crypto-rs
+  years:
+    en: "2025 — now"
+    zh: "2025 — 至今"
+  tags:
+    en: ["Rust", "Cryptography", "no_std"]
+    zh: ["Rust", "密码学", "no_std"]
+  status: released
+  status_label:
+    en: "Released"
+    zh: "已发布"
+  release: "v0.7.0"
+  release_source: public_tag
+  repo_url:
+  crate_url: "https://crates.io/crates/gmcrypto-core"
+  docs_url: "https://docs.rs/gmcrypto-core"
+  detail_url: "/projects/gm-crypto-rs/"
+  zh_detail_url: "/zh/projects/gm-crypto-rs/"
+  public_source: false
+
+- slug: repolens-rs
+  title: RepoLens
+  years:
+    en: "2025 — now"
+    zh: "2025 — 至今"
+  tags:
+    en: ["Rust", "MCP", "Agent tooling"]
+    zh: ["Rust", "MCP", "Agent 工具"]
+  status: private-pre-release
+  status_label:
+    en: "Private pre-release"
+    zh: "私有预发布"
+  release: "origin/main @ afd7a6b"
+  release_source: private_main
+  repo_url:
+  crate_url:
+  docs_url:
+  detail_url: "/projects/repolens-rs/"
+  zh_detail_url: "/zh/projects/repolens-rs/"
+  public_source: false
+
+- slug: ghrunners
+  title: ghrunners
+  years:
+    en: "2026"
+    zh: "2026"
+  tags:
+    en: ["Rust", "CLI", "macOS"]
+    zh: ["Rust", "CLI", "macOS"]
+  status: private-local
+  status_label:
+    en: "Private/local"
+    zh: "本地/私有"
+  release: "local tag v0.1.1"
+  release_source: local_tag
+  repo_url:
+  crate_url:
+  docs_url:
+  detail_url: "/projects/ghrunners/"
+  zh_detail_url: "/zh/projects/ghrunners/"
+  public_source: false
