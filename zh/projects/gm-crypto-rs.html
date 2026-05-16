@@ -42,6 +42,13 @@ alternate: /projects/gm-crypto-rs/
             v0.7.0 就在这之上,
             做出<em>第一批用户能直接调用的密码模式</em>。
         </p>
+        <dl class="version-grid">
+            <dt>v0.6.0</dt>
+            <dd>已发布 2026-05-14 — AVX2 <code>sbox_x32</code>、NEON <code>sbox_x16</code>、CBC 解密 fanout。</dd>
+
+            <dt>v0.7.0</dt>
+            <dd>已公开发布 — 批量分组 API、单次 SM4-CTR、流式 SM4-CTR,以及 <code>ct_sm4_ctr_encrypt</code> dudect 目标。</dd>
+        </dl>
 
         <h2>跟其他实现差在哪儿</h2>
         <p>
@@ -75,12 +82,6 @@ alternate: /projects/gm-crypto-rs/
 
         <h2>下一步</h2>
         <dl class="version-grid">
-            <dt>v0.6.0</dt>
-            <dd>已发布 2026-05-14 — AVX2 <code>sbox_x32</code>、NEON <code>sbox_x16</code>、CBC 解密 fanout。</dd>
-
-            <dt>v0.7.0</dt>
-            <dd>已公开发布 — 批量分组 API、单次 SM4-CTR、流式 SM4-CTR,以及 <code>ct_sm4_ctr_encrypt</code> dudect 目标。</dd>
-
             <dt>下一步</dt>
             <dd>AEAD — SM4-GCM 和 SM4-CCM,再加 GHASH 工作和专门的泄漏检测回归目标。这是下一步,不是已发布功能。</dd>
         </dl>

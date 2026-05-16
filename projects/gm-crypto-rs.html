@@ -41,6 +41,13 @@ alternate: /zh/projects/gm-crypto-rs/
             v0.7.0 ships the first <em>user-callable cipher modes</em> on
             top of that work.
         </p>
+        <dl class="version-grid">
+            <dt>v0.6.0</dt>
+            <dd>Shipped 2026-05-14 — AVX2 <code>sbox_x32</code>, NEON <code>sbox_x16</code>, CBC-decrypt fanout.</dd>
+
+            <dt>v0.7.0</dt>
+            <dd>Shipped publicly — public batch APIs, single-shot SM4-CTR, streaming SM4-CTR, and the <code>ct_sm4_ctr_encrypt</code> dudect target.</dd>
+        </dl>
 
         <h2>What's different about it</h2>
         <p>
@@ -72,14 +79,8 @@ alternate: /zh/projects/gm-crypto-rs/
 
         <h2>Next</h2>
         <dl class="version-grid">
-            <dt>v0.6.0</dt>
-            <dd>Shipped 2026-05-14 — AVX2 <code>sbox_x32</code>, NEON <code>sbox_x16</code>, CBC-decrypt fanout.</dd>
-
-            <dt>v0.7.0</dt>
-            <dd>Shipped publicly — public batch APIs, single-shot SM4-CTR, streaming SM4-CTR, and the <code>ct_sm4_ctr_encrypt</code> dudect target.</dd>
-
             <dt>Next</dt>
-            <dd>AEAD — SM4-GCM and SM4-CCM, plus GHASH work and dedicated detectable-leak regression targets. This is next work, not shipped site copy.</dd>
+            <dd>AEAD — SM4-GCM and SM4-CCM, plus GHASH work and dedicated detectable-leak regression targets. This is planned work, not part of v0.7.0.</dd>
         </dl>
 
         <h2>What it isn't</h2>
