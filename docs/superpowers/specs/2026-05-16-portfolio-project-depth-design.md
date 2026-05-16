@@ -13,27 +13,43 @@ or tagged source of truth.
 ## Source Of Truth
 
 The site must describe public/tagged release state, not untagged local branch
-state.
+state. Before implementation, re-verify each project instead of trusting the
+snapshot below:
 
-- `gm-crypto-rs` uses public `origin/main` and tag `v0.7.0` as the shipped
-  source. The site may mention `v0.8` only as next work around AEAD,
-  SM4-GCM, and SM4-CCM.
-- `repolens-rs` uses public `origin/main` plus public milestone tags. The site
-  should not call it a `v0.1` release. It should describe shipped CLI/MCP
-  surfaces and keep planned memory-safety work explicit.
-- `ghrunners` has local tags `v0.1.0` and `v0.1.1`, but its GitHub repository
-  is not publicly reachable from this environment. The site should describe it
-  as a local/private tagged `v0.1.1` tool and omit a public source link until
-  the repository is reachable.
+```sh
+git -C ../gm-crypto-rs ls-remote --tags origin
+git -C ../gm-crypto-rs ls-remote origin HEAD refs/heads/main
+git -C ../repolens-rs ls-remote --tags origin
+git -C ../repolens-rs ls-remote origin HEAD refs/heads/main
+git -C ../ghrunners tag --sort=-creatordate
+git ls-remote https://github.com/frankxue831/ghrunners.git HEAD refs/heads/main refs/heads/master
+```
+
+Discovery snapshot on 2026-05-16:
+
+- `gm-crypto-rs`: latest public tag is `v0.7.0`; public `origin/main` points at
+  the same commit. If a newer public tag exists at implementation time, use the
+  newer public tag. Any untagged `v0.8` work may appear only as next work around
+  AEAD, SM4-GCM, and SM4-CCM.
+- `repolens-rs`: public `origin/main` exists and carries the shipped CLI/MCP
+  surfaces. Public tags are milestone tags, not semver releases. Label the site
+  status as `Public pre-release` and cite the public `origin/main` short SHA or
+  current public milestone label; do not call it a `v0.1` release.
+- `ghrunners`: local tags include `v0.1.0` and `v0.1.1`, but its GitHub
+  repository is not publicly reachable from this environment. If it remains
+  private at implementation time, describe it as a local/private tagged tool
+  using the latest local tag and omit a public source link.
 
 ## Scope
 
 Included:
 
-- Refresh `gm-crypto-rs` copy around public `v0.7.0`.
+- Refresh `gm-crypto-rs` copy around the latest public tag verified at
+  implementation time.
 - Add English and Chinese detail pages for `RepoLens`.
 - Add English and Chinese detail pages for `ghrunners`.
-- Update home and project-index summaries so they match the detail pages.
+- Update `index.html`, `zh/index.html`, `projects.html`, and
+  `zh/projects.html` so their summaries do not contradict the detail pages.
 - Add a small metadata file for repeated project facts.
 
 Excluded:
@@ -47,20 +63,40 @@ Excluded:
 
 Keep the existing Jekyll structure and static bilingual page approach.
 
-Add `_data/projects.yml` for repeated metadata only:
+Add `_data/projects.yml` for repeated metadata only. Field meanings:
 
-- `slug`
-- `title`
-- `years`
-- `tags`
-- `status`
-- `release`
-- `repo_url`
-- `crate_url`
-- `docs_url`
-- `detail_url`
-- `zh_detail_url`
-- `public_source`
+- `slug`: stable URL/data key, e.g. `gm-crypto-rs`.
+- `title`: display title.
+- `years`: display year range, e.g. `2025 — now`.
+- `tags`: array of display technology tags, not VCS tags.
+- `status`: one of `released`, `public-pre-release`, or `private-local`.
+- `release`: display release label or snapshot label, e.g. `v0.7.0`,
+  `origin/main @ afd7a6b`, or `local tag v0.1.1`.
+- `release_source`: one of `public_tag`, `public_main`, or `local_tag`.
+- `repo_url`: public source URL, or omitted/null when not public.
+- `crate_url`: public crate/package URL, or omitted/null.
+- `docs_url`: public documentation URL, or omitted/null.
+- `detail_url`: English detail page URL.
+- `zh_detail_url`: Chinese detail page URL.
+- `public_source`: boolean; `true` only when visitors can inspect the source.
+
+Example shape:
+
+```yaml
+- slug: gm-crypto-rs
+  title: gm-crypto-rs
+  years: "2025 — now"
+  tags: ["Rust", "Cryptography", "no_std"]
+  status: released
+  release: v0.7.0
+  release_source: public_tag
+  repo_url: https://github.com/frankxue831/gm-crypto-rs
+  crate_url: https://crates.io/crates/gmcrypto-core
+  docs_url: https://docs.rs/gmcrypto-core
+  detail_url: /projects/gm-crypto-rs/
+  zh_detail_url: /zh/projects/gm-crypto-rs/
+  public_source: true
+```
 
 Add detail pages:
 
@@ -68,6 +104,16 @@ Add detail pages:
 - `projects/ghrunners.html`
 - `zh/projects/repolens-rs.html`
 - `zh/projects/ghrunners.html`
+
+Likely touched support files:
+
+- `_data/projects.yml`
+- `_data/i18n.yml` if shared labels such as status/source/link labels are
+  introduced in includes.
+- `index.html`
+- `zh/index.html`
+- `projects.html`
+- `zh/projects.html`
 
 Long-form project copy stays in the page files. Metadata can drive repeated
 facts in home and project lists, but it should not force generated detail
@@ -85,12 +131,14 @@ Each detail page should use the same editorial shape:
 
 Project-specific emphasis:
 
-- `gm-crypto-rs`: pure-Rust SM2/SM3/SM4 SDK, public `v0.7.0`, SM4-CTR and
-  public batch APIs, constant-time-designed secret paths, and in-CI
-  `dudect-bencher` leak-regression gates.
+- `gm-crypto-rs`: pure-Rust SM2/SM3/SM4 SDK, latest public tag verified at
+  implementation time, SM4-CTR and public batch APIs when backed by that tag,
+  constant-time-designed secret paths, and in-CI `dudect-bencher`
+  leak-regression gates.
 - `RepoLens`: agent-facing repository packs, MCP tools, typed decaying memory,
-  shipped workspace CLI surfaces, and clear boundaries between shipped and
-  planned memory-safety work.
+  shipped workspace CLI surfaces from public `origin/main`, status labeled
+  `Public pre-release`, and clear boundaries between shipped and planned
+  memory-safety work.
 - `ghrunners`: one-shot read-only macOS GitHub Actions runner observability,
   typed findings, partial output as a deliberate design, and no public source
   link until the repository is reachable.
@@ -109,11 +157,14 @@ Project-specific emphasis:
   or absolute `constant-time`.
 - Use public links only. Omit `ghrunners` GitHub links until the repo is
   publicly reachable.
+- Detail pages should contain the five editorial sections from the Content
+  Model in the same order. Section titles may be localized.
 
 ## Data Flow
 
-`_data/projects.yml` provides stable repeated facts to the home page and
-project index. Detail pages provide narrative and source-specific nuance.
+`_data/projects.yml` provides stable repeated facts to `index.html`,
+`zh/index.html`, `projects.html`, and `zh/projects.html`. Detail pages provide
+narrative and source-specific nuance.
 
 The site should avoid duplicating status strings by hand where metadata is
 enough, especially for release labels, public-source availability, tags, and
@@ -127,20 +178,36 @@ Implementation should verify:
 - `bundle exec jekyll build`
 - English and Chinese detail pages are generated.
 - Home and project-index links resolve to the intended pages.
-- No public page links to an unreachable `ghrunners` GitHub URL.
-- `gm-crypto-rs` shipped language does not describe untagged `v0.8` work as
-  released.
+- `_site/projects/repolens-rs/index.html`,
+  `_site/projects/ghrunners/index.html`,
+  `_site/zh/projects/repolens-rs/index.html`, and
+  `_site/zh/projects/ghrunners/index.html` exist after build.
+- No public page links to an unreachable `ghrunners` GitHub URL:
+  `! rg -n "github\\.com/frankxue831/ghrunners" _site`.
+- Security-sensitive overclaims are absent from project pages:
+  `! rg -n "\\b(production-ready|guaranteed|secure)\\b" _site/projects _site/zh/projects`.
+- `gm-crypto-rs` next-version language is explicitly labeled as next/planned
+  work. If terms such as `v0.8`, `AEAD`, `SM4-GCM`, or `SM4-CCM` appear in the
+  generated `gm-crypto-rs` pages, they must appear only in a section titled
+  `Next` or its Chinese equivalent.
 
 ## Acceptance Criteria
 
 - `/projects/` presents all three projects at a comparable level of credibility.
-- `gm-crypto-rs` reflects public `v0.7.0`, with `v0.8` only as next work.
+- `gm-crypto-rs` reflects the latest public tag verified at implementation
+  time, with newer untagged work only as next/planned work.
 - `RepoLens` has English and Chinese detail pages with shipped/planned
-  boundaries kept explicit.
+  boundaries kept explicit and status labeled `Public pre-release` unless a
+  public release tag exists by implementation time.
 - `ghrunners` has English and Chinese detail pages, no broken public GitHub
-  link, and status marked as local/private tagged `v0.1.1`.
-- Home page summaries match the project pages.
-- English and Chinese pages have matching meaning.
+  link, and status marked as local/private using the latest local tag unless
+  the repository is public by implementation time.
+- All English and Chinese detail pages contain the five editorial sections from
+  the Content Model in order, with localized section titles allowed.
+- Home and project-index summaries use `_data/projects.yml` for repeated facts
+  and do not contradict the detail pages.
+- English and Chinese pages carry the same shipped/planned boundary, release
+  label, public-source status, and links.
 - `bundle exec jekyll doctor` and `bundle exec jekyll build` pass.
 
 ## Open Risk
@@ -148,3 +215,11 @@ Implementation should verify:
 `ghrunners` is less publicly verifiable until the repository is public. Its
 detail page must be clear that the project is local/private right now, and it
 must avoid implying that visitors can inspect the source.
+
+`gm-crypto-rs` may ship another public tag before implementation starts. The
+implementation must re-run the source-of-truth check rather than treating this
+spec's discovery snapshot as current.
+
+`RepoLens` has public milestone tags but no semver release tag. The
+implementation must use the `Public pre-release` label unless that changes
+before implementation.
