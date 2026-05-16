@@ -96,7 +96,38 @@ Example shape:
   detail_url: /projects/gm-crypto-rs/
   zh_detail_url: /zh/projects/gm-crypto-rs/
   public_source: true
+
+- slug: repolens-rs
+  title: RepoLens
+  years: "2025 — now"
+  tags: ["Rust", "MCP", "Agent tooling"]
+  status: public-pre-release
+  release: "origin/main @ afd7a6b"
+  release_source: public_main
+  repo_url: https://github.com/frankxue831/repolens-rs
+  crate_url:
+  docs_url:
+  detail_url: /projects/repolens-rs/
+  zh_detail_url: /zh/projects/repolens-rs/
+  public_source: true
+
+- slug: ghrunners
+  title: ghrunners
+  years: "2026"
+  tags: ["Rust", "CLI", "macOS"]
+  status: private-local
+  release: "local tag v0.1.1"
+  release_source: local_tag
+  repo_url:
+  crate_url:
+  docs_url:
+  detail_url: /projects/ghrunners/
+  zh_detail_url: /zh/projects/ghrunners/
+  public_source: false
 ```
+
+Use a 7-character short SHA for public-main snapshot labels unless the codebase
+already establishes a longer local convention.
 
 Add detail pages:
 
@@ -189,7 +220,8 @@ Implementation should verify:
 - `gm-crypto-rs` next-version language is explicitly labeled as next/planned
   work. If terms such as `v0.8`, `AEAD`, `SM4-GCM`, or `SM4-CCM` appear in the
   generated `gm-crypto-rs` pages, they must appear only in a section titled
-  `Next` or its Chinese equivalent.
+  `Next` or its Chinese equivalent. Use `Next` for English and `下一步` for
+  Chinese so the rule is deterministic during review.
 
 ## Acceptance Criteria
 
@@ -208,7 +240,9 @@ Implementation should verify:
   and do not contradict the detail pages.
 - English and Chinese pages carry the same shipped/planned boundary, release
   label, public-source status, and links.
-- `bundle exec jekyll doctor` and `bundle exec jekyll build` pass.
+- All Testing checks pass, including `bundle exec jekyll doctor`,
+  `bundle exec jekyll build`, generated-page existence checks, unreachable-link
+  checks, overclaim checks, and the `Next`/`下一步` content placement check.
 
 ## Open Risk
 
