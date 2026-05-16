@@ -1,0 +1,66 @@
+---
+layout: default
+title: "ghrunners"
+description: ghrunners is a read-only observability CLI for GitHub Actions self-hosted runners on macOS.
+permalink: /projects/ghrunners/
+lang: en
+alternate: /zh/projects/ghrunners/
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(02)  Work / Detail</p>
+    <h1 class="page-header__title">
+        <em>ghrunners</em>
+    </h1>
+    <p class="page-header__lede">
+        A one-shot, read-only observability CLI for GitHub Actions
+        self-hosted runners on macOS.
+    </p>
+</section>
+
+<section class="section wrap">
+    <article class="project-detail prose">
+        <h2>What it is</h2>
+        <p>
+            <code>ghrunners</code> checks the local Mac for GitHub Actions
+            self-hosted runner installs, launchd state, process state, logs,
+            and optional GitHub API status. It reports the result as a quiet
+            table or JSON, with typed findings when something looks wrong.
+        </p>
+
+        <h2>What is shipped</h2>
+        <p>
+            Local/private status: <code>local tag v0.1.1</code>. The shipped
+            CLI includes <code>status</code>, <code>describe</code>, and
+            <code>logs</code>; API enrichment is opt-in via <code>--api</code>.
+        </p>
+
+        <h2>What's different about it</h2>
+        <p>
+            The tool is deliberately read-only and partial-output friendly.
+            Permission-denied paths become row-level findings instead of
+            fatal errors, and missing sudo or missing GitHub API access is
+            reflected in provenance rather than hidden.
+        </p>
+
+        <h2>Next</h2>
+        <p>
+            Public source link comes after the repository is reachable. Control
+            verbs such as start, stop, and restart are outside the current
+            shipped scope.
+        </p>
+
+        <h2>What it isn't</h2>
+        <ul>
+            <li>Not a runner installer or unregister tool.</li>
+            <li>Not a daemon or persistent monitor.</li>
+            <li>Not Linux or Windows tooling.</li>
+            <li>Not fleet management.</li>
+            <li>Not a public-source project until the repository is reachable.</li>
+        </ul>
+
+        <div class="project-detail__links">
+            <a href="{{ '/projects/' | relative_url }}">← All work</a>
+        </div>
+    </article>
+</section>

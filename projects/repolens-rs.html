@@ -1,0 +1,75 @@
+---
+layout: default
+title: "RepoLens"
+description: RepoLens is an agent-facing repository memory and context layer for AI coding agents.
+permalink: /projects/repolens-rs/
+lang: en
+alternate: /zh/projects/repolens-rs/
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(02)  Work / Detail</p>
+    <h1 class="page-header__title">
+        <em>RepoLens</em>
+    </h1>
+    <p class="page-header__lede">
+        An agent-facing repository memory and context layer that helps
+        coding agents recover project understanding across sessions.
+    </p>
+</section>
+
+<section class="section wrap">
+    <article class="project-detail prose">
+        <h2>What it is</h2>
+        <p>
+            <code>RepoLens</code> scans a repository into structured packs,
+            exposes that model through an MCP server, and pairs it with a
+            typed, decaying memory graph. The goal is not to write code for
+            the agent. The goal is to stop every new session from starting
+            cold.
+        </p>
+
+        <h2>What is shipped</h2>
+        <p>
+            Public pre-release snapshot: <code>origin/main @ afd7a6b</code>.
+            The shipped surface includes repo scanning, 26 MCP tools, tiered
+            summaries, convention extraction, pack comparison, grounded
+            long-term memory recall, <code>repolens init</code>,
+            <code>brief</code>, <code>remember</code>,
+            <code>eval list/start</code>, and warnings-only
+            <code>validate-plan</code>.
+        </p>
+
+        <h2>What's different about it</h2>
+        <p>
+            RepoLens treats repository understanding as structured perception,
+            not as a bigger prompt dump. Memories have types, anchors, decay,
+            and grounding status; tool responses carry epistemic metadata so
+            an agent can see whether it is reading observation, heuristic, or
+            interpretation.
+        </p>
+
+        <h2>Next</h2>
+        <p>
+            The planned v0.1 direction is agent legibility and memory safety:
+            richer memory types such as hypotheses, constraints, failed
+            attempts, and friction findings, plus explicit confidence labels.
+            Those pieces should be described as planned until they ship in a
+            public release or public main snapshot.
+        </p>
+
+        <h2>What it isn't</h2>
+        <ul>
+            <li>Not an autonomous coding agent.</li>
+            <li>Not a replacement for tests or human review.</li>
+            <li>Not a generic RAG store.</li>
+            <li>Not multi-repo or org-wide memory today.</li>
+            <li>Not a guarantee that recalled memory is correct.</li>
+        </ul>
+
+        <div class="project-detail__links">
+            <a href="https://github.com/frankxue831/repolens-rs" rel="noopener noreferrer">Source ↗</a>
+            <a href="{{ '/projects/' | relative_url }}">← All work</a>
+        </div>
+    </article>
+</section>

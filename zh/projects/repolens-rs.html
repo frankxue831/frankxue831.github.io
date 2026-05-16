@@ -1,0 +1,69 @@
+---
+layout: default
+title: "RepoLens"
+description: RepoLens 是给 AI 编程 Agent 用的仓库记忆和上下文层。
+permalink: /zh/projects/repolens-rs/
+lang: zh
+alternate: /projects/repolens-rs/
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(02)  作品 / 详情</p>
+    <h1 class="page-header__title">
+        <em>RepoLens</em>
+    </h1>
+    <p class="page-header__lede">
+        给编程 Agent 用的仓库记忆和上下文层,让新的 session
+        不必每次都从零开始理解项目。
+    </p>
+</section>
+
+<section class="section wrap">
+    <article class="project-detail prose">
+        <h2>是什么</h2>
+        <p>
+            <code>RepoLens</code> 把仓库扫描成结构化 pack,
+            通过 MCP server 暴露给 Agent,再配上类型化、会随时间衰减的记忆图。
+            它不是替 Agent 写代码,而是给 Agent 一个更稳定的项目理解起点。
+        </p>
+
+        <h2>已经发布了什么</h2>
+        <p>
+            公开预发布快照:<code>origin/main @ afd7a6b</code>。
+            已经可用的表面包括仓库扫描、26 个 MCP 工具、分层摘要、约定提取、
+            pack 对比、有 grounding 状态的长期记忆召回,以及
+            <code>repolens init</code>、<code>brief</code>、
+            <code>remember</code>、<code>eval list/start</code>
+            和只给 warning 的 <code>validate-plan</code>。
+        </p>
+
+        <h2>跟别的工具差在哪儿</h2>
+        <p>
+            RepoLens 把仓库理解当成结构化感知来做,不是把更多文件塞进提示词。
+            记忆有类型、anchor、衰减和 grounding 状态;工具响应也带 epistemic
+            元数据,让 Agent 知道自己看到的是观察、启发式判断,还是解释。
+        </p>
+
+        <h2>下一步</h2>
+        <p>
+            v0.1 的方向是 Agent 可读性和记忆安全:更丰富的记忆类型,
+            比如 hypothesis、constraint、failed attempt、friction finding,
+            以及明确的 confidence 标签。这些在公开 release 或公开 main
+            快照落地之前,都应该写成规划中。
+        </p>
+
+        <h2>它不是什么</h2>
+        <ul>
+            <li>不是自动写代码的 Agent。</li>
+            <li>不能替代测试或人工 review。</li>
+            <li>不是通用 RAG 存储。</li>
+            <li>今天还不是多仓库或组织级记忆。</li>
+            <li>不保证召回出来的记忆一定正确。</li>
+        </ul>
+
+        <div class="project-detail__links">
+            <a href="https://github.com/frankxue831/repolens-rs" rel="noopener noreferrer">源码 ↗</a>
+            <a href="{{ '/zh/projects/' | relative_url }}">← 全部作品</a>
+        </div>
+    </article>
+</section>

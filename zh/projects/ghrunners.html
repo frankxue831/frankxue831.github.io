@@ -1,0 +1,64 @@
+---
+layout: default
+title: "ghrunners"
+description: ghrunners 是 macOS 上 GitHub Actions self-hosted runner 的只读观测 CLI。
+permalink: /zh/projects/ghrunners/
+lang: zh
+alternate: /projects/ghrunners/
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(02)  作品 / 详情</p>
+    <h1 class="page-header__title">
+        <em>ghrunners</em>
+    </h1>
+    <p class="page-header__lede">
+        macOS 上 GitHub Actions self-hosted runner 的一次性、只读观测 CLI。
+    </p>
+</section>
+
+<section class="section wrap">
+    <article class="project-detail prose">
+        <h2>是什么</h2>
+        <p>
+            <code>ghrunners</code> 会检查本机 Mac 上的 GitHub Actions
+            self-hosted runner 安装、launchd 状态、进程状态、日志,
+            以及可选的 GitHub API 状态。输出可以是安静的表格,
+            也可以是 JSON;异常会落成类型化 findings。
+        </p>
+
+        <h2>已经发布了什么</h2>
+        <p>
+            本地/私有状态:<code>local tag v0.1.1</code>。已经有的 CLI
+            包括 <code>status</code>、<code>describe</code> 和
+            <code>logs</code>;GitHub API 增强通过 <code>--api</code>
+            显式开启。
+        </p>
+
+        <h2>跟别的工具差在哪儿</h2>
+        <p>
+            它刻意只读,也刻意允许部分输出。权限不足的路径会变成单行 finding,
+            而不是让整个命令失败;缺 sudo 或缺 GitHub API 权限也会体现在来源信息里,
+            不会被藏起来。
+        </p>
+
+        <h2>下一步</h2>
+        <p>
+            等仓库可以公开访问以后再加源码链接。start、stop、restart
+            这类控制命令不属于当前已发布范围。
+        </p>
+
+        <h2>它不是什么</h2>
+        <ul>
+            <li>不是 runner 安装或注销工具。</li>
+            <li>不是 daemon 或持续监控器。</li>
+            <li>不支持 Linux 或 Windows。</li>
+            <li>不是 fleet 管理工具。</li>
+            <li>在仓库可公开访问前,它不是公开源码项目。</li>
+        </ul>
+
+        <div class="project-detail__links">
+            <a href="{{ '/zh/projects/' | relative_url }}">← 全部作品</a>
+        </div>
+    </article>
+</section>
