@@ -27,18 +27,18 @@
   tags:
     en: ["Rust", "MCP", "Agent tooling"]
     zh: ["Rust", "MCP", "Agent 工具"]
-  status: public-pre-release
+  status: private-pre-release
   status_label:
-    en: "Public pre-release"
-    zh: "公开预发布"
+    en: "Private pre-release"
+    zh: "私有预发布"
   release: "origin/main @ afd7a6b"
-  release_source: public_main
-  repo_url: "https://github.com/frankxue831/repolens-rs"
+  release_source: private_main
+  repo_url:
   crate_url:
   docs_url:
   detail_url: "/projects/repolens-rs/"
   zh_detail_url: "/zh/projects/repolens-rs/"
-  public_source: true
+  public_source: false
 
 - slug: ghrunners
   title: ghrunners
