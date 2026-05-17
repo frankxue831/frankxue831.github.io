@@ -11,27 +11,27 @@ alternate: /
     <p class="hero__eyebrow">Frank Xue / 软件工程师</p>
 
     <h1 class="hero__title">
-        做点东西,
-        <em>顺手写下来。</em>
+        写可靠的工具,
+        <em>给代码、密码学和 Agent 用。</em>
     </h1>
 
     <p class="hero__lede">
-        工作时写软件,闲下来也写。这里放着一些做过的小东西,
-        和正在做的大东西。
+        我主要用 Rust 写软件。这里放一些项目、实现笔记,
+        以及帮助我把事情想清楚的小工具。
     </p>
 
     <dl class="hero__meta">
         <div>
-            <dt>在做</dt>
-            <dd>Rust 居多——密码学、Agent 工具、CLI</dd>
-        </div>
-        <div>
-            <dt>开源</dt>
-            <dd><a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a></dd>
+            <dt>方向</dt>
+            <dd>Rust、密码学、Agent 工具、CLI</dd>
         </div>
         <div>
             <dt>最近</dt>
-            <dd>发布了 <em>gm-crypto-rs</em> v0.7.0</dd>
+            <dd><em>gm-crypto-rs</em> v0.7.0</dd>
+        </div>
+        <div>
+            <dt>作品</dt>
+            <dd>三个项目说明</dd>
         </div>
     </dl>
 
@@ -53,8 +53,9 @@ alternate: /
         <p class="preview__label">一句话</p>
         <div class="preview__body">
             <p>
-                我是个软件工程师,挺<em>较真"清楚"</em>这件事——
-                代码要清楚,界面要清楚,跟人讲话也要清楚。
+                我是个软件工程师,很在意<em>清楚</em>这件事:
+                代码要能被审计,工具要说明自己的状态,
+                界面不要把日常工作变复杂。
             </p>
             <a href="{{ '/zh/about/' | relative_url }}" class="preview__link">
                 看长一点的版本 <span aria-hidden="true">→</span>
@@ -78,14 +79,14 @@ alternate: /
             <a class="work-list__row"
                href="{{ project.zh_detail_url | relative_url }}">
                 <span class="work-list__year">{{ project.years.zh }}</span>
-                <span class="work-list__title"><em>{{ project.title }}</em></span>
+                <span class="work-list__title">{{ project.title }}</span>
                 <span class="work-list__tags">{{ project.tags.zh | join: ' · ' }}</span>
             </a>
         </li>
         {% endfor %}
     </ul>
 
-    <a href="{{ '/zh/projects/' | relative_url }}" class="preview__link" style="margin-top: var(--space-8);">
+    <a href="{{ '/zh/projects/' | relative_url }}" class="preview__link preview__link--section">
         看全部作品 <span aria-hidden="true">→</span>
     </a>
 </section>

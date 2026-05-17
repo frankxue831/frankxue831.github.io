@@ -10,27 +10,28 @@ alternate: /zh/
     <p class="hero__eyebrow">Frank Xue — Software engineer</p>
 
     <h1 class="hero__title">
-        Building things,
-        <em>writing about them.</em>
+        Building reliable tools
+        <em>for code, crypto, and agents.</em>
     </h1>
 
     <p class="hero__lede">
-        I write software for a living and for fun. This is where I keep the
-        small things I make and the longer things I'm working on.
+        I'm a software engineer working mostly in Rust. This site collects
+        selected projects, notes on how they are built, and the smaller tools
+        that help me think clearly.
     </p>
 
     <dl class="hero__meta">
         <div>
-            <dt>Currently</dt>
-            <dd>Writing Rust — crypto, agent tooling, CLIs</dd>
+            <dt>Focus</dt>
+            <dd>Rust, cryptography, agent tooling, CLIs</dd>
         </div>
         <div>
-            <dt>Open source</dt>
-            <dd><a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a></dd>
+            <dt>Recent</dt>
+            <dd><em>gm-crypto-rs</em> v0.7.0</dd>
         </div>
         <div>
-            <dt>Lately</dt>
-            <dd>Released <em>gm-crypto-rs</em> v0.7.0</dd>
+            <dt>Work</dt>
+            <dd>Three selected project writeups</dd>
         </div>
     </dl>
 
@@ -52,9 +53,9 @@ alternate: /zh/
         <p class="preview__label">In a sentence</p>
         <div class="preview__body">
             <p>
-                I'm a software engineer who cares about <em>clarity</em> —
-                in code, in interfaces, in the way teams talk about the
-                things they're building.
+                I'm a software engineer who cares about <em>clarity</em>:
+                code that can be audited, tools that explain their state, and
+                interfaces that do not make routine work feel mysterious.
             </p>
             <a href="{{ '/about/' | relative_url }}" class="preview__link">
                 Read the longer version <span aria-hidden="true">→</span>
@@ -78,14 +79,14 @@ alternate: /zh/
             <a class="work-list__row"
                href="{{ project.detail_url | relative_url }}">
                 <span class="work-list__year">{{ project.years.en }}</span>
-                <span class="work-list__title"><em>{{ project.title }}</em></span>
+                <span class="work-list__title">{{ project.title }}</span>
                 <span class="work-list__tags">{{ project.tags.en | join: ' · ' }}</span>
             </a>
         </li>
         {% endfor %}
     </ul>
 
-    <a href="{{ '/projects/' | relative_url }}" class="preview__link" style="margin-top: var(--space-8);">
+    <a href="{{ '/projects/' | relative_url }}" class="preview__link preview__link--section">
         See all work <span aria-hidden="true">→</span>
     </a>
 </section>
