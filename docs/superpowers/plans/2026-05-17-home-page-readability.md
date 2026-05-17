@@ -201,7 +201,23 @@ with:
 
 Expected: no inline style remains on the English "See all work" link.
 
-- [ ] **Step 5: Build after English markup changes**
+- [ ] **Step 5: Remove project title emphasis wrappers**
+
+In `index.html`, replace:
+
+```html
+                <span class="work-list__title"><em>{{ project.title }}</em></span>
+```
+
+with:
+
+```html
+                <span class="work-list__title">{{ project.title }}</span>
+```
+
+Expected: project titles no longer render italic by default on the home page.
+
+- [ ] **Step 6: Build after English markup changes**
 
 Run:
 
@@ -211,7 +227,7 @@ bundle exec jekyll build
 
 Expected: build exits with status 0 and `_site/index.html` contains `Building reliable tools`.
 
-- [ ] **Step 6: Commit English home update**
+- [ ] **Step 7: Commit English home update**
 
 Run:
 
@@ -298,7 +314,23 @@ with:
 
 Expected: no inline style remains on the Chinese "See all work" equivalent.
 
-- [ ] **Step 5: Build after Chinese markup changes**
+- [ ] **Step 5: Remove project title emphasis wrappers**
+
+In `zh/index.html`, replace:
+
+```html
+                <span class="work-list__title"><em>{{ project.title }}</em></span>
+```
+
+with:
+
+```html
+                <span class="work-list__title">{{ project.title }}</span>
+```
+
+Expected: project titles no longer render italic by default on the Chinese home page.
+
+- [ ] **Step 6: Build after Chinese markup changes**
 
 Run:
 
@@ -308,7 +340,7 @@ bundle exec jekyll build
 
 Expected: build exits with status 0 and `_site/zh/index.html` contains `写可靠的工具`.
 
-- [ ] **Step 6: Commit Chinese home update**
+- [ ] **Step 7: Commit Chinese home update**
 
 Run:
 
@@ -494,7 +526,7 @@ Expected: preview text becomes readable paragraph text and the new class replace
 
 - [ ] **Step 5: Replace work-list text styles**
 
-Replace `.work-list__row`, `.work-list__year`, `.work-list__title`, and `.work-list__tags` blocks with:
+Replace `.work-list__row`, `.work-list__year`, `.work-list__title`, `.work-list__item:hover .work-list__title`, and `.work-list__tags` blocks with:
 
 ```css
 .work-list__row {
@@ -521,6 +553,9 @@ Replace `.work-list__row`, `.work-list__year`, `.work-list__title`, and `.work-l
     line-height: 1.35;
     transition: color var(--dur) var(--ease);
 }
+.work-list__item:hover .work-list__title {
+    color: var(--accent);
+}
 
 .work-list__tags {
     font-family: var(--sans);
@@ -532,7 +567,7 @@ Replace `.work-list__row`, `.work-list__year`, `.work-list__title`, and `.work-l
 }
 ```
 
-Expected: project rows become easier to scan and long tags have a stable third column.
+Expected: project rows become easier to scan, long tags have a stable third column, and hover no longer makes project titles italic.
 
 - [ ] **Step 6: Add mobile hero metadata override**
 
@@ -634,14 +669,26 @@ Start the local Jekyll server:
 bundle exec jekyll serve --host 127.0.0.1 --port 4000
 ```
 
-Open `http://127.0.0.1:4000/` and `http://127.0.0.1:4000/zh/` in the browser. Verify:
+Open these pages in the browser:
+
+- `http://127.0.0.1:4000/`
+- `http://127.0.0.1:4000/zh/`
+- `http://127.0.0.1:4000/about/`
+- `http://127.0.0.1:4000/zh/about/`
+- `http://127.0.0.1:4000/projects/`
+- `http://127.0.0.1:4000/zh/projects/`
+- `http://127.0.0.1:4000/projects/gm-crypto-rs/`
+- `http://127.0.0.1:4000/zh/projects/gm-crypto-rs/`
+
+Verify:
 
 - Desktop hero title, lede, metadata, and CTA do not overlap.
 - Mobile hero metadata stacks in one column.
 - English and Chinese selected-work rows remain scannable.
+- Non-home page headers still fit after the global type token changes.
 - The paper background, blue accent, and serif display identity are still visible.
 
-Expected: no visual overlap or unreadable text at desktop or mobile viewport widths.
+Expected: no visual overlap or unreadable text at desktop or mobile viewport widths on home, index, about, and detail pages.
 
 - [ ] **Step 6: Commit final verification note only if fixes were needed**
 
