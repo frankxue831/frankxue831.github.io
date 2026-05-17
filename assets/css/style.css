@@ -807,6 +807,11 @@ body.lang-zh .page-header__lede {
     .hero__title {
         max-width: 11ch;
     }
+    body.lang-zh .hero__title {
+        max-width: 13ch;
+        font-size: 3rem;
+        word-break: keep-all;
+    }
     .hero__lede {
         font-size: var(--text-lg);
         line-height: 1.65;
