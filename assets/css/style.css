@@ -480,7 +480,7 @@ body.lang-zh .page-header__lede {
     color: var(--fg-muted);
     letter-spacing: 0;
 }
-.hero__meta div {
+.hero__meta > div {
     padding-top: var(--space-3);
     border-top: 1px solid var(--rule);
 }
@@ -597,6 +597,8 @@ body.lang-zh .page-header__lede {
    Work list
    ========================================================= */
 .work-list {
+    --work-list-year-col: 88px;
+
     list-style: none;
     padding: 0;
     margin: 0;
@@ -609,7 +611,7 @@ body.lang-zh .page-header__lede {
 
 .work-list__row {
     display: grid;
-    grid-template-columns: 88px minmax(0, 1fr) minmax(180px, auto);
+    grid-template-columns: var(--work-list-year-col) minmax(0, 1fr) minmax(180px, auto);
     gap: var(--space-6);
     align-items: baseline;
     padding: var(--space-5) 0;
@@ -649,7 +651,7 @@ body.lang-zh .page-header__lede {
 }
 
 .work-list__note {
-    margin: calc(var(--space-3) * -1) 0 var(--space-6) calc(80px + var(--space-6));
+    margin: calc(var(--space-3) * -1) 0 var(--space-6) calc(var(--work-list-year-col) + var(--space-6));
     padding-right: var(--space-8);
     max-width: 62ch;
     font-family: var(--serif);
