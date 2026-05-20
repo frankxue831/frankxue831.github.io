@@ -223,5 +223,6 @@ if failures.empty?
   puts "Site validation passed"
 else
   warn failures.join("\n")
+  warn "Hint: run `bundle exec jekyll build` before validation; `jekyll serve` can leave localhost URLs in _site."
   exit 1
 end
