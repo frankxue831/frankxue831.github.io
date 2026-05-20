@@ -35,11 +35,17 @@ def generated_target_for(href)
   path = uri.path
   path = "/" if path.empty?
 
-  if path.end_with?("/")
+  relative = if path.end_with?("/")
     path == "/" ? "index.html" : "#{path.delete_prefix("/")}index.html"
   else
     path.delete_prefix("/")
   end
+
+  target_path = SITE.join(relative).cleanpath
+  site_root = SITE.cleanpath.to_s
+  return :outside_site unless target_path.to_s == site_root || target_path.to_s.start_with?("#{site_root}/")
+
+  relative
 rescue URI::InvalidURIError
   nil
 end
@@ -65,14 +71,56 @@ end
 end
 
 core_pages = {
-  "index.html" => { alternates: ["#{BASE_URL}/zh/"] },
-  "zh/index.html" => { alternates: ["#{BASE_URL}/"] },
-  "about/index.html" => { alternates: ["#{BASE_URL}/zh/about/"] },
-  "zh/about/index.html" => { alternates: ["#{BASE_URL}/about/"] },
-  "projects/index.html" => { alternates: ["#{BASE_URL}/zh/projects/"] },
-  "zh/projects/index.html" => { alternates: ["#{BASE_URL}/projects/"] },
-  "contact/index.html" => { alternates: ["#{BASE_URL}/zh/contact/"] },
-  "zh/contact/index.html" => { alternates: ["#{BASE_URL}/contact/"] }
+  "index.html" => {
+    alternates: [
+      { hreflang: "en", href: "#{BASE_URL}/" },
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/" }
+    ]
+  },
+  "zh/index.html" => {
+    alternates: [
+      { hreflang: "en", href: "#{BASE_URL}/" },
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/" }
+    ]
+  },
+  "about/index.html" => {
+    alternates: [
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/about/" },
+      { hreflang: "en", href: "#{BASE_URL}/about/" }
+    ]
+  },
+  "zh/about/index.html" => {
+    alternates: [
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/about/" },
+      { hreflang: "en", href: "#{BASE_URL}/about/" }
+    ]
+  },
+  "projects/index.html" => {
+    alternates: [
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/projects/" },
+      { hreflang: "en", href: "#{BASE_URL}/projects/" }
+    ]
+  },
+  "zh/projects/index.html" => {
+    alternates: [
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/projects/" },
+      { hreflang: "en", href: "#{BASE_URL}/projects/" }
+    ]
+  },
+  "contact/index.html" => {
+    alternates: [
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/contact/" },
+      { hreflang: "en", href: "#{BASE_URL}/contact/" }
+    ]
+  },
+  "zh/contact/index.html" => {
+    alternates: [
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/contact/" },
+      { hreflang: "en", href: "#{BASE_URL}/contact/" }
+    ]
+  }
 }
 
 project_pages = %w[
@@ -105,8 +153,9 @@ end
 core_pages.each do |relative, config|
   html = read_file(SITE.join(relative), failures)
   config[:alternates].each do |alternate|
-    unless html.include?(%(<link rel="alternate")) && html.include?(%(href="#{alternate}"))
-      record(failures, "#{relative}: missing alternate #{alternate}")
+    pattern = %r{<link rel="alternate" hreflang="#{Regexp.escape(alternate[:hreflang])}" href="#{Regexp.escape(alternate[:href])}">}
+    unless html.match?(pattern)
+      record(failures, "#{relative}: missing alternate #{alternate[:hreflang]} #{alternate[:href]}")
     end
   end
 end
@@ -123,8 +172,14 @@ internal_targets = Set.new
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
   html.scan(%r{<(?:a|link)\b[^>]+\bhref="([^"]+)"}i).each do |match|
-    target = generated_target_for(CGI.unescapeHTML(match.first))
-    internal_targets << [path.relative_path_from(SITE).to_s, target] if target
+    href = CGI.unescapeHTML(match.first)
+    source = path.relative_path_from(SITE).to_s
+    target = generated_target_for(href)
+    if target == :outside_site
+      record(failures, "#{source}: internal link escapes _site: #{href}")
+    elsif target
+      internal_targets << [source, target]
+    end
   end
 end
 
