@@ -1,0 +1,51 @@
+{%- assign lang = page.lang | default: 'en' -%}
+{%- assign labels = site.data.i18n[lang].project_summary -%}
+{%- assign project = site.data.projects | where: 'slug', page.project_slug | first -%}
+{%- if project -%}
+  {%- assign tags = project.tags[lang] | default: project.tags.en -%}
+  {%- assign status_label = project.status_label[lang] | default: project.status_label.en -%}
+  <dl class="project-summary" aria-label="{{ labels.aria | escape }}">
+    <div class="project-summary__item">
+      <dt>{{ labels.role }}</dt>
+      <dd>{{ labels.owner }}</dd>
+    </div>
+    <div class="project-summary__item">
+      <dt>{{ labels.status }}</dt>
+      <dd>{{ status_label }}</dd>
+    </div>
+    <div class="project-summary__item">
+      <dt>{{ labels.release }}</dt>
+      <dd>{{ project.release }}</dd>
+    </div>
+    {%- if page.summary_outcome -%}
+      <div class="project-summary__item project-summary__item--wide">
+        <dt>{{ labels.key_outcome }}</dt>
+        <dd>{{ page.summary_outcome }}</dd>
+      </div>
+    {%- endif -%}
+    <div class="project-summary__item project-summary__item--wide">
+      <dt>{{ labels.stack }}</dt>
+      <dd>
+        {%- for tag in tags -%}
+          <span>{{ tag }}</span>{% unless forloop.last %}<span aria-hidden="true">/</span>{% endunless %}
+        {%- endfor -%}
+      </dd>
+    </div>
+    {%- if project.crate_url or project.docs_url or project.repo_url -%}
+      <div class="project-summary__item project-summary__item--wide">
+        <dt>{{ labels.links }}</dt>
+        <dd>
+          {%- if project.repo_url and project.public_source -%}
+            <a href="{{ project.repo_url }}" rel="noopener noreferrer">Source</a>
+          {%- endif -%}
+          {%- if project.crate_url -%}
+            <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>
+          {%- endif -%}
+          {%- if project.docs_url -%}
+            <a href="{{ project.docs_url }}" rel="noopener noreferrer">docs.rs</a>
+          {%- endif -%}
+        </dd>
+      </div>
+    {%- endif -%}
+  </dl>
+{%- endif -%}

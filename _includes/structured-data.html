@@ -1,0 +1,70 @@
+{%- assign lang = page.lang | default: 'en' -%}
+{%- assign html_lang = site.data.i18n[lang].html_lang | default: lang -%}
+{%- assign page_description = page.description | default: site.description | strip_newlines | strip -%}
+{%- assign page_title = page.title | default: site.title -%}
+{%- assign page_url = page.url | absolute_url -%}
+{%- assign site_url = '/' | absolute_url -%}
+{%- assign person_id = site_url | append: '#person' -%}
+{%- assign website_id = site_url | append: '#website' -%}
+{%- assign webpage_id = page_url | append: '#webpage' -%}
+{%- if page.project_slug -%}
+  {%- assign project = site.data.projects | where: 'slug', page.project_slug | first -%}
+{%- endif -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": {{ person_id | jsonify }},
+      "name": {{ site.author.name | default: site.title | jsonify }},
+      "url": {{ site_url | jsonify }},
+      "sameAs": [
+        {{ 'https://github.com/' | append: site.github_username | jsonify }}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": {{ website_id | jsonify }},
+      "url": {{ site_url | jsonify }},
+      "name": {{ site.title | jsonify }},
+      "description": {{ site.description | strip_newlines | strip | jsonify }},
+      "inLanguage": ["en", "zh-CN"],
+      "publisher": {
+        "@id": {{ person_id | jsonify }}
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": {{ webpage_id | jsonify }},
+      "url": {{ page_url | jsonify }},
+      "name": {{ page_title | jsonify }},
+      "description": {{ page_description | jsonify }},
+      "inLanguage": {{ html_lang | jsonify }},
+      "isPartOf": {
+        "@id": {{ website_id | jsonify }}
+      },
+      "about": {
+        "@id": {{ person_id | jsonify }}
+      }
+    }{% if project %},
+    {
+      "@type": "SoftwareSourceCode",
+      "@id": {{ page_url | append: '#software' | jsonify }},
+      "name": {{ project.title | jsonify }},
+      "description": {{ page_description | jsonify }},
+      "url": {{ page_url | jsonify }},
+      "programmingLanguage": "Rust",
+      "author": {
+        "@id": {{ person_id | jsonify }}
+      },
+      "isPartOf": {
+        "@id": {{ webpage_id | jsonify }}
+      }{% if project.public_source and project.repo_url %},
+      "codeRepository": {{ project.repo_url | jsonify }}{% endif %}{% if project.crate_url or project.docs_url %},
+      "sameAs": [{% assign emitted_same_as = false %}{% if project.crate_url %}{{ project.crate_url | jsonify }}{% assign emitted_same_as = true %}{% endif %}{% if project.docs_url %}{% if emitted_same_as %}, {% endif %}{{ project.docs_url | jsonify }}{% endif %}]
+      {% endif %}
+    }{% endif %}
+  ]
+}
+</script>
