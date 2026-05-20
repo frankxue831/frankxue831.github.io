@@ -25,6 +25,25 @@ rescue Errno::ENOENT
   ""
 end
 
+def expected_url_for(relative)
+  path = relative.sub(/index\.html\z/, "")
+  "#{BASE_URL}/#{path}"
+end
+
+def alternate_pairs(html)
+  html.scan(%r{<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">}).map do |hreflang, href|
+    [hreflang, href]
+  end.to_set
+end
+
+def internal_href?(href)
+  href.start_with?("/") ||
+    href.start_with?("#{BASE_URL}/") ||
+    href.start_with?("https://#{HOST}/") ||
+    href.start_with?("http://#{HOST}/") ||
+    !href.match?(%r{\A[a-z][a-z0-9+.-]*:}i)
+end
+
 def generated_target_for(href)
   return nil if href.empty? || href.start_with?("#", "mailto:", "tel:")
 
@@ -47,7 +66,7 @@ def generated_target_for(href)
 
   relative
 rescue URI::InvalidURIError
-  nil
+  internal_href?(href) ? :invalid_internal_href : nil
 end
 
 def json_ld_documents(html, failures, source)
@@ -137,7 +156,9 @@ project_pages = %w[
   html = read_file(path, failures)
   next if html.empty?
 
-  record(failures, "#{relative}: missing canonical URL") unless html.match?(%r{<link rel="canonical" href="#{Regexp.escape(BASE_URL)}/})
+  expected_canonical = expected_url_for(relative)
+  canonical_pattern = %r{<link rel="canonical" href="#{Regexp.escape(expected_canonical)}"\s*/?>}
+  record(failures, "#{relative}: missing canonical URL #{expected_canonical}") unless html.match?(canonical_pattern)
   record(failures, "#{relative}: missing meta description") unless html.match?(%r{<meta name="description" content="[^"]+"})
   record(failures, "#{relative}: missing Open Graph title") unless html.match?(%r{<meta property="og:title" content="[^"]+"})
   record(failures, "#{relative}: missing Open Graph description") unless html.match?(%r{<meta property="og:description" content="[^"]+"})
@@ -152,11 +173,10 @@ end
 
 core_pages.each do |relative, config|
   html = read_file(SITE.join(relative), failures)
-  config[:alternates].each do |alternate|
-    pattern = %r{<link rel="alternate" hreflang="#{Regexp.escape(alternate[:hreflang])}" href="#{Regexp.escape(alternate[:href])}">}
-    unless html.match?(pattern)
-      record(failures, "#{relative}: missing alternate #{alternate[:hreflang]} #{alternate[:href]}")
-    end
+  expected_pairs = config[:alternates].map { |alternate| [alternate[:hreflang], alternate[:href]] }.to_set
+  actual_pairs = alternate_pairs(html)
+  unless actual_pairs == expected_pairs
+    record(failures, "#{relative}: alternate set mismatch expected #{expected_pairs.to_a.inspect} got #{actual_pairs.to_a.inspect}")
   end
 end
 
@@ -171,12 +191,14 @@ end
 internal_targets = Set.new
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
-  html.scan(%r{<(?:a|link)\b[^>]+\bhref="([^"]+)"}i).each do |match|
-    href = CGI.unescapeHTML(match.first)
+  html.scan(%r{<(?:a|link)\b[^>]+\bhref=(['"])(.*?)\1}i).each do |match|
+    href = CGI.unescapeHTML(match[1])
     source = path.relative_path_from(SITE).to_s
     target = generated_target_for(href)
     if target == :outside_site
       record(failures, "#{source}: internal link escapes _site: #{href}")
+    elsif target == :invalid_internal_href
+      record(failures, "#{source}: invalid internal href: #{href}")
     elsif target
       internal_targets << [source, target]
     end
