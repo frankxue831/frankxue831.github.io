@@ -1,0 +1,30 @@
+name: Site
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Run Jekyll doctor
+        run: bundle exec jekyll doctor
+
+      - name: Build site
+        run: bundle exec jekyll build
+
+      - name: Validate generated site
+        run: ruby scripts/validate_site.rb
