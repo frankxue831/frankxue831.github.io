@@ -19,6 +19,15 @@ en:
     set_in: "Set in"
     built_with: "Built with Jekyll. Hosted on GitHub Pages."
     last_built: "Last built"
+  project_summary:
+    aria: "Project summary"
+    role: "Role"
+    status: "Status"
+    stack: "Stack"
+    release: "Release"
+    links: "Links"
+    owner: "Personal project"
+    key_outcome: "Key outcome"
 
 zh:
   html_lang: "zh-CN"
@@ -37,3 +46,12 @@ zh:
     set_in: "字体使用"
     built_with: "Jekyll 构建，托管于 GitHub Pages。"
     last_built: "最近构建"
+  project_summary:
+    aria: "项目摘要"
+    role: "角色"
+    status: "状态"
+    stack: "技术"
+    release: "版本"
+    links: "链接"
+    owner: "个人项目"
+    key_outcome: "关键点"
