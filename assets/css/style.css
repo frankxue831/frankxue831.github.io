@@ -19,6 +19,12 @@
     --accent-cool: #3730a3;
     --danger: #b91c1c;
 
+    /* Semantic status — the dot carries hue; the text label always
+       accompanies it, so meaning never depends on color alone. */
+    --status-released: #15803d;
+    --status-pre: #b45309;
+    --status-private: #8a8276;
+
     /* Spacing — fluid scale */
     --space-1: 0.25rem;
     --space-2: 0.5rem;
@@ -470,31 +476,41 @@ body.lang-zh .page-header__lede {
     margin-bottom: var(--space-8);
 }
 
+/* Datasheet card — name/role facts rendered like an index card. */
 .hero__meta {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-4);
-    max-width: 760px;
+    max-width: 560px;
+    border: 1px solid var(--rule);
+    border-radius: 5px;
+    background: var(--bg-sunk);
+    overflow: hidden;
     font-family: var(--sans);
     font-size: var(--text-sm);
     color: var(--fg-muted);
     letter-spacing: 0;
 }
 .hero__meta > div {
-    padding-top: var(--space-3);
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding: var(--space-3) var(--space-5);
     border-top: 1px solid var(--rule);
 }
+.hero__meta > div:first-child { border-top: 0; }
 .hero__meta dt {
     color: var(--fg-subtle);
     text-transform: uppercase;
     font-family: var(--mono);
     font-size: var(--text-xs);
     letter-spacing: 0.04em;
-    margin-bottom: var(--space-2);
 }
 .hero__meta dd {
     color: var(--fg);
     line-height: 1.5;
+}
+.hero__meta dd em {
+    font-style: italic;
+    color: var(--accent-cool);
 }
 .hero__meta a:hover { color: var(--accent); }
 
@@ -597,8 +613,6 @@ body.lang-zh .page-header__lede {
    Work list
    ========================================================= */
 .work-list {
-    --work-list-year-col: 88px;
-
     list-style: none;
     padding: 0;
     margin: 0;
@@ -611,9 +625,9 @@ body.lang-zh .page-header__lede {
 
 .work-list__row {
     display: grid;
-    grid-template-columns: var(--work-list-year-col) minmax(0, 1fr) minmax(180px, auto);
-    gap: var(--space-6);
-    align-items: baseline;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-4) var(--space-8);
+    align-items: start;
     padding: var(--space-5) 0;
     transition: padding var(--dur) var(--ease);
 }
@@ -622,11 +636,11 @@ body.lang-zh .page-header__lede {
     padding-left: var(--space-3);
 }
 
-.work-list__year {
-    font-family: var(--mono);
-    font-size: var(--text-xs);
-    color: var(--fg-subtle);
-    letter-spacing: 0.02em;
+.work-list__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
 }
 
 .work-list__title {
@@ -634,7 +648,7 @@ body.lang-zh .page-header__lede {
     font-size: var(--text-xl);
     font-weight: 600;
     color: var(--fg);
-    line-height: 1.35;
+    line-height: 1.3;
     transition: color var(--dur) var(--ease);
 }
 .work-list__item:hover .work-list__title {
@@ -645,14 +659,67 @@ body.lang-zh .page-header__lede {
     font-family: var(--sans);
     font-size: var(--text-sm);
     color: var(--fg-muted);
-    text-align: right;
     line-height: 1.45;
     letter-spacing: 0;
 }
 
+/* Right rail: status + version + year, right-aligned and mono. */
+.work-list__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-2);
+    text-align: right;
+    white-space: nowrap;
+}
+.work-list__rel {
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    color: var(--fg);
+    letter-spacing: 0.02em;
+}
+.work-list__year {
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    color: var(--fg-subtle);
+    letter-spacing: 0.02em;
+}
+
+/* Status pill — colored dot + always-present text label. */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.02em;
+    color: var(--fg);
+}
+.status-pill::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex: none;
+    border: 1.5px solid var(--status-private);
+    background: var(--status-private);
+}
+.status-pill[data-status="released"]::before {
+    background: var(--status-released);
+    border-color: var(--status-released);
+}
+.status-pill[data-status="private-pre-release"]::before {
+    background: var(--status-pre);
+    border-color: var(--status-pre);
+}
+.status-pill[data-status="private-local"]::before,
+.status-pill[data-status="private"]::before {
+    background: transparent;
+    border-color: var(--status-private);
+}
+
 .work-list__note {
-    margin: calc(var(--space-3) * -1) 0 var(--space-6) calc(var(--work-list-year-col) + var(--space-6));
-    padding-right: var(--space-8);
+    margin: var(--space-1) 0 var(--space-6) 0;
     max-width: 62ch;
     font-family: var(--serif);
     font-size: var(--text-base);
@@ -866,17 +933,26 @@ body.lang-zh .page-header__lede {
         font-size: var(--text-lg);
         line-height: 1.65;
     }
-    .hero__meta {
-        grid-template-columns: 1fr;
-        gap: var(--space-4);
+    .hero__meta > div {
+        grid-template-columns: 80px 1fr;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
     }
 
     .work-list__row {
         grid-template-columns: 1fr;
-        gap: var(--space-2);
+        gap: var(--space-3);
         padding: var(--space-5) 0;
     }
-    .work-list__tags { text-align: left; }
+    .work-list__meta {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: left;
+        gap: var(--space-2) var(--space-4);
+        white-space: normal;
+    }
     .work-list__item:hover .work-list__row { padding-left: 0; }
 }
 

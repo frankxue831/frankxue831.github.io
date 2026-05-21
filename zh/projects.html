@@ -25,9 +25,15 @@ alternate: /projects/
         <li class="work-list__item">
             <a class="work-list__row"
                href="{{ project.zh_detail_url | relative_url }}">
-                <span class="work-list__year">{{ project.years.zh }}</span>
-                <span class="work-list__title"><em>{{ project.title }}</em></span>
-                <span class="work-list__tags">{{ project.tags.zh | join: ' · ' }}</span>
+                <span class="work-list__head">
+                    <span class="work-list__title">{{ project.title }}</span>
+                    <span class="work-list__tags">{{ project.tags.zh | join: ' · ' }}</span>
+                </span>
+                <span class="work-list__meta">
+                    <span class="status-pill" data-status="{{ project.status }}">{{ project.status_label.zh }}</span>
+                    {% if project.release_source == 'public_tag' %}<span class="work-list__rel">{{ project.release }}</span>{% endif %}
+                    <span class="work-list__year">{{ project.years.zh }}</span>
+                </span>
             </a>
             <p class="work-list__note">
                 {% case project.slug %}
