@@ -51,16 +51,13 @@ alternate: /zh/projects/
                 A repository memory and context layer for AI coding agents.
                 It exposes 26 MCP tools and pairs structured repository context
                 with typed, decaying memory so agents can keep a durable model
-                of a project across sessions. Status:
-                <strong>{{ project.status_label.en }}</strong>,
-                <code>{{ project.release }}</code>.
+                of a project across sessions. Private pre-release for now.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
                 {% when 'ghrunners' %}
                 A read-only observability CLI for GitHub Actions self-hosted
                 runners on macOS, surfacing launchd domain, PID, process tree,
                 log tails, and optional GitHub API status in one invocation.
-                Current state: <code>{{ project.release }}</code>; source is
-                private/local for now.
+                Source is private/local for now.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
                 {% endcase %}
             </p>

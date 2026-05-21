@@ -49,14 +49,12 @@ alternate: /projects/
                 <em>给 AI 编程 Agent 用</em>的仓库记忆和上下文层。
                 它通过 MCP 暴露 26 个工具,把结构化仓库上下文和会随时间衰减的
                 类型化记忆连在一起,让 Agent 能跨 session 保留对项目的稳定理解。
-                状态: <strong>{{ project.status_label.zh }}</strong>,
-                <code>{{ project.release }}</code>。
+                目前仍是私有预发布。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'ghrunners' %}
                 macOS 上 GitHub Actions self-hosted runner 的只读观测 CLI。
                 一条命令就能看到 launchd domain、PID、进程树、日志尾,
-                需要的话还能附上 GitHub API 的状态。当前状态:
-                <code>{{ project.release }}</code>; 目前源码仍是本地/私有。
+                需要的话还能附上 GitHub API 的状态。目前源码仍是本地/私有。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% endcase %}
             </p>
