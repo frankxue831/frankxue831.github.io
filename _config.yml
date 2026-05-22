@@ -42,3 +42,4 @@ exclude:
   - vendor/
   - README.md
   - CLAUDE.md
+  - scripts/

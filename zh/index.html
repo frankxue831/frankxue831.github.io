@@ -8,37 +8,65 @@ alternate: /
 ---
 
 <section class="hero wrap">
-    <p class="hero__eyebrow">Frank Xue / 软件工程师</p>
+    {% assign projects = site.data.projects %}
+    {% assign public_project = projects | where: 'release_source', 'public_tag' | first %}
 
-    <h1 class="hero__title">
-        写可靠的工具,
-        <em>给代码、密码学和 Agent 用。</em>
-    </h1>
+    <div class="hero__grid">
+        <div class="hero__copy">
+            <p class="hero__eyebrow">Frank Xue / 软件工程师</p>
 
-    <p class="hero__lede">
-        我主要用 Rust 写软件。这里放一些项目、实现笔记,
-        以及帮助我把事情想清楚的小工具。
-    </p>
+            <h1 class="hero__title">
+                写可审计的工具,
+                <em>给代码、密码学和 Agent 用。</em>
+            </h1>
 
-    <dl class="hero__meta">
-        <div>
-            <dt>方向</dt>
-            <dd>Rust、密码学、Agent 工具、CLI</dd>
+            <p class="hero__lede">
+                主要用 Rust 做偏系统层的工程: 密码学 SDK、仓库上下文、
+                以及本地开发者基础设施。公开、私有和本地状态会写清楚。
+            </p>
+
+            <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
+                查看精选项目
+                <span class="hero__cta__arrow" aria-hidden="true">→</span>
+            </a>
         </div>
-        <div>
-            <dt>最近</dt>
-            <dd><em>gm-crypto-rs</em> v0.7.0</dd>
-        </div>
-        <div>
-            <dt>作品</dt>
-            <dd>三个项目说明</dd>
-        </div>
-    </dl>
 
-    <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
-        看看在做什么
-        <span class="hero__cta__arrow" aria-hidden="true">→</span>
-    </a>
+        <aside class="hero-proof" aria-label="精选项目概览">
+            <div class="hero-proof__header">
+                <p class="hero-proof__label">项目账本</p>
+                {% if public_project %}
+                <p class="hero-proof__recent">
+                    公开版本:
+                    <span>{{ public_project.title }} {{ public_project.release }}</span>
+                </p>
+                {% endif %}
+            </div>
+
+            <ul class="hero-proof__list">
+                {% for project in projects %}
+                <li class="hero-proof__item">
+                    <a href="{{ project.zh_detail_url | relative_url }}" class="hero-proof__row">
+                        <span class="hero-proof__main">
+                            <span class="hero-proof__title">{{ project.title }}</span>
+                            <span class="hero-proof__tags">{{ project.tags.zh | join: ' · ' }}</span>
+                        </span>
+                        <span class="hero-proof__meta">
+                            <span class="status-pill" data-status="{{ project.status }}">{{ project.status_label.zh }}</span>
+                            {% if project.release_source == 'public_tag' %}
+                            <span class="hero-proof__release">{{ project.release }}</span>
+                            {% endif %}
+                            <span class="hero-proof__year">{{ project.years.zh }}</span>
+                        </span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <p class="hero-proof__note">
+                私有项目只保留概览,不展示不可公开访问的源码链接或私有版本细节。
+            </p>
+        </aside>
+    </div>
 </section>
 
 <section class="section wrap" aria-labelledby="about-h">
@@ -68,7 +96,7 @@ alternate: /
     <header class="section__head">
         <p class="section__num">(02)  作品</p>
         <h2 id="work-h" class="section__title">
-            几个项目,<em>大多用 Rust 写。</em>
+            工程结果,<em>大多用 Rust 写。</em>
         </h2>
     </header>
 
@@ -88,6 +116,29 @@ alternate: /
                     <span class="work-list__year">{{ project.years.zh }}</span>
                 </span>
             </a>
+            <p class="work-list__note">
+                {% case project.slug %}
+                {% when 'gm-crypto-rs' %}
+                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK,
+                重点是常量时间设计的 secret-handling 路径和 CI 里的泄漏回归门禁。
+                公开版 <strong>{{ project.release }}</strong> 已发布到
+                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                {% when 'repolens-rs' %}
+                给 AI 编程 Agent 用的仓库上下文和类型化记忆层,
+                目标是让新的 session 不再从零理解项目。
+                目前状态是 <strong>{{ project.status_label.zh }}</strong>。
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                {% when 'ghrunners' %}
+                macOS 上 GitHub Actions self-hosted runner 的只读诊断 CLI,
+                把 launchd 状态、进程树、日志和 API 状态放到一次输出里,
+                同时保留部分失败的可见性。
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                {% else %}
+                精选工程项目,状态和项目信息会明确标出来。
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                {% endcase %}
+            </p>
         </li>
         {% endfor %}
     </ul>
