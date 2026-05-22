@@ -7,38 +7,67 @@ alternate: /zh/
 ---
 
 <section class="hero wrap">
-    <p class="hero__eyebrow">Frank Xue — Software engineer</p>
+    {% assign projects = site.data.projects %}
+    {% assign public_project = projects | where: 'release_source', 'public_tag' | first %}
 
-    <h1 class="hero__title">
-        Building reliable tools
-        <em>for code, crypto, and agents.</em>
-    </h1>
+    <div class="hero__grid">
+        <div class="hero__copy">
+            <p class="hero__eyebrow">Frank Xue — Software engineer</p>
 
-    <p class="hero__lede">
-        I'm a software engineer working mostly in Rust. This site collects
-        selected projects, notes on how they are built, and the smaller tools
-        that help me think clearly.
-    </p>
+            <h1 class="hero__title">
+                Building auditable tools
+                <em>for code, crypto, and agents.</em>
+            </h1>
 
-    <dl class="hero__meta">
-        <div>
-            <dt>Focus</dt>
-            <dd>Rust, cryptography, agent tooling, CLIs</dd>
+            <p class="hero__lede">
+                Rust-focused systems work across cryptography, repository
+                context, and local developer infrastructure — with release
+                state kept explicit.
+            </p>
+
+            <a href="{{ '/projects/' | relative_url }}" class="hero__cta">
+                Review selected work
+                <span class="hero__cta__arrow" aria-hidden="true">→</span>
+            </a>
         </div>
-        <div>
-            <dt>Recent</dt>
-            <dd><em>gm-crypto-rs</em> v0.7.0</dd>
-        </div>
-        <div>
-            <dt>Work</dt>
-            <dd>Three selected project writeups</dd>
-        </div>
-    </dl>
 
-    <a href="{{ '/projects/' | relative_url }}" class="hero__cta">
-        See what I'm working on
-        <span class="hero__cta__arrow" aria-hidden="true">→</span>
-    </a>
+        <aside class="hero-proof" aria-label="Selected project proof">
+            <div class="hero-proof__header">
+                <p class="hero-proof__label">Proof ledger</p>
+                {% if public_project %}
+                <p class="hero-proof__recent">
+                    Public release:
+                    <span>{{ public_project.title }} {{ public_project.release }}</span>
+                </p>
+                {% endif %}
+            </div>
+
+            <ul class="hero-proof__list">
+                {% for project in projects %}
+                <li class="hero-proof__item">
+                    <a href="{{ project.detail_url | relative_url }}" class="hero-proof__row">
+                        <span class="hero-proof__main">
+                            <span class="hero-proof__title">{{ project.title }}</span>
+                            <span class="hero-proof__tags">{{ project.tags.en | join: ' · ' }}</span>
+                        </span>
+                        <span class="hero-proof__meta">
+                            <span class="status-pill" data-status="{{ project.status }}">{{ project.status_label.en }}</span>
+                            {% if project.release_source == 'public_tag' %}
+                            <span class="hero-proof__release">{{ project.release }}</span>
+                            {% endif %}
+                            <span class="hero-proof__year">{{ project.years.en }}</span>
+                        </span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <p class="hero-proof__note">
+                Private work is summarized without public source links or
+                private release claims.
+            </p>
+        </aside>
+    </div>
 </section>
 
 <section class="section wrap" aria-labelledby="about-h">
@@ -68,7 +97,7 @@ alternate: /zh/
     <header class="section__head">
         <p class="section__num">(02)  Selected work</p>
         <h2 id="work-h" class="section__title">
-            Projects, <em>mostly in Rust.</em>
+            Outcomes, <em>mostly in Rust.</em>
         </h2>
     </header>
 
@@ -88,6 +117,31 @@ alternate: /zh/
                     <span class="work-list__year">{{ project.years.en }}</span>
                 </span>
             </a>
+            <p class="work-list__note">
+                {% case project.slug %}
+                {% when 'gm-crypto-rs' %}
+                Pure-Rust SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 SDK with
+                constant-time-designed secret paths and in-CI leak-regression
+                gates. Public <strong>{{ project.release }}</strong> is on
+                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>.
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                {% when 'repolens-rs' %}
+                Repository context and typed memory for AI coding agents, built
+                to help sessions restart with grounded project understanding.
+                <strong>{{ project.status_label.en }}</strong> while the source
+                remains private.
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                {% when 'ghrunners' %}
+                Read-only macOS diagnostics for GitHub Actions self-hosted
+                runners, surfacing launchd state, process trees, logs, and API
+                status without hiding partial failures.
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                {% else %}
+                Selected engineering work with status and project facts kept
+                explicit.
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                {% endcase %}
+            </p>
         </li>
         {% endfor %}
     </ul>

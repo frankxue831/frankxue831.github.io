@@ -6,11 +6,13 @@ require "json"
 require "pathname"
 require "set"
 require "uri"
+require "yaml"
 
 ROOT = Pathname.new(__dir__).parent
 SITE = ROOT.join("_site")
 HOST = "www.frankxue.dev"
 BASE_URL = "https://#{HOST}"
+PROJECTS = YAML.load_file(ROOT.join("_data/projects.yml"))
 
 failures = []
 
@@ -84,7 +86,8 @@ end
 
 [
   SITE.join("CLAUDE.md"),
-  SITE.join("docs/superpowers")
+  SITE.join("docs/superpowers"),
+  SITE.join("scripts")
 ].each do |path|
   record(failures, "Excluded path was generated: #{path.relative_path_from(SITE)}") if path.exist?
 end
@@ -151,6 +154,10 @@ project_pages = %w[
   zh/projects/ghrunners/index.html
 ]
 
+public_release_labels = PROJECTS.select { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }
+private_release_labels = PROJECTS.reject { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }.compact
+home_pages = %w[index.html zh/index.html]
+
 (core_pages.keys + project_pages).each do |relative|
   path = SITE.join(relative)
   html = read_file(path, failures)
@@ -188,6 +195,19 @@ project_pages.each do |relative|
   record(failures, "#{relative}: missing project summary") unless html.include?(%(class="project-summary"))
 end
 
+home_pages.each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+
+  record(failures, "#{relative}: missing hero proof ledger") unless html.include?(%(class="hero-proof"))
+  public_release_labels.each do |release|
+    record(failures, "#{relative}: missing public release label #{release}") unless html.include?(release)
+  end
+  private_release_labels.each do |release|
+    record(failures, "#{relative}: exposes private or local release label #{release}") if html.include?(release)
+  end
+end
+
 internal_targets = Set.new
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
@@ -214,6 +234,9 @@ end
 private_source_pattern = %r{github\.com/frankxue831/(gm-crypto-rs|repolens-rs|ghrunners)}
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
+  if html.match?(/mailto:/i) || html.match?(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)
+    record(failures, "#{path.relative_path_from(SITE)}: exposes public email")
+  end
   if html.match?(private_source_pattern)
     record(failures, "#{path.relative_path_from(SITE)}: exposes private or unavailable GitHub source link")
   end
