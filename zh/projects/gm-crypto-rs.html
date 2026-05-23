@@ -36,21 +36,40 @@ summary_outcome: "用 CI 泄漏回归门控守住涉及秘密的关键路径。"
 
         <h2>已经发布了什么</h2>
         <p>
-            v0.5 到 v0.6 是一条 SIMD 演进线。
-            v0.5.0 先搭好脚手架;
-            v0.5.1 加上 AVX2 的 <code>sbox_x8</code>;
-            v0.6.0 把它拓到 AVX2 上的 <code>sbox_x32</code>,
-            又在 aarch64 上加了 NEON 的 <code>sbox_x16</code>,
-            CBC 解密做了 fanout,让单块延迟藏在并行 S-box 后面。
-            v0.7.0 就在这之上,
-            做出<em>第一批用户能直接调用的密码模式</em>。
+            v0.5 → v0.7 是一条"先提吞吐、再开 API"的线:
+            先做位切片 SIMD S-box(AVX2 <code>sbox_x32</code>、NEON <code>sbox_x16</code>)
+            加 CBC 解密 fanout,再在上面做出
+            <em>第一批用户能直接调用的密码模式</em>(批量分组 API、单次和流式 SM4-CTR)。
+        </p>
+        <p>
+            v0.8 → v0.11 是一条 <em>AEAD 线</em>。
+            v0.8 落地 AEAD 核心——单次 SM4-GCM 和 SM4-CCM,
+            外加一个常量时间的 GHASH 原语(x86_64 上走 CLMUL、aarch64 上走 PMULL、
+            其余平台回退到软件 Karatsuba)。
+            v0.9–v0.10 加上 GCM tag 长度参数化、增量输入的缓冲式 GCM,
+            以及单次到流式的 AEAD C FFI(C / C++ / Go / Zig / Python 都能调)。
+            v0.11 把可选的 RustCrypto trait 适配迁到
+            <code>digest 0.11</code> / <code>cipher 0.5</code>——
+            默认特性的用户不受影响,所有输出在 KAT 套件和 gmssl 3.1.1 互操作下逐字节一致。
         </p>
         <dl class="version-grid">
             <dt>v0.6.0</dt>
-            <dd>已发布 2026-05-14 — AVX2 <code>sbox_x32</code>、NEON <code>sbox_x16</code>、CBC 解密 fanout。</dd>
+            <dd>2026-05-14 — AVX2 <code>sbox_x32</code>、NEON <code>sbox_x16</code>、CBC 解密 fanout。</dd>
 
             <dt>v0.7.0</dt>
-            <dd>已公开发布 — 批量分组 API、单次 SM4-CTR、流式 SM4-CTR,以及 <code>ct_sm4_ctr_encrypt</code> dudect 目标。</dd>
+            <dd>2026-05-14 — 用户可直接调用的密码模式:公开批量分组 API、单次和流式 SM4-CTR。</dd>
+
+            <dt>v0.8.0</dt>
+            <dd>2026-05-15 — AEAD 核心:单次 SM4-GCM + SM4-CCM、常量时间 GHASH。</dd>
+
+            <dt>v0.9.0</dt>
+            <dd>2026-05-17 — GCM tag 长度参数化、增量输入缓冲式 GCM、单次 AEAD C FFI。</dd>
+
+            <dt>v0.10.0</dt>
+            <dd>2026-05-21 — 流式 SM4-GCM AEAD FFI(C / C++ / Go / Zig / Python)。</dd>
+
+            <dt>v0.11.0</dt>
+            <dd>2026-05-23 — RustCrypto trait 适配迁到 <code>digest 0.11</code> / <code>cipher 0.5</code>;输出逐字节一致(KAT + gmssl 3.1.1)。</dd>
         </dl>
 
         <h2>跟其他实现差在哪儿</h2>
@@ -63,12 +82,14 @@ summary_outcome: "用 CI 泄漏回归门控守住涉及秘密的关键路径。"
             不靠人工评审去断言"目前没事"。
         </p>
         <p>
-            每次 CI 跑,<code>dudect-bencher</code> 都会扫过 15 个涉及秘密的代码路径,
-            门槛是 <code>|τ|&nbsp;&lt;&nbsp;0.20</code>。
-            覆盖了 SM2 签名、SM2 解密、SM4 密钥扩展、SM4 加密
-            (默认线性扫描和位切片 SIMD S-box 两种都跑)、
-            HMAC-SM3、加密 PKCS#8 解密,
-            还有 <code>Fn::invert</code> / <code>Fp::invert</code> 的直接诊断。
+            每次 CI 跑,<code>dudect-bencher</code> 都会扫过 17 个涉及秘密的代码路径。
+            其中核心一组是<em>带门控</em>的,门槛 <code>|τ|&nbsp;&lt;&nbsp;0.20</code>——一旦回归就让构建失败:
+            SM2 签名、SM2 解密、SM4 密钥扩展、SM4 加密
+            (默认线性扫描和位切片 SIMD S-box 两种都跑)、SM4-CTR、CBC 解密 fanout、
+            单次 SM4-GCM / SM4-CCM 解密路径、HMAC-SM3、加密 PKCS#8 解密。
+            域求逆诊断(<code>Fn::invert</code> / <code>Fp::invert</code>)、k-class 签名、
+            以及缓冲式 GCM 路径在 PR 预算下只做<em>遥测</em>
+            (k-class 签名在更深的 nightly 上以 <code>0.25</code> 门控)。
         </p>
         <p>
             harness 报告的是<em>检测事件</em>——
@@ -85,8 +106,11 @@ summary_outcome: "用 CI 泄漏回归门控守住涉及秘密的关键路径。"
 
         <h2>下一步</h2>
         <dl class="version-grid">
-            <dt>下一步</dt>
-            <dd>AEAD — SM4-GCM 和 SM4-CCM,再加 GHASH 工作和专门的泄漏检测回归目标。这是下一步,不是已发布功能。</dd>
+            <dt>v0.12</dt>
+            <dd>SM4-XTS——面向磁盘/扇区加密的可调分组模式(IEEE 1619,推广到 SM4),支持完整的密文挪用,和 OpenSSL SM4-XTS 逐字节一致。计划中,尚未发布。</dd>
+
+            <dt>暂缓</dt>
+            <dd>RustCrypto <code>aead 0.6</code> trait 适配先搁着,等上游从 <code>0.6.0-rc</code> 转正;v0.11 已经把它需要的 <code>crypto-common 0.2</code> 那条线落好了。</dd>
         </dl>
 
         <h2>它不是什么</h2>
