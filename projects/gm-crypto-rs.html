@@ -36,20 +36,40 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
         <h2>What is shipped</h2>
         <p>
-            v0.5 → v0.6 was an SIMD arc. v0.5.0 shipped the scaffolding;
-            v0.5.1 added an AVX2 <code>sbox_x8</code>; v0.6.0 widened that
-            to <code>sbox_x32</code> on AVX2 and added a NEON
-            <code>sbox_x16</code> on aarch64, with a CBC-decrypt fanout that
-            keeps the per-block latency hidden behind the parallel S-box.
-            v0.7.0 ships the first <em>user-callable cipher modes</em> on
-            top of that work.
+            v0.5 → v0.7 was a throughput-then-API arc: a bitsliced SIMD
+            S-box (AVX2 <code>sbox_x32</code>, NEON <code>sbox_x16</code>) with
+            a CBC-decrypt fanout, then the first <em>user-callable cipher
+            modes</em> (batch APIs, single-shot and streaming SM4-CTR) on top.
+        </p>
+        <p>
+            v0.8 → v0.11 was an <em>AEAD arc</em>. v0.8 landed the AEAD core —
+            single-shot SM4-GCM and SM4-CCM, plus a constant-time GHASH
+            primitive (CLMUL on x86_64, PMULL on aarch64, software Karatsuba
+            fallback). v0.9–v0.10 added GCM tag-length parameterization,
+            incremental-input buffered GCM, and the single-shot then streaming
+            AEAD C FFI (reachable from C / C++ / Go / Zig / Python). v0.11
+            modernized the opt-in RustCrypto trait fit to <code>digest 0.11</code> /
+            <code>cipher 0.5</code> — default-features users unaffected, every
+            output byte-identical against the KAT suite and gmssl 3.1.1 interop.
         </p>
         <dl class="version-grid">
             <dt>v0.6.0</dt>
-            <dd>Shipped 2026-05-14 — AVX2 <code>sbox_x32</code>, NEON <code>sbox_x16</code>, CBC-decrypt fanout.</dd>
+            <dd>2026-05-14 — AVX2 <code>sbox_x32</code>, NEON <code>sbox_x16</code>, CBC-decrypt fanout.</dd>
 
             <dt>v0.7.0</dt>
-            <dd>Shipped publicly — public batch APIs, single-shot SM4-CTR, streaming SM4-CTR, and the <code>ct_sm4_ctr_encrypt</code> dudect target.</dd>
+            <dd>2026-05-14 — user-callable cipher modes: public batch APIs, single-shot &amp; streaming SM4-CTR.</dd>
+
+            <dt>v0.8.0</dt>
+            <dd>2026-05-15 — AEAD core: single-shot SM4-GCM + SM4-CCM, constant-time GHASH.</dd>
+
+            <dt>v0.9.0</dt>
+            <dd>2026-05-17 — GCM tag-length parameterization, incremental-input buffered GCM, single-shot AEAD C FFI.</dd>
+
+            <dt>v0.10.0</dt>
+            <dd>2026-05-21 — streaming SM4-GCM AEAD FFI (C / C++ / Go / Zig / Python).</dd>
+
+            <dt>v0.11.0</dt>
+            <dd>2026-05-23 — RustCrypto trait fit on <code>digest 0.11</code> / <code>cipher 0.5</code>; outputs byte-identical (KAT + gmssl 3.1.1).</dd>
         </dl>
 
         <h2>What's different about it</h2>
@@ -62,16 +82,21 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             relying on review to assert its absence.
         </p>
         <p>
-            Fifteen secret-touching code paths run under a
-            <code>dudect-bencher</code> harness on every CI run, gated at
-            <code>|τ| &lt; 0.20</code>. SM2 sign, SM2 decrypt, SM4 key
-            schedule, SM4 encrypt (under both the default linear-scan and
-            the bitsliced SIMD S-box), HMAC-SM3, encrypted-PKCS#8 decrypt,
-            and direct <code>Fn::invert</code> / <code>Fp::invert</code>
-            diagnostics. The harness reports <em>detection events</em> — low
-            <code>|τ|</code> means the test couldn't detect a leak with the
-            budget given, not that no leak exists. Language taken directly
-            from <code>dudect-bencher</code>'s own docs.
+            A <code>dudect-bencher</code> harness exercises seventeen
+            secret-touching paths on every CI run. The core set is
+            <em>gated</em> at <code>|τ| &lt; 0.20</code> — a regression fails
+            the build: SM2 sign, SM2 decrypt, SM4 key schedule, SM4 encrypt
+            (default linear-scan and bitsliced SIMD S-box), SM4-CTR,
+            CBC-decrypt fanout, the single-shot SM4-GCM / SM4-CCM decrypt
+            paths, HMAC-SM3, and encrypted-PKCS#8 decrypt. The field-inversion
+            diagnostics (<code>Fn::invert</code> / <code>Fp::invert</code>),
+            the k-class sign, and the buffered-GCM path run as
+            <em>telemetry</em> on the PR budget (the k-class sign gates at
+            <code>0.25</code> on the deeper nightly run). The harness reports
+            <em>detection events</em> — low <code>|τ|</code> means the test
+            couldn't detect a leak with the budget given, not that no leak
+            exists. Language taken directly from <code>dudect-bencher</code>'s
+            own docs.
         </p>
         <ul>
             <li><code>#![forbid(unsafe_code)]</code> on <code>gmcrypto-core</code>.</li>
@@ -82,8 +107,11 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
         <h2>Next</h2>
         <dl class="version-grid">
-            <dt>Next</dt>
-            <dd>AEAD — SM4-GCM and SM4-CCM, plus GHASH work and dedicated detectable-leak regression targets. This is planned work, not part of v0.7.0.</dd>
+            <dt>v0.12</dt>
+            <dd>SM4-XTS — a tweakable block-cipher mode for disk/sector encryption (IEEE 1619, generalized to SM4) with full ciphertext stealing, byte-identical to OpenSSL SM4-XTS. Planned, not yet shipped.</dd>
+
+            <dt>Deferred</dt>
+            <dd>The RustCrypto <code>aead 0.6</code> trait fit stays parked while upstream is still on <code>0.6.0-rc</code>; v0.11 already landed the <code>crypto-common 0.2</code> line it needs.</dd>
         </dl>
 
         <h2>What it isn't</h2>
