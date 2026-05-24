@@ -1499,3 +1499,19 @@ body.lang-zh .page-header__lede {
 @media print {
     .reveal { opacity: 1 !important; transform: none !important; }
 }
+
+/* ============================================================
+   Hero decrypt cells (built in place by decrypt.js).
+   Widths are locked inline by JS to each glyph's final advance;
+   overflow:hidden keeps a wider random glyph from overlapping
+   its neighbour (no reflow, ever). Accent cells inherit the
+   <em> indigo. Only present while JS runs.
+   ============================================================ */
+.hero-word { white-space: nowrap; }
+.hero-cell {
+    display: inline-block;
+    overflow: hidden;
+    text-align: center;
+    white-space: pre;          /* keep space cells from collapsing */
+    vertical-align: baseline;
+}
