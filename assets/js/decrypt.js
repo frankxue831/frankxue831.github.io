@@ -84,21 +84,32 @@
     }
   };
 
+  const DURATION = 900; // ms — total decrypt time, independent of title length
+  let cancelled = false;
+  const settleAll = () => { cancelled = true; cells.forEach((c) => { c.span.textContent = c.real; }); };
+
   const animate = () => {
     segments.forEach(buildSegment);
     // Lock each cell width to its natural (final-glyph) advance -> swaps never reflow.
     cells.forEach((c) => { c.span.style.width = c.span.getBoundingClientRect().width + 'px'; });
-    // Resolve left -> right.
+    // FIX C: if the page is frozen mid-animation and restored from bfcache, settle to
+    // the real title instead of resuming/replaying the scramble.
+    window.addEventListener('pagehide', settleAll);
+    window.addEventListener('pageshow', (e) => { if (e.persisted) settleAll(); });
+    // Resolve left -> right over DURATION (time-based, ~constant duration), re-rolling
+    // unresolved glyphs each tick.
     const total = cells.length;
-    let frame = 0;
+    const nowMs = () => (window.performance && performance.now) ? performance.now() : Date.now();
+    const t0 = nowMs();
     const tick = () => {
-      const resolved = (frame / 2) | 0;
+      if (cancelled) return;
+      const t = Math.min(1, (nowMs() - t0) / DURATION);
+      const resolved = Math.floor(t * total);
       for (let i = 0; i < total; i++) {
         cells[i].span.textContent = i < resolved ? cells[i].real : rnd();
       }
-      frame++;
-      if (resolved < total) window.setTimeout(tick, 45);
-      else cells.forEach((c) => { c.span.textContent = c.real; }); // settle exact
+      if (t < 1) window.setTimeout(tick, 45);
+      else settleAll(); // final frame: all real
     };
     tick();
   };
@@ -117,6 +128,4 @@
   } else {
     animate();
   }
-  // bfcache: this module's JS state persists on restore, so `settled` stays true
-  // and the decrypt does not replay. Fresh navigations re-run the module.
 })();
