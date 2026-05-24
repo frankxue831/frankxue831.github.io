@@ -46,25 +46,27 @@ page-transition animations; sound; theme toggles; new hover states.
 ## Component 1 — Hero decrypt
 
 ### C1.1 DOM model (the key change from review)
-- The `<h1 class="hero__title">` is **server-rendered with the real text** (two segments:
-  plain lead + nested `<em>` accent), exactly as today. It is **never mutated** and is
-  never `aria-hidden`. It remains the accessible name, the SEO content, and the layout box.
-- The scramble plays in a **separate `aria-hidden="true"` overlay** absolutely positioned
-  to exactly cover the title box. The overlay is the only thing that animates.
-- During the animation the real `<h1>` text is rendered **visually transparent**
-  (`color: transparent` via a `.is-decrypting` class) so the overlay shows through, while
-  the `<h1>` keeps its layout box and stays in the a11y tree with the correct text.
-- On completion: remove `.is-decrypting` (real text becomes visible) and remove/hide the
-  overlay. Net resting state is identical to today's markup.
+- The `<h1 class="hero__title">` is **server-rendered with the real text** (plain lead +
+  nested `<em>` accent), exactly as today — so SEO and no-JS get the real headline.
+- JS **locks the accessible name**: it sets `aria-label` on the `<h1>` to the real,
+  whitespace-normalized title and marks all animated descendants `aria-hidden="true"`, so
+  assistive tech always reads the real headline, never cipher noise. (This is codex's
+  sanctioned "stable accessible name + aria-hidden character spans" fix.)
+- The scramble runs **in place** (no separate overlay): JS rewraps the title's graphemes
+  into `inline-block` **cells** and animates their text. Because the cells ARE the `<h1>`'s
+  own layout, wrapping is inherently identical to the final title.
+- Resting state: cells hold the real graphemes — visually identical to today's title.
 
-### C1.2 No reflow — fixed character cells
-- The overlay is built from one inline-block **cell per final grapheme** of the title.
-- Each cell's width is **locked to the final glyph's measured advance** (measured from the
-  real, rendered `<h1>` after fonts load — see C1.5), so swapping in random glyphs never
-  changes width. The title box is the real `<h1>`'s box, so the page never reflows.
-- CJK cells are full-width (~1em); Latin cipher glyphs placed in a CJK cell are centered
-  within that fixed cell. The ZH scramble therefore can **not** rewrap (the prior failure).
-- Cells preserve the `<em>` segment boundary; accent-segment cells render indigo throughout.
+### C1.2 No reflow — fixed-width cells + word grouping
+- Each cell's width is **locked to that glyph's measured final advance** (measured from the
+  rendered cell after fonts load — see C1.5), so swapping in a random glyph never changes
+  width → no reflow (CLS = 0).
+- **Line-break behavior is preserved:** consecutive Latin graphemes are grouped into a
+  `white-space:nowrap` "word" wrapper (words never break mid-word; break only at spaces, as
+  normal text). CJK graphemes are standalone cells that may break per character (normal CJK
+  wrapping). Spaces are real break opportunities. The EN title (Latin words) and ZH title
+  (CJK) each therefore wrap exactly as the final text.
+- Cells preserve the `<em>` segment boundary; accent-segment cells inherit the em's indigo.
 
 ### C1.3 Glyph pool
 `0 1 2 3 4 5 6 7 8 9 A B C D E F / \ { } [ ] # * + = $ % @ ?`
@@ -81,12 +83,14 @@ page-transition animations; sound; theme toggles; new hover states.
   from invalidating the measured widths.
 
 ### C1.6 Accessibility / SEO
-- Accessible name = the untouched `<h1>` text at all times. Screen readers never encounter
-  cipher noise. No focus is placed on the title; no `aria-live`.
-- `prefers-reduced-motion: reduce` → no overlay, no scramble; real title shown instantly
-  (checked in JS via `matchMedia`, not only CSS).
-- No-JS → real title shown (it's the server-rendered resting state). Overlay only ever
-  exists when JS runs.
+- Accessible name = `aria-label` on the `<h1>` (the real title); animated cells are
+  `aria-hidden`. Screen readers read the label, never cipher noise. No focus on the title;
+  no `aria-live`.
+- `prefers-reduced-motion: reduce` → set the `aria-label`, then **no cell rewrap, no
+  scramble**; the real `<h1>` is left untouched and shown instantly (checked in JS via
+  `matchMedia`, not only CSS).
+- No-JS → real title shown (server-rendered resting state). Cells + `aria-label` only ever
+  exist when JS runs.
 
 ### C1.7 Run frequency / bfcache
 - Runs on every **fresh** home load (the chosen behavior).
@@ -158,7 +162,7 @@ page-transition animations; sound; theme toggles; new hover states.
   watchdog (C2.1). See "CSP note" below.
 - `_layouts/default.html` — add `defer` `<script>` for `reveal.js` and `decrypt.js`.
 - `assets/css/style.css` — add `.reveal` / `.is-revealed` / `:focus-within` / `@media print`
-  rules and the `.hero__title.is-decrypting` + overlay styles; reuse `:root` tokens.
+  rules and the hero decrypt **cell** styles (`.hero-cell`, `.hero-word`); reuse `:root` tokens.
 - Templates that gain a `reveal` class on targets (per C2.3): `_includes` partial(s) and/or
   `index.html`, `zh/index.html`, `about.html`, `projects.html`, `contact.html`,
   project-detail pages and ZH mirrors. Bilingual mirror invariant preserved.
