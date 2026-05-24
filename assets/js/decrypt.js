@@ -85,13 +85,14 @@
   };
 
   const DURATION = 900; // ms — total decrypt time, independent of title length
-  let cancelled = false;
-  const settleAll = () => { cancelled = true; cells.forEach((c) => { c.span.textContent = c.real; }); };
+  let stopped = false; // lifecycle cancel (bfcache/pagehide) — NOT normal completion
+  const settle = () => { cells.forEach((c) => { c.span.textContent = c.real; }); };
+  const stop = () => { stopped = true; settle(); };
 
   // Register lifecycle settling FIRST, before any async/animation work, so a bfcache
   // restore can never resume a pending scramble — it just shows the final title.
-  window.addEventListener('pagehide', settleAll);
-  window.addEventListener('pageshow', (e) => { if (e.persisted) settleAll(); });
+  window.addEventListener('pagehide', stop);
+  window.addEventListener('pageshow', (e) => { if (e.persisted) stop(); });
 
   // Lock each cell's width to its REAL glyph's advance so random glyphs never change
   // width (no per-frame reflow). Re-runnable: called again once web fonts load so the
@@ -115,21 +116,21 @@
   const nowMs = () => (window.performance && performance.now) ? performance.now() : Date.now();
   const t0 = nowMs();
   const tick = () => {
-    if (cancelled) return;
+    if (stopped) return;
     const t = Math.min(1, (nowMs() - t0) / DURATION);
     const resolved = Math.floor(t * total);
     for (let i = 0; i < total; i++) {
       cells[i].span.textContent = i < resolved ? cells[i].real : rnd();
     }
     if (t < 1) window.setTimeout(tick, 45);
-    else settleAll(); // final frame: all real
+    else settle(); // natural end: settle to real (lifecycle flag stays clear)
   };
   tick();
 
-  // When web fonts finish, re-lock widths to the final typeface's advances (the page
-  // reflows on font-swap regardless; this keeps the title's cells correct). Skipped if
-  // already settled/cancelled.
+  // Re-lock widths once web fonts load so final advances match the real typeface (not a
+  // fallback) — runs EVEN IF the ~900ms animation already finished. Only skipped if the
+  // page was lifecycle-cancelled (bfcache/pagehide).
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => { if (!cancelled) lockWidths(); });
+    document.fonts.ready.then(() => { if (!stopped) lockWidths(); });
   }
 })();
