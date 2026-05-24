@@ -76,11 +76,13 @@ page-transition animations; sound; theme toggles; new hover states.
 - ~1s total, brisk: characters resolve **left → right**, glyphs re-roll on a short interval,
   settle by ~900–1100ms. Tunable constants in `decrypt.js`. No looping.
 
-### C1.5 Font-loading safety
-- Measure cell widths and start the animation **only after `document.fonts.ready`**
-  (with a short timeout, e.g. 800ms). If fonts aren't ready in time → **skip the animation**
-  and show the real title instantly (fail open). This prevents a mid-animation font swap
-  from invalidating the measured widths.
+### C1.5 Font handling (no gate — avoid "backwards" playback)
+- Do **not** gate the start on `document.fonts.ready` — waiting would show the real title
+  first, then scramble (the effect playing backwards). Instead, build the cells and start
+  scrambling **immediately** so the real title is never shown in final form first.
+- Lock each cell's width to its **real glyph's** advance up front, then **re-lock once on
+  `document.fonts.ready`** so final widths match the web font instead of a fallback. (The
+  page reflows on font-swap regardless; re-locking just keeps the title's cells correct.)
 
 ### C1.6 Accessibility / SEO
 - Accessible name = `aria-label` on the `<h1>` (the real title); animated cells are
@@ -94,9 +96,10 @@ page-transition animations; sound; theme toggles; new hover states.
 
 ### C1.7 Run frequency / bfcache
 - Runs on every **fresh** home load (the chosen behavior).
-- On `pageshow` with `event.persisted === true` (back/forward bfcache restore) → **do not
-  replay**; show the final title immediately. (Replaying on "back" delays comprehension and
-  isn't "opening the page".)
+- Lifecycle handlers are registered **before any async work**: on `pagehide` and on
+  `pageshow` with `event.persisted === true` (bfcache restore) the decrypt **settles to the
+  final title and cancels** — it never resumes or replays a mid-flight scramble. (Replaying
+  on "back" delays comprehension and isn't "opening the page".)
 
 ### C1.8 Text capture / segmentation
 - Read each segment's text with **whitespace normalized** (collapse the template's newlines

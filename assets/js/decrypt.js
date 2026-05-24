@@ -88,44 +88,48 @@
   let cancelled = false;
   const settleAll = () => { cancelled = true; cells.forEach((c) => { c.span.textContent = c.real; }); };
 
-  const animate = () => {
-    segments.forEach(buildSegment);
-    // Lock each cell width to its natural (final-glyph) advance -> swaps never reflow.
-    cells.forEach((c) => { c.span.style.width = c.span.getBoundingClientRect().width + 'px'; });
-    // FIX C: if the page is frozen mid-animation and restored from bfcache, settle to
-    // the real title instead of resuming/replaying the scramble.
-    window.addEventListener('pagehide', settleAll);
-    window.addEventListener('pageshow', (e) => { if (e.persisted) settleAll(); });
-    // Resolve left -> right over DURATION (time-based, ~constant duration), re-rolling
-    // unresolved glyphs each tick.
-    const total = cells.length;
-    const nowMs = () => (window.performance && performance.now) ? performance.now() : Date.now();
-    const t0 = nowMs();
-    const tick = () => {
-      if (cancelled) return;
-      const t = Math.min(1, (nowMs() - t0) / DURATION);
-      const resolved = Math.floor(t * total);
-      for (let i = 0; i < total; i++) {
-        cells[i].span.textContent = i < resolved ? cells[i].real : rnd();
-      }
-      if (t < 1) window.setTimeout(tick, 45);
-      else settleAll(); // final frame: all real
-    };
-    tick();
+  // Register lifecycle settling FIRST, before any async/animation work, so a bfcache
+  // restore can never resume a pending scramble — it just shows the final title.
+  window.addEventListener('pagehide', settleAll);
+  window.addEventListener('pageshow', (e) => { if (e.persisted) settleAll(); });
+
+  // Lock each cell's width to its REAL glyph's advance so random glyphs never change
+  // width (no per-frame reflow). Re-runnable: called again once web fonts load so the
+  // locked widths match the final typeface instead of a fallback.
+  const lockWidths = () => {
+    cells.forEach((c) => {
+      const shown = c.span.textContent;
+      c.span.style.width = '';
+      c.span.textContent = c.real;
+      c.span.style.width = c.span.getBoundingClientRect().width + 'px';
+      c.span.textContent = shown;
+    });
   };
 
-  // 4) Start after fonts are ready (correct width measurement). If fonts take
-  //    longer than 800ms, SKIP the animation and leave the real title (fail open).
-  let settled = false;
+  // Build cells and start scrambling IMMEDIATELY (no fonts wait): the real title is
+  // never shown in final form first, so the decrypt can't play "backwards".
+  segments.forEach(buildSegment);
+  lockWidths();
+
+  const total = cells.length;
+  const nowMs = () => (window.performance && performance.now) ? performance.now() : Date.now();
+  const t0 = nowMs();
+  const tick = () => {
+    if (cancelled) return;
+    const t = Math.min(1, (nowMs() - t0) / DURATION);
+    const resolved = Math.floor(t * total);
+    for (let i = 0; i < total; i++) {
+      cells[i].span.textContent = i < resolved ? cells[i].real : rnd();
+    }
+    if (t < 1) window.setTimeout(tick, 45);
+    else settleAll(); // final frame: all real
+  };
+  tick();
+
+  // When web fonts finish, re-lock widths to the final typeface's advances (the page
+  // reflows on font-swap regardless; this keeps the title's cells correct). Skipped if
+  // already settled/cancelled.
   if (document.fonts && document.fonts.ready) {
-    const timer = window.setTimeout(() => { settled = true; /* skip: real title stays */ }, 800);
-    document.fonts.ready.then(() => {
-      if (settled) return;
-      settled = true;
-      window.clearTimeout(timer);
-      animate();
-    });
-  } else {
-    animate();
+    document.fonts.ready.then(() => { if (!cancelled) lockWidths(); });
   }
 })();
