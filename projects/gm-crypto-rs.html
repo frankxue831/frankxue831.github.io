@@ -32,6 +32,9 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             graph is <code>no_std + alloc</code>, builds on
             <code>wasm32-unknown-unknown</code>, and ships RustCrypto-trait
             fits for <code>digest</code>, <code>mac</code>, and <code>cipher</code>.
+            A runnable consumer demo — <code>hash</code> / <code>sign</code> /
+            <code>verify</code> over SM3 and SM2 — lives at
+            <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>.
         </p>
 
         <h2>What is shipped</h2>
@@ -52,6 +55,13 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <code>cipher 0.5</code> — default-features users unaffected, every
             output byte-identical against the KAT suite and gmssl 3.1.1 interop.
         </p>
+        <p>
+            v0.12 added <em>SM4-XTS</em> — a tweakable block-cipher mode for
+            disk/sector encryption (GB/T 17964-2021) with full ciphertext
+            stealing, byte-identical to OpenSSL <code>SM4-XTS</code>
+            (<code>xts_standard=GB</code>), behind the opt-in <code>sm4-xts</code>
+            feature.
+        </p>
         <dl class="version-grid">
             <dt>v0.6.0</dt>
             <dd>2026-05-14 — AVX2 <code>sbox_x32</code>, NEON <code>sbox_x16</code>, CBC-decrypt fanout.</dd>
@@ -70,6 +80,9 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
             <dt>v0.11.0</dt>
             <dd>2026-05-23 — RustCrypto trait fit on <code>digest 0.11</code> / <code>cipher 0.5</code>; outputs byte-identical (KAT + gmssl 3.1.1).</dd>
+
+            <dt>v0.12.0</dt>
+            <dd>2026-05-23 — SM4-XTS (GB/T 17964-2021): single-shot, full ciphertext stealing, byte-identical to OpenSSL SM4-XTS (<code>xts_standard=GB</code>); opt-in <code>sm4-xts</code>.</dd>
         </dl>
 
         <h2>What's different about it</h2>
@@ -82,13 +95,13 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             relying on review to assert its absence.
         </p>
         <p>
-            A <code>dudect-bencher</code> harness exercises seventeen
+            A <code>dudect-bencher</code> harness exercises eighteen
             secret-touching paths on every CI run. The core set is
             <em>gated</em> at <code>|τ| &lt; 0.20</code> — a regression fails
             the build: SM2 sign, SM2 decrypt, SM4 key schedule, SM4 encrypt
             (default linear-scan and bitsliced SIMD S-box), SM4-CTR,
             CBC-decrypt fanout, the single-shot SM4-GCM / SM4-CCM decrypt
-            paths, HMAC-SM3, and encrypted-PKCS#8 decrypt. The field-inversion
+            paths, SM4-XTS decrypt, HMAC-SM3, and encrypted-PKCS#8 decrypt. The field-inversion
             diagnostics (<code>Fn::invert</code> / <code>Fp::invert</code>),
             the k-class sign, and the buffered-GCM path run as
             <em>telemetry</em> on the PR budget (the k-class sign gates at
@@ -107,11 +120,8 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
         <h2>Next</h2>
         <dl class="version-grid">
-            <dt>v0.12</dt>
-            <dd>SM4-XTS — a tweakable block-cipher mode for disk/sector encryption (IEEE 1619, generalized to SM4) with full ciphertext stealing, byte-identical to OpenSSL SM4-XTS. Planned, not yet shipped.</dd>
-
-            <dt>Deferred</dt>
-            <dd>The RustCrypto <code>aead 0.6</code> trait fit stays parked while upstream is still on <code>0.6.0-rc</code>; v0.11 already landed the <code>crypto-common 0.2</code> line it needs.</dd>
+            <dt>Next</dt>
+            <dd>Candidate scope, not committed — RustCrypto <code>aead 0.6</code> trait fit (parked while upstream is on <code>0.6.0-rc</code>; v0.11 landed the <code>crypto-common 0.2</code> line it needs), AVX-512 <code>sbox_x64</code>, and streaming / incremental CCM.</dd>
         </dl>
 
         <h2>What it isn't</h2>
@@ -132,6 +142,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         <div class="project-detail__links">
             <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io ↗</a>
             <a href="https://docs.rs/gmcrypto-core" rel="noopener noreferrer">docs.rs ↗</a>
+            <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">Demo ↗</a>
             <a href="{{ '/projects/' | relative_url }}">← All work</a>
         </div>
     </article>

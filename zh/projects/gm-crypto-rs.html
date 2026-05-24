@@ -32,6 +32,9 @@ summary_outcome: "用 CI 泄漏回归门控守住涉及秘密的关键路径。"
             整个 crate 图是 <code>no_std + alloc</code>,
             能编进 <code>wasm32-unknown-unknown</code>,
             也给出了 RustCrypto 的 <code>digest</code> / <code>mac</code> / <code>cipher</code> trait 适配。
+            一个可直接运行的消费端示例(对 SM3 和 SM2 做 <code>hash</code> / <code>sign</code> /
+            <code>verify</code>)放在
+            <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>。
         </p>
 
         <h2>已经发布了什么</h2>
@@ -52,6 +55,12 @@ summary_outcome: "用 CI 泄漏回归门控守住涉及秘密的关键路径。"
             <code>digest 0.11</code> / <code>cipher 0.5</code>——
             默认特性的用户不受影响,所有输出在 KAT 套件和 gmssl 3.1.1 互操作下逐字节一致。
         </p>
+        <p>
+            v0.12 加上了 <em>SM4-XTS</em>——面向磁盘/扇区加密的可调分组模式
+            (GB/T 17964-2021),支持完整的密文挪用,
+            和 OpenSSL <code>SM4-XTS</code>(<code>xts_standard=GB</code>)逐字节一致,
+            走可选的 <code>sm4-xts</code> 特性。
+        </p>
         <dl class="version-grid">
             <dt>v0.6.0</dt>
             <dd>2026-05-14 — AVX2 <code>sbox_x32</code>、NEON <code>sbox_x16</code>、CBC 解密 fanout。</dd>
@@ -70,6 +79,9 @@ summary_outcome: "用 CI 泄漏回归门控守住涉及秘密的关键路径。"
 
             <dt>v0.11.0</dt>
             <dd>2026-05-23 — RustCrypto trait 适配迁到 <code>digest 0.11</code> / <code>cipher 0.5</code>;输出逐字节一致(KAT + gmssl 3.1.1)。</dd>
+
+            <dt>v0.12.0</dt>
+            <dd>2026-05-23 — SM4-XTS(GB/T 17964-2021):单次、完整密文挪用,和 OpenSSL SM4-XTS(<code>xts_standard=GB</code>)逐字节一致;可选 <code>sm4-xts</code> 特性。</dd>
         </dl>
 
         <h2>跟其他实现差在哪儿</h2>
@@ -82,11 +94,11 @@ summary_outcome: "用 CI 泄漏回归门控守住涉及秘密的关键路径。"
             不靠人工评审去断言"目前没事"。
         </p>
         <p>
-            每次 CI 跑,<code>dudect-bencher</code> 都会扫过 17 个涉及秘密的代码路径。
+            每次 CI 跑,<code>dudect-bencher</code> 都会扫过 18 个涉及秘密的代码路径。
             其中核心一组是<em>带门控</em>的,门槛 <code>|τ|&nbsp;&lt;&nbsp;0.20</code>——一旦回归就让构建失败:
             SM2 签名、SM2 解密、SM4 密钥扩展、SM4 加密
             (默认线性扫描和位切片 SIMD S-box 两种都跑)、SM4-CTR、CBC 解密 fanout、
-            单次 SM4-GCM / SM4-CCM 解密路径、HMAC-SM3、加密 PKCS#8 解密。
+            单次 SM4-GCM / SM4-CCM 解密路径、SM4-XTS 解密、HMAC-SM3、加密 PKCS#8 解密。
             域求逆诊断(<code>Fn::invert</code> / <code>Fp::invert</code>)、k-class 签名、
             以及缓冲式 GCM 路径在 PR 预算下只做<em>遥测</em>
             (k-class 签名在更深的 nightly 上以 <code>0.25</code> 门控)。
@@ -106,11 +118,8 @@ summary_outcome: "用 CI 泄漏回归门控守住涉及秘密的关键路径。"
 
         <h2>下一步</h2>
         <dl class="version-grid">
-            <dt>v0.12</dt>
-            <dd>SM4-XTS——面向磁盘/扇区加密的可调分组模式(IEEE 1619,推广到 SM4),支持完整的密文挪用,和 OpenSSL SM4-XTS 逐字节一致。计划中,尚未发布。</dd>
-
-            <dt>暂缓</dt>
-            <dd>RustCrypto <code>aead 0.6</code> trait 适配先搁着,等上游从 <code>0.6.0-rc</code> 转正;v0.11 已经把它需要的 <code>crypto-common 0.2</code> 那条线落好了。</dd>
+            <dt>下一步</dt>
+            <dd>候选范围,尚未敲定——RustCrypto <code>aead 0.6</code> trait 适配(先搁着,等上游从 <code>0.6.0-rc</code> 转正;v0.11 已把它需要的 <code>crypto-common 0.2</code> 那条线落好)、AVX-512 <code>sbox_x64</code>,以及流式 / 增量 CCM。</dd>
         </dl>
 
         <h2>它不是什么</h2>
@@ -130,6 +139,7 @@ summary_outcome: "用 CI 泄漏回归门控守住涉及秘密的关键路径。"
         <div class="project-detail__links">
             <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io ↗</a>
             <a href="https://docs.rs/gmcrypto-core" rel="noopener noreferrer">docs.rs ↗</a>
+            <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">示例 ↗</a>
             <a href="{{ '/zh/projects/' | relative_url }}">← 全部作品</a>
         </div>
     </article>

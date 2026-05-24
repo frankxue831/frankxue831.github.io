@@ -231,7 +231,10 @@ internal_targets.each do |source, target|
   record(failures, "#{source}: broken internal link to #{target}")
 end
 
-private_source_pattern = %r{github\.com/frankxue831/(gm-crypto-rs|repolens-rs|ghrunners)}
+# Private/unreachable source repos that must never be linked publicly.
+# The trailing (?![\w-]) word-boundary keeps `gm-crypto-rs` from also
+# matching the genuinely-public `gm-crypto-rs-demo` repo (a prefix match).
+private_source_pattern = %r{github\.com/frankxue831/(gm-crypto-rs|repolens-rs|ghrunners)(?![\w-])}
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
   if html.match?(/mailto:/i) || html.match?(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)
