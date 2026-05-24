@@ -10,12 +10,10 @@ alternate: /projects/
 <section class="page-header wrap">
     <p class="page-header__eyebrow">(02)  作品</p>
     <h1 class="page-header__title">
-        项目
-        <em>选辑。</em>
+        <em>项目</em>
     </h1>
     <p class="page-header__lede">
-        清单不长,故意的。等到能写得诚实点再添新条目——
-        基本都是用 Rust 写的,做的事也基本都在开发者工具和底层系统之间。
+        这里不会放很长的清单。一个项目只有在我能比较诚实地讲清楚它做什么、做到哪一步、还有什么限制时，才会放上来。
     </p>
 </section>
 
@@ -38,23 +36,14 @@ alternate: /projects/
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
-                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK
-                (对应 GB/T 32905、32918、32907),
-                关键路径按常量时间设计,CI 里有 dudect 泄漏回归门控守着。
-                公开版 <strong>{{ project.release }}</strong> 已上
-                <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io</a>,
-                叫 <code>gmcrypto-core</code>——SM4 分组密码模式、SM4-GCM/CCM AEAD 和 SM4-XTS 都已发布。
+                纯 Rust 的国密 SM2 / SM3 / SM4 SDK。除了功能本身，我更关注处理密钥和敏感数据的代码路径是否按常量时间实现，以及 CI 里是否有 dudect 这样的侧信道泄漏检测。公开版本已经发布到
+                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'repolens-rs' %}
-                <em>给 AI 编程 Agent 用</em>的仓库记忆和上下文层。
-                它通过 MCP 暴露 26 个工具,把结构化仓库上下文和会随时间衰减的
-                类型化记忆连在一起,让 Agent 能跨 session 保留对项目的稳定理解。
-                目前仍是私有预发布。
+                给 AI 编程 Agent 用的仓库上下文工具，通过 MCP 暴露一组工具。新的 coding session 不用每次都从零开始理解项目，也不会把不确定的内容说成确定事实。目前暂时不公开。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'ghrunners' %}
-                macOS 上 GitHub Actions self-hosted runner 的只读观测 CLI。
-                一条命令就能看到 launchd domain、PID、进程树、日志尾,
-                需要的话还能附上 GitHub API 的状态。目前源码仍是本地/私有。
+                macOS 上用于查看 GitHub Actions self-hosted runner 状态的小工具。一个命令把 launchd 状态、进程树、日志和 GitHub API 状态放在一起看；即使某一部分读取失败，也会尽量保留可用信息。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% endcase %}
             </p>

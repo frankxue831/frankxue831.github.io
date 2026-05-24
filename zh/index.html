@@ -16,27 +16,26 @@ alternate: /
             <p class="hero__eyebrow">Frank Xue / 软件工程师</p>
 
             <h1 class="hero__title">
-                写可审计的工具,
-                <em>给代码、密码学和 Agent 用。</em>
+                写工具，
+                <em>也让代码更容易被人和 Agent 理解。</em>
             </h1>
 
             <p class="hero__lede">
-                主要用 Rust 做偏系统层的工程: 密码学 SDK、仓库上下文、
-                以及本地开发者基础设施。公开、私有和本地状态会写清楚。
+                这里放一些我正在做的项目和笔记，主要是 Rust、密码学、开发者工具，以及 AI 编程相关的工具和基础能力。开源项目会写清楚版本和状态；暂时不公开的项目只放能公开的概览。
             </p>
 
             <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
-                查看精选项目
+                查看项目
                 <span class="hero__cta__arrow" aria-hidden="true">→</span>
             </a>
         </div>
 
         <aside class="hero-proof" aria-label="精选项目概览">
             <div class="hero-proof__header">
-                <p class="hero-proof__label">项目账本</p>
+                <p class="hero-proof__label">项目概览</p>
                 {% if public_project %}
                 <p class="hero-proof__recent">
-                    公开版本:
+                    最新公开版本：
                     <span>{{ public_project.title }} {{ public_project.release }}</span>
                 </p>
                 {% endif %}
@@ -63,7 +62,7 @@ alternate: /
             </ul>
 
             <p class="hero-proof__note">
-                私有项目只保留概览,不展示不可公开访问的源码链接或私有版本细节。
+                暂时不公开的项目只保留概览，不展示源码链接或内部版本细节。
             </p>
         </aside>
     </div>
@@ -73,7 +72,7 @@ alternate: /
     <header class="section__head">
         <p class="section__num">(01)  关于</p>
         <h2 id="about-h" class="section__title">
-            一句话版本,<em>给懒得读长版的。</em>
+            简单<em>说说。</em>
         </h2>
     </header>
 
@@ -81,9 +80,7 @@ alternate: /
         <p class="preview__label">一句话</p>
         <div class="preview__body">
             <p>
-                我是个软件工程师,很在意<em>清楚</em>这件事:
-                代码要能被审计,工具要说明自己的状态,
-                界面不要把日常工作变复杂。
+                我是 Frank，软件工程师。平时更关心一些<em>“不显眼但很重要”</em>的事：代码能不能被看懂，工具有没有把状态说清楚，系统出问题时能不能查得明白。
             </p>
             <a href="{{ '/zh/about/' | relative_url }}" class="preview__link">
                 看长一点的版本 <span aria-hidden="true">→</span>
@@ -96,7 +93,7 @@ alternate: /
     <header class="section__head">
         <p class="section__num">(02)  作品</p>
         <h2 id="work-h" class="section__title">
-            工程结果,<em>大多用 Rust 写。</em>
+            最近做的<em>一些东西。</em>
         </h2>
     </header>
 
@@ -152,7 +149,7 @@ alternate: /
     <header class="section__head">
         <p class="section__num">(03)  联系</p>
         <h2 id="contact-h" class="section__title">
-            打个 <em>招呼。</em>
+            <em>联系我。</em>
         </h2>
     </header>
 
@@ -160,9 +157,7 @@ alternate: /
         <p class="preview__label">联系</p>
         <div class="preview__body">
             <p>
-                目前最直接的方式是 <em>GitHub</em>——
-                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>。
-                在任意一个仓库里开 issue 或 discussion 也都会到我这儿。
+                目前最直接的方式是 <em>GitHub</em>：<a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>。也可以在任意仓库里开 issue 或 discussion，我都会看到。
             </p>
             <a href="{{ '/zh/contact/' | relative_url }}" class="preview__link">
                 其他联系方式 <span aria-hidden="true">→</span>

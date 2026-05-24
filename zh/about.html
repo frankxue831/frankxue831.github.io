@@ -10,43 +10,26 @@ alternate: /about/
 <section class="page-header wrap">
     <p class="page-header__eyebrow">(01)  关于</p>
     <h1 class="page-header__title">
-        关于,
-        <em>简单说说。</em>
+        关于<em>我</em>
     </h1>
     <p class="page-header__lede">
-        草稿一份。话不多,但都是真话。
+        简单介绍一下我最近在做什么，以及我在意什么。
     </p>
 </section>
 
 <section class="section wrap">
     <div class="prose">
         <p>
-            我叫 Frank,软件工程师。Rust 写得多一些,
-            做的事大多卡在开发者工具和底层系统中间这一块。
+            我叫 Frank，是软件工程师。最近写 Rust 比较多，做的东西大多和开发者工具、底层系统、AI 编程工作流有关。
         </p>
         <p>
-            最近主要在做三样东西。
-            一是国密 SM2 / SM3 / SM4 的纯 Rust SDK,
-            涉及秘密的关键路径按<em>常量时间</em>来设计,
-            CI 里有 dudect 在守着。
-            二是给 AI 编程 Agent 做一个仓库记忆层——
-            把项目里的事结构化地记下来、按时间慢慢淡化,
-            走 MCP 暴露给 Agent 用。
-            三是一个小工具,专门看 macOS 上 self-hosted runner 的状态;
-            起因俗气得很:有次在 Mac Studio 上装第二个 runner 调了一个小时,
-            才发现想要的工具压根没有。
+            最近主要在做三件事。第一件是 gm-crypto-rs，一个纯 Rust 的国密 SM2 / SM3 / SM4 SDK，重点关注处理密钥和敏感数据的代码路径是否按常量时间实现，并在 CI 里用 dudect 做侧信道泄漏检测。第二件是 RepoLens，一个给 AI 编程 Agent 用的仓库上下文工具，希望新的 session 不用每次都从零开始理解项目。第三件是 ghrunners，一个 macOS 上的小工具，用来查看 GitHub Actions self-hosted runner 的运行状态，把 launchd、进程、日志和 GitHub API 里的信息放在一起看。
         </p>
         <p>
-            把这几件事串起来的,
-            是我对那些<em>不太显眼</em>的部分的偏好——
-            把名字起清楚,门控在出问题之前拦住,
-            注释里终于把"为什么"讲明白。
-            <em>有立场</em>的那些东西。
+            这些项目方向不完全一样，但我关心的东西比较一致：命名要清楚，状态要讲明白；不确定的地方不要装确定，出问题前最好有检查能先拦一下。代码里的注释也应该解释<em>“为什么”</em>，而不只是重复<em>“做了什么”</em>。
         </p>
         <p>
-            这个网站会慢慢填起来。想知道我最近在做什么,
-            <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">GitHub</a>
-            最直接。
+            这个网站会慢慢补起来。想看我最近在做什么，<a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">GitHub</a> 最直接。
         </p>
     </div>
 
@@ -61,7 +44,7 @@ alternate: /about/
         </li>
         <li>
             <span>写作</span>
-            <span>还没动笔</span>
+            <span>还在补</span>
         </li>
         <li>
             <span>开源</span>
