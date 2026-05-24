@@ -70,7 +70,7 @@ alternate: /zh/
     </div>
 </section>
 
-<section class="section wrap" aria-labelledby="about-h">
+<section class="section wrap reveal" aria-labelledby="about-h">
     <header class="section__head">
         <p class="section__num">(01)  About</p>
         <h2 id="about-h" class="section__title">
@@ -104,7 +104,7 @@ alternate: /zh/
     <ul class="work-list">
         {% assign projects = site.data.projects %}
         {% for project in projects %}
-        <li class="work-list__item">
+        <li class="work-list__item reveal">
             <a class="work-list__row"
                href="{{ project.detail_url | relative_url }}">
                 <span class="work-list__head">
@@ -151,7 +151,7 @@ alternate: /zh/
     </a>
 </section>
 
-<section class="section wrap" aria-labelledby="contact-h">
+<section class="section wrap reveal" aria-labelledby="contact-h">
     <header class="section__head">
         <p class="section__num">(03)  Contact</p>
         <h2 id="contact-h" class="section__title">
