@@ -245,6 +245,54 @@ Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   end
 end
 
+# --- Interactive motion (decrypt + scroll reveal) regression checks ---
+%w[assets/js/reveal.js assets/js/decrypt.js].each do |rel|
+  record(failures, "Missing motion script: #{rel}") unless SITE.join(rel).exist?
+end
+
+Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
+  html = path.read
+  source = path.relative_path_from(SITE).to_s
+  record(failures, "#{source}: missing reveal.js include") unless html.include?("/assets/js/reveal.js")
+  record(failures, "#{source}: missing decrypt.js include") unless html.include?("/assets/js/decrypt.js")
+  record(failures, "#{source}: missing inline motion gate") unless html.include?("classList.add('motion')")
+end
+
+# Home heroes must keep their real, server-rendered title (decrypt is JS-only).
+{ "index.html" => "auditable tools", "zh/index.html" => "更清楚的工具" }.each do |relative, needle|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: hero title lost real text (#{needle.inspect})") unless html.include?(needle)
+  record(failures, "#{relative}: hero__title missing") unless html.include?(%(class="hero__title"))
+end
+
+# Reveal targets must be template-declared (no FOUC), one level only.
+%w[
+  about/index.html zh/about/index.html
+  contact/index.html zh/contact/index.html
+  projects/gm-crypto-rs/index.html projects/repolens-rs/index.html projects/ghrunners/index.html
+  zh/projects/gm-crypto-rs/index.html zh/projects/repolens-rs/index.html zh/projects/ghrunners/index.html
+].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: missing reveal section") unless html.include?(%(class="section wrap reveal"))
+end
+
+%w[index.html zh/index.html projects/index.html zh/projects/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: work-list items missing reveal class") unless html.include?(%(class="work-list__item reveal"))
+end
+
+# No nesting: the home work section must NOT also carry reveal.
+%w[index.html zh/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  if html.include?(%(class="section wrap reveal" aria-labelledby="work-h"))
+    record(failures, "#{relative}: work section is nested reveal (should be items only)")
+  end
+end
+
 if failures.empty?
   puts "Site validation passed"
 else
