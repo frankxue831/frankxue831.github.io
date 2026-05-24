@@ -57,10 +57,11 @@ page-transition animations; sound; theme toggles; new hover states.
   own layout, wrapping is inherently identical to the final title.
 - Resting state: cells hold the real graphemes — visually identical to today's title.
 
-### C1.2 No reflow — fixed-width cells + word grouping
-- Each cell's width is **locked to that glyph's measured final advance** (measured from the
-  rendered cell after fonts load — see C1.5), so swapping in a random glyph never changes
-  width → no reflow (CLS = 0).
+### C1.2 No reflow — pinned-width cells + word grouping
+- **During the scramble**, each cell's width is **pinned to its real glyph's advance**, so
+  swapping in a random glyph never changes width → no reflow (CLS = 0). The pin is
+  **released when the animation settles** (see C1.5), so the final title is natural-width
+  and responsive.
 - **Line-break behavior is preserved:** consecutive Latin graphemes are grouped into a
   `white-space:nowrap` "word" wrapper (words never break mid-word; break only at spaces, as
   normal text). CJK graphemes are standalone cells that may break per character (normal CJK
@@ -76,13 +77,15 @@ page-transition animations; sound; theme toggles; new hover states.
 - ~1s total, brisk: characters resolve **left → right**, glyphs re-roll on a short interval,
   settle by ~900–1100ms. Tunable constants in `decrypt.js`. No looping.
 
-### C1.5 Font handling (no gate — avoid "backwards" playback)
+### C1.5 Font handling & responsiveness (no gate, no fixed final widths)
 - Do **not** gate the start on `document.fonts.ready` — waiting would show the real title
-  first, then scramble (the effect playing backwards). Instead, build the cells and start
-  scrambling **immediately** so the real title is never shown in final form first.
-- Lock each cell's width to its **real glyph's** advance up front, then **re-lock once on
-  `document.fonts.ready`** so final widths match the web font instead of a fallback. (The
-  page reflows on font-swap regardless; re-locking just keeps the title's cells correct.)
+  first, then scramble (the effect playing backwards). Build the cells and scramble
+  **immediately** so the real title is never shown in final form first.
+- Pin each cell's width to its real glyph's advance **only for the scramble** (so random
+  glyphs don't reflow), then **release the pins on settle** (`style.width = ''`). The
+  settled title therefore has natural widths: it renders correctly across web-font swaps
+  with **no re-measure**, and stays **responsive** to the `clamp()` / mobile media-query
+  title sizing — no clipping or gaps after a resize or orientation change.
 
 ### C1.6 Accessibility / SEO
 - Accessible name = `aria-label` on the `<h1>` (the real title); animated cells are

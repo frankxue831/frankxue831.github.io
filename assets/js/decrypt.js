@@ -86,31 +86,26 @@
 
   const DURATION = 900; // ms — total decrypt time, independent of title length
   let stopped = false; // lifecycle cancel (bfcache/pagehide) — NOT normal completion
-  const settle = () => { cells.forEach((c) => { c.span.textContent = c.real; }); };
+  // Settle to the real title AND release the fixed cell widths. Releasing makes the
+  // headline responsive again (it uses clamp()/media-query sizing) and renders in
+  // whatever font is active — no stale widths to clip/space after a resize, and no
+  // fallback-vs-webfont skew to re-measure.
+  const settle = () => {
+    cells.forEach((c) => { c.span.textContent = c.real; c.span.style.width = ''; });
+  };
   const stop = () => { stopped = true; settle(); };
 
-  // Register lifecycle settling FIRST, before any async/animation work, so a bfcache
-  // restore can never resume a pending scramble — it just shows the final title.
+  // Register lifecycle settling FIRST, before any animation work, so a bfcache restore
+  // can never resume a pending scramble — it just shows the final responsive title.
   window.addEventListener('pagehide', stop);
   window.addEventListener('pageshow', (e) => { if (e.persisted) stop(); });
 
-  // Lock each cell's width to its REAL glyph's advance so random glyphs never change
-  // width (no per-frame reflow). Re-runnable: called again once web fonts load so the
-  // locked widths match the final typeface instead of a fallback.
-  const lockWidths = () => {
-    cells.forEach((c) => {
-      const shown = c.span.textContent;
-      c.span.style.width = '';
-      c.span.textContent = c.real;
-      c.span.style.width = c.span.getBoundingClientRect().width + 'px';
-      c.span.textContent = shown;
-    });
-  };
-
-  // Build cells and start scrambling IMMEDIATELY (no fonts wait): the real title is
-  // never shown in final form first, so the decrypt can't play "backwards".
+  // Build cells and start scrambling IMMEDIATELY (no fonts wait) so the real title is
+  // never shown in final form first (the decrypt can't play "backwards"). Each cell's
+  // width is pinned to its REAL glyph's advance ONLY for the scramble, so swapping in
+  // random glyphs never reflows; the pin is released on settle().
   segments.forEach(buildSegment);
-  lockWidths();
+  cells.forEach((c) => { c.span.style.width = c.span.getBoundingClientRect().width + 'px'; });
 
   const total = cells.length;
   const nowMs = () => (window.performance && performance.now) ? performance.now() : Date.now();
@@ -123,14 +118,7 @@
       cells[i].span.textContent = i < resolved ? cells[i].real : rnd();
     }
     if (t < 1) window.setTimeout(tick, 45);
-    else settle(); // natural end: settle to real (lifecycle flag stays clear)
+    else settle(); // natural end: real text + release widths (responsive)
   };
   tick();
-
-  // Re-lock widths once web fonts load so final advances match the real typeface (not a
-  // fallback) — runs EVEN IF the ~900ms animation already finished. Only skipped if the
-  // page was lifecycle-cancelled (bfcache/pagehide).
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => { if (!stopped) lockWidths(); });
-  }
 })();
