@@ -1473,3 +1473,45 @@ body.lang-zh .page-header__lede {
         padding-top: var(--space-8);
     }
 }
+
+/* ============================================================
+   Scroll reveal — gated by the `motion` flag set in <head>.
+   Without `.motion` (no-JS, reduced-motion, or unsupported),
+   `.reveal` has no hidden state, so content is visible + static.
+   ============================================================ */
+.motion .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity var(--dur-slow) var(--ease),
+                transform var(--dur-slow) var(--ease);
+}
+.motion .reveal.is-revealed,
+.motion .reveal:focus-within {
+    opacity: 1;
+    transform: none;
+}
+
+/* Capped stagger for work-list rows (one reveal level — items only) */
+.motion .work-list__item.reveal:nth-child(2) { transition-delay: 80ms; }
+.motion .work-list__item.reveal:nth-child(3) { transition-delay: 160ms; }
+.motion .work-list__item.reveal:nth-child(4) { transition-delay: 240ms; }
+
+@media print {
+    .reveal { opacity: 1 !important; transform: none !important; }
+}
+
+/* ============================================================
+   Hero decrypt cells (built in place by decrypt.js).
+   Widths are locked inline by JS to each glyph's final advance;
+   overflow:hidden keeps a wider random glyph from overlapping
+   its neighbour (no reflow, ever). Accent cells inherit the
+   <em> indigo. Only present while JS runs.
+   ============================================================ */
+.hero-word { white-space: nowrap; }
+.hero-cell {
+    display: inline-block;
+    overflow: hidden;
+    text-align: center;
+    white-space: pre;          /* keep space cells from collapsing */
+    vertical-align: baseline;
+}

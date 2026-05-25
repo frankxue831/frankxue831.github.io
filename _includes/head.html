@@ -4,6 +4,29 @@
 <html lang="{{ t.html_lang }}">
 <head>
     <meta charset="UTF-8">
+<script>
+  /* Motion enable-gate — runs before paint, no external deps.
+     Adds `motion` to <html> ONLY when motion is allowed AND the reveal
+     observer is supported, so the CSS hidden-state for `.reveal` applies
+     before first paint (no FOUC). Fails open on any error. A watchdog
+     strips `motion` if reveal.js never signals ready (blocked/failed load),
+     so content can never stay stuck hidden. */
+  (function () {
+    try {
+      var el = document.documentElement;
+      var mq = window.matchMedia;
+      var reduce = mq && mq('(prefers-reduced-motion: reduce)').matches;
+      if (!reduce && 'IntersectionObserver' in window) {
+        el.classList.add('motion');
+        window.setTimeout(function () {
+          if (el.getAttribute('data-reveal-ready') !== 'true') {
+            el.classList.remove('motion');
+          }
+        }, 3000);
+      }
+    } catch (e) { /* fail open: no motion class => content visible */ }
+  })();
+</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#f5f1e8">
 
