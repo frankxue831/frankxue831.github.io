@@ -345,6 +345,38 @@ if manifest.exist?
   end
 end
 
+# --- Light/dark theme toggle ---
+# theme.js must ship, and every page must (1) carry the pre-paint script that
+# applies data-theme before first paint (no FOUC), (2) link theme.js, (3) carry
+# both media-queried theme-color metas (light + dark), and (4) include the
+# theme toggle button. The dark token block must exist in the CSS.
+record(failures, "Missing theme script: assets/js/theme.js") unless SITE.join("assets/js/theme.js").exist?
+
+css_path = SITE.join("assets/css/style.css")
+if css_path.exist?
+  css = css_path.read
+  record(failures, "style.css: missing [data-theme=\"dark\"] token block") unless css.include?(%([data-theme="dark"]))
+end
+
+Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
+  html = path.read
+  source = path.relative_path_from(SITE).to_s
+  record(failures, "#{source}: missing theme.js include") unless html.include?("/assets/js/theme.js")
+  record(failures, "#{source}: missing pre-paint theme gate") unless html.include?("frankxue.theme")
+  record(failures, "#{source}: missing light theme-color meta") unless
+    html.match?(%r{<meta name="theme-color" content="#f5f1e8" media="\(prefers-color-scheme: light\)">})
+  record(failures, "#{source}: missing dark theme-color meta") unless
+    html.match?(%r{<meta name="theme-color" content="#1a1814" media="\(prefers-color-scheme: dark\)">})
+  record(failures, "#{source}: missing theme toggle button") unless html.include?(%(class="theme-toggle"))
+  # The theme gate must run before the motion gate so a stored dark choice
+  # is applied before motion classes / reveal hidden-state paint.
+  theme_at = html.index("frankxue.theme")
+  motion_at = html.index("classList.add('motion')")
+  if theme_at && motion_at && theme_at > motion_at
+    record(failures, "#{source}: theme gate must precede motion gate (FOUC risk)")
+  end
+end
+
 if failures.empty?
   puts "Site validation passed"
 else
