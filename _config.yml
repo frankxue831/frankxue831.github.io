@@ -29,7 +29,15 @@ defaults:
       path: ""
     values:
       layout: default
-      image: /assets/img/social-card.svg
+      # Social/share card. PNG (not SVG) so link previews render on
+      # iMessage, Slack, X, LinkedIn, WhatsApp, Discord — none of which
+      # rasterize SVG og:images. jekyll-seo-tag emits og:image plus
+      # width/height/alt from this map.
+      image:
+        path: /assets/img/social-card.png
+        width: 1200
+        height: 630
+        alt: "Frank Xue — software engineer. Building auditable tools for code, crypto, and agents."
 
 exclude:
   - .sass-cache/

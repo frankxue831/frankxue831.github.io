@@ -169,7 +169,12 @@ home_pages = %w[index.html zh/index.html]
   record(failures, "#{relative}: missing meta description") unless html.match?(%r{<meta name="description" content="[^"]+"})
   record(failures, "#{relative}: missing Open Graph title") unless html.match?(%r{<meta property="og:title" content="[^"]+"})
   record(failures, "#{relative}: missing Open Graph description") unless html.match?(%r{<meta property="og:description" content="[^"]+"})
-  record(failures, "#{relative}: missing Open Graph image") unless html.match?(%r{<meta property="og:image" content="#{Regexp.escape(BASE_URL)}/assets/img/social-card\.svg"})
+  # Share card must be a raster PNG — SVG og:images do not render in
+  # link previews on iMessage, Slack, X, LinkedIn, WhatsApp, or Discord.
+  record(failures, "#{relative}: missing PNG Open Graph image") unless html.match?(%r{<meta property="og:image" content="#{Regexp.escape(BASE_URL)}/assets/img/social-card\.png"})
+  record(failures, "#{relative}: og:image must not be an SVG (link previews won't render it)") if html.match?(%r{<meta property="og:image" content="[^"]+\.svg"})
+  record(failures, "#{relative}: missing apple-touch-icon") unless html.match?(%r{<link rel="apple-touch-icon"[^>]*href="/assets/img/apple-touch-icon\.png"})
+  record(failures, "#{relative}: missing web manifest link") unless html.include?(%(<link rel="manifest" href="/site.webmanifest">))
 
   docs = json_ld_documents(html, failures, relative)
   graph_types = docs.flat_map { |doc| Array(doc["@graph"]).map { |node| node["@type"] } }
@@ -290,6 +295,53 @@ end
   next if html.empty?
   if html.include?(%(class="section wrap reveal" aria-labelledby="work-h"))
     record(failures, "#{relative}: work section is nested reveal (should be items only)")
+  end
+end
+
+# --- Share/icon assets (product polish layer) ---
+# The referenced share card, favicons, touch icon, and manifest must
+# actually be generated, and the social card must be the right dimensions.
+%w[
+  assets/img/social-card.png
+  assets/img/apple-touch-icon.png
+  assets/img/icon-192.png
+  assets/img/icon-512.png
+  assets/img/favicon-32.png
+  assets/img/favicon-16.png
+  site.webmanifest
+].each do |rel|
+  record(failures, "Missing share/icon asset: #{rel}") unless SITE.join(rel).exist?
+end
+
+card = SITE.join("assets/img/social-card.png")
+if card.exist?
+  # PNG IHDR: width/height are big-endian uint32 at byte offsets 16 and 20.
+  header = card.binread(24)
+  if header && header.byteslice(0, 8) == "\x89PNG\r\n\x1a\n".b
+    width = header.byteslice(16, 4).unpack1("N")
+    height = header.byteslice(20, 4).unpack1("N")
+    unless width == 1200 && height == 630
+      record(failures, "social-card.png must be 1200x630 (Open Graph), got #{width}x#{height}")
+    end
+  else
+    record(failures, "social-card.png is not a valid PNG")
+  end
+end
+
+manifest = SITE.join("site.webmanifest")
+if manifest.exist?
+  begin
+    data = JSON.parse(manifest.read)
+    record(failures, "site.webmanifest: missing name") unless data["name"].to_s != ""
+    icons = Array(data["icons"])
+    record(failures, "site.webmanifest: needs 192px and 512px icons") unless
+      icons.any? { |i| i["sizes"] == "192x192" } && icons.any? { |i| i["sizes"] == "512x512" }
+    icons.each do |icon|
+      src = icon["src"].to_s.sub(%r{\A/}, "")
+      record(failures, "site.webmanifest: icon missing on disk: #{icon["src"]}") unless src.empty? || SITE.join(src).exist?
+    end
+  rescue JSON::ParserError => error
+    record(failures, "site.webmanifest: invalid JSON (#{error.message})")
   end
 end
 
