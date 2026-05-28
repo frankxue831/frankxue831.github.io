@@ -383,6 +383,43 @@ Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   end
 end
 
+# --- Contents rail ("On this page") scroll-spy ---
+# contents.js must ship and load site-wide (it self-guards to detail pages).
+# The CSS must carry the rail styles, the sticky-header scroll-margin, and the
+# print rule that drops the rail. The bilingual label must exist in i18n and be
+# emitted as data-toc-label on the detail-page bodies the rail attaches to.
+record(failures, "Missing contents script: assets/js/contents.js") unless SITE.join("assets/js/contents.js").exist?
+
+Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
+  html = path.read
+  source = path.relative_path_from(SITE).to_s
+  record(failures, "#{source}: missing contents.js include") unless html.include?("/assets/js/contents.js")
+end
+
+if css_path.exist?
+  css = css_path.read
+  record(failures, "style.css: missing contents-rail grid (.section.has-toc)") unless css.include?(".section.has-toc")
+  record(failures, "style.css: missing contents-rail link style (.toc__link)") unless css.include?(".toc__link")
+  record(failures, "style.css: missing scroll-margin-top on detail headings") unless
+    css.match?(/\.project-detail h2\s*\{[^}]*scroll-margin-top/)
+  record(failures, "style.css: missing print rule hiding the contents rail") unless
+    css.match?(/@media print\s*\{\s*\.toc\s*\{\s*display:\s*none/)
+end
+
+i18n = YAML.load_file(ROOT.join("_data/i18n.yml"))
+%w[en zh].each do |lang|
+  label = i18n.dig(lang, "toc", "label").to_s
+  record(failures, "i18n.yml: missing #{lang}.toc.label") if label.empty?
+end
+
+# Detail-page bodies must carry the localized rail label for contents.js to read.
+project_pages.each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: missing data-toc-label on body") unless
+    html.match?(/<body[^>]*\sdata-toc-label="[^"]+"/)
+end
+
 if failures.empty?
   puts "Site validation passed"
 else
