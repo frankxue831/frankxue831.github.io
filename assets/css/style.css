@@ -127,9 +127,15 @@
     }
     :root:not([data-theme]) .grain { display: none; }
 }
-/* Print stays paper no matter the chosen theme. */
+/* Print stays paper no matter the chosen theme. Reset the full token set
+   (not just bg/fg) so dark-only values like --accent-cool / --accent-warm
+   / status colors don't print as pale, low-contrast tints on white paper.
+   Cover BOTH dark paths: explicit data-theme="dark" AND the no-JS
+   :root:not([data-theme]) fallback (which under prefers-color-scheme:dark
+   would otherwise carry dark tokens into print). */
 @media print {
-    [data-theme="dark"] {
+    [data-theme="dark"],
+    :root:not([data-theme]) {
         --bg: #ffffff;
         --bg-elevated: #f8f6f1;
         --bg-sunk: #ffffff;
@@ -138,6 +144,12 @@
         --fg-subtle: #666666;
         --rule: #cccccc;
         --accent: #1e40af;
+        --accent-warm: #1e3a8a;
+        --accent-cool: #3730a3;
+        --status-released: #15803d;
+        --status-pre: #b45309;
+        --status-private: #8a8276;
+        --danger: #b91c1c;
     }
     .grain { display: none; }
 }

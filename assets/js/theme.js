@@ -33,6 +33,10 @@
   // PWA chrome / theme-color: when the reader makes an explicit choice we
   // add a non-media meta that wins over the two media-queried ones in head.
   // Removed when going back to auto so the media-queried metas track the OS.
+  // Browsers pick the FIRST matching theme-color meta — the override has to
+  // be inserted *before* the media-queried metas, otherwise on a light OS
+  // the earlier `media="(prefers-color-scheme: light)"` tag would win and
+  // an explicit dark choice would never reach the address bar / PWA chrome.
   const setThemeColorOverride = (effective, isExplicit) => {
     let m = document.querySelector('meta[name="theme-color"][data-override]');
     if (!isExplicit) { if (m) m.remove(); return; }
@@ -40,7 +44,12 @@
       m = document.createElement('meta');
       m.setAttribute('name', 'theme-color');
       m.setAttribute('data-override', '');
-      document.head.appendChild(m);
+      const firstThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (firstThemeColor && firstThemeColor.parentNode) {
+        firstThemeColor.parentNode.insertBefore(m, firstThemeColor);
+      } else {
+        document.head.appendChild(m);
+      }
     }
     m.setAttribute('content', effective === 'dark' ? '#1a1814' : '#f5f1e8');
   };
