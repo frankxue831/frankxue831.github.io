@@ -77,6 +77,47 @@
 }
 
 /* =========================================================
+   Dark theme — "ink as paper"
+   The pre-paint script (head.html) resolves auto/light/dark from
+   localStorage + matchMedia and writes data-theme="light|dark" on
+   <html> BEFORE first paint, so a single selector handles all the
+   dark cases (explicit choice AND auto-resolved dark). No FOUC.
+   ========================================================= */
+[data-theme="dark"] {
+    --bg: #1a1814;
+    --bg-elevated: #23201a;
+    --bg-sunk: #13110d;
+    --fg: #ede4cc;
+    --fg-muted: #a39880;
+    --fg-subtle: #6b6557;
+    --rule: #2f2c25;
+    --accent: #9bb4ff;
+    --accent-warm: #c2b8ff;
+    --accent-cool: #7e93e6;
+    --status-released: #4ade80;
+    --status-pre: #f59e0b;
+    --status-private: #8a8276;
+    --danger: #f87171;
+}
+/* Paper grain doesn't translate to dark — the multiply blend just
+   eats the noise and reads as banding. Suppress in dark. */
+[data-theme="dark"] .grain { display: none; }
+/* Print stays paper no matter the chosen theme. */
+@media print {
+    [data-theme="dark"] {
+        --bg: #ffffff;
+        --bg-elevated: #f8f6f1;
+        --bg-sunk: #ffffff;
+        --fg: #000000;
+        --fg-muted: #333333;
+        --fg-subtle: #666666;
+        --rule: #cccccc;
+        --accent: #1e40af;
+    }
+    .grain { display: none; }
+}
+
+/* =========================================================
    Reset
    ========================================================= */
 *, *::before, *::after { box-sizing: border-box; }
@@ -264,6 +305,50 @@ a { color: inherit; text-decoration: none; }
 .primary-nav__link--switch:hover .primary-nav__num {
     color: var(--accent);
 }
+
+/* Theme toggle — sits at the very end of the nav, after the language
+   switcher. Icon-only. State and aria-label are managed by theme.js.
+   Hidden when JS is off (the rendered theme is still correct via CSS
+   @media — we just don't surface a non-functional control). */
+.primary-nav__item--theme {
+    margin-left: var(--space-2);
+}
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 999px;
+    color: var(--fg-muted);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.theme-toggle:hover { color: var(--accent); background: var(--bg-elevated); }
+.theme-toggle:focus-visible { color: var(--accent); }
+.theme-toggle svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+/* Show exactly one icon at a time, matching the current data-theme-pref.
+   theme.js sets data-theme-pref on the button to "auto" | "light" | "dark". */
+.theme-toggle [data-icon] { display: none; }
+.theme-toggle[data-theme-pref="auto"]  [data-icon="auto"],
+.theme-toggle[data-theme-pref="light"] [data-icon="light"],
+.theme-toggle[data-theme-pref="dark"]  [data-icon="dark"] { display: block; }
+/* Pre-JS default: show the auto icon so first paint isn't blank. */
+.theme-toggle:not([data-theme-pref]) [data-icon="auto"] { display: block; }
+/* No-JS: hide entirely so we never present a non-functional control. */
+.no-js .theme-toggle { display: none; }
 
 /* =========================================================
    Locale-specific tweaks (Chinese pages)

@@ -28,6 +28,16 @@ en:
     links: "Links"
     owner: "Personal project"
     key_outcome: "Key outcome"
+  theme:
+    label: "Theme"
+    auto: "Auto"
+    light: "Light"
+    dark: "Dark"
+    # {current} and {next} are substituted by theme.js on load. The whole
+    # sentence is localized so each language owns its own punctuation +
+    # word order. Server-rendered aria-label uses `label` as a generic
+    # fallback for the brief window before theme.js runs.
+    aria_template: "Theme: {current}. Switch to {next}."
 
 zh:
   html_lang: "zh-CN"
@@ -55,3 +65,9 @@ zh:
     links: "链接"
     owner: "个人项目"
     key_outcome: "关键点"
+  theme:
+    label: "主题"
+    auto: "跟随系统"
+    light: "浅色"
+    dark: "深色"
+    aria_template: "主题：{current}。切换到{next}。"

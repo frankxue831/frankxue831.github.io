@@ -1,9 +1,32 @@
 {%- assign lang = page.lang | default: 'en' -%}
 {%- assign t = site.data.i18n[lang] -%}
 <!DOCTYPE html>
-<html lang="{{ t.html_lang }}">
+<html lang="{{ t.html_lang }}" class="no-js">
 <head>
     <meta charset="UTF-8">
+<script>
+  /* Theme gate — runs before paint, no external deps.
+     Resolves the reader's preference (localStorage > prefers-color-scheme),
+     writes data-theme="light|dark" on <html> synchronously so first paint
+     is the correct theme — never a flash of the wrong one. Also strips the
+     `no-js` class (theme.js will further re-confirm on load). Fails open:
+     if anything throws, the CSS @media (prefers-color-scheme) handles it. */
+  (function () {
+    try {
+      var el = document.documentElement;
+      el.classList.remove('no-js');
+      var stored = null;
+      try { stored = localStorage.getItem('frankxue.theme'); } catch (e) {}
+      var pref = (stored === 'light' || stored === 'dark') ? stored : 'auto';
+      var effective = pref;
+      if (pref === 'auto') {
+        effective = (window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      }
+      el.setAttribute('data-theme', effective);
+    } catch (e) { /* fail open: CSS @media (prefers-color-scheme) handles it */ }
+  })();
+</script>
 <script>
   /* Motion enable-gate — runs before paint, no external deps.
      Adds `motion` to <html> ONLY when motion is allowed AND the reveal
@@ -28,7 +51,11 @@
   })();
 </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f5f1e8">
+    {%- comment -%} Two media-queried theme-color metas so the browser/PWA
+        chrome tracks the OS theme. theme.js adds a non-media override when
+        the reader explicitly chooses a theme. {%- endcomment -%}
+    <meta name="theme-color" content="#f5f1e8" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1a1814" media="(prefers-color-scheme: dark)">
 
     {% seo %}
     {% include structured-data.html %}
