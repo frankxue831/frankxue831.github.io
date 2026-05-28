@@ -85,6 +85,32 @@
                     </a>
                 </li>
                 {%- endif -%}
+                {%- comment -%} Theme toggle. Three-state cycle handled by
+                    theme.js (auto → light → dark → auto). Pre-paint script
+                    in head.html has already applied the right theme; this
+                    button only exposes the choice. Hidden when JS is off
+                    (rendered theme is still correct via CSS @media). {%- endcomment -%}
+                <li class="primary-nav__item primary-nav__item--theme">
+                    <button type="button"
+                            class="theme-toggle"
+                            aria-label="{{ t.theme.label }}"
+                            data-state-auto="{{ t.theme.auto }}"
+                            data-state-light="{{ t.theme.light }}"
+                            data-state-dark="{{ t.theme.dark }}"
+                            data-aria-template="{{ t.theme.aria_template }}">
+                        <svg viewBox="0 0 24 24" data-icon="auto" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/>
+                        </svg>
+                        <svg viewBox="0 0 24 24" data-icon="light" aria-hidden="true">
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+                        </svg>
+                        <svg viewBox="0 0 24 24" data-icon="dark" aria-hidden="true">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                    </button>
+                </li>
             </ol>
         </nav>
     </div>
