@@ -102,6 +102,31 @@
 /* Paper grain doesn't translate to dark — the multiply blend just
    eats the noise and reads as banding. Suppress in dark. */
 [data-theme="dark"] .grain { display: none; }
+
+/* No-JS fail-open. The pre-paint script always sets data-theme to "light"
+   or "dark", so when JS runs this @media never matches. When JS is
+   disabled, blocked, or throws, data-theme is absent — and a dark-OS
+   reader would otherwise be stuck on the light paper palette. Mirror the
+   dark tokens here so the fail-open path actually fails open visually. */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --bg: #1a1814;
+        --bg-elevated: #23201a;
+        --bg-sunk: #13110d;
+        --fg: #ede4cc;
+        --fg-muted: #a39880;
+        --fg-subtle: #6b6557;
+        --rule: #2f2c25;
+        --accent: #9bb4ff;
+        --accent-warm: #c2b8ff;
+        --accent-cool: #7e93e6;
+        --status-released: #4ade80;
+        --status-pre: #f59e0b;
+        --status-private: #8a8276;
+        --danger: #f87171;
+    }
+    :root:not([data-theme]) .grain { display: none; }
+}
 /* Print stays paper no matter the chosen theme. */
 @media print {
     [data-theme="dark"] {

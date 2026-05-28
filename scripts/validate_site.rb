@@ -356,6 +356,12 @@ css_path = SITE.join("assets/css/style.css")
 if css_path.exist?
   css = css_path.read
   record(failures, "style.css: missing [data-theme=\"dark\"] token block") unless css.include?(%([data-theme="dark"]))
+  # Fail-open: a dark-OS reader with JS disabled / pre-paint script throwing
+  # must still see dark — needs the @media (prefers-color-scheme: dark) +
+  # :not([data-theme]) fallback that mirrors the dark tokens.
+  unless css.match?(/@media\s*\(prefers-color-scheme:\s*dark\)[^{]*\{\s*:root:not\(\[data-theme\]\)/)
+    record(failures, "style.css: missing no-JS dark fallback (@media prefers-color-scheme + :root:not([data-theme]))")
+  end
 end
 
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|

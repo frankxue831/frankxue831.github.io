@@ -67,19 +67,24 @@
     setThemeColorOverride(effective, pref !== 'auto');
   };
 
-  // Initial sync (pre-paint already wrote data-theme; this only mirrors
-  // the pref onto the button and builds the aria-label).
-  apply(readPref());
+  // Hold the current preference in memory so a storage-blocked browser
+  // (Safari private mode, strict cookie/storage policies) still cycles
+  // correctly. We try to persist on each change but never re-read storage
+  // for the source of truth after init — otherwise a silently-failing
+  // setItem would leave readPref() returning 'auto' forever and the
+  // toggle would be stuck after one click.
+  let currentPref = readPref();
+  apply(currentPref);
 
   btn.addEventListener('click', () => {
-    const next = CYCLE[readPref()];
-    writePref(next);
-    apply(next);
+    currentPref = CYCLE[currentPref];
+    writePref(currentPref); // best-effort; failure is non-fatal
+    apply(currentPref);
   });
 
   // Live OS-theme sync — only acts when the reader is in 'auto'.
   if (mq) {
-    const onChange = () => { if (readPref() === 'auto') apply('auto'); };
+    const onChange = () => { if (currentPref === 'auto') apply('auto'); };
     if (mq.addEventListener) mq.addEventListener('change', onChange);
     else if (mq.addListener) mq.addListener(onChange); // older Safari
   }
