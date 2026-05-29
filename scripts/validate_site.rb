@@ -512,12 +512,16 @@ if css_path.exist?
     "dark"  => css[/\[data-theme="dark"\]\s*\{(.*?)\n\}/m, 1]
   }.each do |theme, block|
     bg = hex_in.(block, "bg")
-    fg = hex_in.(block, "fg-subtle")
-    if bg && fg
-      r = ratio.(fg, bg)
-      record(failures, "style.css: #{theme} --fg-subtle #{fg} on --bg #{bg} = #{r.round(2)}:1, below WCAG AA 4.5:1") if r < 4.5
-    else
-      record(failures, "style.css: could not extract #{theme} --bg/--fg-subtle for contrast check")
+    # Tokens used as normal-size text → must clear AA 4.5:1 on --bg.
+    # (--status-released is also used as text in .install__copy.is-copied.)
+    %w[fg-subtle status-released].each do |var|
+      fg = hex_in.(block, var)
+      if bg && fg
+        r = ratio.(fg, bg)
+        record(failures, "style.css: #{theme} --#{var} #{fg} on --bg #{bg} = #{r.round(2)}:1, below WCAG AA 4.5:1") if r < 4.5
+      else
+        record(failures, "style.css: could not extract #{theme} --bg/--#{var} for contrast check")
+      end
     end
   end
 end

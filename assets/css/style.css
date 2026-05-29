@@ -21,7 +21,7 @@
 
     /* Semantic status — the dot carries hue; the text label always
        accompanies it, so meaning never depends on color alone. */
-    --status-released: #15803d;
+    --status-released: #147838; /* WCAG AA: 4.94:1 on --bg (was #15803d, 4.45:1) — also used as text in .install__copy.is-copied */
     --status-pre: #b45309;
     --status-private: #8a8276;
 
