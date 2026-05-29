@@ -463,6 +463,20 @@ if css_path.exist? && !css_path.read.include?(".install__copy")
   record(failures, "style.css: missing .install copy-button styles")
 end
 
+# --- Keyboard-focus parity for interactive affordances ---
+# The rich hover affordances must have :focus-visible counterparts so keyboard
+# users get the same feedback as the mouse (matching the nav-link pattern).
+if css_path.exist?
+  css = css_path.read
+  {
+    ".work-list__row:focus-visible"  => "work-list row focus parity",
+    ".hero__cta:focus-visible"       => "hero CTA focus parity",
+    ".btn:focus-visible"             => "button focus parity"
+  }.each do |selector, label|
+    record(failures, "style.css: missing #{label} (#{selector})") unless css.include?(selector)
+  end
+end
+
 if failures.empty?
   puts "Site validation passed"
 else
