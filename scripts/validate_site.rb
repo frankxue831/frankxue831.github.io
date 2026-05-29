@@ -445,8 +445,11 @@ end
 ].each do |relative|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
-  if html.include?("cargo add") || html.include?("data-copy-target")
-    record(failures, "#{relative}: private/local project must not show an install command")
+  # Key on the install-block markers, not the bare "cargo add" string, so a
+  # private page that merely mentions the command in prose can't false-trip
+  # this guard — only an actual install block is forbidden.
+  if html.include?(%(class="install")) || html.include?("data-copy-target")
+    record(failures, "#{relative}: private/local project must not show an install block")
   end
 end
 
