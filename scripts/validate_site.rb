@@ -8,6 +8,12 @@ require "set"
 require "uri"
 require "yaml"
 
+# Read everything as UTF-8 regardless of the caller's locale. The site has CJK
+# content; under an ASCII locale Pathname#read would raise "invalid byte
+# sequence in US-ASCII" and abort before any check runs. Binary reads
+# (PNG header via binread) are unaffected. Makes the validator self-contained.
+Encoding.default_external = Encoding::UTF_8
+
 ROOT = Pathname.new(__dir__).parent
 SITE = ROOT.join("_site")
 HOST = "www.frankxue.dev"
@@ -418,6 +424,63 @@ project_pages.each do |relative|
   next if html.empty?
   record(failures, "#{relative}: missing data-toc-label on body") unless
     html.match?(/<body[^>]*\sdata-toc-label="[^"]+"/)
+end
+
+# --- Copy-to-clipboard install command (gm-crypto-rs only) ---
+# copy.js must ship and load site-wide. The gm-crypto-rs pages (EN + ZH) must
+# carry the install block; the private/local projects must NOT — only the
+# public crate gets an install command (source-of-truth boundary).
+record(failures, "Missing copy script: assets/js/copy.js") unless SITE.join("assets/js/copy.js").exist?
+
+Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
+  html = path.read
+  source = path.relative_path_from(SITE).to_s
+  record(failures, "#{source}: missing copy.js include") unless html.include?("/assets/js/copy.js")
+end
+
+%w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: missing install command") unless html.include?("cargo add gmcrypto-core")
+  record(failures, "#{relative}: missing copy button") unless html.include?(%(data-copy-target="install-cmd"))
+end
+
+%w[
+  projects/repolens-rs/index.html projects/ghrunners/index.html
+  zh/projects/repolens-rs/index.html zh/projects/ghrunners/index.html
+].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  # Key on the install-block markers, not the bare "cargo add" string, so a
+  # private page that merely mentions the command in prose can't false-trip
+  # this guard — only an actual install block is forbidden.
+  if html.include?(%(class="install")) || html.include?("data-copy-target")
+    record(failures, "#{relative}: private/local project must not show an install block")
+  end
+end
+
+%w[en zh].each do |lang|
+  %w[label copy copied aria].each do |key|
+    record(failures, "i18n.yml: missing #{lang}.install.#{key}") if i18n.dig(lang, "install", key).to_s.empty?
+  end
+end
+
+if css_path.exist? && !css_path.read.include?(".install__copy")
+  record(failures, "style.css: missing .install copy-button styles")
+end
+
+# --- Keyboard-focus parity for interactive affordances ---
+# The rich hover affordances must have :focus-visible counterparts so keyboard
+# users get the same feedback as the mouse (matching the nav-link pattern).
+if css_path.exist?
+  css = css_path.read
+  {
+    ".work-list__row:focus-visible"  => "work-list row focus parity",
+    ".hero__cta:focus-visible"       => "hero CTA focus parity",
+    ".btn:focus-visible"             => "button focus parity"
+  }.each do |selector, label|
+    record(failures, "style.css: missing #{label} (#{selector})") unless css.include?(selector)
+  end
 end
 
 if failures.empty?
