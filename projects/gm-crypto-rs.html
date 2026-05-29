@@ -24,6 +24,21 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 <section class="section wrap reveal">
     <article class="project-detail prose">
         {% include project-summary.html %}
+        {% assign inst = site.data.i18n[page.lang].install %}
+        <div class="install">
+            <span class="install__label">{{ inst.label }}</span>
+            <div class="install__row">
+                <code class="install__cmd" id="install-cmd">cargo add gmcrypto-core</code>
+                <button type="button" class="install__copy"
+                        data-copy-target="install-cmd"
+                        data-label-copy="{{ inst.copy }}"
+                        data-label-done="{{ inst.copied }}"
+                        aria-label="{{ inst.aria }}">
+                    <span class="install__copy-text" aria-hidden="true">{{ inst.copy }}</span>
+                </button>
+            </div>
+            <span class="install__status" role="status" aria-live="polite"></span>
+        </div>
         <h2>What it is</h2>
         <p>
             <code>gm-crypto-rs</code> implements GB/T 32905 (SM3 hash),

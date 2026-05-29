@@ -42,6 +42,12 @@ en:
     # Contents rail on project detail pages. Built by contents.js from the
     # page's <h2> headings; this label is the rail heading + nav aria-label.
     label: "On this page"
+  install:
+    # Copy-to-clipboard install command on the gm-crypto-rs detail page.
+    label: "Install"
+    copy: "Copy"
+    copied: "Copied"
+    aria: "Copy install command"
 
 zh:
   html_lang: "zh-CN"
@@ -77,3 +83,8 @@ zh:
     aria_template: "主题：{current}。切换到{next}。"
   toc:
     label: "本页内容"
+  install:
+    label: "安装"
+    copy: "复制"
+    copied: "已复制"
+    aria: "复制安装命令"
