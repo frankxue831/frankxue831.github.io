@@ -12,7 +12,7 @@
     --bg-sunk: #faf7f0;
     --fg: #1a1814;
     --fg-muted: #6b6557;
-    --fg-subtle: #a39c8d;
+    --fg-subtle: #726a5a; /* WCAG AA: 4.75:1 on --bg (was #a39c8d, 2.42:1) */
     --rule: #d4cdb8;
     --accent: #1e40af;
     --accent-warm: #1e3a8a;
@@ -89,7 +89,7 @@
     --bg-sunk: #13110d;
     --fg: #ede4cc;
     --fg-muted: #a39880;
-    --fg-subtle: #6b6557;
+    --fg-subtle: #8f8571; /* WCAG AA: 4.86:1 on --bg (was #6b6557, 3.06:1) */
     --rule: #2f2c25;
     --accent: #9bb4ff;
     --accent-warm: #c2b8ff;
@@ -115,7 +115,7 @@
         --bg-sunk: #13110d;
         --fg: #ede4cc;
         --fg-muted: #a39880;
-        --fg-subtle: #6b6557;
+        --fg-subtle: #8f8571; /* WCAG AA — mirror of dark token */
         --rule: #2f2c25;
         --accent: #9bb4ff;
         --accent-warm: #c2b8ff;
