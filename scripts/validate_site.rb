@@ -420,6 +420,19 @@ project_pages.each do |relative|
     html.match?(/<body[^>]*\sdata-toc-label="[^"]+"/)
 end
 
+# --- Smooth theme-toggle transition ---
+# theme.js adds a transient `theme-anim` class for an explicit switch; the CSS
+# must carry the scoped colour transition and its reduced-motion null-out.
+if css_path.exist?
+  css = css_path.read
+  record(failures, "style.css: missing theme-anim transition block") unless
+    css.match?(/html\.theme-anim[^{]*\{[^}]*transition:[^}]*background-color/m)
+  record(failures, "style.css: missing reduced-motion theme-anim null-out") unless
+    css.match?(/prefers-reduced-motion:\s*reduce\)\s*\{[^}]*\.theme-anim[^}]*transition:\s*none/m)
+end
+record(failures, "theme.js: missing theme-anim hook") unless
+  SITE.join("assets/js/theme.js").read.include?("theme-anim")
+
 if failures.empty?
   puts "Site validation passed"
 else
