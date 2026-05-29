@@ -685,7 +685,8 @@ body.lang-zh .page-header__lede {
     align-items: center;
     padding: var(--space-4) 0;
 }
-.hero-proof__row:hover .hero-proof__title {
+.hero-proof__row:hover .hero-proof__title,
+.hero-proof__row:focus-visible .hero-proof__title {
     color: var(--accent);
 }
 
@@ -772,12 +773,14 @@ body.lang-zh .page-header__lede {
     border-bottom: 1px solid var(--accent);
     transition: gap var(--dur) var(--ease), color var(--dur) var(--ease);
 }
-.hero__cta:hover {
+.hero__cta:hover,
+.hero__cta:focus-visible {
     gap: var(--space-4);
     color: var(--accent);
 }
 .hero__cta__arrow { transition: transform var(--dur) var(--ease); }
-.hero__cta:hover .hero__cta__arrow { transform: translateX(4px); }
+.hero__cta:hover .hero__cta__arrow,
+.hero__cta:focus-visible .hero__cta__arrow { transform: translateX(4px); }
 
 /* =========================================================
    Index page — preview blocks
@@ -829,7 +832,8 @@ body.lang-zh .page-header__lede {
 .preview__link--section {
     margin-top: var(--space-8);
 }
-.preview__link:hover {
+.preview__link:hover,
+.preview__link:focus-visible {
     color: var(--accent);
     border-color: var(--accent);
 }
@@ -857,7 +861,8 @@ body.lang-zh .page-header__lede {
     transition: padding var(--dur) var(--ease);
 }
 
-.work-list__item:hover .work-list__row {
+.work-list__item:hover .work-list__row,
+.work-list__row:focus-visible {
     padding-left: var(--space-3);
 }
 
@@ -876,7 +881,8 @@ body.lang-zh .page-header__lede {
     line-height: 1.3;
     transition: color var(--dur) var(--ease);
 }
-.work-list__item:hover .work-list__title {
+.work-list__item:hover .work-list__title,
+.work-list__row:focus-visible .work-list__title {
     color: var(--accent);
 }
 
@@ -1045,6 +1051,83 @@ body.lang-zh .page-header__lede {
         grid-column: auto;
     }
 }
+
+/* =========================================================
+   Install command — copy-to-clipboard (gm-crypto-rs only)
+   Terminal-styled line + copy button. Command is real,
+   selectable text; the button is JS-only (hidden with no JS)
+   and the "$ " prompt is a pseudo-element so it's never copied.
+   Tokens only — dark inherits.
+   ========================================================= */
+.install {
+    margin: 0 0 var(--space-8);
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--bg-sunk);
+}
+.install__label {
+    display: block;
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+    margin-bottom: var(--space-2);
+}
+.install__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+}
+.install__cmd {
+    font-family: var(--mono);
+    font-size: var(--text-sm);
+    color: var(--fg);
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.install__cmd::before {
+    content: "$ ";
+    color: var(--fg-subtle);
+}
+.install__copy {
+    flex: none;
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    color: var(--fg-muted);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: var(--space-1) var(--space-3);
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.install__copy:hover,
+.install__copy:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+.install__copy.is-copied {
+    color: var(--status-released);
+    border-color: var(--status-released);
+}
+/* Visually-hidden live region for the copy confirmation. */
+.install__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+/* No JS: keep the command selectable, drop the dead button. */
+.no-js .install__copy { display: none; }
+@media print { .install__copy { display: none; } }
+
 .project-detail h2 {
     font-family: var(--mono);
     font-size: var(--text-xs);
@@ -1279,7 +1362,8 @@ body.lang-zh .page-header__lede {
         gap: var(--space-2) var(--space-4);
         white-space: normal;
     }
-    .work-list__item:hover .work-list__row { padding-left: 0; }
+    .work-list__item:hover .work-list__row,
+    .work-list__row:focus-visible { padding-left: 0; }
 }
 
 /* Empty state */
@@ -1481,7 +1565,8 @@ body.lang-zh .page-header__lede {
     transition: background var(--dur) var(--ease), color var(--dur) var(--ease), gap var(--dur) var(--ease);
     margin-top: var(--space-4);
 }
-.btn:hover {
+.btn:hover,
+.btn:focus-visible {
     background: var(--accent);
     color: var(--bg);
     gap: var(--space-4);
@@ -1492,7 +1577,8 @@ body.lang-zh .page-header__lede {
     cursor: not-allowed;
 }
 .btn__arrow { transition: transform var(--dur) var(--ease); }
-.btn:hover .btn__arrow { transform: translateX(3px); }
+.btn:hover .btn__arrow,
+.btn:focus-visible .btn__arrow { transform: translateX(3px); }
 
 .form__note {
     font-family: var(--mono);
