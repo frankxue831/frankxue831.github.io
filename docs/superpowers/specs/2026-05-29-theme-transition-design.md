@@ -24,13 +24,17 @@ duration of the switch, then removed, so it never affects ordinary interactions
 
 ### JS (`theme.js`)
 
-- A `firstApplyDone` flag: the initial `apply()` on load runs with **no**
-  transition (avoids a flash as the stored theme resolves). Every subsequent
-  `apply()` (toggle click, or matchMedia `change` while in auto) wraps the
-  `data-theme` change in a transient class.
-- `runWithThemeAnim(fn)`: if `prefers-reduced-motion: reduce`, just run `fn`
-  (instant). Otherwise add `theme-anim` to `<html>`, run `fn`, and remove the
-  class after the duration (timer reset on rapid re-toggles).
+- `beginThemeAnim()`: if `prefers-reduced-motion: reduce` (checked **live** each
+  call), return immediately — no class, instant switch. Otherwise add
+  `theme-anim` to `<html>`, force a reflow (`void el.offsetWidth`) so the
+  transition property is committed before the value change, and remove the
+  class after ~380ms (slightly longer than `--dur`); the removal timer is
+  reset on rapid re-toggles so the class never sticks.
+- It is called **only** from the toggle click handler and the matchMedia
+  `change` handler (OS change while in auto), each time just before `apply()`.
+  The initial `apply(currentPref)` on load runs before the handlers are wired
+  and never calls it — so the first paint never animates (no flash). No
+  `firstApplyDone` flag is needed; the call-ordering guarantees it.
 - The pre-paint script in `head.html` is untouched — it sets the initial theme
   before first paint with no transition.
 
