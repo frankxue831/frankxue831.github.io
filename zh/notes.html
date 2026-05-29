@@ -1,0 +1,45 @@
+---
+layout: default
+title: 写作
+permalink: /zh/notes/
+description: Frank Xue 的笔记——关于 Rust、密码学和 Agent 工具的短文。
+lang: zh
+alternate: /notes/
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">（04）写作</p>
+    <h1 class="page-header__title">
+        一些<em>工作笔记。</em>
+    </h1>
+    <p class="page-header__lede">
+        关于 Rust、密码学、Agent 工具,以及做软件里那些不那么光鲜的部分。
+        不求精雕细琢,只记下值得写下来的东西。
+    </p>
+</section>
+
+<section class="section wrap">
+    {%- assign notes = site.notes | where: "lang", "zh" | sort: "date" | reverse -%}
+    {%- if notes.size > 0 -%}
+    <ul class="work-list">
+        {%- for note in notes -%}
+        <li class="work-list__item reveal">
+            <a class="work-list__row" href="{{ note.url | relative_url }}">
+                <span class="work-list__head">
+                    <span class="work-list__title">{{ note.title }}</span>
+                </span>
+                <span class="work-list__meta">
+                    <span class="work-list__year">{{ note.date | date: "%Y-%m-%d" }}</span>
+                </span>
+            </a>
+            <p class="work-list__note">
+                {{ note.excerpt | default: note.description | strip_html | truncate: 160 }}
+                <a href="{{ note.url | relative_url }}" class="work-list__more">{{ site.data.i18n.zh.notes.read_more }}</a>
+            </p>
+        </li>
+        {%- endfor -%}
+    </ul>
+    {%- else -%}
+    <p class="prose">{{ site.data.i18n.zh.notes.none }}</p>
+    {%- endif -%}
+</section>

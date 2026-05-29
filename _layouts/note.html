@@ -1,0 +1,23 @@
+---
+layout: default
+---
+{%- assign t = site.data.i18n[page.lang] -%}
+{%- assign notes_index = '/notes/' -%}
+{%- if page.lang == 'zh' -%}{%- assign notes_index = '/zh/notes/' -%}{%- endif -%}
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">{% if page.lang == 'zh' %}（04）写作{% else %}(04)  Writing{% endif %}</p>
+    <h1 class="page-header__title">{{ page.title }}</h1>
+    <p class="page-header__lede">
+        <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>
+    </p>
+</section>
+
+<section class="section wrap reveal">
+    <article class="prose note">
+        {{ content }}
+        <div class="project-detail__links">
+            <a href="{{ notes_index | relative_url }}">← {{ t.notes.all }}</a>
+        </div>
+    </article>
+</section>

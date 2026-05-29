@@ -1,0 +1,47 @@
+---
+layout: default
+title: Writing
+permalink: /notes/
+description: Notes by Frank Xue — short writing on Rust, cryptography, and agent tooling.
+lang: en
+alternate: /zh/notes/
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(04)  Writing</p>
+    <h1 class="page-header__title">
+        Notes,
+        <em>working ones.</em>
+    </h1>
+    <p class="page-header__lede">
+        Short pieces on Rust, cryptography, agent tooling, and the
+        unglamorous parts of building software. Nothing polished — just
+        things worth writing down.
+    </p>
+</section>
+
+<section class="section wrap">
+    {%- assign notes = site.notes | where: "lang", "en" | sort: "date" | reverse -%}
+    {%- if notes.size > 0 -%}
+    <ul class="work-list">
+        {%- for note in notes -%}
+        <li class="work-list__item reveal">
+            <a class="work-list__row" href="{{ note.url | relative_url }}">
+                <span class="work-list__head">
+                    <span class="work-list__title">{{ note.title }}</span>
+                </span>
+                <span class="work-list__meta">
+                    <span class="work-list__year">{{ note.date | date: "%Y-%m-%d" }}</span>
+                </span>
+            </a>
+            <p class="work-list__note">
+                {{ note.excerpt | default: note.description | strip_html | truncate: 160 }}
+                <a href="{{ note.url | relative_url }}" class="work-list__more">{{ site.data.i18n.en.notes.read_more }}</a>
+            </p>
+        </li>
+        {%- endfor -%}
+    </ul>
+    {%- else -%}
+    <p class="prose">{{ site.data.i18n.en.notes.none }}</p>
+    {%- endif -%}
+</section>
