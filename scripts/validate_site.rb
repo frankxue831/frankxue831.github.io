@@ -8,6 +8,12 @@ require "set"
 require "uri"
 require "yaml"
 
+# Read everything as UTF-8 regardless of the caller's locale. The site has CJK
+# content; under an ASCII locale Pathname#read would raise "invalid byte
+# sequence in US-ASCII" and abort before any check runs. Binary reads
+# (PNG header via binread) are unaffected. Makes the validator self-contained.
+Encoding.default_external = Encoding::UTF_8
+
 ROOT = Pathname.new(__dir__).parent
 SITE = ROOT.join("_site")
 HOST = "www.frankxue.dev"
