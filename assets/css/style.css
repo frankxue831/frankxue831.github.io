@@ -154,6 +154,26 @@
     .grain { display: none; }
 }
 
+/* Smooth the colour change when the reader switches theme. theme.js adds
+   `theme-anim` to <html> only for the ~320ms of an explicit switch (never on
+   the initial pre-paint load), so this broad transition never touches normal
+   interaction. Scoped to colour properties; reduced motion nulls it out. */
+html.theme-anim,
+html.theme-anim *,
+html.theme-anim *::before,
+html.theme-anim *::after {
+    transition: background-color var(--dur) var(--ease),
+                color var(--dur) var(--ease),
+                border-color var(--dur) var(--ease),
+                fill var(--dur) var(--ease) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+    html.theme-anim,
+    html.theme-anim *,
+    html.theme-anim *::before,
+    html.theme-anim *::after { transition: none !important; }
+}
+
 /* =========================================================
    Reset
    ========================================================= */

@@ -64,6 +64,24 @@
   };
   const ariaTemplate = btn.dataset.ariaTemplate || 'Theme: {current}. Switch to {next}.';
 
+  // Briefly enable a colour transition for an explicit theme switch (toggle or
+  // OS change) — never on the initial load (that would flash), never under
+  // reduced motion (re-checked live). The class carries the transition; a
+  // forced reflow commits it before data-theme flips so the change actually
+  // animates, then it's removed once the crossfade is done.
+  const ANIM_CLASS = 'theme-anim';
+  const ANIM_MS = 380; // slightly longer than --dur (320ms) so it isn't cut short
+  let animTimer = null;
+  const beginThemeAnim = () => {
+    if (window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const el = document.documentElement;
+    el.classList.add(ANIM_CLASS);
+    void el.offsetWidth; // commit the transition property before the value change
+    if (animTimer) clearTimeout(animTimer);
+    animTimer = setTimeout(() => el.classList.remove(ANIM_CLASS), ANIM_MS);
+  };
+
   const apply = (pref) => {
     const effective = resolve(pref);
     document.documentElement.setAttribute('data-theme', effective);
@@ -88,12 +106,13 @@
   btn.addEventListener('click', () => {
     currentPref = CYCLE[currentPref];
     writePref(currentPref); // best-effort; failure is non-fatal
+    beginThemeAnim();        // crossfade the explicit switch
     apply(currentPref);
   });
 
   // Live OS-theme sync — only acts when the reader is in 'auto'.
   if (mq) {
-    const onChange = () => { if (currentPref === 'auto') apply('auto'); };
+    const onChange = () => { if (currentPref === 'auto') { beginThemeAnim(); apply('auto'); } };
     if (mq.addEventListener) mq.addEventListener('change', onChange);
     else if (mq.addListener) mq.addListener(onChange); // older Safari
   }
