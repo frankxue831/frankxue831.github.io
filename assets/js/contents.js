@@ -17,8 +17,12 @@
   // --- stable, unique ids on each heading -------------------------------
   const used = new Set();
   document.querySelectorAll('[id]').forEach((el) => used.add(el.id));
+  // Keep Unicode letters/numbers so CJK headings on the ZH pages get
+  // content-derived ids too (not positional fallbacks); collapse every other
+  // run to a single hyphen. ASCII headings are unaffected (\p{L}/\p{N} cover
+  // a-z0-9), so EN ids stay identical.
   const slugify = (s) =>
-    s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '');
   const ensureId = (h, i) => {
     if (h.id) { used.add(h.id); return h.id; }
     const base = slugify(h.textContent || '') || ('section-' + (i + 1));
@@ -80,7 +84,7 @@
     links.forEach((a, hid) => {
       if (hid === id) {
         a.classList.add('is-active');
-        a.setAttribute('aria-current', 'true');
+        a.setAttribute('aria-current', 'location');
       } else {
         a.classList.remove('is-active');
         a.removeAttribute('aria-current');

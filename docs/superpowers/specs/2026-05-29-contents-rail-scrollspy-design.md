@@ -83,9 +83,11 @@ browser; tune if cramped.
 ```
 
 - Each `<h2>` gets a **stable, unique id**: reuse an existing `id` if present,
-  else slugify the heading text (lowercase, non-alphanumerics → `-`, trim), and
-  de-duplicate with a numeric suffix if a slug collides. CJK headings (the ZH
-  pages) slugify to empty → fall back to `section-<n>`.
+  else slugify the heading text (lowercase, collapse every run of non-Unicode-
+  letter/number to a single `-`, trim) and de-duplicate with a numeric suffix
+  if a slug collides. The slug keeps Unicode letters, so CJK headings on the ZH
+  pages get **content-derived** ids (`#是什么`, …), matching the EN pages; only
+  a heading with no letters/numbers at all falls back to `section-<n>`.
 - The rail is inserted as the **last child** of the reading `.section` so it
   lands in the grid's right column.
 - `aria-label` and the visible `.toc__label` come from i18n (see below).
@@ -166,7 +168,8 @@ falls back to `"On this page"`.
 ## Accessibility
 
 - `<nav aria-label="On this page">` is a labelled navigation landmark.
-- Active link carries `aria-current="true"`.
+- Active link carries `aria-current="location"` (the ARIA token for the
+  current location within a set — the right value for an in-page TOC entry).
 - Links are real anchors → keyboard focusable, work without JS pointer events.
 - Color is never the only active signal: the active item also gets the marker +
   weight change, and `aria-current` exposes it to assistive tech.
