@@ -10,6 +10,7 @@ en:
     about: "About"
     work: "Work"
     contact: "Contact"
+    writing: "Writing"
   switcher:
     label: "中文"
     aria: "Switch to Chinese"
@@ -48,6 +49,11 @@ en:
     copy: "Copy"
     copied: "Copied"
     aria: "Copy install command"
+  notes:
+    # Writing/Notes section.
+    all: "All notes"
+    read_more: "Read →"
+    none: "Nothing published yet."
 
 zh:
   html_lang: "zh-CN"
@@ -57,6 +63,7 @@ zh:
     about: "关于"
     work: "作品"
     contact: "联系"
+    writing: "写作"
   switcher:
     label: "EN"
     aria: "切换为英文"
@@ -88,3 +95,7 @@ zh:
     copy: "复制"
     copied: "已复制"
     aria: "复制安装命令"
+  notes:
+    all: "全部笔记"
+    read_more: "阅读 →"
+    none: "还没有发布内容。"

@@ -48,7 +48,8 @@
               t.nav.home  | append: '|' | append: base | append: '/' | append: '||' |
               append: t.nav.about   | append: '|' | append: base | append: '/about/'    | append: '||' |
               append: t.nav.work    | append: '|' | append: base | append: '/projects/' | append: '||' |
-              append: t.nav.contact | append: '|' | append: base | append: '/contact/'
+              append: t.nav.contact | append: '|' | append: base | append: '/contact/'  | append: '||' |
+              append: t.nav.writing | append: '|' | append: base | append: '/notes/'
               | split: '||' -%}
             <ol class="primary-nav__list">
                 {%- for entry in nav_items -%}

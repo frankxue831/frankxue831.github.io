@@ -20,6 +20,22 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
 
+# Writing/Notes live in a collection (not _posts) so each note declares its own
+# lang + alternate + permalink, mirroring the bilingual page pattern.
+collections:
+  notes:
+    output: true
+
+# Atom feed. jekyll-feed's main feed is _posts-only (and there are none, so it
+# was empty). Move that empty posts feed aside and let the notes collection
+# feed claim /feed.xml — head.html already links /feed.xml. One combined feed,
+# both languages.
+feed:
+  path: feed/posts.xml
+  collections:
+    notes:
+      path: feed.xml
+
 github_username: frankxue831
 # linkedin_username:
 # twitter_username:
@@ -38,6 +54,13 @@ defaults:
         width: 1200
         height: 630
         alt: "Frank Xue — software engineer. Building auditable tools for code, crypto, and agents."
+  # Notes are long-form documents; the more-specific scope sets their layout
+  # while inheriting the share image above.
+  - scope:
+      path: ""
+      type: notes
+    values:
+      layout: note
 
 exclude:
   - .sass-cache/

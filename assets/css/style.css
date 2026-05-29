@@ -1417,6 +1417,67 @@ body.lang-zh .page-header__lede {
 }
 .prose a:hover { color: var(--accent); }
 
+/* =========================================================
+   Note bodies — long-form article typography on top of .prose
+   (which styles p / em / a). Serif headings, mono code, restrained.
+   Tokens only; dark + print inherit.
+   ========================================================= */
+.note h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: var(--text-2xl);
+    line-height: 1.2;
+    color: var(--fg);
+    margin: var(--space-10) 0 var(--space-4);
+}
+.note h3 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: var(--text-xl);
+    line-height: 1.25;
+    color: var(--fg);
+    margin: var(--space-8) 0 var(--space-3);
+}
+.note ul, .note ol {
+    margin: 0 0 var(--space-6);
+    padding-left: var(--space-6);
+}
+.note li {
+    font-family: var(--serif);
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--fg);
+    margin-bottom: var(--space-2);
+}
+.note code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    color: var(--accent);
+    background: var(--bg-elevated);
+    padding: 1px 6px;
+    border-radius: 3px;
+}
+.note pre {
+    font-family: var(--mono);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    background: var(--bg-sunk);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: var(--space-4);
+    overflow-x: auto;
+    margin: 0 0 var(--space-6);
+}
+.note pre code { background: none; padding: 0; color: var(--fg); font-size: inherit; }
+.note blockquote {
+    margin: 0 0 var(--space-6);
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--accent);
+    color: var(--fg-muted);
+    font-style: italic;
+}
+.note strong { font-weight: 600; color: var(--fg); }
+
 .facts {
     list-style: none;
     padding: 0;

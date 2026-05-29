@@ -148,6 +148,18 @@ core_pages = {
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/contact/" },
       { hreflang: "en", href: "#{BASE_URL}/contact/" }
     ]
+  },
+  "notes/index.html" => {
+    alternates: [
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/notes/" },
+      { hreflang: "en", href: "#{BASE_URL}/notes/" }
+    ]
+  },
+  "zh/notes/index.html" => {
+    alternates: [
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/notes/" },
+      { hreflang: "en", href: "#{BASE_URL}/notes/" }
+    ]
   }
 }
 
@@ -160,11 +172,17 @@ project_pages = %w[
   zh/projects/ghrunners/index.html
 ]
 
+# Individual notes (collection docs). Run through the same per-page SEO loop.
+note_pages = %w[
+  notes/starting-a-notebook/index.html
+  zh/notes/starting-a-notebook/index.html
+]
+
 public_release_labels = PROJECTS.select { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }
 private_release_labels = PROJECTS.reject { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }.compact
 home_pages = %w[index.html zh/index.html]
 
-(core_pages.keys + project_pages).each do |relative|
+(core_pages.keys + project_pages + note_pages).each do |relative|
   path = SITE.join(relative)
   html = read_file(path, failures)
   next if html.empty?
@@ -493,6 +511,34 @@ if css_path.exist?
     ".btn:focus-visible"             => "button focus parity"
   }.each do |selector, label|
     record(failures, "style.css: missing #{label} (#{selector})") unless css.include?(selector)
+  end
+end
+
+# --- Writing/Notes section ---
+# The collection feed must be non-empty (it was empty before — no _posts), the
+# notes index must list notes, each note page must carry both-language
+# hreflang, and the i18n strings must exist.
+feed = read_file(SITE.join("feed.xml"), failures)
+record(failures, "feed.xml: no <entry> (notes feed is empty)") unless feed.include?("<entry")
+
+%w[notes/index.html zh/notes/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: notes index lists no notes") unless html.include?(%(class="work-list__item))
+end
+
+note_pages.each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: missing en hreflang alternate") unless html.match?(%r{<link rel="alternate" hreflang="en" href="#{Regexp.escape(BASE_URL)}/notes/[^"]+">})
+  record(failures, "#{relative}: missing zh-CN hreflang alternate") unless html.match?(%r{<link rel="alternate" hreflang="zh-CN" href="#{Regexp.escape(BASE_URL)}/zh/notes/[^"]+">})
+end
+
+i18n = YAML.load_file(ROOT.join("_data/i18n.yml"))
+%w[en zh].each do |lang|
+  record(failures, "i18n.yml: missing #{lang}.nav.writing") if i18n.dig(lang, "nav", "writing").to_s.empty?
+  %w[all read_more none].each do |key|
+    record(failures, "i18n.yml: missing #{lang}.notes.#{key}") if i18n.dig(lang, "notes", key).to_s.empty?
   end
 end
 
