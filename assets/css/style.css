@@ -1122,6 +1122,88 @@ body.lang-zh .page-header__lede {
 }
 .project-detail__links a:hover { color: var(--accent); }
 
+/* =========================================================
+   Contents rail ("On this page")
+   Built by contents.js from the page's <h2>s on project detail
+   pages. Sticky scroll-spy nav in the right margin on wide
+   viewports; hidden below 1024px. Tokens only — dark/print
+   inherit via the remapped custom properties.
+   ========================================================= */
+
+/* Anchored / spied headings clear the sticky site header. */
+.project-detail h2 { scroll-margin-top: var(--space-20); }
+
+/* Hidden by default; the wide-viewport block reveals it and turns
+   the reading section into a two-column grid. JS adds .has-toc. */
+.toc { display: none; }
+
+@media (min-width: 1024px) {
+    .section.has-toc {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 12rem;
+        column-gap: var(--space-12);
+        align-items: start;
+    }
+    .section.has-toc > .project-detail { grid-column: 1; }
+
+    .toc {
+        display: block;
+        grid-column: 2;
+        position: sticky;
+        top: calc(var(--space-8) + 3.5rem); /* clear the sticky header */
+        align-self: start;
+        font-family: var(--mono);
+        border-left: 1px solid var(--rule);
+        padding-left: var(--space-4);
+    }
+    .toc__label {
+        font-size: var(--text-xs);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-subtle);
+        margin-bottom: var(--space-4);
+    }
+    .toc__list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+    .toc__link {
+        position: relative;
+        display: block;
+        font-size: var(--text-sm);
+        line-height: 1.4;
+        color: var(--fg-muted);
+        transition: color var(--dur) var(--ease);
+    }
+    /* active marker rides the rail rule */
+    .toc__link::before {
+        content: "";
+        position: absolute;
+        left: calc(-1 * var(--space-4) - 1px);
+        top: 0.1em;
+        bottom: 0.1em;
+        width: 2px;
+        background: var(--accent);
+        transform: scaleY(0);
+        transform-origin: top center;
+        transition: transform var(--dur) var(--ease);
+    }
+    .toc__link:hover,
+    .toc__link:focus-visible { color: var(--fg); }
+    .toc__link.is-active { color: var(--accent); }
+    .toc__link.is-active::before { transform: scaleY(1); }
+}
+
+/* Print stays a single reading column — no rail. */
+@media print {
+    .toc { display: none; }
+    .section.has-toc { display: block; }
+}
+
 @media (max-width: 759px) {
     .hero {
         padding-block: var(--space-12) var(--space-10);
