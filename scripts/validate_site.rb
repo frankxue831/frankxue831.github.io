@@ -496,6 +496,36 @@ if css_path.exist?
   end
 end
 
+# --- WCAG AA contrast guard ---
+# --fg-subtle styles normal-size meta text (eyebrows, section numbers, tags,
+# years), so it must clear 4.5:1 on --bg in BOTH themes. Regression guard for
+# the a11y fix (was 2.42:1 light / 3.06:1 dark). Parses the token values from
+# the :root and [data-theme="dark"] blocks and computes the WCAG ratio.
+if css_path.exist?
+  css = css_path.read
+  lin = ->(c) { c /= 255.0; c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055)**2.4 }
+  lum = ->(hex) { r, g, b = hex.delete("#").scan(/../).map { |x| x.to_i(16) }; 0.2126 * lin.(r) + 0.7152 * lin.(g) + 0.0722 * lin.(b) }
+  ratio = ->(a, b) { l1 = lum.(a); l2 = lum.(b); ([l1, l2].max + 0.05) / ([l1, l2].min + 0.05) }
+  hex_in = ->(block, var) { block && block[/--#{var}:\s*(#[0-9a-fA-F]{6})/, 1] }
+  {
+    "light" => css[/:root\s*\{(.*?)\n\}/m, 1],
+    "dark"  => css[/\[data-theme="dark"\]\s*\{(.*?)\n\}/m, 1]
+  }.each do |theme, block|
+    bg = hex_in.(block, "bg")
+    # Tokens used as normal-size text → must clear AA 4.5:1 on --bg.
+    # (--status-released is also used as text in .install__copy.is-copied.)
+    %w[fg-subtle status-released].each do |var|
+      fg = hex_in.(block, var)
+      if bg && fg
+        r = ratio.(fg, bg)
+        record(failures, "style.css: #{theme} --#{var} #{fg} on --bg #{bg} = #{r.round(2)}:1, below WCAG AA 4.5:1") if r < 4.5
+      else
+        record(failures, "style.css: could not extract #{theme} --bg/--#{var} for contrast check")
+      end
+    end
+  end
+end
+
 if failures.empty?
   puts "Site validation passed"
 else
