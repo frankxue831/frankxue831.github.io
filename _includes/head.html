@@ -83,9 +83,13 @@
     <link rel="manifest" href="{{ '/site.webmanifest' | relative_url }}">
     <link rel="alternate" type="application/atom+xml" href="{{ '/feed.xml' | relative_url }}" title="{{ site.title | escape }}">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&amp;family=Noto+Sans+SC:wght@400;500;600;700&amp;family=Noto+Serif+SC:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+    {%- comment -%} Self-hosted fonts (no Google origin — see assets/fonts/ +
+        the @font-face block at the top of style.css). Preload only the two
+        above-the-fold Latin faces: EB Garamond roman (site mark + hero title +
+        headings) and IBM Plex Mono 400 (eyebrow labels + metadata). Body is
+        system-sans, so it needs no web font. CJK is system-served. {%- endcomment -%}
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ '/assets/fonts/eb-garamond-latin.woff2' | relative_url }}">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ '/assets/fonts/ibm-plex-mono-400-latin.woff2' | relative_url }}">
 
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
 </head>
