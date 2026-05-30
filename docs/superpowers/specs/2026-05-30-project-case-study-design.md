@@ -272,3 +272,41 @@ all-in-one scope and the explicit cost cue):
 - **i18n.** Added `project_summary.source` (`en: Source` / `zh: 源码`) so the
   shared summary include renders a localized source link instead of a hardcoded
   English string.
+
+## Private siblings (2026-05-31, post Codex + Grok review)
+
+Applying the shape to the **private** siblings (`repolens-rs`, `ghrunners`) tests
+the "sibling degradation unproven" risk above. Codex + Grok reviewed the plan;
+these rules resolve how the shape degrades for a project with no public artifacts:
+
+- **Evidence is redefined for private, and may be merged, not padded.** With no
+  public source / crate / CI to cite, legitimate evidence is *binary-observable*:
+  named shipped surfaces (CLI/MCP commands usable today), internal test/eval
+  contracts, refusal/safety contracts, and the project's own honest-status
+  discipline. It is labeled "private snapshot at `<tag/SHA>`" and must never imply
+  inspectable source or hidden CI. Per the omit-if-padded rule, keep `Evidence`
+  only when it has concrete private backing; otherwise fold it into decisions or
+  boundaries.
+- **Sharpened anti-relabeling (private projects relabel more easily).** A
+  limitation alone is **not** a cost. Every decision opens with a positive
+  engineering verb, names a concrete rejected alternative, and points to an
+  observable consequence. The `forced-by → decision → cost → private evidence`
+  matrix is authored first and signed off (subagent + human) before any HTML edit.
+- **The honest-status discipline is the centerpiece, not a caveat dump.** Where a
+  project publishes calibrated "shipped vs scaffolding" boundaries (repolens:
+  `validate-plan` warnings-only, `remember` markdown-not-graph, `eval`
+  scaffolding/no auto-grading, `state` read-only), present each as a deliberately
+  chosen trust boundary *with its cost* — evidence of judgment, not weakness.
+- **Two PRs, repolens first.** repolens is a clean judgment narrative; ghrunners
+  carries a source-of-truth contradiction (its code shipped guarded launchd
+  `control` (bootstrap/unload/restart) + `doctor` by v0.4.0, while its docs still
+  said "read-only / control planned"). Per the user, ghrunners is framed as
+  "observability + guarded control"; that PR follows.
+- **Validator: project-specific, added after prose review.** Keep
+  `private_source_pattern` (still forbids `repolens-rs`/`ghrunners` links) and the
+  no-install-block guard. Add per-page: six headings in order, `>= 4` cost cues,
+  no overclaims, and regression guards for the load-bearing honest-status phrases
+  (repolens: `warnings-only`, `not the typed graph`, `scaffolding`; ghrunners:
+  `v0.4.0` present and `v0.1.1` absent, no read-only-only promise). **Brittle, do
+  not add:** version-grid placement, exact tool/test counts, private SHAs, or any
+  check that shells into the sibling private repos.
