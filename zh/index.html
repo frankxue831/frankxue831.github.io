@@ -1,7 +1,7 @@
 ---
 layout: default
 title: 个人主页
-description: Frank Xue 的个人主页。软件工程师,记一些笔记,放几个项目。
+description: Frank Xue 的个人主页。软件工程师，记一些笔记，放几个项目。
 permalink: /zh/
 lang: zh
 alternate: /
@@ -16,12 +16,12 @@ alternate: /
             <p class="hero__eyebrow">Frank Xue / 软件工程师</p>
 
             <h1 class="hero__title">
-                写一些让代码和工作流
-                <em>更清楚的工具。</em>
+                为代码、密码学和 Agent，写可审计、
+                <em>状态清晰的工具。</em>
             </h1>
 
             <p class="hero__lede">
-                也做一些给 AI 编程 Agent 用的上下文工具，让新的 session 更快理解当前任务和所在仓库。
+                以 Rust 为主，覆盖密码学、仓库上下文和本地开发基础设施，把发布状态写在明面上。
             </p>
 
             <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
@@ -116,23 +116,23 @@ alternate: /
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
-                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK,
-                重点是常量时间设计的 secret-handling 路径和 CI 里的泄漏回归门禁。
+                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK，
+                重点是按常量时间设计的、处理密钥和敏感数据的路径，以及 CI 里的泄漏回归门禁。
                 公开版 <strong>{{ project.release }}</strong> 已发布到
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的仓库上下文和类型化记忆层,
-                目标是让新的 session 不再从零理解项目。
+                给 AI 编程 Agent 用的仓库上下文和类型化记忆层，
+                目标是让新的会话不再从零理解项目。
                 目前状态是 <strong>{{ project.status_label.zh }}</strong>。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'ghrunners' %}
-                macOS 上 GitHub Actions self-hosted runner 的只读诊断 CLI,
-                把 launchd 状态、进程树、日志和 API 状态放到一次输出里,
+                macOS 上 GitHub Actions self-hosted runner 的只读诊断 CLI，
+                把 launchd 状态、进程树、日志和 API 状态放到一次输出里，
                 同时保留部分失败的可见性。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% else %}
-                精选工程项目,状态和项目信息会明确标出来。
+                精选工程项目，状态和项目信息会明确标出来。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% endcase %}
             </p>

@@ -26,11 +26,11 @@
     zh: "2025 — 至今"
   tags:
     en: ["Rust", "MCP", "Agent tooling"]
-    zh: ["Rust", "MCP", "Agent 工具"]
+    zh: ["Rust", "MCP", "Agent 工具链"]
   status: private-pre-release
   status_label:
     en: "Private pre-release"
-    zh: "私有预发布"
+    zh: "私有预发布版"
   release: "origin/main @ afd7a6b"
   release_source: private_main
   repo_url:

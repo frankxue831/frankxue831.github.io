@@ -77,11 +77,11 @@ zh:
     aria: "项目摘要"
     role: "角色"
     status: "状态"
-    stack: "技术"
+    stack: "技术栈"
     release: "版本"
     links: "链接"
     owner: "个人项目"
-    key_outcome: "关键点"
+    key_outcome: "关键结果"
   theme:
     label: "主题"
     auto: "跟随系统"
