@@ -237,3 +237,38 @@ the rewritten detail page; adjust their one-line copy if the framing shifts.
 - **Sibling degradation unproven.** The shape is designed to degrade for private
   projects, but that is only validated when `repolens-rs` / `ghrunners` adopt it
   later. If it does not fit them, revise the shape before forcing it on.
+
+## Implementation refinements (2026-05-30, post-review)
+
+Codex and Grok reviewed this spec; source-of-truth was re-verified in plan mode.
+The following refinements were folded into the implementation (the user chose the
+all-in-one scope and the explicit cost cue):
+
+- **Source-of-truth update.** `gm-crypto-rs` is now a **public** repo
+  (`gh repo view` → `PUBLIC`; unauthenticated `200`). Latest public tag and the
+  published `gmcrypto-core` version are **v0.16.0**, not v0.12.0. `v0.14.0` was
+  deliberately **never published** — a `cargo-fuzz` parser-fuzzing sweep (16
+  targets, zero crashes) that changed no output bytes, so crates.io goes
+  `0.13.0 → 0.15.0`. Releases follow a **core-in-vN / FFI-in-vN+1** cadence.
+  Consequences: the page links its public **Source**; `_data/projects.yml` sets
+  `repo_url` + `public_source: true` + `release: v0.16.0`; the validator's
+  `private_source_pattern` drops `gm-crypto-rs` (keeps `repolens-rs|ghrunners`).
+- **Anti-relabeling gate = a decision/rationale matrix authored first** (both
+  reviewers' #1 fix): `forced-by → decision → cost → evidence`, kept in the PR
+  description and signed off by human + subagent review before the rule is
+  claimed satisfied.
+- **Explicit cost cue.** Each decision ends with a visible `Cost:` (EN) / `代价：`
+  (ZH) lead-in; the validator counts `>= 4` per page (one per decision) — the
+  machine-checkable half of the anti-relabeling rule.
+- **Fixed ZH headings** (deterministic checks): `是什么` · `要解决的问题` ·
+  `约束与关键决策` · `证据` · `下一步` · `它不是什么`.
+- **New validator checks** (all teeth-tested) on both `gm-crypto-rs` pages: the
+  six headings present and in order; `>= 4` cost cues; the dudect caveat phrase
+  (`detection events` / `检测事件`) survives; the `version-grid` precedes the
+  `Next`/`下一步` heading and `v0.16.0` appears before it (history lives under
+  Evidence); the public source link is present; no overclaims (EN whole-word
+  `production-ready|guaranteed|secure`; ZH `生产就绪|保证安全|绝对常量时间`,
+  without flagging the legitimate `按常量时间设计`).
+- **i18n.** Added `project_summary.source` (`en: Source` / `zh: 源码`) so the
+  shared summary include renders a localized source link instead of a hardcoded
+  English string.

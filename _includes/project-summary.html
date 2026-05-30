@@ -36,7 +36,7 @@
         <dt>{{ labels.links }}</dt>
         <dd>
           {%- if project.repo_url and project.public_source -%}
-            <a href="{{ project.repo_url | escape }}" rel="noopener noreferrer">Source</a>
+            <a href="{{ project.repo_url | escape }}" rel="noopener noreferrer">{{ labels.source }}</a>
           {%- endif -%}
           {%- if project.crate_url -%}
             <a href="{{ project.crate_url | escape }}" rel="noopener noreferrer">crates.io</a>
