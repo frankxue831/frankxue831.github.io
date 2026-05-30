@@ -10,7 +10,11 @@
 {%- if page.project_slug -%}
   {%- assign project = site.data.projects | where: 'slug', page.project_slug | first -%}
 {%- endif -%}
-<script type="application/ld+json">
+{%- comment -%} Build the JSON-LD, then escape <, >, & to their \uXXXX JSON
+    forms before emitting. jsonify alone leaves these literal, so a value
+    containing </script> could break out of the script element. The \u forms
+    parse back to the same characters, so the structured data is unchanged. {%- endcomment -%}
+{%- capture json_ld -%}
 {
   "@context": "https://schema.org",
   "@graph": [
@@ -67,4 +71,7 @@
     }{% endif %}
   ]
 }
+{%- endcapture -%}
+<script type="application/ld+json">
+{{ json_ld | replace: '<', '\u003c' | replace: '>', '\u003e' | replace: '&', '\u0026' }}
 </script>

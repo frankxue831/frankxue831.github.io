@@ -4,6 +4,18 @@
 <html lang="{{ t.html_lang }}" class="no-js">
 <head>
     <meta charset="UTF-8">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    {%- comment -%} Content-Security-Policy via <meta> (GitHub Pages cannot set
+        response headers). Placed BEFORE the inline pre-paint scripts so those
+        are governed by it; their exact sha256 hashes are pinned in script-src
+        (validate_site.rb recomputes them and fails CI if a gate script changes
+        without the hash being updated). All resources are same-origin; the only
+        non-'self' allowances are data: images (the inline SVG favicon + the
+        paper-grain background) — fonts are self-hosted, no external origins.
+        Header-only protections (X-Frame-Options, frame-ancestors, HSTS,
+        X-Content-Type-Options, Permissions-Policy, COOP/COEP) are not
+        achievable on GitHub Pages. {%- endcomment -%}
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Y5SPrSlmZ1E/1ZwkCJM8CtVOKWtyav1fJ2Z7hYiU5Qk=' 'sha256-RDRBZAaGuCDDjd2WCMm5Koarjk7IRgOxCivEo5GV8LA='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <script>
   /* Theme gate — runs before paint, no external deps.
      Resolves the reader's preference (localStorage > prefers-color-scheme),

@@ -28,9 +28,9 @@
 
 <header class="site-header">
     <div class="site-header__inner">
-        <a href="{{ base | append: '/' | relative_url }}" class="site-mark" aria-label="{{ site.title | escape }} — {{ t.nav.home }}">
+        <a href="{{ base | append: '/' | relative_url }}" class="site-mark" aria-label="{{ site.title | escape }} — {{ t.nav.home | escape }}">
             <span class="site-mark__glyph">f</span>
-            <span class="site-mark__name">{{ site.title }}</span>
+            <span class="site-mark__name">{{ site.title | escape }}</span>
         </a>
 
         <button class="nav-toggle" type="button"
@@ -71,7 +71,7 @@
                            class="primary-nav__link"
                            {% if is_current %}aria-current="page"{% endif %}>
                             <span class="primary-nav__num">{{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
-                            <span class="primary-nav__label">{{ label }}</span>
+                            <span class="primary-nav__label">{{ label | escape }}</span>
                         </a>
                     </li>
                 {%- endfor -%}
@@ -80,9 +80,9 @@
                     <a href="{{ other_url | relative_url }}"
                        class="primary-nav__link primary-nav__link--switch"
                        hreflang="{% if lang == 'en' %}zh-CN{% else %}en{% endif %}"
-                       aria-label="{{ t.switcher.aria }}">
+                       aria-label="{{ t.switcher.aria | escape }}">
                         <span class="primary-nav__num" aria-hidden="true">⇄</span>
-                        <span class="primary-nav__label">{{ t.switcher.label }}</span>
+                        <span class="primary-nav__label">{{ t.switcher.label | escape }}</span>
                     </a>
                 </li>
                 {%- endif -%}
@@ -94,11 +94,11 @@
                 <li class="primary-nav__item primary-nav__item--theme">
                     <button type="button"
                             class="theme-toggle"
-                            aria-label="{{ t.theme.label }}"
-                            data-state-auto="{{ t.theme.auto }}"
-                            data-state-light="{{ t.theme.light }}"
-                            data-state-dark="{{ t.theme.dark }}"
-                            data-aria-template="{{ t.theme.aria_template }}">
+                            aria-label="{{ t.theme.label | escape }}"
+                            data-state-auto="{{ t.theme.auto | escape }}"
+                            data-state-light="{{ t.theme.light | escape }}"
+                            data-state-dark="{{ t.theme.dark | escape }}"
+                            data-aria-template="{{ t.theme.aria_template | escape }}">
                         <svg viewBox="0 0 24 24" data-icon="auto" aria-hidden="true">
                             <circle cx="12" cy="12" r="9"/>
                             <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/>
