@@ -478,26 +478,43 @@ end
   record(failures, "#{relative}: missing copy button") unless html.include?(%(data-copy-target="install-cmd"))
 end
 
-# --- gm-crypto-rs case study structure (per 2026-05-30-project-case-study spec) ---
-# The flagship page is a six-section case study with an anti-relabeling discipline.
-# These checks are deterministic proxies: section shape + order, a per-decision
-# cost cue (so every decision names a tradeoff), the dudect non-proof caveat
-# surviving the rewrite, the version history living under Evidence (not its own
-# section), the now-public source link present, and no overclaims. Headings are
-# matched as they appear in built HTML (note the `&amp;` entity).
+# --- Project case-study structure (per 2026-05-30-project-case-study spec) ---
+# Each featured page is a six-section case study with an anti-relabeling
+# discipline: section shape + order, a per-decision cost cue (every decision
+# names a tradeoff), and no overclaims. gm-crypto-rs (public) additionally checks
+# the dudect caveat, the version history living under Evidence, and its public
+# source link. The private siblings instead carry load-bearing honest-status
+# phrases as regression guards, and must NOT show a public source link (already
+# enforced by private_source_pattern above). Headings match built HTML
+# (note the `&amp;` entity).
 case_study = {
   "projects/gm-crypto-rs/index.html" => {
     headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
                "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
                "<h2>Next</h2>", "<h2>What it isn't</h2>"],
-    cost: "Cost:", next_h2: "<h2>Next</h2>", caveat: "detection events",
-    overclaims: %w[production-ready guaranteed secure]
+    cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
+    caveat: "detection events", version_before: ["<h2>Next</h2>", "v0.16.0"],
+    source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "zh/projects/gm-crypto-rs/index.html" => {
     headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
                "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
-    cost: "代价：", next_h2: "<h2>下一步</h2>", caveat: "检测事件",
-    overclaims: ["生产就绪", "保证安全", "绝对常量时间"]
+    cost: "代价：", overclaims: ["生产就绪", "保证安全", "绝对常量时间"],
+    caveat: "检测事件", version_before: ["<h2>下一步</h2>", "v0.16.0"],
+    source_link: %(github.com/frankxue831/gm-crypto-rs")
+  },
+  "projects/repolens-rs/index.html" => {
+    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
+               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
+               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
+    must_include: ["warnings-only", "not the typed graph", "scaffolding"]
+  },
+  "zh/projects/repolens-rs/index.html" => {
+    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
+               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    cost: "代价：", overclaims: ["生产就绪", "保证安全"],
+    must_include: ["只给 warning", "不是那张类型化记忆图", "脚手架"]
   }
 }
 case_study.each do |relative, spec|
@@ -517,24 +534,37 @@ case_study.each do |relative, spec|
   cost_count = html.scan(spec[:cost]).length
   record(failures, "#{relative}: only #{cost_count} #{spec[:cost].inspect} cost cues (need >= 4, one per decision)") if cost_count < 4
 
-  # The dudect non-proof caveat must survive the reframe.
-  record(failures, "#{relative}: dudect detection-event caveat missing") unless html.include?(spec[:caveat])
-
-  # Version history lives under Evidence (the grid precedes the Next heading),
-  # and the current public release is shown there.
-  grid_i = html.index("version-grid")
-  next_i = html.index(spec[:next_h2])
-  record(failures, "#{relative}: version-grid not before Next (history must live under Evidence)") if grid_i && next_i && grid_i >= next_i
-  record(failures, "#{relative}: latest public release v0.16.0 missing from Evidence") unless next_i && (html.index("v0.16.0") || 1 << 60) < next_i
-
-  # The now-public source link must be present (closing quote pins it to the repo,
-  # not the -demo sibling).
-  record(failures, "#{relative}: missing public source link") unless html.include?(%(github.com/frankxue831/gm-crypto-rs"))
-
   # No overclaims (whole-word for the ASCII set).
   spec[:overclaims].each do |word|
     pattern = word.match?(/\A[\x00-\x7F]+\z/) ? /\b#{Regexp.escape(word)}\b/ : /#{Regexp.escape(word)}/
     record(failures, "#{relative}: overclaim #{word.inspect} present") if html.match?(pattern)
+  end
+
+  # Load-bearing phrases that must survive a rewrite (private honest-status guards).
+  # Normalize whitespace first so a phrase wrapped across source lines still matches.
+  normalized = html.gsub(/\s+/, " ")
+  Array(spec[:must_include]).each do |phrase|
+    record(failures, "#{relative}: required phrase #{phrase.inspect} missing") unless normalized.include?(phrase)
+  end
+
+  # gm-crypto-only: the dudect non-proof caveat survives the reframe.
+  if spec[:caveat]
+    record(failures, "#{relative}: dudect detection-event caveat missing") unless html.include?(spec[:caveat])
+  end
+
+  # gm-crypto-only: version history lives under Evidence (release token appears
+  # before the Next heading, and the version-grid precedes it).
+  if spec[:version_before]
+    next_h2, version = spec[:version_before]
+    next_i = html.index(next_h2)
+    grid_i = html.index("version-grid")
+    record(failures, "#{relative}: version-grid not before Next (history must live under Evidence)") if grid_i && next_i && grid_i >= next_i
+    record(failures, "#{relative}: release #{version} missing from Evidence (before Next)") unless next_i && (html.index(version) || 1 << 60) < next_i
+  end
+
+  # gm-crypto-only: the now-public source link must be present.
+  if spec[:source_link]
+    record(failures, "#{relative}: missing public source link") unless html.include?(spec[:source_link])
   end
 end
 

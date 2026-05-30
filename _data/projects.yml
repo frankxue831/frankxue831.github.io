@@ -31,7 +31,7 @@
   status_label:
     en: "Private pre-release"
     zh: "私有预发布版"
-  release: "origin/main @ afd7a6b"
+  release: "origin/main @ 5136bbc"
   release_source: private_main
   repo_url:
   crate_url:

@@ -23,51 +23,109 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
 <section class="section wrap reveal">
     <article class="project-detail prose">
         {% include project-summary.html %}
+
         <h2>What it is</h2>
         <p>
-            <code>RepoLens</code> scans a repository into structured packs,
-            exposes that model through an MCP server, and pairs it with a
-            typed, decaying memory graph. The goal is not to write code for
-            the agent. The goal is to stop every new session from starting
-            cold.
+            <code>RepoLens</code> scans a repository into structured, immutable
+            "packs," exposes that model through an MCP server, and pairs it with
+            a typed, decaying memory graph. The goal isn't to write code for the
+            agent — it's to stop every new session from starting cold. It is a
+            private pre-release; the snapshot it describes is named under
+            <em>Evidence</em> below.
         </p>
 
-        <h2>Current private snapshot</h2>
+        <h2>The problem</h2>
         <p>
-            Private pre-release snapshot: <code>origin/main @ afd7a6b</code>.
-            That private snapshot includes repo scanning, 26 MCP tools, tiered
-            summaries, convention extraction, pack comparison, grounded
-            long-term memory recall, <code>repolens init</code>,
-            <code>brief</code>, <code>remember</code>,
-            <code>eval list/start</code>, and warnings-only
-            <code>validate-plan</code>.
+            Coding agents generate code well but lose project context the moment
+            a session ends. Every new session restarts cold: re-grepping the
+            same files, re-deriving the same conventions, re-making mistakes that
+            were caught and rolled back weeks ago, guessing plausibly but wrongly
+            because nothing pushes back. The naive fix — a bigger context window,
+            more files dumped into the prompt — dilutes the signal in noise
+            ("lost in the middle"). The bottleneck isn't intelligence; it's
+            <em>durable, structured perception</em>.
         </p>
 
-        <h2>What's different about it</h2>
+        <h2>Constraints &amp; key decisions</h2>
         <p>
-            RepoLens treats repository understanding as structured perception,
-            not as a bigger prompt dump. Memories have types, anchors, decay,
-            and grounding status; tool responses carry epistemic metadata so
-            an agent can see whether it is reading observation, heuristic, or
-            interpretation.
+            <strong>Structured typed perception over a bigger prompt.</strong>
+            Because cold-start re-discovery is the problem and dumping more files
+            only dilutes the signal, RepoLens scans the repo into an immutable
+            typed pack — files, symbols, dependency graph, profile — and exposes
+            it through 26 MCP tools (code search, graph traversal, summaries,
+            convention extraction, memory, wiki) instead of widening the context
+            window. <strong>Cost:</strong> a pack is a build-and-refresh step,
+            and because packs are immutable they go stale until the next scan.
+        </p>
+        <p>
+            <strong>Typed, decaying, grounded memory over a flat store.</strong>
+            A flat RAG bucket has no notion of staleness or trust, so agents
+            re-make rolled-back mistakes. Memory here is a typed graph (five node
+            types) with exponential decay and a grounding status checked against
+            the current pack — not a flat embedding store.
+            <strong>Cost:</strong> more moving parts, and recall is decay-based
+            and grounded, <em>not</em> a source of truth — it can be stale or
+            wrong by design.
+        </p>
+        <p>
+            <strong>Publish the calibrated status before the surface is
+            complete.</strong> Agent tooling is full of inflated claims, and a
+            tool that overstates erodes the very trust it exists to build. So the
+            shipped boundaries are labeled out loud: <code>validate-plan</code> is
+            warnings-only (a clean run doesn't prove a plan valid),
+            <code>remember</code> is workspace-markdown handoff — not the typed
+            graph, <code>eval</code> is scaffolding (it launches no agents and
+            grades nothing; a human fills the scorecard), and <code>state</code>
+            is read-only inspection. <strong>Cost:</strong> the page reads less
+            impressive than a vaguer one would, because the gaps are stated
+            instead of glossed.
+        </p>
+        <p>
+            <strong>A regression-locked benchmark over "more context must be
+            better."</strong> Whether an agent's context is actually improving
+            has no answer without a measurement, so RepoLens emits calibrated
+            evidence findings (agent-readable) and keeps a five-case eval
+            contract with one case regression-locked. <strong>Cost:</strong> the
+            contract is a maintenance burden, and the eval is scaffolding —
+            humans grade it; it isn't automated proof.
+        </p>
+
+        <h2>Evidence</h2>
+        <p>
+            Private snapshot at <code>origin/main @ 5136bbc</code> — there is no
+            public source, crate, or docs page to inspect. What backs the claims
+            instead is the running surface: <code>scan</code>, <code>init</code>,
+            <code>brief --task</code>, <code>remember --file</code>,
+            <code>eval list / start</code>, <code>validate-plan --file</code>,
+            <code>state</code>, <code>compare-summaries</code>, and
+            <code>findings</code> are usable today through the CLI and MCP,
+            alongside the 26 MCP tools and the typed memory graph. The strongest
+            signal is the project's own <em>honest-status discipline</em> — a
+            published, per-surface map of what is shipped versus scaffolding, kept
+            deliberately calibrated so a future overclaim would stand out — and a
+            <code>dogfood</code> eval contract (five cases, one regression-locked)
+            that holds the line on context quality.
         </p>
 
         <h2>Next</h2>
         <p>
-            The planned v0.1 direction is agent legibility and memory safety:
-            richer memory types such as hypotheses, constraints, failed
-            attempts, and friction findings, plus explicit confidence labels.
-            Those pieces should be described as planned until they appear in a
-            public release or public main snapshot.
+            The v0.1 milestone is what makes RepoLens legible as a product:
+            richer memory types — <code>Hypothesis</code>, <code>Constraint</code>,
+            <code>FailedAttempt</code>, <code>FrictionFinding</code> — and an
+            explicit <code>Confidence</code> enum (<code>TestValidated</code> /
+            <code>HumanVerified</code> / <code>ScanExtracted</code> /
+            <code>AgentAsserted</code>). Planned until they land in a public
+            release or public-main snapshot.
         </p>
 
         <h2>What it isn't</h2>
         <ul>
-            <li>Not an autonomous coding agent.</li>
+            <li>Doesn't write code — agents do that.</li>
             <li>Not a replacement for tests or human review.</li>
-            <li>Not a generic RAG store.</li>
+            <li>Not a generic RAG store — memory is typed, grounded, and decays.</li>
             <li>Not multi-repo or org-wide memory today.</li>
-            <li>Not a guarantee that recalled memory is correct.</li>
+            <li>No guarantee that recalled memory is correct.</li>
+            <li>Private pre-release — not a public-source project today.</li>
         </ul>
 
         <div class="project-detail__links">
