@@ -261,9 +261,11 @@ internal_targets.each do |source, target|
 end
 
 # Private/unreachable source repos that must never be linked publicly.
-# The trailing (?![\w-]) word-boundary keeps `gm-crypto-rs` from also
-# matching the genuinely-public `gm-crypto-rs-demo` repo (a prefix match).
-private_source_pattern = %r{github\.com/frankxue831/(gm-crypto-rs|repolens-rs|ghrunners)(?![\w-])}
+# `gm-crypto-rs` went public (repo + crate + demo all visitor-reachable), so it
+# is no longer forbidden — only the still-private repos are. The trailing
+# (?![\w-]) word-boundary keeps these from prefix-matching a future public
+# `<name>-demo`/`-foo` sibling.
+private_source_pattern = %r{github\.com/frankxue831/(repolens-rs|ghrunners)(?![\w-])}
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
   if html.match?(/mailto:/i) || html.match?(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)
@@ -474,6 +476,66 @@ end
   next if html.empty?
   record(failures, "#{relative}: missing install command") unless html.include?("cargo add gmcrypto-core")
   record(failures, "#{relative}: missing copy button") unless html.include?(%(data-copy-target="install-cmd"))
+end
+
+# --- gm-crypto-rs case study structure (per 2026-05-30-project-case-study spec) ---
+# The flagship page is a six-section case study with an anti-relabeling discipline.
+# These checks are deterministic proxies: section shape + order, a per-decision
+# cost cue (so every decision names a tradeoff), the dudect non-proof caveat
+# surviving the rewrite, the version history living under Evidence (not its own
+# section), the now-public source link present, and no overclaims. Headings are
+# matched as they appear in built HTML (note the `&amp;` entity).
+case_study = {
+  "projects/gm-crypto-rs/index.html" => {
+    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
+               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
+               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    cost: "Cost:", next_h2: "<h2>Next</h2>", caveat: "detection events",
+    overclaims: %w[production-ready guaranteed secure]
+  },
+  "zh/projects/gm-crypto-rs/index.html" => {
+    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
+               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    cost: "代价：", next_h2: "<h2>下一步</h2>", caveat: "检测事件",
+    overclaims: ["生产就绪", "保证安全", "绝对常量时间"]
+  }
+}
+case_study.each do |relative, spec|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+
+  # All six headings present, in order.
+  positions = spec[:headings].map { |h| [h, html.index(h)] }
+  missing = positions.select { |_, i| i.nil? }.map(&:first)
+  record(failures, "#{relative}: missing case-study heading(s): #{missing.join(', ')}") unless missing.empty?
+  if missing.empty?
+    idxs = positions.map(&:last)
+    record(failures, "#{relative}: case-study headings out of order") unless idxs == idxs.sort
+  end
+
+  # Every decision must name a tradeoff: at least four visible cost cues.
+  cost_count = html.scan(spec[:cost]).length
+  record(failures, "#{relative}: only #{cost_count} #{spec[:cost].inspect} cost cues (need >= 4, one per decision)") if cost_count < 4
+
+  # The dudect non-proof caveat must survive the reframe.
+  record(failures, "#{relative}: dudect detection-event caveat missing") unless html.include?(spec[:caveat])
+
+  # Version history lives under Evidence (the grid precedes the Next heading),
+  # and the current public release is shown there.
+  grid_i = html.index("version-grid")
+  next_i = html.index(spec[:next_h2])
+  record(failures, "#{relative}: version-grid not before Next (history must live under Evidence)") if grid_i && next_i && grid_i >= next_i
+  record(failures, "#{relative}: latest public release v0.16.0 missing from Evidence") unless next_i && (html.index("v0.16.0") || 1 << 60) < next_i
+
+  # The now-public source link must be present (closing quote pins it to the repo,
+  # not the -demo sibling).
+  record(failures, "#{relative}: missing public source link") unless html.include?(%(github.com/frankxue831/gm-crypto-rs"))
+
+  # No overclaims (whole-word for the ASCII set).
+  spec[:overclaims].each do |word|
+    pattern = word.match?(/\A[\x00-\x7F]+\z/) ? /\b#{Regexp.escape(word)}\b/ : /#{Regexp.escape(word)}/
+    record(failures, "#{relative}: overclaim #{word.inspect} present") if html.match?(pattern)
+  end
 end
 
 %w[

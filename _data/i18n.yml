@@ -27,6 +27,7 @@ en:
     stack: "Stack"
     release: "Release"
     links: "Links"
+    source: "Source"
     owner: "Personal project"
     key_outcome: "Key outcome"
   theme:
@@ -80,6 +81,7 @@ zh:
     stack: "技术栈"
     release: "版本"
     links: "链接"
+    source: "源码"
     owner: "个人项目"
     key_outcome: "关键结果"
   theme:

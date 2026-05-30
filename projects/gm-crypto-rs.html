@@ -39,6 +39,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             </div>
             <span class="install__status" role="status" aria-live="polite"></span>
         </div>
+
         <h2>What it is</h2>
         <p>
             <code>gm-crypto-rs</code> implements GB/T 32905 (SM3 hash),
@@ -52,30 +53,97 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>.
         </p>
 
-        <h2>What is shipped</h2>
+        <h2>The problem</h2>
         <p>
-            v0.5 → v0.7 was a throughput-then-API arc: a bitsliced SIMD
-            S-box (AVX2 <code>sbox_x32</code>, NEON <code>sbox_x16</code>) with
-            a CBC-decrypt fanout, then the first <em>user-callable cipher
-            modes</em> (batch APIs, single-shot and streaming SM4-CTR) on top.
+            Rust already has SM2 / SM3 / SM4 implementations, and the good
+            ones are <em>designed</em> for constant-time secret-dependent
+            operations. But design intent is asserted once, at review time,
+            and then erodes quietly — a refactor, a new fast path, a
+            dependency bump, and a timing leak slips back in with nothing to
+            catch it. This SDK targets a combination that makes that erosion
+            easy: byte-level GB/T conformance, a <code>no_std</code> / wasm
+            core, secret-touching paths that must stay constant-time-designed
+            across releases, and a C ABI that hands those same paths to
+            non-Rust callers (C, C++, Go, Zig, Python). The question it is
+            built around isn't <em>is it constant-time today</em> — it's
+            <em>what keeps it constant-time on every commit.</em>
+        </p>
+
+        <h2>Constraints &amp; key decisions</h2>
+        <p>
+            <strong>Verify continuously, don't assert once.</strong>
+            Constant-time behavior is treated as a property CI re-checks, not
+            a claim review signs off. A <code>dudect-bencher</code> harness
+            exercises eighteen secret-touching paths on every run; a core set
+            is <em>gated</em> at <code>|τ|&nbsp;&lt;&nbsp;0.20</code>, so a
+            timing regression fails the build instead of waiting for someone
+            to notice. The harness reports <em>detection events</em> — a low
+            <code>|τ|</code> means no leak was detected under the budget
+            given, <em>not</em> that none exists (the wording is
+            <code>dudect-bencher</code>'s own).
+            <strong>Cost:</strong> every PR pays the measurement budget, and
+            statistics can never turn "not detected" into "absent."
         </p>
         <p>
-            v0.8 → v0.11 was an <em>AEAD arc</em>. v0.8 landed the AEAD core —
-            single-shot SM4-GCM and SM4-CCM, plus a constant-time GHASH
-            primitive (CLMUL on x86_64, PMULL on aarch64, software Karatsuba
-            fallback). v0.9–v0.10 added GCM tag-length parameterization,
-            incremental-input buffered GCM, and the single-shot then streaming
-            AEAD C FFI (reachable from C / C++ / Go / Zig / Python). v0.11
-            modernized the opt-in RustCrypto trait fit to <code>digest 0.11</code> /
-            <code>cipher 0.5</code> — default-features users unaffected, every
-            output byte-identical against the KAT suite and gmssl 3.1.1 interop.
+            <strong>Gate the core, observe the rest.</strong> Not every path
+            fits a PR's time budget, so the harness splits them. Gated
+            (build-failing): SM2 sign and decrypt, SM4 key schedule, SM4
+            encrypt (default linear-scan and bitsliced SIMD S-box), SM4-CTR,
+            CBC-decrypt fanout, single-shot SM4-GCM / SM4-CCM decrypt,
+            SM4-XTS decrypt, HMAC-SM3, and encrypted-PKCS#8 decrypt.
+            Telemetry-only: field-inversion diagnostics, the k-class sign
+            (gated at <code>0.25</code> on a deeper nightly run), and the
+            buffered-GCM path. <strong>Cost:</strong> the telemetry paths are
+            watched, not enforced, and the two-tier split is a permanent
+            surface to maintain.
         </p>
         <p>
-            v0.12 added <em>SM4-XTS</em> — a tweakable block-cipher mode for
-            disk/sector encryption (GB/T 17964-2021) with full ciphertext
-            stealing, byte-identical to OpenSSL <code>SM4-XTS</code>
-            (<code>xts_standard=GB</code>), behind the opt-in <code>sm4-xts</code>
-            feature.
+            <strong>A safe core; SIMD is opt-in.</strong>
+            <code>gmcrypto-core</code> is <code>#![forbid(unsafe_code)]</code>.
+            The bitsliced SIMD S-box needs <code>unsafe</code>, so all of it
+            is quarantined in a separate <code>gmcrypto-simd</code> crate
+            behind the <code>sm4-bitsliced-simd</code> feature.
+            <strong>Cost:</strong> the fast path isn't the default — you opt
+            into SIMD, and the stock build runs the slower linear-scan S-box.
+        </p>
+        <p>
+            <strong>Constant-time-designed arithmetic, caveat stated.</strong>
+            Secret-dependent arithmetic is built on <code>subtle</code> and
+            <code>crypto-bigint</code>, and secret material is zeroized on
+            drop via <code>zeroize</code>. The design targets constant time
+            but can't guarantee it everywhere. <strong>Cost:</strong> on CPUs
+            whose multiply latency is data-dependent (some older x86, some
+            embedded), the timing properties don't hold — stated plainly under
+            <em>What it isn't</em> rather than buried.
+        </p>
+        <p>
+            <strong>Ship the core first, the FFI next — and skip releases that
+            change nothing.</strong> Cipher modes land on a
+            <code>core-in-vN / FFI-in-vN+1</code> cadence: the SM4-XTS core
+            shipped in v0.12 and its C ABI in v0.13; the in-place multi-sector
+            disk helper in v0.15 and its FFI in v0.16. When a cycle changes no
+            output bytes — v0.14 was a <code>cargo-fuzz</code> parser-fuzzing
+            sweep that found zero crashes — it merges as assurance and is never
+            published, so crates.io skips <code>0.14.0</code>.
+            <strong>Cost:</strong> the version line carries a deliberate gap to
+            explain, and the C ABI doubles the surface every mode has to be
+            tested and owned across three published crates.
+        </p>
+
+        <h2>Evidence</h2>
+        <p>
+            Every output is checked for byte-identity: against the standard
+            KAT vectors, against gmssl 3.1.1 for interop, and against
+            OpenSSL 3.x <code>SM4-XTS</code> (<code>xts_standard=GB</code>)
+            for the tweakable mode. The leak-regression gates above run in CI
+            on every commit, and the core carries
+            <code>#![forbid(unsafe_code)]</code>. The v0.14 cycle added a
+            <code>cargo-fuzz</code> (libFuzzer) harness — sixteen targets over
+            the untrusted-input decode / decrypt surface — run as a nightly
+            sweep. All of it is inspectable: the source, the CI workflow, and
+            the dudect harness are public, alongside the published
+            <code>gmcrypto-core</code> crate, its <code>docs.rs</code>
+            reference, and the runnable demo.
         </p>
         <dl class="version-grid">
             <dt>v0.6.0</dt>
@@ -97,41 +165,20 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <dd>2026-05-23 — RustCrypto trait fit on <code>digest 0.11</code> / <code>cipher 0.5</code>; outputs byte-identical (KAT + gmssl 3.1.1).</dd>
 
             <dt>v0.12.0</dt>
-            <dd>2026-05-23 — SM4-XTS (GB/T 17964-2021): single-shot, full ciphertext stealing, byte-identical to OpenSSL SM4-XTS (<code>xts_standard=GB</code>); opt-in <code>sm4-xts</code>.</dd>
-        </dl>
+            <dd>2026-05-23 — SM4-XTS core (GB/T 17964-2021): single-shot, full ciphertext stealing, byte-identical to OpenSSL SM4-XTS (<code>xts_standard=GB</code>); opt-in <code>sm4-xts</code>.</dd>
 
-        <h2>What's different about it</h2>
-        <p>
-            Other Rust SM2 crates exist — RustCrypto's <code>sm2</code> is the most
-            established, and it <em>aims for constant-time-designed
-            secret-dependent operations</em>. The differentiator here isn't
-            design intent in isolation. It's an <em>in-CI regression gate</em>
-            that catches a timing leak the moment it shows up, instead of
-            relying on review to assert its absence.
-        </p>
-        <p>
-            A <code>dudect-bencher</code> harness exercises eighteen
-            secret-touching paths on every CI run. The core set is
-            <em>gated</em> at <code>|τ| &lt; 0.20</code> — a regression fails
-            the build: SM2 sign, SM2 decrypt, SM4 key schedule, SM4 encrypt
-            (default linear-scan and bitsliced SIMD S-box), SM4-CTR,
-            CBC-decrypt fanout, the single-shot SM4-GCM / SM4-CCM decrypt
-            paths, SM4-XTS decrypt, HMAC-SM3, and encrypted-PKCS#8 decrypt. The field-inversion
-            diagnostics (<code>Fn::invert</code> / <code>Fp::invert</code>),
-            the k-class sign, and the buffered-GCM path run as
-            <em>telemetry</em> on the PR budget (the k-class sign gates at
-            <code>0.25</code> on the deeper nightly run). The harness reports
-            <em>detection events</em> — low <code>|τ|</code> means the test
-            couldn't detect a leak with the budget given, not that no leak
-            exists. Language taken directly from <code>dudect-bencher</code>'s
-            own docs.
-        </p>
-        <ul>
-            <li><code>#![forbid(unsafe_code)]</code> on <code>gmcrypto-core</code>.</li>
-            <li>All SIMD <code>unsafe</code> quarantined to the sibling crate <code>gmcrypto-simd</code>, opt-in via the <code>sm4-bitsliced-simd</code> feature.</li>
-            <li>Constant-time-designed arithmetic via <code>subtle</code> and <code>crypto-bigint</code> 0.7.</li>
-            <li>Secret material zeroized on drop via <code>zeroize</code>.</li>
-        </ul>
+            <dt>v0.13.0</dt>
+            <dd>2026-05-24 — single-shot SM4-XTS C ABI (the deferred FFI half of v0.12); default build byte-unchanged.</dd>
+
+            <dt>v0.14.0</dt>
+            <dd><em>Not published.</em> A <code>cargo-fuzz</code> parser-fuzzing sweep (16 targets, zero crashes) merged as assurance — no output change, no version bump.</dd>
+
+            <dt>v0.15.0</dt>
+            <dd>2026-05-28 — in-place multi-sector (disk) SM4-XTS helper; pure-core, opt-in <code>sm4-xts</code>.</dd>
+
+            <dt>v0.16.0</dt>
+            <dd>2026-05-29 — multi-sector SM4-XTS C FFI; every cipher mode now reachable from C / C++ / Go / Zig / Python.</dd>
+        </dl>
 
         <h2>Next</h2>
         <dl class="version-grid">
@@ -155,6 +202,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         </p>
 
         <div class="project-detail__links">
+            <a href="https://github.com/frankxue831/gm-crypto-rs" rel="noopener noreferrer">Source ↗</a>
             <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io ↗</a>
             <a href="https://docs.rs/gmcrypto-core" rel="noopener noreferrer">docs.rs ↗</a>
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">Demo ↗</a>

@@ -10,14 +10,14 @@
   status_label:
     en: "Released"
     zh: "已发布"
-  release: "v0.12.0"
+  release: "v0.16.0"
   release_source: public_tag
-  repo_url:
+  repo_url: "https://github.com/frankxue831/gm-crypto-rs"
   crate_url: "https://crates.io/crates/gmcrypto-core"
   docs_url: "https://docs.rs/gmcrypto-core"
   detail_url: "/projects/gm-crypto-rs/"
   zh_detail_url: "/zh/projects/gm-crypto-rs/"
-  public_source: false
+  public_source: true
 
 - slug: repolens-rs
   title: RepoLens
