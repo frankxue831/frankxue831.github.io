@@ -611,6 +611,56 @@ Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   end
 end
 
+# --- Security hardening: CSP, referrer policy, no inline styles, JSON-LD safety ---
+require "digest"
+
+# The CSP script-src must pin the sha256 of each inline pre-paint gate script.
+# Recompute them from the built output: if a gate script is edited without
+# updating the hash in head.html, this fails (self-guarding). The gates are the
+# only attribute-less <script> blocks (JSON-LD has type=, others have src=).
+sample = read_file(SITE.join("index.html"), failures)
+unless sample.empty?
+  gate_scripts = sample.scan(%r{<script>(.*?)</script>}m).flatten
+  record(failures, "head: expected 2 inline gate scripts, found #{gate_scripts.length}") unless gate_scripts.length == 2
+  csp = sample[/content="(default-src[^"]*)"/, 1].to_s
+  record(failures, "head: missing/!malformed CSP meta (no default-src)") if csp.empty?
+  gate_scripts.each_with_index do |body, i|
+    digest = Digest::SHA256.base64digest(body)
+    record(failures, "CSP: script-src missing 'sha256-#{digest}' for inline gate script ##{i + 1}") unless csp.include?("sha256-#{digest}")
+  end
+end
+
+# Every page must carry the CSP + referrer metas, no inline style attributes
+# (strict style-src), and no </script breakout inside JSON-LD.
+Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
+  html = path.read
+  source = path.relative_path_from(SITE).to_s
+  record(failures, "#{source}: missing Content-Security-Policy meta") unless html.include?(%(http-equiv="Content-Security-Policy"))
+  record(failures, "#{source}: missing referrer policy meta") unless html.include?(%(name="referrer"))
+  record(failures, "#{source}: inline style= attribute (breaks strict style-src CSP)") if html.match?(/\sstyle="/)
+  # JSON-LD breakout guard: the content up to the FIRST </script> (what the
+  # browser treats as the script body) must be valid, complete JSON. A value
+  # containing </script> closes the element early and truncates it, so the
+  # parse fails. The template \u-escapes <,>,& so this cannot happen in normal
+  # output — this check makes a regression impossible to ship.
+  html.scan(%r{<script type="application/ld\+json">\s*(.*?)\s*</script>}m).flatten.each do |ld|
+    begin
+      JSON.parse(ld)
+    rescue JSON::ParserError
+      record(failures, "#{source}: JSON-LD does not parse up to first </script> (possible breakout)")
+    end
+  end
+end
+
+# Project URLs come from a data file; require https (no javascript:/data: scheme).
+PROJECTS.each do |project|
+  %w[repo_url crate_url docs_url].each do |key|
+    url = project[key].to_s
+    next if url.empty?
+    record(failures, "projects.yml: #{project["slug"]} #{key} is not https: #{url}") unless url.start_with?("https://")
+  end
+end
+
 if failures.empty?
   puts "Site validation passed"
 else

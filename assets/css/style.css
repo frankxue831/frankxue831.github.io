@@ -1602,6 +1602,12 @@ body.lang-zh .page-header__lede {
     font-size: var(--text-xs);
 }
 .facts dd, .facts span:last-child { color: var(--fg); }
+/* Inline link inside a fact value (Notes / GitHub / crates.io). Class, not an
+   inline style, so a strict style-src CSP needs no 'unsafe-inline'. */
+.facts__link {
+    color: inherit;
+    border-bottom: 1px solid var(--accent);
+}
 
 @media (max-width: 759px) {
     .facts { grid-template-columns: 1fr; }
@@ -1625,12 +1631,21 @@ body.lang-zh .page-header__lede {
     .contact-grid { grid-template-columns: 1fr; gap: var(--space-12); }
 }
 
+.contact-intro { max-width: 64ch; }
 .contact-intro p {
     font-family: var(--serif);
     font-size: var(--text-xl);
     line-height: 1.5;
     color: var(--fg);
     margin-bottom: var(--space-6);
+}
+/* The "coming back soon" note under the contact list — relocated from an inline
+   style so style-src can stay strict. Selector carries dd to outrank the
+   `.contact-direct dd` serif rule the inline style used to win over. */
+.contact-direct dd.contact-direct__note {
+    font-family: var(--mono);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
 }
 
 .contact-direct {

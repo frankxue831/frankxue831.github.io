@@ -25,15 +25,15 @@ summary_outcome: "用 CI 泄漏回归门控守住涉及秘密的关键路径。"
         {% include project-summary.html %}
         {% assign inst = site.data.i18n[page.lang].install %}
         <div class="install">
-            <span class="install__label">{{ inst.label }}</span>
+            <span class="install__label">{{ inst.label | escape }}</span>
             <div class="install__row">
                 <code class="install__cmd" id="install-cmd">cargo add gmcrypto-core</code>
                 <button type="button" class="install__copy"
                         data-copy-target="install-cmd"
-                        data-label-copy="{{ inst.copy }}"
-                        data-label-done="{{ inst.copied }}"
-                        aria-label="{{ inst.aria }}">
-                    <span class="install__copy-text" aria-hidden="true">{{ inst.copy }}</span>
+                        data-label-copy="{{ inst.copy | escape }}"
+                        data-label-done="{{ inst.copied | escape }}"
+                        aria-label="{{ inst.aria | escape }}">
+                    <span class="install__copy-text" aria-hidden="true">{{ inst.copy | escape }}</span>
                 </button>
             </div>
             <span class="install__status" role="status" aria-live="polite"></span>

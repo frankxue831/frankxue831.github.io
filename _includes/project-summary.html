@@ -36,13 +36,13 @@
         <dt>{{ labels.links }}</dt>
         <dd>
           {%- if project.repo_url and project.public_source -%}
-            <a href="{{ project.repo_url }}" rel="noopener noreferrer">Source</a>
+            <a href="{{ project.repo_url | escape }}" rel="noopener noreferrer">Source</a>
           {%- endif -%}
           {%- if project.crate_url -%}
-            <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>
+            <a href="{{ project.crate_url | escape }}" rel="noopener noreferrer">crates.io</a>
           {%- endif -%}
           {%- if project.docs_url -%}
-            <a href="{{ project.docs_url }}" rel="noopener noreferrer">docs.rs</a>
+            <a href="{{ project.docs_url | escape }}" rel="noopener noreferrer">docs.rs</a>
           {%- endif -%}
         </dd>
       </div>
