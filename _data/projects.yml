@@ -52,7 +52,7 @@
   status_label:
     en: "Private/local"
     zh: "本地/私有"
-  release: "local tag v0.1.1"
+  release: "local tag v0.4.0"
   release_source: local_tag
   repo_url:
   crate_url:
