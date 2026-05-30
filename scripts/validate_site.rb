@@ -572,6 +572,45 @@ if css_path.exist?
   end
 end
 
+# --- Self-hosted fonts: no third-party Google origin (privacy) ---
+# Fonts are served from this origin; no page may reach fonts.googleapis.com /
+# fonts.gstatic.com. The self-hosted @font-face must be present with
+# font-display: swap, every woff2 the CSS references must exist on disk, each
+# preloaded font link must resolve, and --serif must keep a system CJK serif
+# (Noto Serif SC is no longer downloaded, so CJK display relies on the fallback).
+Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
+  html = path.read
+  if html.match?(%r{fonts\.(?:googleapis|gstatic)\.com})
+    record(failures, "#{path.relative_path_from(SITE)}: references Google Fonts (fonts.googleapis/gstatic.com) — fonts must be self-hosted")
+  end
+end
+
+if css_path.exist?
+  css = css_path.read
+  record(failures, "style.css: missing @font-face (self-hosted fonts)") unless css.include?("@font-face")
+  record(failures, "style.css: missing font-display: swap on self-hosted fonts") unless css.match?(/font-display:\s*swap/)
+  font_srcs = css.scan(%r{url\(['"]?(/assets/fonts/[^'")]+\.woff2)['"]?\)}).flatten.uniq
+  record(failures, "style.css: no /assets/fonts/*.woff2 @font-face src found") if font_srcs.empty?
+  font_srcs.each do |src|
+    record(failures, "style.css: @font-face src missing on disk: #{src}") unless SITE.join(src.sub(%r{\A/}, "")).exist?
+  end
+  serif = css[/--serif:\s*([^;]+);/, 1]
+  unless serif && serif.match?(/Songti SC|STSong|SimSun|Noto Serif SC/)
+    record(failures, "style.css: --serif lost its system CJK serif fallback")
+  end
+end
+
+Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
+  html = path.read
+  html.scan(/<link\b[^>]*\bas="font"[^>]*>/i).each do |tag|
+    next unless tag.include?('rel="preload"')
+    href = tag[/href="([^"]+)"/, 1]
+    next unless href
+    rel = href.sub(%r{\Ahttps?://[^/]+}, "").sub(%r{\A/}, "")
+    record(failures, "#{path.relative_path_from(SITE)}: preload font missing on disk: #{href}") unless SITE.join(rel).exist?
+  end
+end
+
 if failures.empty?
   puts "Site validation passed"
 else

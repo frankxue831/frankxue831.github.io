@@ -72,5 +72,6 @@ exclude:
   - node_modules/
   - vendor/
   - README.md
+  - assets/fonts/README.md   # dev-only provenance doc; the defaults `layout` would otherwise render it into the site
   - CLAUDE.md
   - scripts/
