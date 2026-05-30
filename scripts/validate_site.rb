@@ -288,7 +288,7 @@ Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
 end
 
 # Home heroes must keep their real, server-rendered title (decrypt is JS-only).
-{ "index.html" => "auditable tools", "zh/index.html" => "更清楚的工具" }.each do |relative, needle|
+{ "index.html" => "auditable tools", "zh/index.html" => "可审计" }.each do |relative, needle|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
   record(failures, "#{relative}: hero title lost real text (#{needle.inspect})") unless html.include?(needle)
