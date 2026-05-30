@@ -1,12 +1,12 @@
 ---
 layout: default
 title: "ghrunners"
-description: ghrunners is a read-only observability CLI for GitHub Actions self-hosted runners on macOS.
+description: "ghrunners is a one-shot CLI for GitHub Actions self-hosted runners on macOS: read-only observability plus guarded launchd control."
 permalink: /projects/ghrunners/
 lang: en
 alternate: /zh/projects/ghrunners/
 project_slug: ghrunners
-summary_outcome: "Read-only diagnostics surface runner state without hiding partial failures."
+summary_outcome: "Typed findings and guarded control act on the same authoritative launchd state."
 ---
 
 <section class="page-header wrap">
@@ -15,51 +15,121 @@ summary_outcome: "Read-only diagnostics surface runner state without hiding part
         <em>ghrunners</em>
     </h1>
     <p class="page-header__lede">
-        A one-shot, read-only observability CLI for GitHub Actions
-        self-hosted runners on macOS.
+        A one-shot, no-daemon CLI for GitHub Actions self-hosted runners on
+        macOS — read-only observability, plus <em>guarded</em> launchd control.
     </p>
 </section>
 
 <section class="section wrap reveal">
     <article class="project-detail prose">
         {% include project-summary.html %}
+
         <h2>What it is</h2>
         <p>
-            <code>ghrunners</code> checks the local Mac for GitHub Actions
-            self-hosted runner installs, launchd state, process state, logs,
-            and optional GitHub API status. It reports the result as a quiet
-            table or JSON, with typed findings when something looks wrong.
+            <code>ghrunners</code> discovers every actions-runner on a Mac and
+            cross-checks <code>launchctl</code> domain state, the process tree,
+            <code>.runner</code> JSON, the worker logs, and (optionally) the
+            GitHub API. The observability core — <code>status</code>,
+            <code>describe</code>, <code>doctor</code>, <code>logs</code> —
+            surfaces problems as typed findings; a separate, guarded
+            <code>control</code> verb acts on the same state. It is a private,
+            local tool; the snapshot it describes is named under
+            <em>Evidence</em> below.
         </p>
 
-        <h2>Current local snapshot</h2>
+        <h2>The problem</h2>
         <p>
-            Local/private status: <code>local tag v0.1.1</code>. The current
-            CLI includes <code>status</code>, <code>describe</code>, and
-            <code>logs</code>; API enrichment is opt-in via <code>--api</code>.
+            When a self-hosted runner quietly dies on a Mac, the truth is
+            scattered: launchd holds the domain and last-exit state, the process
+            tree says whether a worker is really alive, the install dir holds the
+            config behind <code>0700</code> permissions, and the GitHub API knows
+            whether the job ever landed. You SSH in and reassemble it by hand —
+            and the obvious fix, restarting the runner, is exactly where a
+            careless command nukes an in-progress build or bootstraps it into the
+            wrong launchd domain.
         </p>
 
-        <h2>What's different about it</h2>
+        <h2>Constraints &amp; key decisions</h2>
         <p>
-            The tool is deliberately read-only and partial-output friendly.
-            Permission-denied paths become row-level findings instead of
-            fatal errors, and missing sudo or missing GitHub API access is
-            reflected in provenance rather than hidden.
+            <strong>One-shot observability from authoritative state.</strong>
+            Rather than run a monitoring daemon, <code>ghrunners</code> is a
+            single no-state invocation that parses the <code>launchctl print</code>
+            body — readable without <code>sudo</code> — so the run-state and
+            last-exit it reports are authoritative even for a non-root caller,
+            not guessed from <code>ps</code>. <strong>Cost:</strong> one-shot
+            means no continuous monitoring or historical trend — you run it, or
+            cron it, when you want a snapshot.
+        </p>
+        <p>
+            <strong>Partial output over fail-fast.</strong> Runner install dirs
+            sit under another user at mode <code>0700</code>, so a strict tool
+            would just error out without <code>sudo</code>. Instead the missing
+            pieces degrade gracefully: <code>PID -</code> and <code>REPO ?</code>
+            are not errors, and a permission-denied path becomes an
+            <code>Unreadable</code> finding rather than a fatal stop, while the
+            state column stays authoritative from the sudo-free print body.
+            <strong>Cost:</strong> every blank cell is a path the tool has to
+            design and explain — permission gap versus real absence — and the
+            output is simply less complete without <code>sudo</code>.
+        </p>
+        <p>
+            <strong>Guarded control, bound to observed state.</strong> The
+            obvious next step — start / stop / restart — is the dangerous one, so
+            <code>control</code> (bootstrap / unload / restart) resolves its
+            target from the same authoritative state the observability core
+            reads, never free-form <code>launchctl</code>. <code>--dry-run</code>
+            prints the resolved command without running it; the <code>--domain</code>
+            override is rejected with a usage error anywhere except a
+            <code>DoubleLoaded</code> unload (every other verb has a deterministic
+            target an override would subvert); and <code>--yes</code> is required
+            before a verb may kill a live <code>Runner.Worker</code>.
+            <strong>Cost:</strong> more preconditions and flags to carry, and the
+            tool deliberately refuses some commands raw <code>launchctl</code>
+            would run.
+        </p>
+        <p>
+            <strong>Typed findings and stable exit codes over free-text logs.</strong>
+            "Is this runner healthy?" needs a machine answer, so problems are 13
+            typed findings with severities — <code>doctor</code> prints only the
+            actionable <code>warn</code> / <code>error</code> ones, each with a
+            <code>fix:</code> line — and the process exits <code>1</code> when
+            <code>status</code> or <code>doctor</code> sees a warning or error, so
+            <code>ghrunners doctor &gt;/dev/null || mail …</code> works as a cron
+            health check. <strong>Cost:</strong> every finding is a typed contract
+            to define, trigger, and assign a severity and fix — a maintained
+            catalogue, not free text.
+        </p>
+
+        <h2>Evidence</h2>
+        <p>
+            Private snapshot at <code>local tag v0.4.0</code> — there is no public
+            source to inspect. What backs the claims is the running surface:
+            <code>status</code>, <code>describe</code>, <code>doctor</code>,
+            <code>logs</code>, and the guarded <code>control</code> verbs work
+            today, over a catalogue of 13 typed findings (from
+            <code>LoadedNotRunning</code> and <code>OrphanListener</code> to
+            <code>DoubleLoaded</code> and <code>Unreadable</code>) with
+            cron-friendly exit codes, JSON output, and a <code>--dry-run</code>
+            preview on every control action. The capability arrived in dated
+            steps: control verbs in v0.2, authoritative liveness from the
+            print body in v0.3, and the <code>doctor</code> sweep plus
+            <code>OrphanListener</code> in v0.4.
         </p>
 
         <h2>Next</h2>
         <p>
-            Public source link comes after the repository is reachable. Control
-            verbs such as start, stop, and restart are outside the current
-            local/private scope.
+            Candidate scope, not committed — deeper GitHub API enrichment and new
+            findings as edge cases surface on real hosts. A public source link
+            follows if and when the repository becomes reachable.
         </p>
 
         <h2>What it isn't</h2>
         <ul>
             <li>Not a runner installer or unregister tool.</li>
             <li>Not a daemon or persistent monitor.</li>
+            <li>Not fleet management — control is single-runner and guarded, not bulk orchestration.</li>
             <li>Not Linux or Windows tooling.</li>
-            <li>Not fleet management.</li>
-            <li>Not a public-source project until the repository is reachable.</li>
+            <li>Private/local — not a public-source project today.</li>
         </ul>
 
         <div class="project-detail__links">

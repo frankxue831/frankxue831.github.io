@@ -127,9 +127,9 @@ alternate: /
                 目前状态是 <strong>{{ project.status_label.zh }}</strong>。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'ghrunners' %}
-                macOS 上 GitHub Actions self-hosted runner 的只读诊断 CLI，
-                把 launchd 状态、进程树、日志和 API 状态放到一次输出里，
-                同时保留部分失败的可见性。
+                macOS 上 GitHub Actions self-hosted runner 的一次性 CLI——
+                只读观测加受控的 launchd 控制，把 launchd 状态、进程树、日志
+                和 API 状态放到一次输出里，同时保留部分失败的可见性。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% else %}
                 精选工程项目，状态和项目信息会明确标出来。
