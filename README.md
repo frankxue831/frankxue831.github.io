@@ -1,127 +1,91 @@
-# Frank Xue's Personal Website
+# frankxue.dev
 
-A modern, responsive personal portfolio website built with Jekyll and hosted on GitHub Pages.
+Personal site for **Frank Xue** — a Rust engineer working on cryptography, agent
+tooling, and CLIs. A bilingual (English / 中文), hand-built Jekyll site deployed on
+GitHub Pages at **[www.frankxue.dev](https://www.frankxue.dev)**.
 
-## 🌟 Features
+No framework, no CSS preprocessor, no build step beyond Jekyll. The aesthetic is
+"Codex — paper & ink": a light, monograph-feel layout that also ships a dark theme.
 
-- **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
-- **Modern UI/UX**: Clean, professional design with smooth animations
-- **Fast Loading**: Optimized for performance with minimal dependencies
-- **SEO-Friendly**: Proper meta tags and structure for search engines
-- **Easy to Customize**: Well-organized code and clear documentation
+## Highlights
 
-## 📂 Site Structure
+- **Bilingual, one-for-one.** English pages live at the root; Chinese mirrors live
+  under `/zh/`. Every page cross-links its counterpart and emits `hreflang` tags;
+  UI strings are centralized in `_data/i18n.yml`, never hardcoded.
+- **Light / dark theme.** Three-state toggle (light · dark · auto) that persists a
+  preference and follows the OS when set to auto, with a pre-paint script to avoid
+  a flash of the wrong theme.
+- **Progressive enhancement.** A handful of small vanilla JS files in `assets/js/`
+  (~500 lines total) add scroll reveals, a decrypt-on-reveal effect, a contents
+  rail with scroll-spy, a copy-to-clipboard install button, and the mobile nav.
+  Every page works with JavaScript disabled, and all motion respects
+  `prefers-reduced-motion`.
+- **Self-hosted fonts, zero third-party requests.** EB Garamond and IBM Plex Mono
+  (both OFL) are served from `assets/fonts/`; CJK falls back to the reader's system
+  serif/sans. No Google Fonts, no external runtime dependencies.
+- **Security-conscious.** A Content-Security-Policy and `referrer-policy` are set
+  via `<meta>` (the most GitHub Pages allows), with defense-in-depth escaping in
+  the templates.
+- **Project portfolio + writing.** Featured projects render from a single
+  source-of-truth data file with deeper detail pages; a bilingual Writing/Notes
+  section publishes an Atom feed at `/feed.xml`.
 
-- **Home**: Hero section with introduction and featured projects
-- **About**: Personal background, skills, and experience
-- **Projects**: Detailed showcase of work and accomplishments
-- **Contact**: Contact form and social links
+## Local development
 
-## 🚀 Getting Started
+Prerequisites: Ruby 3.x, Bundler, Git.
 
-### Prerequisites
+```bash
+bundle install                # one-time, installs the github-pages gem
+bundle exec jekyll serve      # http://localhost:4000, watches + rebuilds
+```
 
-- Ruby 2.7 or higher
-- Bundler gem
-- Git
+Build the production output (what GitHub Pages produces) into `_site/`:
 
-### Local Development
+```bash
+bundle exec jekyll build
+```
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/frankxue831/frankxue831.github.io.git
-   cd frankxue831.github.io
-   ```
+Run the validator — the de-facto test harness for this repo. It checks metadata,
+hreflang/i18n parity, security headers, and asset integrity against the built
+`_site/`. CI runs it on every push and pull request.
 
-2. Install dependencies:
-   ```bash
-   bundle install
-   ```
+```bash
+# The LC_ALL/LANG prefix is required on macOS so the script reads UTF-8 cleanly.
+LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 ruby scripts/validate_site.rb
+```
 
-3. Serve the site locally:
-   ```bash
-   bundle exec jekyll serve
-   ```
+## Project structure
 
-4. Visit `http://localhost:4000` in your browser
+```
+index.html  about.html  projects.html  contact.html  notes.html   # EN pages (root)
+zh/                                                                # ZH mirrors, same filenames
+projects/<slug>.html  zh/projects/<slug>.html                      # project detail pages
+_data/projects.yml                                                 # source of truth for project facts
+_data/i18n.yml                                                     # all bilingual UI strings
+_includes/  _layouts/                                              # head, nav, footer, single layout
+_notes/                                                            # Writing/Notes collection (bilingual)
+assets/css/style.css                                               # one hand-written stylesheet, design tokens
+assets/js/                                                         # progressive-enhancement scripts
+assets/fonts/                                                      # self-hosted woff2 + OFL licenses
+scripts/validate_site.rb                                           # post-build validator (run in CI)
+```
 
-## ✨ Customization
+The plugin set is `github-pages` (umbrella), `jekyll-feed`, `jekyll-seo-tag`, and
+`jekyll-sitemap`. Deeper architecture and contribution conventions live in
+[`CLAUDE.md`](CLAUDE.md).
 
-### Site Configuration
+## Deployment
 
-Edit `_config.yml` to customize:
-- Site title, description, and URL
-- Social media usernames
-- Contact email
-- SEO settings
+Pushing to `main` deploys automatically via GitHub Pages. The custom domain is
+configured through the `CNAME` file with HTTPS enabled in the Pages settings.
 
-### Content Updates
+## License
 
-- **Home Page**: Edit `index.html`
-- **About Page**: Edit `about.html`
-- **Projects**: Edit `projects.html`
-- **Contact**: Edit `contact.html`
-
-### Styling
-
-- Main styles: `assets/css/style.css`
-- Color scheme: CSS custom properties at the top of the stylesheet
-- Responsive breakpoints: Already configured for mobile, tablet, and desktop
-
-### Adding New Pages
-
-1. Create a new HTML file (e.g., `blog.html`)
-2. Add front matter with layout and title
-3. Add navigation links in `_layouts/page.html`
-
-## 🎨 Design Features
-
-- **Color Scheme**: Professional blue and gray palette
-- **Typography**: Inter font family for modern readability
-- **Animations**: Subtle hover effects and transitions
-- **Components**: Reusable buttons, cards, and form elements
-
-## 📱 Responsive Design
-
-- Mobile-first approach
-- Flexible grid systems
-- Optimized touch targets
-- Readable typography at all sizes
-
-## 🔧 Technical Details
-
-- **Framework**: Jekyll (GitHub Pages compatible)
-- **CSS**: Custom CSS with CSS Grid and Flexbox
-- **JavaScript**: Minimal vanilla JS (if needed)
-- **Hosting**: GitHub Pages with custom domain support
-
-## 📧 Contact Form
-
-The contact form is ready for integration with:
-- Formspree
-- Netlify Forms
-- EmailJS
-- Custom backend solution
-
-## 🚀 Deployment
-
-The site automatically deploys to GitHub Pages when you push to the main branch.
-
-### Custom Domain
-
-1. Add your domain to `CNAME` file
-2. Configure DNS with your domain provider
-3. Enable HTTPS in GitHub Pages settings
-
-## 📝 License
-
-This project is open source and available under the [Apache License 2.0](LICENSE).
-
-## 🤝 Contributing
-
-Feel free to submit issues and enhancement requests!
+Site code is released under the [Apache License 2.0](LICENSE). The bundled fonts
+are licensed separately under the SIL Open Font License (see
+`assets/fonts/OFL-EBGaramond.txt` and `assets/fonts/OFL-IBMPlexMono.txt`).
 
 ---
 
-**Live Site**: [www.frankxue.dev](https://www.frankxue.dev)
-**GitHub**: [@frankxue831](https://github.com/frankxue831)
+**Live site:** [www.frankxue.dev](https://www.frankxue.dev) · **GitHub:**
+[@frankxue831](https://github.com/frankxue831)

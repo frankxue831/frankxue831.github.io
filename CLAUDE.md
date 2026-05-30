@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository
 
-Personal site for Frank Xue at https://www.frankxue.dev — a Jekyll static site deployed via GitHub Pages (custom domain via `CNAME`). No JS framework, no build step beyond Jekyll; one ~30-line vanilla JS file for the mobile nav.
+Personal site for Frank Xue at https://www.frankxue.dev — a Jekyll static site deployed via GitHub Pages (custom domain via `CNAME`). No JS framework and no build step beyond Jekyll; interactivity is a handful of small vanilla JS files in `assets/js/` (~500 lines total: mobile nav, scroll reveal, decrypt cells, theme toggle, contents rail, copy button) used purely as progressive enhancement — every page works with JavaScript disabled.
 
 ## Commands
 
@@ -12,9 +12,13 @@ Personal site for Frank Xue at https://www.frankxue.dev — a Jekyll static site
 bundle install                # one-time, installs github-pages gem
 bundle exec jekyll serve      # http://localhost:4000, watches + rebuilds
 bundle exec jekyll build      # writes _site/ (also what gh-pages produces)
+
+# Post-build validator (the de-facto test harness; CI runs this on every push/PR).
+# The LC_ALL/LANG prefix is required on macOS so the script reads UTF-8 cleanly.
+LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 ruby scripts/validate_site.rb
 ```
 
-No tests, no linter, no JS build. Deployment is automatic on push to `main`.
+No JS build and no unit-test or linter suite. The test harness is `scripts/validate_site.rb` — a post-build validator (metadata, hreflang/i18n parity, security headers, asset integrity) that CI runs after `jekyll doctor` and `jekyll build` on every push and PR (`.github/workflows/site.yml`). Deployment is automatic on push to `main`.
 
 ## Architecture
 
