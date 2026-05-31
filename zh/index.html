@@ -145,9 +145,44 @@ alternate: /
     </a>
 </section>
 
+{%- assign latest_notes = site.notes | where: "lang", "zh" | sort: "date" | reverse -%}
+{%- if latest_notes.size > 0 -%}
+<section class="section wrap reveal" aria-labelledby="writing-h">
+    <header class="section__head">
+        <p class="section__num">(03)  写作</p>
+        <h2 id="writing-h" class="section__title">
+            最近的<em>笔记。</em>
+        </h2>
+    </header>
+
+    <ul class="work-list">
+        {%- for note in latest_notes limit: 2 -%}
+        <li class="work-list__item reveal">
+            <a class="work-list__row" href="{{ note.url | relative_url }}">
+                <span class="work-list__head">
+                    <span class="work-list__title">{{ note.title }}</span>
+                </span>
+                <span class="work-list__meta">
+                    <span class="work-list__year">{{ note.date | date: "%Y-%m-%d" }}</span>
+                </span>
+            </a>
+            <p class="work-list__note">
+                {{ note.excerpt | default: note.description | strip_html | truncate: 160 }}
+                <a href="{{ note.url | relative_url }}" class="work-list__more">{{ site.data.i18n.zh.notes.read_more }}</a>
+            </p>
+        </li>
+        {%- endfor -%}
+    </ul>
+
+    <a href="{{ '/zh/notes/' | relative_url }}" class="preview__link preview__link--section">
+        看全部笔记 <span aria-hidden="true">→</span>
+    </a>
+</section>
+{%- endif -%}
+
 <section class="section wrap reveal" aria-labelledby="contact-h">
     <header class="section__head">
-        <p class="section__num">(03)  联系</p>
+        <p class="section__num">(04)  联系</p>
         <h2 id="contact-h" class="section__title">
             <em>联系我。</em>
         </h2>
