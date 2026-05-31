@@ -494,6 +494,10 @@ case_study = {
                "<h2>Next</h2>", "<h2>What it isn't</h2>"],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
     caveat: "detection events", version_before: ["<h2>Next</h2>", "v0.16.0"],
+    # Non-affiliation note ties to the named interop targets (trademark-disclaimer
+    # convention) instead of denying ties to unnamed parties. "either project" is
+    # the tell; if it reverts to the generic enumerated form, this guard trips.
+    must_include: ["either project"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "zh/projects/gm-crypto-rs/index.html" => {
@@ -501,6 +505,9 @@ case_study = {
                "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
     cost: "代价：", overclaims: ["生产就绪", "保证安全", "绝对常量时间"],
     caveat: "检测事件", version_before: ["<h2>下一步</h2>", "v0.16.0"],
+    # ZH mirror of the interop-tied non-affiliation guard ("这两个项目" = the two
+    # named projects gmssl/OpenSSL); trips if it reverts to the enumerated form.
+    must_include: ["这两个项目"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "projects/repolens-rs/index.html" => {
