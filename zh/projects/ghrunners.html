@@ -41,7 +41,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             Mac 上一台 self-hosted runner 悄无声息地挂掉时，线索是散落
             各处的：launchd 记着域和上次退出状态，进程树才知道 worker
             是不是真活着，安装目录用 <code>0700</code> 权限把配置挡在外面，
-            而 GitHub API 知道任务到底有没有落地。你 SSH 上去一点点拼，
+            而 GitHub API 才知道任务到底有没有真正派到这台机器上。你 SSH 上去一点点拼，
             可最顺手的修法——重启 runner——恰恰最危险：一条不小心的命令，
             就可能干掉正在跑的构建，或者把它 bootstrap 进错误的 launchd 域。
         </p>
@@ -49,9 +49,9 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
         <h2>约束与关键决策</h2>
         <p>
             <strong>一次性观测，基于权威状态。</strong>它不跑监控守护
-            进程，每次都是一回无状态的调用，去解析 <code>launchctl
+            进程，每次都是一次无状态调用，去解析 <code>launchctl
             print</code> 的正文——读它不需要 <code>sudo</code>。所以哪怕
-            是非 root 调用，它报出来的运行态和上次退出也是权威的，而不是
+            是非 root 调用，它报出来的运行态和上次退出状态也是权威的，而不是
             拿 <code>ps</code> 猜的。<strong>代价：</strong>一次性也意味着
             没有持续监控、没有历史趋势——想要快照就跑一次，或者交给 cron
             定时跑。
@@ -62,10 +62,10 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             没有 <code>sudo</code> 就直接报错退出。这里换成优雅降级：
             <code>PID -</code> 和 <code>REPO ?</code> 不算错误，读不动的
             路径变成一条 <code>Unreadable</code> finding，而不是直接崩掉；
-            与此同时，state 列仍然靠那份免 <code>sudo</code> 的 print 正文
-            保持权威。<strong>代价：</strong>每一个空格子都得工具去设计、
-            去解释——到底是权限不够，还是真的没有——而且少了
-            <code>sudo</code>，输出就是没那么全。
+            与此同时，state 列仍然从不需要 <code>sudo</code> 的 print 正文
+            里读，所以保持权威。<strong>代价：</strong>表格里每一个空着的格子，工具都得设计好它的含义、
+            解释清楚——到底是权限不够，还是真的没有——而且少了
+            <code>sudo</code>，输出就不那么完整。
         </p>
         <p>
             <strong>受控的 control，绑在它观测到的状态上。</strong>最顺手的
@@ -78,7 +78,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             都是确定的，再去覆盖只会搞乱）；而在某个 verb 可能干掉正在
             运行的 <code>Runner.Worker</code> 之前，必须显式传
             <code>--yes</code>。<strong>代价：</strong>要多记一串前置条件和
-            参数，而且有些原始 <code>launchctl</code> 照样能跑的命令，工具
+            参数，而且有些直接用 <code>launchctl</code> 照样能跑的命令，工具
             会故意拒掉。
         </p>
         <p>
@@ -90,8 +90,8 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             一看到 warning 或 error，进程就以 <code>1</code> 退出，于是
             <code>ghrunners doctor &gt;/dev/null || mail …</code> 能当 cron
             健康检查用。<strong>代价：</strong>每一条 finding 都是一份
-            类型化契约，要定义、要触发、要标严重度、要给修法——是一份得
-            维护的目录，而不是自由文本。
+            类型化契约，要定义、要触发、要标严重度、要给修法——是一套需要
+            维护的分类目录，而不是随手写的自由文本。
         </p>
 
         <h2>证据</h2>
@@ -110,9 +110,9 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
 
         <h2>下一步</h2>
         <p>
-            候选范围还没敲定——把 GitHub API 的信息接得更深，以及在真实
-            机器上随着各种边角情况冒出来的新 findings。等仓库能公开访问，
-            再加源码链接。
+            下一步还没完全敲定；候选项包括把 GitHub API 接得更深，以及把
+            真实机器上冒出来的边角情况沉淀成新的 findings。等仓库能公开
+            访问，再加源码链接。
         </p>
 
         <h2>它不是什么</h2>
