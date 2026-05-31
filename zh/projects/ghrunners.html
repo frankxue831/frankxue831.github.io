@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "ghrunners"
-description: ghrunners 是 macOS 上 GitHub Actions self-hosted runner 的一次性 CLI：只读观测，外加受控的 launchd 控制。
+description: ghrunners 是 macOS 上 GitHub Actions self-hosted runner 的单次运行 CLI：只读观测，外加受控的 launchd 控制。
 permalink: /zh/projects/ghrunners/
 lang: zh
 alternate: /projects/ghrunners/
@@ -15,7 +15,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
         <em>ghrunners</em>
     </h1>
     <p class="page-header__lede">
-        macOS 上 GitHub Actions self-hosted runner 的一次性、无守护进程
+        macOS 上 GitHub Actions self-hosted runner 的单次运行、无守护进程的
         CLI——只读观测，外加<em>受控的</em> launchd 控制。
     </p>
 </section>
@@ -48,11 +48,11 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
 
         <h2>约束与关键决策</h2>
         <p>
-            <strong>一次性观测，基于权威状态。</strong>它不跑监控守护
-            进程，每次都是一次无状态调用，去解析 <code>launchctl
+            <strong>单次观测，基于权威状态。</strong>它不跑监控守护
+            进程，每次都是无状态调用，去解析 <code>launchctl
             print</code> 的正文——读它不需要 <code>sudo</code>。所以哪怕
             是非 root 调用，它报出来的运行态和上次退出状态也是权威的，而不是
-            拿 <code>ps</code> 猜的。<strong>代价：</strong>一次性也意味着
+            拿 <code>ps</code> 猜的。<strong>代价：</strong>单次运行也意味着
             没有持续监控、没有历史趋势——想要快照就跑一次，或者交给 cron
             定时跑。
         </p>
