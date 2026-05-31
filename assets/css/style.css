@@ -1814,6 +1814,11 @@ body.lang-zh .page-header__lede {
     border-bottom: 1px solid transparent;
     transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
     display: inline-flex;
+    align-items: center;
+    /* WCAG 2.2 SC 2.5.8 target size (min): keep footer links a clean 24px tap
+       target — they pass via the spacing exception today, but this holds even
+       if the conditional LinkedIn / Twitter / Email links stack densely. */
+    min-block-size: 24px;
     gap: 6px;
 }
 .site-footer__list a:hover {

@@ -632,6 +632,18 @@ if css_path.exist?
   }.each do |selector, label|
     record(failures, "style.css: missing #{label} (#{selector})") unless css.include?(selector)
   end
+
+  # --- Tap-target floor for footer links (WCAG 2.2 SC 2.5.8, target size min) ---
+  # Footer social links are standalone targets (not inline-in-prose), so keep
+  # them a >=24px tap target. Measured: text-only line box is ~22.7px; the rule
+  # must carry a min-block-size floor so it holds even if LinkedIn/Twitter/Email
+  # stack densely.
+  footer_link_rule = css[/\.site-footer__list a\s*\{[^}]*\}/m]
+  if footer_link_rule.nil?
+    record(failures, "style.css: missing .site-footer__list a rule")
+  elsif !footer_link_rule.include?("min-block-size")
+    record(failures, "style.css: footer links missing 24px tap-target floor (min-block-size)")
+  end
 end
 
 # --- Writing/Notes section ---
