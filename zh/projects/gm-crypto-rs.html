@@ -48,7 +48,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
             整个 crate 依赖图是 <code>no_std + alloc</code>，
             可构建到 <code>wasm32-unknown-unknown</code>，
             也给出了 RustCrypto 的 <code>digest</code> / <code>mac</code> / <code>cipher</code> trait 适配。
-            一个可直接运行的使用示例（对 SM3 和 SM2 做 <code>hash</code> / <code>sign</code> /
+            可直接运行的示例（对 SM3 和 SM2 做 <code>hash</code> / <code>sign</code> /
             <code>verify</code>）放在
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>。
         </p>
@@ -88,8 +88,8 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
             CBC 解密扇出、单次 SM4-GCM / SM4-CCM 解密、SM4-XTS 解密、
             HMAC-SM3、加密 PKCS#8 解密。<em>只做遥测</em>：域求逆诊断、
             k-class 签名（在更深的 nightly 上以 <code>0.25</code> 门禁）、
-            以及缓冲式 GCM。<strong>代价：</strong>遥测路径是被盯着、而不是被
-            强制的，而且这套两层划分本身需要长期维护。
+            以及缓冲式 GCM。<strong>代价：</strong>遥测路径只是盯着看、并不
+            强制，而且这套两层划分本身也得长期维护。
         </p>
         <p>
             <strong>核心保持安全，SIMD 选择性开启。</strong>
@@ -115,9 +115,9 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
             辅助在 v0.15、它的 FFI 在 v0.16。当某一轮没有改变任何输出字节——
             v0.14 是一次 <code>cargo-fuzz</code> 解析器模糊测试，零崩溃——它就
             作为保障性工作合入、永不发布，所以 crates.io 跳过了
-            <code>0.14.0</code>。<strong>代价：</strong>版本号上留了一个需要
-            解释的缺口，而 C ABI 让每个模式要测试和维护的面，在三个已发布
-            crate 上翻了一倍。
+            <code>0.14.0</code>。<strong>代价：</strong>版本号上留了一处需要
+            解释的缺口，而 C ABI 又把每个模式的测试和维护摊到三个已发布的
+            crate 上，工作量翻了一倍。
         </p>
 
         <h2>证据</h2>
@@ -128,7 +128,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
             在每次提交的 CI 里都会跑，核心带着
             <code>#![forbid(unsafe_code)]</code>。v0.14 那一轮加了一套
             <code>cargo-fuzz</code>（libFuzzer）harness——16 个目标覆盖不可信
-            输入的解码 / 解密面——作为 nightly 扫描跑。这些都可以查证：源码、
+            输入的解码 / 解密路径——作为 nightly 扫描跑。这些都可以查证：源码、
             CI 工作流和 dudect harness 都是公开的，连同已发布的
             <code>gmcrypto-core</code> crate、它的 <code>docs.rs</code> 文档，
             以及可运行的示例。
@@ -171,7 +171,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
         <h2>下一步</h2>
         <dl class="version-grid">
             <dt>下一步</dt>
-            <dd>候选范围，尚未敲定——RustCrypto <code>aead 0.6</code> trait 适配（先搁着，等上游从 <code>0.6.0-rc</code> 转正；v0.11 已把它需要的 <code>crypto-common 0.2</code> 那条线落好）、AVX-512 <code>sbox_x64</code>，以及流式 / 增量 CCM。</dd>
+            <dd>候选范围还没敲定——RustCrypto <code>aead 0.6</code> trait 适配（先搁着，等上游从 <code>0.6.0-rc</code> 转正；v0.11 已经把它需要的 <code>crypto-common 0.2</code> 那条线铺好了）、AVX-512 <code>sbox_x64</code>，以及流式 / 增量 CCM。</dd>
         </dl>
 
         <h2>它不是什么</h2>

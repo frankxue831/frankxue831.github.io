@@ -23,7 +23,7 @@ alternate: /about/
             我叫 Frank，是软件工程师。主要写 Rust，做的多是开发者工具，以及这些工具所依赖的底层系统。
         </p>
         <p>
-            最近主要在做三件事。第一件是 gm-crypto-rs，一个纯 Rust 的国密 SM2 / SM3 / SM4 SDK，重点关注处理密钥和敏感数据的代码路径是否按常量时间实现，并在 CI 里用 dudect 做侧信道泄漏检测。第二件是 RepoLens，一个给 AI 编程 Agent 用的仓库上下文工具，希望新的会话不用每次都从零开始理解项目。第三件是 ghrunners，一个 macOS 上的小工具，用来查看 GitHub Actions self-hosted runner 的运行状态，把 launchd、进程、日志和 GitHub API 里的信息放在一起看。
+            最近主要在做三件事。第一件是 gm-crypto-rs，纯 Rust 的国密 SM2 / SM3 / SM4 SDK，重点是让处理密钥、敏感数据的代码路径按常量时间实现，并在 CI 里用 dudect 做侧信道泄漏检测。第二件是 RepoLens，给 AI 编程 Agent 用的仓库上下文层，想让新的会话不必每次都从零开始理解项目。第三件是 ghrunners，macOS 上的一个小工具，用来查看 GitHub Actions self-hosted runner 的运行状态，把 launchd、进程、日志和 GitHub API 里的信息放在一起看。
         </p>
         <p>
             这些项目方向不完全一样，但我关心的东西比较一致：命名要清楚，状态要讲明白；不确定的地方不要装确定，出问题前最好有检查能先拦一下。代码里的注释也应该解释<em>“为什么”</em>，而不只是重复<em>“做了什么”</em>。
@@ -56,7 +56,7 @@ alternate: /about/
         </li>
         <li>
             <span>最近</span>
-            <span>发布了 gm-crypto-rs v0.12.0</span>
+            <span>发布了 gm-crypto-rs v0.16.0</span>
         </li>
     </ul>
 </section>

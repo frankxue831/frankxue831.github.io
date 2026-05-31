@@ -117,7 +117,7 @@ alternate: /
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
                 国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK，
-                重点是按常量时间设计的、处理密钥和敏感数据的路径，以及 CI 里的泄漏回归门禁。
+                重点是按常量时间设计的涉密路径，以及 CI 里的泄漏回归门禁。
                 公开版 <strong>{{ project.release }}</strong> 已发布到
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
@@ -129,7 +129,7 @@ alternate: /
                 {% when 'ghrunners' %}
                 macOS 上 GitHub Actions self-hosted runner 的一次性 CLI——
                 只读观测加受控的 launchd 控制，把 launchd 状态、进程树、日志
-                和 API 状态放到一次输出里，同时保留部分失败的可见性。
+                和 API 状态汇到一次输出里；哪怕只读到一部分，也照样列出来。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% else %}
                 精选工程项目，状态和项目信息会明确标出来。
