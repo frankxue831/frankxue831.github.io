@@ -176,6 +176,8 @@ project_pages = %w[
 note_pages = %w[
   notes/starting-a-notebook/index.html
   zh/notes/starting-a-notebook/index.html
+  notes/constant-time-ci-gate/index.html
+  zh/notes/constant-time-ci-gate/index.html
 ]
 
 public_release_labels = PROJECTS.select { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }
@@ -645,6 +647,15 @@ record(failures, "feed.xml: no <entry> (notes feed is empty)") unless feed.inclu
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
   record(failures, "#{relative}: notes index lists no notes") unless html.include?(%(class="work-list__item))
+end
+
+# Home pages surface a "Latest writing" teaser that links to the notes index,
+# so the writing section is reachable in one click from the front door.
+{ "index.html" => "/notes/", "zh/index.html" => "/zh/notes/" }.each do |relative, notes_path|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: missing Latest-writing teaser (aria-labelledby=\"writing-h\")") unless html.include?('aria-labelledby="writing-h"')
+  record(failures, "#{relative}: writing teaser missing link to #{notes_path}") unless html.include?(%(href="#{notes_path}"))
 end
 
 note_pages.each do |relative|
