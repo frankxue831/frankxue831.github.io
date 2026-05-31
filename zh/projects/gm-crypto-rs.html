@@ -41,97 +41,99 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
 
         <h2>是什么</h2>
         <p>
-            <code>gm-crypto-rs</code> 用纯 Rust 实现了
-            GB/T 32905（SM3 哈希）、
-            GB/T 32918（SM2 公钥签名 / 验签 / 加密 / 解密）、
-            GB/T 32907（SM4 分组密码）。
-            整个 crate 依赖图是 <code>no_std + alloc</code>，
-            可构建到 <code>wasm32-unknown-unknown</code>，
-            也给出了 RustCrypto 的 <code>digest</code> / <code>mac</code> / <code>cipher</code> trait 适配。
-            可直接运行的示例（对 SM3 和 SM2 做 <code>hash</code> / <code>sign</code> /
-            <code>verify</code>）放在
-            <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>。
+            <code>gm-crypto-rs</code> 是一套纯 Rust 写的国密算法库，覆盖
+            SM3 哈希（GB/T 32905）、SM2 公钥算法（GB/T 32918，签名 / 验签 /
+            加密 / 解密）和 SM4 分组密码（GB/T 32907）。整套依赖都是
+            <code>no_std + alloc</code>，能编到 <code>wasm32-unknown-unknown</code>，
+            也实现了 RustCrypto 的 <code>digest</code> / <code>mac</code> /
+            <code>cipher</code> trait，方便直接接进现有的 Rust 生态。想上手跑
+            一下，<a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>
+            里有现成例子（拿 SM3、SM2 做 <code>hash</code> / <code>sign</code> /
+            <code>verify</code>）。
         </p>
 
         <h2>要解决的问题</h2>
         <p>
-            Rust 里已经有 SM2 / SM3 / SM4 的实现，写得好的那些在设计上
-            就奔着秘密相关操作的<em>常量时间</em>去。但「设计意图」只在评审
-            那一刻成立，之后会悄悄松动——一次重构、一条新的快路径、一次依赖
-            升级，时序泄漏就可能溜回来，而没有任何东西拦得住。这个 SDK 面对
-            的恰好是一组让这种松动很容易发生的约束：字节级的 GB/T 一致性、
-            <code>no_std</code> / wasm 的核心、必须在历次发布之间都保持按常量
-            时间设计的涉密路径，以及一层把这些同样的路径暴露给非 Rust 调用方
-            （C、C++、Go、Zig、Python）的 C ABI。它真正围绕的问题不是<em>「今天
-            是不是常量时间」</em>，而是<em>「靠什么让它在每次提交后都还是常量
-            时间」</em>。
+            国密这几个算法，Rust 社区其实早有实现，写得好的那些，本来也都按
+            <em>常量时间</em>设计——意思是处理密钥的那段代码，跑多久跟密钥
+            无关，免得别人靠测耗时反推出密钥。难点在于，这种「常量时间」常常
+            只在代码评审那一刻成立；之后随便一次重构、一条图快新加的路径、
+            一次依赖升级，时序泄漏都可能悄悄溜回来，还没人当场发现。这个库
+            偏偏又卡在一堆容易让它松动的约束里：要逐字节对上 GB/T 标准、核心
+            要能跑在 <code>no_std</code> / wasm 上、涉密路径在每次发版之间都得
+            守住常量时间，还要透过一层 C ABI 把这些路径暴露给 C、C++、Go、
+            Zig、Python 调用。所以它真正要回答的，不是<em>「今天是不是常量
+            时间」</em>，而是<em>「靠什么保证每次提交之后它还是常量时间」</em>。
         </p>
 
         <h2>约束与关键决策</h2>
         <p>
-            <strong>持续验证，而不是一次性断言。</strong>
-            把常量时间当成 CI 每次都要复核的性质，而不是评审签字认可的一句
-            结论。一套 <code>dudect-bencher</code> harness 在每次 CI 都会跑过
-            18 个涉及秘密的代码路径；其中核心一组是<em>带门禁</em>的，门槛
-            <code>|τ|&nbsp;&lt;&nbsp;0.20</code>——一旦回归就让构建失败，而不是
-            等人去发现。harness 报告的是<em>检测事件</em>：<code>|τ|</code> 低，
-            只意味着在给定预算下没检测到泄漏，<em>并不能</em>证明不存在泄漏
-            （这段措辞直接借用 <code>dudect-bencher</code> 自己的文档）。
-            <strong>代价：</strong>每个 PR 都要付出这份测量预算，而统计也永远
-            没法把「没检测到」变成「不存在」。
+            <strong>持续验证，而不是一次性拍板。</strong>
+            常量时间不该是评审会上签个字就算数的结论，而该是 CI 每次都重新
+            核一遍的性质。所以每次 CI 都会用 <code>dudect-bencher</code>（一个
+            靠时序统计找泄漏的工具）把 18 条涉密路径跑一遍；其中核心那一组
+            带<em>门禁</em>，阈值是统计量 <code>|τ|&nbsp;&lt;&nbsp;0.20</code>——
+            一旦越界就直接让构建挂掉，不用等人去发现。要说清楚的是，它报的是
+            <em>检测事件</em>：<code>|τ|</code> 低，只说明在这点测量预算下没测到
+            泄漏，<em>并不能</em>证明泄漏不存在（这句措辞直接照搬了
+            <code>dudect-bencher</code> 自己的文档）。<strong>代价：</strong>每个
+            PR 都要付出这份测量开销；而且统计永远只能说「没测到」，证明不了
+            「不存在」。
         </p>
         <p>
-            <strong>核心路径上门禁，其余只做观测。</strong>
-            不是每条路径都塞得进一个 PR 的时间预算，所以 harness 把它们分了层。
-            <em>带门禁</em>（构建会失败）：SM2 签名与解密、SM4 密钥扩展、
-            SM4 加密（默认线性扫描和位切片 SIMD S-box 两种）、SM4-CTR、
-            CBC 解密扇出、单次 SM4-GCM / SM4-CCM 解密、SM4-XTS 解密、
-            HMAC-SM3、加密 PKCS#8 解密。<em>只做遥测</em>：域求逆诊断、
-            k-class 签名（在更深的 nightly 上以 <code>0.25</code> 门禁）、
-            以及缓冲式 GCM。<strong>代价：</strong>遥测路径只是盯着看、并不
-            强制，而且这套两层划分本身也得长期维护。
+            <strong>核心路径上门禁，其余先观察。</strong>
+            不是每条路径都塞得进一个 PR 的时间预算，于是 harness 给它们分了层。
+            <em>带门禁</em>（不达标就让构建失败）的是：SM2 签名与解密、SM4
+            密钥扩展、SM4 加密（线性扫描和位切片 SIMD S-box 两条都算）、
+            SM4-CTR、CBC 解密扇出、单次 SM4-GCM / SM4-CCM 解密、SM4-XTS 解密、
+            HMAC-SM3、加密 PKCS#8 解密。<em>只做遥测</em>的是：域求逆诊断、
+            k-class 签名（放在更深的 nightly 上、用 <code>0.25</code> 的阈值）、
+            以及缓冲式 GCM。<strong>代价：</strong>遥测那部分只是盯着、并不
+            拦截，而且这套分层本身也得长期维护。
         </p>
         <p>
-            <strong>核心保持安全，SIMD 选择性开启。</strong>
-            <code>gmcrypto-core</code> 开了 <code>#![forbid(unsafe_code)]</code>。
-            位切片 SIMD S-box 需要 <code>unsafe</code>，于是把它整段隔离到
-            单独的 <code>gmcrypto-simd</code> crate，通过
-            <code>sm4-bitsliced-simd</code> 特性按需启用。<strong>代价：</strong>
-            快路径不是默认——你得主动开 SIMD，开箱构建跑的是更慢的线性扫描
-            S-box。
+            <strong>核心保持可审计，SIMD 单独按需开。</strong>
+            <code>gmcrypto-core</code> 直接上了 <code>#![forbid(unsafe_code)]</code>——
+            整个核心一行 <code>unsafe</code> 都不许有，审计起来省心。可位切片
+            SIMD 的 S-box 偏偏离不开 <code>unsafe</code>，于是把它整段挪进单独的
+            <code>gmcrypto-simd</code> crate，用时再通过
+            <code>sm4-bitsliced-simd</code> 特性打开。<strong>代价：</strong>
+            快路径不是默认值——你得自己去开 SIMD，否则开箱跑的是更慢的线性
+            扫描 S-box。
         </p>
         <p>
-            <strong>按常量时间设计的算术，但把前提讲清楚。</strong>
-            秘密相关的算术建立在 <code>subtle</code> 和 <code>crypto-bigint</code>
-            之上，秘密材料在 <code>Drop</code> 时由 <code>zeroize</code> 清零。
-            设计上奔着常量时间去，但没法在所有地方都做到。<strong>代价：</strong>
-            在乘法延迟与数据相关的 CPU 上（部分老 x86、部分嵌入式），这些时序
-            性质并不成立——这点明写在<em>「它不是什么」</em>里，而不是藏起来。
+            <strong>算术按常量时间设计，但把前提摆明。</strong>
+            涉密的大数运算搭在 <code>subtle</code> 和 <code>crypto-bigint</code>
+            之上，密钥材料一到 <code>Drop</code> 就由 <code>zeroize</code> 抹零。
+            整体是奔着常量时间设计的，但有些地方确实做不到。<strong>代价：</strong>
+            在那些「乘法耗时跟操作数有关」的 CPU 上（部分老款 x86、部分嵌入式
+            芯片），这些时序保证并不成立——这一条我明写在<em>「它不是什么」</em>
+            里，没藏着掖着。
         </p>
         <p>
-            <strong>先发核心，再发 FFI——没有变化的版本就不发。</strong>
-            密码模式按 <code>核心在 vN / FFI 在 vN+1</code> 的节奏推进：
-            SM4-XTS 核心在 v0.12、它的 C ABI 在 v0.13；面向磁盘的多扇区原地
-            辅助在 v0.15、它的 FFI 在 v0.16。当某一轮没有改变任何输出字节——
-            v0.14 是一次 <code>cargo-fuzz</code> 解析器模糊测试，零崩溃——它就
-            作为保障性工作合入、永不发布，所以 crates.io 跳过了
-            <code>0.14.0</code>。<strong>代价：</strong>版本号上留了一处需要
-            解释的缺口，而 C ABI 又把每个模式的测试和维护摊到三个已发布的
-            crate 上，工作量翻了一倍。
+            <strong>先发核心、再发 FFI——这一轮没改字节就不发版。</strong>
+            每个密码模式都按「核心在 vN、FFI 在 vN+1」的节奏走：SM4-XTS 的
+            核心在 v0.12、对应的 C ABI 在 v0.13；面向磁盘的多扇区原地辅助在
+            v0.15、它的 FFI 在 v0.16。要是某一轮一个输出字节都没改（比如
+            v0.14，那一轮只做了 <code>cargo-fuzz</code> 解析器模糊测试，零
+            崩溃），就只当保障性工作合进去、不单独发版，所以 crates.io 上
+            直接跳过了 <code>0.14.0</code>。<strong>代价：</strong>版本号因此留了
+            个需要解释的缺口；而且多出一层 C ABI，每个模式的测试和维护，三个
+            已发布的 crate 都得各做一遍，等于翻倍。
         </p>
 
         <h2>证据</h2>
         <p>
-            每一处输出都做了逐字节比对：对标准 KAT 向量、对 gmssl 3.1.1 的
-            互操作、对 OpenSSL 3.x <code>SM4-XTS</code>
-            （<code>xts_standard=GB</code>）的可调模式。上面那套泄漏回归门禁
-            在每次提交的 CI 里都会跑，核心带着
-            <code>#![forbid(unsafe_code)]</code>。v0.14 那一轮加了一套
-            <code>cargo-fuzz</code>（libFuzzer）harness——16 个目标覆盖不可信
-            输入的解码 / 解密路径——作为 nightly 扫描跑。这些都可以查证：源码、
-            CI 工作流和 dudect harness 都是公开的，连同已发布的
-            <code>gmcrypto-core</code> crate、它的 <code>docs.rs</code> 文档，
-            以及可运行的示例。
+            每一处输出都逐字节比对过：标准 KAT 测试向量、gmssl 3.1.1
+            （互操作性）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>
+            （<code>xts_standard=GB</code> 模式）。上面那套泄漏回归门禁，
+            每次提交的 CI 都会跑一遍，核心则一直带着
+            <code>#![forbid(unsafe_code)]</code>。v0.14 那一轮还加了一套
+            <code>cargo-fuzz</code>（libFuzzer）模糊测试——16 个目标，专门覆盖
+            不可信输入的解码、解密路径——挂在 nightly 上扫。这些都能自己去核：
+            源码、CI 工作流、dudect harness 全是公开的，已发布的
+            <code>gmcrypto-core</code> crate、它的 <code>docs.rs</code> 文档、
+            以及那个能跑的示例也都在。
         </p>
         <dl class="version-grid">
             <dt>v0.6.0</dt>
@@ -171,7 +173,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
         <h2>下一步</h2>
         <dl class="version-grid">
             <dt>下一步</dt>
-            <dd>候选范围还没敲定——RustCrypto <code>aead 0.6</code> trait 适配（先搁着，等上游从 <code>0.6.0-rc</code> 转正；v0.11 已经把它需要的 <code>crypto-common 0.2</code> 那条线铺好了）、AVX-512 <code>sbox_x64</code>，以及流式 / 增量 CCM。</dd>
+            <dd>还在候选、没定下来的有几样——RustCrypto <code>aead 0.6</code> 的 trait 适配（先搁着，等上游从 <code>0.6.0-rc</code> 转正；它要的 <code>crypto-common 0.2</code> 那条线，v0.11 已经铺好了）、AVX-512 的 <code>sbox_x64</code>，还有流式 / 增量的 CCM。</dd>
         </dl>
 
         <h2>它不是什么</h2>
@@ -180,7 +182,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
             <li>不包括 SM9、ZUC、后量子算法。</li>
             <li>不是 HSM / SDF / SKF 集成。</li>
             <li>不是经过认证的密码模块。</li>
-            <li>在某些“乘法延迟跟数据相关”的 CPU 上（部分老 x86、部分嵌入式）不保证常量时间。</li>
+            <li>在前面提到的那类 CPU 上（乘法耗时跟操作数有关，常见于部分老 x86、部分嵌入式）不保证常量时间。</li>
         </ul>
 
         <p>
