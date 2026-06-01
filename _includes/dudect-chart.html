@@ -40,9 +40,11 @@
     <text class="dudect__gate-label" x="{{ gate_x | plus: 6 }}" y="52">{{ t.gate_label | escape }}</text>
     <!-- sentinel marker (subtle) -->
     <line class="dudect__sentinel" x1="{{ sentinel_x }}" y1="{{ axis_y | minus: 30 }}" x2="{{ sentinel_x }}" y2="{{ axis_y }}"/>
-    <!-- negative_control zone past 1.0 -->
+    <!-- negative_control zone past 1.0. The SVG carries the bare identifier
+         (language-neutral, never overflows); the full "must fire here" meaning
+         lives in the caveat + the data table below. -->
     <rect class="dudect__control" x="{{ control_x }}" y="{{ axis_y | minus: 40 }}" width="{{ W | minus: mr | minus: control_x }}" height="40"/>
-    <text class="dudect__control-label" x="{{ control_x }}" y="{{ axis_y | minus: 48 }}">{{ t.control_label | escape }}</text>
+    <text class="dudect__control-label" text-anchor="end" x="{{ W | minus: mr }}" y="{{ axis_y | minus: 48 }}">negative_control</text>
     <!-- Row A: the four measured points, clustered near zero, on the axis -->
     <g class="dudect__points">
       {%- for m in d.measured -%}
