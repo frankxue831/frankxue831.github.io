@@ -390,6 +390,18 @@ if css_path.exist?
   unless css.match?(/@media\s*\(prefers-color-scheme:\s*dark\)[^{]*\{\s*:root:not\(\[data-theme\]\)/)
     record(failures, "style.css: missing no-JS dark fallback (@media prefers-color-scheme + :root:not([data-theme]))")
   end
+
+  # Undefined custom-property guard. Every `var(--x)` used WITHOUT a fallback
+  # must have a `--x:` definition somewhere in the sheet — otherwise it silently
+  # falls back to the property's initial value (e.g. text-decoration-color ->
+  # currentColor, line-height -> normal), which is how the v1 glossary shipped a
+  # same-as-text underline. `var(--x, fallback)` is exempt (it has a fallback).
+  defined_props = css.scan(/(--[a-zA-Z0-9-]+)\s*:/).flatten.uniq
+  used_no_fallback = css.scan(/var\(\s*(--[a-zA-Z0-9-]+)\s*\)/).flatten.uniq
+  undefined_used = used_no_fallback - defined_props
+  undefined_used.each do |prop|
+    record(failures, "style.css: var(#{prop}) used but #{prop} is never defined (silent initial-value fallback)")
+  end
 end
 
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|

@@ -104,6 +104,7 @@
     --fg-muted: #6b6557;
     --fg-subtle: #726a5a; /* WCAG AA: 4.75:1 on --bg (was #a39c8d, 2.42:1) */
     --rule: #d4cdb8;
+    --rule-strong: #948a70; /* deeper rule for the glossary-term dotted underline — 3.04:1 on --bg (a clear affordance), distinct from the faint --rule and from body text */
     --accent: #1e40af;
     --accent-warm: #1e3a8a;
     --accent-cool: #3730a3;
@@ -153,6 +154,7 @@
     --content-max: 1100px;
     --gutter: clamp(1.25rem, 4vw, 3rem);
     --rule-w: 1px;
+    --line: 1.5; /* default body line-height (glossary definition card, etc.) */
 
     /* Motion */
     --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -196,6 +198,7 @@
     --fg-muted: #a39880;
     --fg-subtle: #8f8571; /* WCAG AA: 4.86:1 on --bg (was #6b6557, 3.06:1) */
     --rule: #2f2c25;
+    --rule-strong: #6f6857; /* glossary-term dotted underline on dark — lighter than --bg so the affordance is visible, dimmer than --fg so it isn't a link/heavy underline */
     --accent: #9bb4ff;
     --accent-warm: #c2b8ff;
     --accent-cool: #7e93e6;
@@ -222,6 +225,7 @@
         --fg-muted: #a39880;
         --fg-subtle: #8f8571; /* WCAG AA — mirror of dark token */
         --rule: #2f2c25;
+        --rule-strong: #6f6857; /* mirror of dark token */
         --accent: #9bb4ff;
         --accent-warm: #c2b8ff;
         --accent-cool: #7e93e6;
@@ -248,6 +252,7 @@
         --fg-muted: #333333;
         --fg-subtle: #666666;
         --rule: #cccccc;
+        --rule-strong: #999999; /* print: visible glossary underline on white */
         --accent: #1e40af;
         --accent-warm: #1e3a8a;
         --accent-cool: #3730a3;
