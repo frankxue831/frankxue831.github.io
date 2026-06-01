@@ -1,0 +1,42 @@
+# Public dudect constant-time measurements for gm-crypto-rs.
+# SOURCE OF TRUTH: gm-crypto-rs SECURITY.md @ the public v0.16.0 tag.
+# Every number here must match that public file — scripts/validate_site.rb
+# pins the four `tau` values + the leak before/after, so a silent drift
+# fails CI. Do NOT add per-target values for the other 14 of 18 targets:
+# they carry gate POLICY in SECURITY.md but no published per-target number,
+# and inventing them would violate the site's auditability rule.
+gate: 0.20            # PR-smoke blocking gate (|tau| < 0.20)
+gate_nightly: 0.25    # ct_sign_k_class, nightly only
+sentinel: 0.55        # invert-diagnostics gross-regression sentinel
+control_floor: 1.0    # negative_control must exceed this to prove the detector fires
+axis_max: 1.1
+source_url: "https://github.com/frankxue831/gm-crypto-rs/blob/v0.16.0/SECURITY.md"
+# The four publicly-measured values (v0.2 "W0" harness, 100K samples,
+# pre-2026-05-12 runner image). A baseline snapshot, not a live gate reading.
+measured:
+  - target: "ct_sign"
+    tau: 0.0044
+    desc:
+      en: "SM2 sign, split by private key d"
+      zh: "SM2 签名，按私钥 d 分类"
+  - target: "ct_sign_k_class"
+    tau: 0.0708
+    desc:
+      en: "SM2 sign, split by nonce k magnitude"
+      zh: "SM2 签名，按随机数 k 的量级分类"
+  - target: "ct_fn_invert"
+    tau: 0.0071
+    desc:
+      en: "Direct Fn::invert diagnostic"
+      zh: "Fn::invert 直接诊断"
+  - target: "ct_fp_invert"
+    tau: 0.0063
+    desc:
+      en: "Direct Fp::invert diagnostic"
+      zh: "Fp::invert 直接诊断"
+leak:
+  before: 0.70
+  after: 0.006
+  what:
+    en: "crypto-bigint 0.6 ConstMontyForm::invert"
+    zh: "crypto-bigint 0.6 的 ConstMontyForm::invert"
