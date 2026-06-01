@@ -2104,3 +2104,100 @@ details.drawer .version-grid {
     padding: 0 var(--space-4) var(--space-4);
     border: 0;
 }
+
+/* =========================================================
+   Constant-time visualizer (Phase 2). Server-rendered inline SVG +
+   data table. Tokens only; dark theme adapts via --bg-sunk/--rule/--fg
+   overrides. Status hues reinforce position+text, never sole signal.
+   ========================================================= */
+.dudect {
+    margin: var(--space-6) 0 var(--space-8);
+    padding: var(--space-5);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--bg-sunk);
+}
+.dudect__title {
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+    margin: 0 0 var(--space-2);
+}
+.dudect__intro {
+    font-family: var(--sans);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    margin: 0 0 var(--space-4);
+    max-width: var(--maxw-reading, 42rem);
+}
+.dudect__chart {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+/* SVG strokes/fills via tokens. font-size in SVG text is in user units. */
+.dudect__axis { stroke: var(--rule); stroke-width: 1.5; }
+.dudect__axis-label,
+.dudect__ticks text { font-family: var(--mono); font-size: 11px; fill: var(--fg-subtle); }
+.dudect__gate { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.dudect__gate-label { font-family: var(--mono); font-size: 11px; fill: var(--accent); }
+.dudect__sentinel { stroke: var(--fg-subtle); stroke-width: 1; stroke-dasharray: 2 3; }
+.dudect__control { fill: var(--danger); opacity: 0.10; }
+.dudect__control-label,
+.dudect__cluster-label { font-family: var(--mono); font-size: 11px; fill: var(--fg-muted); }
+.dudect__pt { fill: var(--status-released); }
+.dudect__leak-heading { font-family: var(--mono); font-size: 11px; fill: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.04em; }
+.dudect__leak-arrow { stroke: var(--fg-muted); stroke-width: 1.5; }
+.dudect__arrowhead { fill: var(--fg-muted); }
+.dudect__leak-before { fill: var(--danger); }
+.dudect__leak-after { fill: var(--status-released); }
+.dudect__leak-before-label,
+.dudect__leak-after-label { font-family: var(--mono); font-size: 12px; fill: var(--fg); }
+.dudect__caveat {
+    font-family: var(--sans);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    font-style: italic;
+    margin: var(--space-3) 0 var(--space-4);
+}
+.dudect__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: var(--text-sm);
+    margin: 0 0 var(--space-3);
+}
+.dudect__table caption {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+    margin-bottom: var(--space-2);
+}
+.dudect__table th,
+.dudect__table td {
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+}
+.dudect__table th { color: var(--fg-subtle); font-weight: 600; }
+.dudect__table code { font-family: var(--mono); font-size: var(--text-xs); }
+.dudect__provenance {
+    font-family: var(--sans);
+    font-size: var(--text-xs);
+    color: var(--fg-subtle);
+    margin: 0;
+}
+/* Reduced-motion: the figure carries `reveal`; the global reveal/motion
+   gate + the prefers-reduced-motion reset already neutralise its animation.
+   No bespoke motion here, so nothing extra to disable. */
+@media (max-width: 759px) {
+    .dudect { padding: var(--space-4); }
+    .dudect__table { font-size: var(--text-xs); }
+    .dudect__table th, .dudect__table td { padding: var(--space-1) var(--space-2); }
+}
