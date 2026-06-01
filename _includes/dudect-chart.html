@@ -52,7 +52,7 @@
       <circle class="dudect__pt" cx="{{ px }}" cy="{{ axis_y }}" r="4"/>
       {%- endfor -%}
     </g>
-    <text class="dudect__cluster-label" x="{{ ml }}" y="{{ axis_y | minus: 14 }}">{{ d.measured.size }}× ct_* &lt; 0.20</text>
+    <text class="dudect__cluster-label" x="{{ ml }}" y="{{ axis_y | minus: 14 }}">{{ t.cluster_label | escape }}</text>
     <!-- Row B: the caught leak — arrow from before (right, danger) to after (left, ok) -->
     <g class="dudect__leak">
       <text class="dudect__leak-heading" x="{{ ml }}" y="{{ leak_y | minus: 24 }}">{{ t.leak_heading | escape }}</text>

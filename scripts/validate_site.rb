@@ -667,9 +667,9 @@ end
 
 # dudect i18n parity: every required key present + non-empty in both languages.
 %w[en zh].each do |lang|
-  %w[title intro axis_label gate_label control_label caveat provenance source
-     table_caption col_target col_measures col_tau col_gate col_status
-     status_pass status_fire].each do |key|
+  %w[title intro axis_label gate_label control_label cluster_label caveat
+     provenance source table_caption col_target col_measures col_tau col_gate
+     col_status status_pass status_fire].each do |key|
     record(failures, "i18n.yml: missing #{lang}.dudect.#{key}") if i18n.dig(lang, "dudect", key).to_s.empty?
   end
 end
