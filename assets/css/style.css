@@ -161,6 +161,18 @@
     --dur-slow: 600ms;
 }
 
+/* Cross-document view transitions: a quiet cross-fade between same-origin
+   navigations. Native, zero-JS — unsupported browsers simply navigate
+   normally. Gated by prefers-reduced-motion like all other motion here. */
+@view-transition {
+    navigation: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+    @view-transition {
+        navigation: none;
+    }
+}
+
 @media (max-width: 759px) {
     :root {
         --text-4xl: 2rem;
@@ -1998,4 +2010,97 @@ body.lang-zh .page-header__lede {
     text-align: center;
     white-space: pre;          /* keep space cells from collapsing */
     vertical-align: baseline;
+}
+
+
+/* =========================================================
+   Native interactivity (Phase 1): popover glossary + audit drawer
+   Zero JS. Tokens only; dark theme adapts via --bg-sunk/--rule overrides.
+   ========================================================= */
+
+/* Inline glossary term (native Popover API). Deliberately NOT link-styled:
+   foreground colour + a dotted underline read as "definition available",
+   distinct from the accent solid-underline of real links. Inline target, so
+   exempt from WCAG 2.2 SC 2.5.8 (target size) under the inline exception. */
+.gloss-term {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: help;
+    text-decoration: underline dotted;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--rule-strong);
+    transition: text-decoration-color var(--dur-fast) var(--ease);
+}
+.gloss-term:hover { text-decoration-color: var(--accent); }
+.gloss-term:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Definition card. Hidden by default; shown only when the popover is open. The
+   :popover-open rule is dropped by browsers without the Popover API, so the
+   definition stays hidden there (never leaks inline) — graceful, no JS. UA
+   styles centre it in the top layer (CSP forbids per-term anchor tethers). */
+.gloss-def { display: none; }
+.gloss-def:popover-open {
+    display: block;
+    inline-size: max-content;
+    max-inline-size: min(32ch, calc(100vw - 2 * var(--space-4)));
+    margin: auto;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--bg-sunk);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: var(--text-sm);
+    line-height: var(--line);
+}
+
+/* Audit drawer (native <details>): progressive disclosure for supplementary
+   depth. Matches the flat .install card. Keyboard + AT for free. */
+details.drawer {
+    margin: var(--space-5) 0 var(--space-6);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--bg-sunk);
+}
+details.drawer > summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: 24px;
+    box-sizing: border-box;
+    padding: var(--space-3) var(--space-4);
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    cursor: pointer;
+    list-style: none;
+}
+details.drawer > summary::-webkit-details-marker { display: none; }
+details.drawer > summary::before {
+    content: "+";
+    font-family: var(--mono);
+    color: var(--fg-subtle);
+}
+details.drawer[open] > summary::before { content: "\2212"; }
+details.drawer > summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+details.drawer .version-grid {
+    margin: 0;
+    padding: 0 var(--space-4) var(--space-4);
+    border: 0;
 }

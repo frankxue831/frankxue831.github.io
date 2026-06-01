@@ -42,8 +42,8 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
         <h2>是什么</h2>
         <p>
             <code>gm-crypto-rs</code> 是一套纯 Rust 写的国密算法库，覆盖
-            SM3 哈希（GB/T 32905）、SM2 公钥算法（GB/T 32918，签名 / 验签 /
-            加密 / 解密）和 SM4 分组密码（GB/T 32907）。整套依赖都不碰标准库
+            {% include glossary-term.html term="sm3" %} 哈希（GB/T 32905）、{% include glossary-term.html term="sm2" %} 公钥算法（GB/T 32918，签名 / 验签 /
+            加密 / 解密）和 {% include glossary-term.html term="sm4" %} 分组密码（GB/T 32907）。整套依赖都不碰标准库
             （<code>no_std + alloc</code>），能编译到 <code>wasm32-unknown-unknown</code>，
             也实现了 RustCrypto 的 <code>digest</code> / <code>mac</code> /
             <code>cipher</code> trait，方便直接接入现有的 Rust 生态。想上手跑
@@ -61,7 +61,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
             一次依赖升级，时序泄漏都可能悄悄溜回来，还没人当场发现。这个库
             偏偏又卡在一堆容易让它松动的约束里：要逐字节对上 GB/T 标准、核心
             要能跑在 <code>no_std</code> / wasm 上、涉密路径在每次发版之间都得
-            守住常量时间，还要通过一层 C ABI 把这些路径暴露给 C、C++、Go、
+            守住{% include glossary-term.html term="constant-time" %}，还要通过一层 C ABI 把这些路径暴露给 C、C++、Go、
             Zig、Python 调用。所以它真正要回答的，不是<em>「今天是不是常量
             时间」</em>，而是<em>「靠什么保证每次提交之后它还是常量时间」</em>。
         </p>
@@ -131,11 +131,13 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
             <code>#![forbid(unsafe_code)]</code>。v0.14 那一轮还加了一套
             <code>cargo-fuzz</code>（libFuzzer）模糊测试——16 个目标，专门覆盖
             不可信输入的解码、解密路径——挂在 nightly 上扫。这些都能自己去核：
-            源码、CI 工作流、dudect harness 全是公开的，已发布的
+            源码、CI 工作流、{% include glossary-term.html term="dudect" %} harness 全是公开的，已发布的
             <code>gmcrypto-core</code> crate、它的 <code>docs.rs</code> 文档、
             以及那个能跑的示例也都在。
         </p>
-        <dl class="version-grid">
+        <details class="drawer">
+            <summary>{{ site.data.i18n[page.lang].details.earlier_releases | escape }}</summary>
+            <dl class="version-grid">
             <dt>v0.6.0</dt>
             <dd>2026-05-14 — AVX2 <code>sbox_x32</code>、NEON <code>sbox_x16</code>、CBC 解密扇出。</dd>
 
@@ -159,7 +161,10 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
 
             <dt>v0.13.0</dt>
             <dd>2026-05-24 — 单次 SM4-XTS 的 C ABI（v0.12 延后的 FFI 部分）；默认构建逐字节不变。</dd>
+            </dl>
+        </details>
 
+        <dl class="version-grid">
             <dt>v0.14.0</dt>
             <dd><em>未发布。</em>合入了一轮 <code>cargo-fuzz</code> 解析器模糊测试（16 个目标，零崩溃），作为保障性工作；输出无变化，不升版本号。</dd>
 

@@ -1,0 +1,15 @@
+{%- comment -%}
+  Inline glossary term — native HTML Popover API, zero JS.
+  Usage (inline, mid-sentence): {% include glossary-term.html term="constant-time" %}
+  Resolves the definition from _data/i18n.yml glossary[lang][term] so EN/ZH stay
+  in parity and no prose is hardcoded. A real <button> gives keyboard + built-in
+  light-dismiss / Esc / focus-return for free; aria-describedby announces the
+  definition to assistive tech even when the popover card is closed. If the key
+  is unknown the include emits the raw term text so prose never breaks.
+{%- endcomment -%}
+{%- assign g = site.data.i18n[page.lang].glossary[include.term] -%}
+{%- if g -%}
+<button type="button" class="gloss-term" popovertarget="gloss-{{ include.term }}" aria-describedby="gloss-{{ include.term }}">{{ g.label | escape }}</button><span id="gloss-{{ include.term }}" class="gloss-def" popover role="note">{{ g.def | escape }}</span>
+{%- else -%}
+{{ include.term | escape }}
+{%- endif -%}
