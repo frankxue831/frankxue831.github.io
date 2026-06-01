@@ -1651,13 +1651,16 @@ body.lang-zh .page-header__lede {
     color: var(--fg);
     margin-bottom: var(--space-6);
 }
-/* The "coming back soon" note under the contact list — relocated from an inline
-   style so style-src can stay strict. Selector carries dd to outrank the
-   `.contact-direct dd` serif rule the inline style used to win over. */
-.contact-direct dd.contact-direct__note {
+/* The rationale note under the contact list — a standalone paragraph after the
+   <dl> (own the GitHub-first stance), mono + muted to read as an aside. The
+   `.contact-intro` prefix outranks the `.contact-intro p` serif rule below
+   (same single-class specificity would otherwise let source order win). */
+.contact-intro .contact-direct__note {
     font-family: var(--mono);
     font-size: var(--text-sm);
+    line-height: 1.55;
     color: var(--fg-muted);
+    margin-top: var(--space-6);
 }
 
 .contact-direct {
