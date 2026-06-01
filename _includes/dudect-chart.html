@@ -1,0 +1,117 @@
+{%- comment -%}
+  Constant-time visualizer. Server-rendered inline SVG (no JS) + an always-
+  visible data table that carries the same numbers (the a11y / no-SVG / JS-off
+  fallback). All numbers come from _data/dudect.yml (pinned to public v0.16.0
+  state by scripts/validate_site.rb). Strings from i18n.yml dudect subtree.
+  Non-interactive figure: no hover/click targets, so no WCAG 2.5.8 concern.
+{%- endcomment -%}
+{%- assign d = site.data.dudect -%}
+{%- assign t = site.data.i18n[page.lang].dudect -%}
+{%- assign W = 720 -%}
+{%- assign H = 300 -%}
+{%- assign ml = 40 -%}
+{%- assign mr = 30 -%}
+{%- assign plotw = 650 -%}
+{%- assign axis_y = 210 -%}
+{%- assign leak_y = 120 -%}
+{%- comment -%} helper: x for a given tau = ml + tau/axis_max * plotw {%- endcomment -%}
+{%- assign gate_x = d.gate | times: 1.0 | divided_by: d.axis_max | times: plotw | plus: ml -%}
+{%- assign sentinel_x = d.sentinel | divided_by: d.axis_max | times: plotw | plus: ml -%}
+{%- assign control_x = d.control_floor | divided_by: d.axis_max | times: plotw | plus: ml -%}
+{%- assign before_x = d.leak.before | divided_by: d.axis_max | times: plotw | plus: ml -%}
+{%- assign after_x = d.leak.after | divided_by: d.axis_max | times: plotw | plus: ml -%}
+<figure class="dudect reveal" aria-labelledby="dudect-cap">
+  <figcaption id="dudect-cap" class="dudect__title">{{ t.title | escape }}</figcaption>
+  <p class="dudect__intro">{{ t.intro | escape }}</p>
+  <svg class="dudect__chart" viewBox="0 0 {{ W }} {{ H }}" role="img"
+       aria-label="{{ t.title | escape }}. {{ t.context | escape }}"
+       xmlns="http://www.w3.org/2000/svg">
+    <!-- axis baseline -->
+    <line class="dudect__axis" x1="{{ ml }}" y1="{{ axis_y }}" x2="{{ W | minus: mr }}" y2="{{ axis_y }}"/>
+    <text class="dudect__axis-label" x="{{ ml }}" y="{{ H | minus: 12 }}">{{ t.axis_label | escape }}</text>
+    <!-- axis ticks: 0, gate, sentinel, control -->
+    <g class="dudect__ticks">
+      <text x="{{ ml }}" y="{{ axis_y | plus: 20 }}" text-anchor="middle">0</text>
+      <text x="{{ sentinel_x }}" y="{{ axis_y | plus: 20 }}" text-anchor="middle">0.55</text>
+      <text x="{{ control_x }}" y="{{ axis_y | plus: 20 }}" text-anchor="middle">1.0</text>
+    </g>
+    <!-- gate line -->
+    <line class="dudect__gate" x1="{{ gate_x }}" y1="40" x2="{{ gate_x }}" y2="{{ axis_y }}"/>
+    <text class="dudect__gate-label" x="{{ gate_x | plus: 6 }}" y="52">{{ t.gate_label | escape }}</text>
+    <!-- sentinel marker (subtle) -->
+    <line class="dudect__sentinel" x1="{{ sentinel_x }}" y1="{{ axis_y | minus: 30 }}" x2="{{ sentinel_x }}" y2="{{ axis_y }}"/>
+    <!-- negative_control zone past 1.0 -->
+    <rect class="dudect__control" x="{{ control_x }}" y="{{ axis_y | minus: 40 }}" width="{{ W | minus: mr | minus: control_x }}" height="40"/>
+    <text class="dudect__control-label" x="{{ control_x }}" y="{{ axis_y | minus: 48 }}">{{ t.control_label | escape }}</text>
+    <!-- Row A: the four measured points, clustered near zero, on the axis -->
+    <g class="dudect__points">
+      {%- for m in d.measured -%}
+      {%- assign px = m.tau | divided_by: d.axis_max | times: plotw | plus: ml -%}
+      <circle class="dudect__pt" cx="{{ px }}" cy="{{ axis_y }}" r="4"/>
+      {%- endfor -%}
+    </g>
+    <text class="dudect__cluster-label" x="{{ ml }}" y="{{ axis_y | minus: 14 }}">{{ d.measured.size }}× ct_* &lt; 0.20</text>
+    <!-- Row B: the caught leak — arrow from before (right, danger) to after (left, ok) -->
+    <g class="dudect__leak">
+      <text class="dudect__leak-heading" x="{{ ml }}" y="{{ leak_y | minus: 24 }}">{{ t.leak_heading | escape }}</text>
+      <line class="dudect__leak-arrow" x1="{{ before_x }}" y1="{{ leak_y }}" x2="{{ after_x | plus: 10 }}" y2="{{ leak_y }}" marker-end="url(#dudect-arrow)"/>
+      <circle class="dudect__leak-before" cx="{{ before_x }}" cy="{{ leak_y }}" r="5"/>
+      <text class="dudect__leak-before-label" x="{{ before_x }}" y="{{ leak_y | minus: 10 }}" text-anchor="middle">≈{{ d.leak.before }}</text>
+      <circle class="dudect__leak-after" cx="{{ after_x }}" cy="{{ leak_y }}" r="5"/>
+      <text class="dudect__leak-after-label" x="{{ after_x }}" y="{{ leak_y | plus: 22 }}" text-anchor="middle">≈{{ d.leak.after }}</text>
+    </g>
+    <defs>
+      <marker id="dudect-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" class="dudect__arrowhead"/>
+      </marker>
+    </defs>
+  </svg>
+  <p class="dudect__caveat">{{ t.caveat | escape }}</p>
+  <table class="dudect__table">
+    <caption>{{ t.table_caption | escape }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{{ t.col_target | escape }}</th>
+        <th scope="col">{{ t.col_measures | escape }}</th>
+        <th scope="col">{{ t.col_tau | escape }}</th>
+        <th scope="col">{{ t.col_gate | escape }}</th>
+        <th scope="col">{{ t.col_status | escape }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%- for m in d.measured -%}
+      <tr>
+        <td><code>{{ m.target }}</code></td>
+        <td>{{ m.desc[page.lang] | default: m.desc.en | escape }}</td>
+        <td>{{ m.tau }}</td>
+        <td>&lt; {{ d.gate }}</td>
+        <td>{{ t.status_pass | escape }}</td>
+      </tr>
+      {%- endfor -%}
+      <tr>
+        <td><code>negative_control</code></td>
+        <td>{{ t.control_label | escape }}</td>
+        <td>&gt; {{ d.control_floor }}</td>
+        <td>&gt; {{ d.control_floor }}</td>
+        <td>{{ t.status_fire | escape }}</td>
+      </tr>
+      <tr>
+        <td><code>{{ d.leak.what[page.lang] | default: d.leak.what.en | escape }}</code></td>
+        <td>{{ t.leak_before_row | escape }}</td>
+        <td>≈{{ d.leak.before }}</td>
+        <td>&lt; {{ d.gate }}</td>
+        <td>{{ t.status_fire | escape }}</td>
+      </tr>
+      <tr>
+        <td><code>{{ d.leak.what[page.lang] | default: d.leak.what.en | escape }}</code></td>
+        <td>{{ t.leak_after_row | escape }}</td>
+        <td>≈{{ d.leak.after }}</td>
+        <td>&lt; {{ d.gate }}</td>
+        <td>{{ t.status_pass | escape }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="dudect__provenance">{{ t.provenance | escape }}
+    <a href="{{ d.source_url }}" rel="noopener noreferrer">{{ t.source | escape }} ↗</a>
+  </p>
+</figure>
