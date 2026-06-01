@@ -598,6 +598,17 @@ case_study.each do |relative, spec|
   end
 end
 
+# Native-interactivity guards on the gm-crypto pages: the popover glossary and
+# the <details> audit drawer must survive edits, and a drawer must never wrap an
+# <h2> (contents.js builds the rail from h2s; a collapsed one breaks scroll-spy).
+%w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: missing popover glossary (popovertarget=\"gloss-\")") unless html.include?('popovertarget="gloss-')
+  record(failures, "#{relative}: missing <details> audit drawer") unless html.include?("<details")
+  record(failures, "#{relative}: <h2> inside <details> breaks the contents rail") if html.match?(/<details\b[^>]*>(?:(?!<\/details>).)*?<h2/m)
+end
+
 %w[
   projects/repolens-rs/index.html projects/ghrunners/index.html
   zh/projects/repolens-rs/index.html zh/projects/ghrunners/index.html
@@ -618,6 +629,16 @@ end
   end
 end
 
+# Glossary popover definitions: every term needs a label + def in both languages.
+%w[en zh].each do |lang|
+  %w[constant-time sm2 sm3 sm4 no_std dudect].each do |term|
+    %w[label def].each do |key|
+      record(failures, "i18n.yml: missing #{lang}.glossary.#{term}.#{key}") if i18n.dig(lang, "glossary", term, key).to_s.empty?
+    end
+  end
+  record(failures, "i18n.yml: missing #{lang}.details.earlier_releases") if i18n.dig(lang, "details", "earlier_releases").to_s.empty?
+end
+
 if css_path.exist? && !css_path.read.include?(".install__copy")
   record(failures, "style.css: missing .install copy-button styles")
 end
@@ -634,6 +655,13 @@ if css_path.exist?
   }.each do |selector, label|
     record(failures, "style.css: missing #{label} (#{selector})") unless css.include?(selector)
   end
+
+  # Cross-document View Transitions: the cross-fade at-rule must be present.
+  record(failures, "style.css: missing @view-transition rule") unless css.include?("@view-transition")
+
+  # Popover glossary: term affordance + definition-card styles must be present.
+  record(failures, "style.css: missing .gloss-term glossary style") unless css.include?(".gloss-term")
+  record(failures, "style.css: missing .gloss-def popover style") unless css.include?(".gloss-def")
 
   # --- Tap-target floor for footer links (WCAG 2.2 SC 2.5.8, target size min) ---
   # Footer social links are standalone targets (not inline-in-prose), so keep

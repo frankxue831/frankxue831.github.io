@@ -42,9 +42,9 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
         <h2>What it is</h2>
         <p>
-            <code>gm-crypto-rs</code> implements GB/T 32905 (SM3 hash),
-            GB/T 32918 (SM2 public-key sign / verify / encrypt / decrypt),
-            and GB/T 32907 (SM4 block cipher) in pure Rust. The crate
+            <code>gm-crypto-rs</code> implements GB/T 32905 ({% include glossary-term.html term="sm3" %} hash),
+            GB/T 32918 ({% include glossary-term.html term="sm2" %} public-key sign / verify / encrypt / decrypt),
+            and GB/T 32907 ({% include glossary-term.html term="sm4" %} block cipher) in pure Rust. The crate
             graph is <code>no_std + alloc</code>, builds on
             <code>wasm32-unknown-unknown</code>, and ships RustCrypto-trait
             fits for <code>digest</code>, <code>mac</code>, and <code>cipher</code>.
@@ -56,7 +56,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         <h2>The problem</h2>
         <p>
             Rust already has SM2 / SM3 / SM4 implementations, and the good
-            ones are <em>designed</em> for constant-time secret-dependent
+            ones are <em>designed</em> for {% include glossary-term.html term="constant-time" %} secret-dependent
             operations. But design intent is asserted once, at review time,
             and then erodes quietly — a refactor, a new fast path, a
             dependency bump, and a timing leak slips back in with nothing to
@@ -141,11 +141,13 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <code>cargo-fuzz</code> (libFuzzer) harness — sixteen targets over
             the untrusted-input decode / decrypt surface — run as a nightly
             sweep. All of it is inspectable: the source, the CI workflow, and
-            the dudect harness are public, alongside the published
+            the {% include glossary-term.html term="dudect" %} harness are public, alongside the published
             <code>gmcrypto-core</code> crate, its <code>docs.rs</code>
             reference, and the runnable demo.
         </p>
-        <dl class="version-grid">
+        <details class="drawer">
+            <summary>{{ site.data.i18n[page.lang].details.earlier_releases | escape }}</summary>
+            <dl class="version-grid">
             <dt>v0.6.0</dt>
             <dd>2026-05-14 — AVX2 <code>sbox_x32</code>, NEON <code>sbox_x16</code>, CBC-decrypt fanout.</dd>
 
@@ -169,7 +171,10 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
             <dt>v0.13.0</dt>
             <dd>2026-05-24 — single-shot SM4-XTS C ABI (the deferred FFI half of v0.12); default build byte-unchanged.</dd>
+            </dl>
+        </details>
 
+        <dl class="version-grid">
             <dt>v0.14.0</dt>
             <dd><em>Not published.</em> A <code>cargo-fuzz</code> parser-fuzzing sweep (16 targets, zero crashes) merged as assurance — no output change, no version bump.</dd>
 

@@ -56,6 +56,27 @@ en:
     read_more: "Read →"
     none: "Nothing published yet."
 
+  glossary:
+    "constant-time":
+      label: "constant-time"
+      def: "Code whose running time does not depend on secret values, so an attacker can't recover secrets by measuring how long it takes. It's a design target, not a guarantee — some hardware can still leak."
+    "sm2":
+      label: "SM2"
+      def: "A Chinese national public-key standard (GB/T 32918) built on elliptic curves — used for digital signatures, key exchange, and public-key encryption."
+    "sm3":
+      label: "SM3"
+      def: "A Chinese national cryptographic hash standard (GB/T 32905) producing a 256-bit digest — broadly the SM-family counterpart to SHA-256."
+    "sm4":
+      label: "SM4"
+      def: "A Chinese national block cipher standard (GB/T 32907) with a 128-bit block and 128-bit key, used for bulk symmetric encryption."
+    "no_std":
+      label: "no_std"
+      def: "A Rust build that doesn't link the standard library, so the code can run in constrained environments — embedded targets, kernels, WebAssembly. It has only `core`; heap allocation is opt-in, requiring `alloc` and an explicit allocator."
+    "dudect":
+      label: "dudect"
+      def: "A statistical test for timing leaks: it times an operation over two input classes and checks whether their timing distributions differ. It detects leaks under a measurement budget — it can't prove none exist."
+  details:
+    earlier_releases: "Earlier releases (v0.6.0 – v0.13.0)"
 zh:
   html_lang: "zh-CN"
   tagline: "Frank Xue 的个人主页。软件工程师，记一些笔记，放几个项目。"
@@ -101,3 +122,24 @@ zh:
     all: "全部笔记"
     read_more: "阅读 →"
     none: "还没有发布内容。"
+  glossary:
+    "constant-time":
+      label: "常量时间"
+      def: "运行耗时不随密钥等秘密值变化的代码，这样攻击者就无法靠测量耗时来还原秘密。它是一个设计目标，而非保证——某些硬件仍可能泄露。"
+    "sm2":
+      label: "SM2"
+      def: "中国商用密码公钥标准（GB/T 32918），基于椭圆曲线，用于数字签名、密钥交换和公钥加密。"
+    "sm3":
+      label: "SM3"
+      def: "中国商用密码杂凑（哈希）标准（GB/T 32905），输出 256 位摘要，在国密体系中大致对应 SHA-256 的角色。"
+    "sm4":
+      label: "SM4"
+      def: "中国商用密码分组密码标准（GB/T 32907），分组长 128 位、密钥长 128 位，用于大批量对称加密。"
+    "no_std":
+      label: "no_std"
+      def: "不链接标准库的 Rust 构建，代码因而能运行在嵌入式、内核、WebAssembly 等受限环境中。它只能使用 core；需要堆分配时才显式引入 alloc 并提供分配器。"
+    "dudect":
+      label: "dudect"
+      def: "一种检测时序泄露的统计方法：对两类输入分别计时，看两组耗时分布是否有差异。它在给定的测量预算下检测泄露，但无法证明泄露不存在。"
+  details:
+    earlier_releases: "更早的版本（v0.6.0 – v0.13.0）"
