@@ -607,6 +607,9 @@ end
   record(failures, "#{relative}: missing popover glossary (popovertarget=\"gloss-\")") unless html.include?('popovertarget="gloss-')
   record(failures, "#{relative}: missing <details> audit drawer") unless html.include?("<details")
   record(failures, "#{relative}: <h2> inside <details> breaks the contents rail") if html.match?(/<details\b[^>]*>(?:(?!<\/details>).)*?<h2/m)
+  record(failures, "#{relative}: missing constant-time visualizer figure (class=\"dudect\")") unless html.include?('class="dudect')
+  record(failures, "#{relative}: visualizer missing data-table fallback (.dudect__table)") unless html.include?("dudect__table")
+  record(failures, "#{relative}: visualizer missing public source link (v0.16.0)") unless html.include?("v0.16.0")
 end
 
 %w[
@@ -639,6 +642,38 @@ end
   record(failures, "i18n.yml: missing #{lang}.details.earlier_releases") if i18n.dig(lang, "details", "earlier_releases").to_s.empty?
 end
 
+# --- Constant-time visualizer: pin the published dudect facts to public state ---
+# The four |tau| values, the gate, and the caught-leak before/after MUST equal
+# the values published in gm-crypto-rs SECURITY.md @ v0.16.0. A silent drift
+# here would misrepresent public release state — fail CI instead.
+dudect_path = ROOT.join("_data/dudect.yml")
+if !dudect_path.exist?
+  record(failures, "_data/dudect.yml: missing (constant-time visualizer data)")
+else
+  dd = YAML.load_file(dudect_path)
+  expected_tau = { "ct_sign" => 0.0044, "ct_sign_k_class" => 0.0708,
+                   "ct_fn_invert" => 0.0071, "ct_fp_invert" => 0.0063 }
+  measured = (dd["measured"] || []).each_with_object({}) { |m, h| h[m["target"]] = m["tau"] }
+  expected_tau.each do |target, tau|
+    got = measured[target]
+    record(failures, "_data/dudect.yml: #{target} |tau| is #{got.inspect}, expected #{tau} (public v0.16.0)") unless got == tau
+  end
+  record(failures, "_data/dudect.yml: gate must be 0.2 (public)") unless dd["gate"] == 0.20
+  record(failures, "_data/dudect.yml: leak.before must be 0.7 (public)") unless dd.dig("leak", "before") == 0.70
+  record(failures, "_data/dudect.yml: leak.after must be 0.006 (public)") unless dd.dig("leak", "after") == 0.006
+  record(failures, "_data/dudect.yml: must NOT publish more than 4 per-target values (others are unpublished)") if (dd["measured"] || []).length != 4
+  record(failures, "_data/dudect.yml: source_url must point at the public v0.16.0 tag") unless dd["source_url"].to_s.include?("v0.16.0")
+end
+
+# dudect i18n parity: every required key present + non-empty in both languages.
+%w[en zh].each do |lang|
+  %w[title intro axis_label gate_label control_label caveat provenance source
+     table_caption col_target col_measures col_tau col_gate col_status
+     status_pass status_fire].each do |key|
+    record(failures, "i18n.yml: missing #{lang}.dudect.#{key}") if i18n.dig(lang, "dudect", key).to_s.empty?
+  end
+end
+
 if css_path.exist? && !css_path.read.include?(".install__copy")
   record(failures, "style.css: missing .install copy-button styles")
 end
@@ -662,6 +697,9 @@ if css_path.exist?
   # Popover glossary: term affordance + definition-card styles must be present.
   record(failures, "style.css: missing .gloss-term glossary style") unless css.include?(".gloss-term")
   record(failures, "style.css: missing .gloss-def popover style") unless css.include?(".gloss-def")
+
+  # Constant-time visualizer styles must be present.
+  record(failures, "style.css: missing .dudect visualizer styles") unless css.include?(".dudect__chart")
 
   # --- Tap-target floor for footer links (WCAG 2.2 SC 2.5.8, target size min) ---
   # Footer social links are standalone targets (not inline-in-prose), so keep
