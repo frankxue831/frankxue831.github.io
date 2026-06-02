@@ -124,7 +124,12 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             disk helper in v0.15 and its FFI in v0.16. When a cycle changes no
             output bytes — v0.14 was a <code>cargo-fuzz</code> parser-fuzzing
             sweep that found zero crashes — it merges as assurance and is never
-            published, so crates.io skips <code>0.14.0</code>.
+            published, so crates.io skips <code>0.14.0</code>. The same rule then
+            scaled up across the <code>0.17</code>–<code>0.23</code> gap — chiefly the
+            <code>v0.21</code>–<code>v0.23</code> readiness work (public-API freeze,
+            <code>crypto-bigint</code> decoupling, a multi-model adversarial pre-1.0
+            re-audit) — which stayed unpublished and shipped together in the
+            deliberate <code>1.0.0</code> release.
             <strong>Cost:</strong> the version line carries a deliberate gap to
             explain, and the C ABI doubles the surface every mode has to be
             tested and owned across three published crates.
@@ -184,12 +189,18 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
             <dt>v0.16.0</dt>
             <dd>2026-05-29 — multi-sector SM4-XTS C FFI; every cipher mode now reachable from C / C++ / Go / Zig / Python.</dd>
+
+            <dt>0.17 – 0.23</dt>
+            <dd><em>Not published.</em> Assurance &amp; API-finalization cycles — public-API freeze with a <code>cargo-public-api</code> drift-check, <code>crypto-bigint</code> decoupled from the always-on surface, and a multi-model adversarial pre-1.0 re-audit. crates.io skips them; their changes ship together in <code>1.0.0</code>.</dd>
+
+            <dt>v1.0.0</dt>
+            <dd>2026-06-01 — first stable release: all three crates published lockstep at <code>=1.0.0</code>. The only published migration is 0.16 → 1.0; the runtime wire output (SM2 signatures / ciphertexts, SM4 mode bytes) is byte-identical to 0.16.0 (KAT + gmssl 3.1.1 interop 11/11), so the breaking changes are API <em>shape</em> only. From 1.0, <code>cargo-semver-checks</code> gates forward breaking changes.</dd>
         </dl>
 
         <h2>Next</h2>
         <dl class="version-grid">
             <dt>Next</dt>
-            <dd>Candidate scope, not committed — RustCrypto <code>aead 0.6</code> trait fit (parked while upstream is on <code>0.6.0-rc</code>; v0.11 landed the <code>crypto-common 0.2</code> line it needs), AVX-512 <code>sbox_x64</code>, and streaming / incremental CCM.</dd>
+            <dd>With the public API frozen at 1.0 and <code>cargo-semver-checks</code> now gating forward breaks, candidate post-1.0 scope — not committed — is RustCrypto <code>aead 0.6</code> trait fit (parked while upstream is on <code>0.6.0-rc</code>; v0.11 landed the <code>crypto-common 0.2</code> line it needs), AVX-512 <code>sbox_x64</code>, and streaming / incremental CCM.</dd>
         </dl>
 
         <h2>What it isn't</h2>
