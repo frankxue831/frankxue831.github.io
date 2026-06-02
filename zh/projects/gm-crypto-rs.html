@@ -117,7 +117,11 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
             v0.15、它的 FFI 在 v0.16。要是某一轮算出来的结果一个字节都没变
             （比如 v0.14，那一轮只做了 <code>cargo-fuzz</code> 解析器模糊测试，
             零崩溃），就只作为保障性工作并入主干、不单独发版，所以 crates.io 上
-            直接跳过了 <code>0.14.0</code>。<strong>代价：</strong>版本号因此留了
+            直接跳过了 <code>0.14.0</code>。同一条规矩后来放大到更大尺度：
+            <code>0.17</code>–<code>0.23</code> 这一段都没单独发版——主要是
+            <code>v0.21</code>–<code>v0.23</code> 的发版准备工作（冻结公开 API、把
+            <code>crypto-bigint</code> 从常开接口解耦、再做一轮多模型对抗式的 1.0 前复审）——
+            一起并进了刻意的 <code>1.0.0</code> 正式发布。<strong>代价：</strong>版本号因此留了
             个需要解释的缺口；而且多出一层 C ABI，每个模式都得在三个已发布的
             crate 里测一遍、维护一遍，工作量等于翻倍。
         </p>
@@ -174,12 +178,18 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
 
             <dt>v0.16.0</dt>
             <dd>2026-05-29 — 多扇区 SM4-XTS 的 C FFI；现在每个密码模式都能从 C / C++ / Go / Zig / Python 调到。</dd>
+
+            <dt>0.17 – 0.23</dt>
+            <dd><em>未发布。</em>都是保障与 API 收尾的轮次——用 <code>cargo-public-api</code> 漂移检查冻结公开 API、把 <code>crypto-bigint</code> 从常开接口解耦、再做一轮多模型对抗式的 1.0 前复审。crates.io 全部跳过；这些改动一起并进 <code>1.0.0</code> 发布。</dd>
+
+            <dt>v1.0.0</dt>
+            <dd>2026-06-01 — 首个稳定版：三个 crate 以 <code>=1.0.0</code> 锁步发布。唯一一次已发布的迁移就是 0.16 → 1.0；运行时实际输出的字节（SM2 签名 / 密文、SM4 各模式字节）与 0.16.0 逐字节一致（KAT + gmssl 3.1.1 互操作 11/11），所以破坏性变更只动了 API 的<em>形状</em>。从 1.0 起，<code>cargo-semver-checks</code> 把关后续的破坏性变更。</dd>
         </dl>
 
         <h2>下一步</h2>
         <dl class="version-grid">
             <dt>下一步</dt>
-            <dd>还只是候选、没定下来的有三件：RustCrypto <code>aead 0.6</code> 的 trait 适配、AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。其中 <code>aead 0.6</code> 先搁着，等上游从 <code>0.6.0-rc</code> 转正；它需要的 <code>crypto-common 0.2</code> 那条线，v0.11 已经铺好了。</dd>
+            <dd>公开 API 已在 1.0 冻结，<code>cargo-semver-checks</code> 也开始把关后续的破坏性变更。1.0 之后的候选范围——都还没定下来——有三件：RustCrypto <code>aead 0.6</code> 的 trait 适配、AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。其中 <code>aead 0.6</code> 先搁着，等上游从 <code>0.6.0-rc</code> 转正；它需要的 <code>crypto-common 0.2</code> 那条线，v0.11 已经铺好了。</dd>
         </dl>
 
         <h2>它不是什么</h2>
