@@ -739,6 +739,15 @@ record(failures, "feed.xml: no <entry> (notes feed is empty)") unless feed.inclu
   record(failures, "#{relative}: notes index lists no notes") unless html.include?(%(class="work-list__item))
 end
 
+# Terminal pages (notes, contact) carry an onward CTA so reading doesn't
+# dead-end — parity with the section CTAs on the home page. Regression guard
+# for the interactivity quick-wins pass.
+%w[notes/index.html zh/notes/index.html contact/index.html zh/contact/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: missing onward CTA (preview__link--section)") unless html.include?("preview__link--section")
+end
+
 # Home pages surface a "Latest writing" teaser that links to the notes index,
 # so the writing section is reachable in one click from the front door.
 { "index.html" => "/notes/", "zh/index.html" => "/zh/notes/" }.each do |relative, notes_path|

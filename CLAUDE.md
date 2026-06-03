@@ -53,6 +53,19 @@ Each featured project has two HTML files: `projects/<slug>.html` (EN) and `zh/pr
 
 The aesthetic is "Codex — paper & ink" (light, monograph-feel). Keep new components consistent with the existing tokens; don't introduce new color values inline.
 
+### Interactivity & the CSP envelope
+
+Interactivity is progressive enhancement: every page must work with JavaScript disabled, and there is no build step or framework. `_includes/head.html` ships a strict Content-Security-Policy via `<meta>` — `script-src 'self'` plus the **pinned sha256 hashes of the two inline scripts** (the pre-paint theme resolver + the motion gate); `style-src 'self'` (no inline styles); `connect-src 'self'` (no external fetch — analytics, CDNs, and remote data are blocked); `img-src 'self' data:`. `scripts/validate_site.rb` recomputes and pins those inline-script hashes, so any change to an inline script must be re-pinned there or the validator fails.
+
+When adding interactivity, reach for the lightest tool that fits, in this order:
+
+1. **CSS only** — hover/affordance states, transitions, reveals (all gated by `prefers-reduced-motion`).
+2. **Native HTML** — `<details>` (audit drawer), the Popover API (glossary), `@view-transition` (cross-document fade). Declarative, zero JS, no new CSP hash.
+3. **A small vanilla-JS IIFE** in `assets/js/` — only when 1–2 can't do it. The six files are `main.js` (mobile nav), `reveal.js` (scroll reveal), `decrypt.js` (hero), `theme.js` (theme toggle), `contents.js` (contents rail), `copy.js` (install copy). External `.js` is governed by `script-src 'self'` and needs no hash.
+4. **A new inline script** — last resort; add its sha256 to the CSP in `head.html` (the validator pins it).
+
+External CDNs, web fonts, and analytics are out — fonts are self-hosted and `connect-src` is `'self'`.
+
 ## Content rules (from `docs/superpowers/specs/`)
 
 Specs in `docs/superpowers/specs/` encode current design direction — read the most recent before substantive content or design changes:
@@ -77,3 +90,5 @@ When the user asks to update a project page, verify the public release state (e.
 - Public email is intentionally omitted from the site (see comment in `_config.yml`). Don't add `mailto:` links or restore `email:` without an explicit ask — the config comment lists the touchpoints to update if it ever comes back.
 - The footer / hero / contact templates assume the no-email state; check those four files together if the user does ask to restore it.
 - `permalink: pretty` is set globally, so internal links should use trailing-slash paths (`/projects/gm-crypto-rs/`, not `.html`).
+- `projects.html` is a deliberately unfiltered `{% for %}` list ("a short, honest list" at the current 3-project scale). Don't add filter/sort/search UI unless the list outgrows ~5 entries — and if it does, it must be progressive enhancement (works with JS off), tokens only, no framework.
+- Terminal pages (`notes`, `contact`) carry an onward `preview__link--section` CTA so reading doesn't dead-end — mirrors the home-page section CTAs. `scripts/validate_site.rb` guards their presence; keep it when editing those pages.

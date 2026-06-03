@@ -70,7 +70,7 @@
                         <a href="{{ href | relative_url }}"
                            class="primary-nav__link"
                            {% if is_current %}aria-current="page"{% endif %}>
-                            <span class="primary-nav__num">{{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
+                            <span class="primary-nav__num" aria-hidden="true">{{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
                             <span class="primary-nav__label">{{ label | escape }}</span>
                         </a>
                     </li>
