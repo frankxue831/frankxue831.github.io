@@ -24,7 +24,6 @@
 require "json"
 require "net/http"
 require "pathname"
-require "rubygems" # Gem::Version
 require "uri"
 require "yaml"
 
@@ -58,8 +57,9 @@ def sparse_index_path(crate)
   end
 end
 
-# Returns the highest non-yanked published version (a Gem::Version), or nil on
-# any network/parse failure (caller treats nil as "could not verify").
+# Returns the latest non-yanked STABLE version (a Gem::Version), or a symbol:
+#   :no_stable   — fetched OK, but the crate has only prereleases
+#   :unreachable — network/HTTP/parse failure, or an empty/garbage response
 def latest_published_version(crate)
   uri = URI("https://index.crates.io/#{sparse_index_path(crate)}")
   # Honor standard proxy env vars (https_proxy / no_proxy). find_proxy returns
@@ -76,7 +76,7 @@ def latest_published_version(crate)
   http.read_timeout = 10
 
   response = http.get(uri.request_uri)
-  return nil unless response.is_a?(Net::HTTPSuccess)
+  return :unreachable unless response.is_a?(Net::HTTPSuccess)
 
   body = response.body
 
@@ -95,12 +95,14 @@ def latest_published_version(crate)
     end
   end
 
+  return :unreachable if versions.empty? # empty/garbage response — treat as a miss
+
   # Compare against the latest STABLE release: the site lists stable public
   # tags, so a published prerelease (e.g. 1.1.0-rc.1) must not register as drift.
-  versions.reject(&:prerelease?).max
+  versions.reject(&:prerelease?).max || :no_stable
 rescue StandardError => e
-  STDERR.puts "DEBUG #{crate}: #{e.class}: #{e.message}" if ENV["DRIFT_DEBUG"]
-  nil
+  warn "release-drift: #{crate} lookup failed — #{e.class}: #{e.message}"
+  :unreachable
 end
 
 def crate_name_from_url(crate_url)
@@ -122,6 +124,7 @@ end
 
 checked = 0
 drift = 0
+unverified = 0
 
 PROJECTS.each do |project|
   next unless project["release_source"] == "public_tag"
@@ -142,9 +145,16 @@ PROJECTS.each do |project|
   published = latest_published_version(crate)
   checked += 1
 
-  if published.nil?
-    warn_annotation("#{slug}: could not read #{crate} from the crates.io sparse index (network/parse) — drift not verified this run")
-    summary("- ⚠️ **#{slug}** — could not verify (`#{crate}` index unreachable)")
+  case published
+  when :unreachable
+    unverified += 1
+    warn_annotation("#{slug}: could not read #{crate} from the crates.io sparse index — drift not verified this run")
+    summary("- ⚠️ **#{slug}** — could not verify (`#{crate}` unreachable)")
+    next
+  when :no_stable
+    unverified += 1
+    warn_annotation("#{slug}: #{crate} has no stable release on crates.io yet — nothing to compare")
+    summary("- ⚠️ **#{slug}** — no stable `#{crate}` release on crates.io yet")
     next
   end
 
@@ -169,7 +179,7 @@ end
 if checked.zero?
   puts "No public_tag projects with a crate_url to check."
 else
-  puts "\nChecked #{checked} crate(s); #{drift} with drift. (warn-only — exit 0)"
+  puts "\nChecked #{checked} crate(s); #{drift} with drift; #{unverified} unverified. (warn-only — exit 0)"
 end
 
 # Never block: warn-only by design.
