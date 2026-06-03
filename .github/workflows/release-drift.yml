@@ -1,0 +1,37 @@
+name: Release drift
+
+# Warn-only check: does any public_tag project's _data/projects.yml release
+# trail the version actually published on crates.io? It reaches the registry,
+# so it lives outside the hermetic validate_site.rb. It never fails the build —
+# drift surfaces as a ::warning:: annotation + a job summary. The weekly cron is
+# the point: it catches a publish that lands while no site PRs are open (exactly
+# how the site sat at v0.16.0 after gmcrypto-core had shipped 1.0.0).
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
+        with:
+          ruby-version: "3.3" # script is pure stdlib — no bundler needed
+
+      - name: Check release drift vs crates.io
+        continue-on-error: true # warn-only: drift must never fail the build
+        run: ruby scripts/check_release_drift.rb
