@@ -184,6 +184,9 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉及秘密的关键路径。"
 
             <dt>v1.0.0</dt>
             <dd>2026-06-01 — 首个稳定版：三个 crate 以 <code>=1.0.0</code> 锁步发布。唯一一次已发布的迁移就是 0.16 → 1.0；运行时实际输出的字节（SM2 签名 / 密文、SM4 各模式字节）与 0.16.0 逐字节一致（KAT + gmssl 3.1.1 互操作 11/11），所以破坏性变更只动了 API 的<em>形状</em>。从 1.0 起，<code>cargo-semver-checks</code> 把关后续的破坏性变更。</dd>
+
+            <dt>v1.0.1</dt>
+            <dd>2026-06-03 — 补丁版：1.0 的收尾清理。<strong>API / ABI / 输出字节均无变化</strong>（<code>cargo-public-api</code> 与 <code>cargo-semver-checks</code> 全程绿；1.0.0 的使用者可直接升级）。修正了 C ABI 的 <code>gmcrypto_version()</code>（之前误返回旧的 <code>0.4.0</code>），并补上文档与 CI 加固——x86_64 的 SIMD 测试任务、对裸单块 API 的 ECB 误用警告、以及依赖耦合的披露说明。</dd>
         </dl>
 
         <h2>下一步</h2>

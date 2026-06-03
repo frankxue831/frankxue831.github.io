@@ -507,7 +507,7 @@ case_study = {
                "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
                "<h2>Next</h2>", "<h2>What it isn't</h2>"],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
-    caveat: "detection events", version_before: ["<h2>Next</h2>", "v1.0.0"],
+    caveat: "detection events", version_before: ["<h2>Next</h2>", "v1.0.1"],
     # Non-affiliation note ties to the named interop targets (trademark-disclaimer
     # convention) instead of denying ties to unnamed parties. "either project" is
     # the tell; if it reverts to the generic enumerated form, this guard trips.
@@ -518,7 +518,7 @@ case_study = {
     headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
                "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
     cost: "代价：", overclaims: ["生产就绪", "保证安全", "绝对常量时间"],
-    caveat: "检测事件", version_before: ["<h2>下一步</h2>", "v1.0.0"],
+    caveat: "检测事件", version_before: ["<h2>下一步</h2>", "v1.0.1"],
     # ZH mirror of the interop-tied non-affiliation guard ("这两个项目" = the two
     # named projects gmssl/OpenSSL); trips if it reverts to the enumerated form.
     must_include: ["这两个项目"],
@@ -621,7 +621,7 @@ end
   record(failures, "#{relative}: <h2> inside <details> breaks the contents rail") if html.match?(/<details\b[^>]*>(?:(?!<\/details>).)*?<h2/m)
   record(failures, "#{relative}: missing constant-time visualizer figure (class=\"dudect\")") unless html.include?('class="dudect')
   record(failures, "#{relative}: visualizer missing data-table fallback (.dudect__table)") unless html.include?("dudect__table")
-  record(failures, "#{relative}: visualizer missing public source link (v1.0.0)") unless html.include?("SECURITY.md @ v1.0.0")
+  record(failures, "#{relative}: visualizer missing public source link (v1.0.1)") unless html.include?("SECURITY.md @ v1.0.1")
 end
 
 %w[
@@ -656,7 +656,7 @@ end
 
 # --- Constant-time visualizer: pin the published dudect facts to public state ---
 # The four |tau| values, the gate, and the caught-leak before/after MUST equal
-# the values published in gm-crypto-rs SECURITY.md @ v1.0.0. A silent drift
+# the values published in gm-crypto-rs SECURITY.md @ v1.0.1. A silent drift
 # here would misrepresent public release state — fail CI instead.
 dudect_path = ROOT.join("_data/dudect.yml")
 if !dudect_path.exist?
@@ -668,13 +668,13 @@ else
   measured = (dd["measured"] || []).each_with_object({}) { |m, h| h[m["target"]] = m["tau"] }
   expected_tau.each do |target, tau|
     got = measured[target]
-    record(failures, "_data/dudect.yml: #{target} |tau| is #{got.inspect}, expected #{tau} (public v1.0.0)") unless got == tau
+    record(failures, "_data/dudect.yml: #{target} |tau| is #{got.inspect}, expected #{tau} (public v1.0.1)") unless got == tau
   end
   record(failures, "_data/dudect.yml: gate must be 0.2 (public)") unless dd["gate"] == 0.20
   record(failures, "_data/dudect.yml: leak.before must be 0.7 (public)") unless dd.dig("leak", "before") == 0.70
   record(failures, "_data/dudect.yml: leak.after must be 0.006 (public)") unless dd.dig("leak", "after") == 0.006
   record(failures, "_data/dudect.yml: must NOT publish more than 4 per-target values (others are unpublished)") if (dd["measured"] || []).length != 4
-  record(failures, "_data/dudect.yml: source_url must point at the public v1.0.0 tag") unless dd["source_url"].to_s.include?("v1.0.0")
+  record(failures, "_data/dudect.yml: source_url must point at the public v1.0.1 tag") unless dd["source_url"].to_s.include?("v1.0.1")
 end
 
 # dudect i18n parity: every required key present + non-empty in both languages.
