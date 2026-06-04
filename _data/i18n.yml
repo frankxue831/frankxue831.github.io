@@ -99,6 +99,24 @@ en:
     "dudect":
       label: "dudect"
       def: "A statistical test for timing leaks: it times an operation over two input classes and checks whether their timing distributions differ. It detects leaks under a measurement budget — it can't prove none exist."
+    "mcp":
+      label: "MCP"
+      def: "Model Context Protocol — an open protocol that lets an AI agent discover and call external tools through one uniform interface, instead of bespoke per-tool glue."
+    "rag":
+      label: "RAG"
+      def: "Retrieval-Augmented Generation — pulling relevant text from a store and feeding it to the model at query time. The plain version tracks no staleness or trust, so rolled-back facts can resurface."
+    "grounding":
+      label: "grounded"
+      def: "Checking a remembered fact against the current code state, so knowledge that no longer holds can be flagged or dropped instead of trusted blindly."
+    "launchd":
+      label: "launchd"
+      def: "macOS's system service manager — it starts, stops, and supervises background services (roughly the macOS counterpart to Linux's systemd)."
+    "self-hosted-runner":
+      label: "self-hosted runner"
+      def: "A machine you run yourself to execute GitHub Actions jobs, instead of GitHub's cloud runners — you own the OS, the network, and what persists between jobs."
+    "daemon":
+      label: "daemon"
+      def: "A program that stays resident in the background between jobs. ghrunners is deliberately the opposite — one-shot: it runs, acts, and exits, holding no long-lived state."
   details:
     earlier_releases: "Earlier releases (v0.6.0 – v0.13.0)"
 zh:
@@ -189,5 +207,23 @@ zh:
     "dudect":
       label: "dudect"
       def: "一种检测时序泄露的统计方法：对两类输入分别计时，看两组耗时分布是否有差异。它在给定的测量预算下检测泄露，但无法证明泄露不存在。"
+    "mcp":
+      label: "MCP"
+      def: "Model Context Protocol（模型上下文协议）——一套开放协议，让 AI agent 通过统一接口发现并调用外部工具，而不必为每个工具单独写胶水代码。"
+    "rag":
+      label: "RAG"
+      def: "Retrieval-Augmented Generation（检索增强生成）——在查询时从存储里取出相关片段，喂给模型。最朴素的做法不记录新鲜度和可信度，已经回滚掉的旧事实可能又冒出来。"
+    "grounding":
+      label: "对上代码"
+      def: "把记下来的事实拿去和当前代码状态核对，让不再成立的旧知识能被标记或丢弃，而不是被盲目采信。"
+    "launchd":
+      label: "launchd"
+      def: "macOS 的系统服务管理器——负责启动、停止、监督后台服务（大致相当于 Linux 上的 systemd）。"
+    "self-hosted-runner":
+      label: "self-hosted runner"
+      def: "你自己运行、用来执行 GitHub Actions 任务的机器，区别于 GitHub 托管的云端 runner——操作系统、网络，以及任务之间保留什么，都由你掌控。"
+    "daemon":
+      label: "守护进程"
+      def: "在任务之间常驻后台的程序。ghrunners 刻意反其道而行——一次性运行：跑一次、做完动作就退出，不保留长期状态。"
   details:
     earlier_releases: "更早的版本（v0.6.0 – v0.13.0）"

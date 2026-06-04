@@ -27,7 +27,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
         <h2>是什么</h2>
         <p>
             <code>RepoLens</code> 会把整个仓库扫描成一份结构化、不可变的
-            「pack」（一份给 Agent 看的仓库快照），通过 MCP server 提供出来，
+            「pack」（一份给 Agent 看的仓库快照），通过 {% include glossary-term.html term="mcp" %} server 提供出来，
             同时维护一张会随时间衰减的类型化记忆图。它不替 Agent 写代码，
             只是让每个新会话不必从零开始。目前还是私有预发布，本页讲的是哪个
             快照，写在下面的<em>「证据」</em>里。
@@ -55,8 +55,8 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             而且它不可变，要等到下一次扫描才会刷新。
         </p>
         <p>
-            <strong>让记忆有类型、会衰减、能对上代码，而不是一摊
-            扁平存储。</strong>扁平的 RAG 存储没有「过期」和「可信度」
+            <strong>让记忆有类型、会衰减、能{% include glossary-term.html term="grounding" %}，而不是一摊
+            扁平存储。</strong>扁平的 {% include glossary-term.html term="rag" %} 存储没有「过期」和「可信度」
             的概念，Agent 于是一错再错，犯的还是早就回滚过的老错。这里
             的记忆是一张类型化的图（五类节点），按指数衰减，并对照当前
             pack 核对每条还站不站得住——而不是一摊扁平的 embedding

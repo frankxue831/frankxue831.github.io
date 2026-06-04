@@ -630,6 +630,9 @@ end
 ].each do |relative|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
+  # Glossary extension: these pages annotate load-bearing jargon, so the popover
+  # affordance must survive edits (parity with the gm-crypto guard above).
+  record(failures, "#{relative}: missing popover glossary (popovertarget=\"gloss-\")") unless html.include?('popovertarget="gloss-')
   # Key on the install-block markers, not the bare "cargo add" string, so a
   # private page that merely mentions the command in prose can't false-trip
   # this guard — only an actual install block is forbidden.
@@ -645,8 +648,10 @@ end
 end
 
 # Glossary popover definitions: every term needs a label + def in both languages.
+# gm-crypto terms first, then the repolens-rs / ghrunners extension terms.
 %w[en zh].each do |lang|
-  %w[constant-time sm2 sm3 sm4 no_std dudect].each do |term|
+  %w[constant-time sm2 sm3 sm4 no_std dudect
+     mcp rag grounding launchd self-hosted-runner daemon].each do |term|
     %w[label def].each do |key|
       record(failures, "i18n.yml: missing #{lang}.glossary.#{term}.#{key}") if i18n.dig(lang, "glossary", term, key).to_s.empty?
     end
