@@ -45,6 +45,12 @@ defaults:
       path: ""
     values:
       layout: default
+      # og:locale. jekyll-seo-tag derives og:locale from page.locale /
+      # site.locale / page.lang (NOT the site's custom `lang:` key), so set it
+      # here. EN is the default; the more-specific `zh` scope below overrides it
+      # for the /zh/ tree. ZH notes live outside /zh/ and carry `locale: zh_CN`
+      # in their own front matter.
+      locale: en_US
       # Social/share card. PNG (not SVG) so link previews render on
       # iMessage, Slack, X, LinkedIn, WhatsApp, Discord — none of which
       # rasterize SVG og:images. jekyll-seo-tag emits og:image plus
@@ -54,6 +60,12 @@ defaults:
         width: 1200
         height: 630
         alt: "Frank Xue — software engineer. Building auditable tools for code, crypto, and agents."
+  # ZH page tree: override og:locale to zh_CN. More-specific path scope wins
+  # over the global "" scope above.
+  - scope:
+      path: "zh"
+    values:
+      locale: zh_CN
   # Notes are long-form documents; the more-specific scope sets their layout
   # while inheriting the share image above.
   - scope:
