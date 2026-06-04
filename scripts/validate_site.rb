@@ -160,6 +160,18 @@ core_pages = {
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/notes/" },
       { hreflang: "en", href: "#{BASE_URL}/notes/" }
     ]
+  },
+  "colophon/index.html" => {
+    alternates: [
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/colophon/" },
+      { hreflang: "en", href: "#{BASE_URL}/colophon/" }
+    ]
+  },
+  "zh/colophon/index.html" => {
+    alternates: [
+      { hreflang: "zh-CN", href: "#{BASE_URL}/zh/colophon/" },
+      { hreflang: "en", href: "#{BASE_URL}/colophon/" }
+    ]
   }
 }
 
@@ -751,6 +763,21 @@ end
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
   record(failures, "#{relative}: missing onward CTA (preview__link--section)") unless html.include?("preview__link--section")
+end
+
+# Colophon ("how it's built / how to audit it"): must carry its audit substance
+# (the CSP), keep the onward CTA, and stay reachable from the footer on every
+# page. The page is the site's auditability claim made legible — guard it.
+%w[colophon/index.html zh/colophon/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: colophon missing audit substance (validator self-reference)") unless html.include?("scripts/validate_site.rb")
+  record(failures, "#{relative}: colophon missing onward CTA (preview__link--section)") unless html.include?("preview__link--section")
+end
+{ "index.html" => "/colophon/", "zh/index.html" => "/zh/colophon/" }.each do |relative, colophon_path|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: footer missing colophon link (#{colophon_path})") unless html.include?(%(href="#{colophon_path}"))
 end
 
 # Home pages surface a "Latest writing" teaser that links to the notes index,
