@@ -3,6 +3,7 @@ title: "把 unsafe 挡在默认构建之外"
 date: 2026-06-02
 permalink: /zh/notes/unsafe-opt-in/
 lang: zh
+locale: zh_CN
 alternate: /notes/unsafe-opt-in/
 description: "gm-crypto-rs 的核心 crate 禁用 unsafe，把需要它的 SIMD 代码隔到另一个 crate 里、藏在需要显式开启的 feature 后面。"
 excerpt: "快路径需要 unsafe。与其让它们进核心，不如把它们放进一个你主动选用的 crate——这样默认构建始终是 #![forbid(unsafe_code)]。"

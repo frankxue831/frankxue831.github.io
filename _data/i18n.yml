@@ -134,7 +134,7 @@ zh:
     aria: "切换为英文"
   footer:
     elsewhere: "其他平台"
-    colophon: "字体说明"
+    colophon: "本站说明"
     set_in: "字体使用"
     built_with: "Jekyll 构建，托管于 GitHub Pages。"
     colophon_more: "本站如何构建"

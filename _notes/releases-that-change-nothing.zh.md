@@ -3,6 +3,7 @@ title: "什么都没变的版本，就不发"
 date: 2026-06-03
 permalink: /zh/notes/releases-that-change-nothing/
 lang: zh
+locale: zh_CN
 alternate: /notes/releases-that-change-nothing/
 description: "为什么 gm-crypto-rs 的版本线上有刻意留下的缺口——只做了保障、没改一个输出字节的周期，不配单独发一个版本。"
 excerpt: "发出去的版本号是对字节的承诺，不是工作量的流水账。这篇讲 gm-crypto-rs 里几个最硬的周期，为什么干脆没发。"

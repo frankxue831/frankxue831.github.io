@@ -3,6 +3,7 @@ title: "开个笔记本"
 date: 2026-05-29
 permalink: /zh/notes/starting-a-notebook/
 lang: zh
+locale: zh_CN
 alternate: /notes/starting-a-notebook/
 description: "这个板块是做什么的，以及之后会写些什么。"
 excerpt: "关于 Rust、密码学、Agent 工具的短笔记——以及做软件里那些不那么光鲜的部分。"

@@ -3,6 +3,7 @@ title: "符合标准，就是逐字节一致——否则不算"
 date: 2026-06-01
 permalink: /zh/notes/byte-identity/
 lang: zh
+locale: zh_CN
 alternate: /notes/byte-identity/
 description: "gm-crypto-rs 怎么核对 SM2/SM3/SM4 的输出：对着 KAT 向量、gmssl 和 OpenSSL 逐字节比——包括那些让「看着对」变成谎话的模式语义陷阱。"
 excerpt: "密码学的测试不问「输出看着对不对」。它问的是：在相同的模式语义下，是不是和参考实现一模一样的字节——而难就难在后半句。"
