@@ -1,6 +1,6 @@
 ---
 title: "Conformance is byte-identity, or it's nothing"
-date: 2026-06-03
+date: 2026-06-01
 permalink: /notes/byte-identity/
 lang: en
 alternate: /zh/notes/byte-identity/

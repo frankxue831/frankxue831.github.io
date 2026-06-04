@@ -1,6 +1,6 @@
 ---
 title: "什么都没变的版本，就不发"
-date: 2026-06-05
+date: 2026-06-03
 permalink: /zh/notes/releases-that-change-nothing/
 lang: zh
 alternate: /notes/releases-that-change-nothing/

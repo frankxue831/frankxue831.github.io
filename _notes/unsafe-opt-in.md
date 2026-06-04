@@ -1,6 +1,6 @@
 ---
 title: "Keeping unsafe out of the default build"
-date: 2026-06-04
+date: 2026-06-02
 permalink: /notes/unsafe-opt-in/
 lang: en
 alternate: /zh/notes/unsafe-opt-in/

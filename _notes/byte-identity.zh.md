@@ -1,6 +1,6 @@
 ---
 title: "符合标准，就是逐字节一致——否则不算"
-date: 2026-06-03
+date: 2026-06-01
 permalink: /zh/notes/byte-identity/
 lang: zh
 alternate: /notes/byte-identity/

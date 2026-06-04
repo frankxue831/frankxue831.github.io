@@ -1,6 +1,6 @@
 ---
 title: "把 unsafe 挡在默认构建之外"
-date: 2026-06-04
+date: 2026-06-02
 permalink: /zh/notes/unsafe-opt-in/
 lang: zh
 alternate: /notes/unsafe-opt-in/

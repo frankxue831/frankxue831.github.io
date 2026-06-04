@@ -1,6 +1,6 @@
 ---
 title: "Skipping the releases that change nothing"
-date: 2026-06-05
+date: 2026-06-03
 permalink: /notes/releases-that-change-nothing/
 lang: en
 alternate: /zh/notes/releases-that-change-nothing/
