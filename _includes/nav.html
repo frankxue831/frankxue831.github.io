@@ -29,7 +29,7 @@
 <header class="site-header">
     <div class="site-header__inner">
         <a href="{{ base | append: '/' | relative_url }}" class="site-mark" aria-label="{{ site.title | escape }} — {{ t.nav.home | escape }}">
-            <span class="site-mark__glyph">f</span>
+            <span class="site-mark__glyph" aria-hidden="true">f</span>
             <span class="site-mark__name">{{ site.title | escape }}</span>
         </a>
 
@@ -80,7 +80,7 @@
                     <a href="{{ other_url | relative_url }}"
                        class="primary-nav__link primary-nav__link--switch"
                        hreflang="{% if lang == 'en' %}zh-CN{% else %}en{% endif %}"
-                       aria-label="{{ t.switcher.aria | escape }}">
+                       aria-label="{{ t.switcher.label | escape }} — {{ t.switcher.aria | escape }}">
                         <span class="primary-nav__num" aria-hidden="true">⇄</span>
                         <span class="primary-nav__label">{{ t.switcher.label | escape }}</span>
                     </a>
