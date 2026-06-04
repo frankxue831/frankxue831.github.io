@@ -1,5 +1,6 @@
 {%- assign lang = page.lang | default: 'en' -%}
 {%- assign t = site.data.i18n[lang] -%}
+{%- assign base = '' -%}{% if lang == 'zh' %}{% assign base = '/zh' %}{% endif %}
 
 <footer class="site-footer">
     <div class="site-footer__inner">
@@ -30,6 +31,7 @@
             <p class="site-footer__heading">{{ t.footer.colophon }}</p>
             <p class="site-footer__detail">{{ t.footer.set_in }} <em>EB Garamond</em> &amp; IBM Plex Mono.</p>
             <p class="site-footer__detail">{{ t.footer.built_with }}</p>
+            <p class="site-footer__detail"><a href="{{ base | append: '/colophon/' | relative_url }}">{{ t.footer.colophon_more }} <span aria-hidden="true">→</span></a></p>
         </div>
     </div>
     <div class="site-footer__rule"></div>

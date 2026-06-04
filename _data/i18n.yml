@@ -19,6 +19,7 @@ en:
     colophon: "Colophon"
     set_in: "Set in"
     built_with: "Built with Jekyll. Hosted on GitHub Pages."
+    colophon_more: "How it's built"
     last_built: "Last built"
   project_summary:
     aria: "Project summary"
@@ -136,6 +137,7 @@ zh:
     colophon: "字体说明"
     set_in: "字体使用"
     built_with: "Jekyll 构建，托管于 GitHub Pages。"
+    colophon_more: "本站如何构建"
     last_built: "最近构建"
   project_summary:
     aria: "项目摘要"
