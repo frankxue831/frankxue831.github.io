@@ -184,13 +184,23 @@ project_pages = %w[
   zh/projects/ghrunners/index.html
 ]
 
-# Individual notes (collection docs). Run through the same per-page SEO loop.
-note_pages = %w[
-  notes/starting-a-notebook/index.html
-  zh/notes/starting-a-notebook/index.html
-  notes/constant-time-ci-gate/index.html
-  zh/notes/constant-time-ci-gate/index.html
-]
+# Individual notes (collection docs), discovered dynamically so adding a note
+# never needs an edit here. Each note builds to <ns>/notes/<slug>/index.html;
+# the notes index (notes/index.html) has no <slug> dir, so the glob skips it.
+note_pages = (Dir.glob(SITE.join("notes/*/index.html").to_s) +
+              Dir.glob(SITE.join("zh/notes/*/index.html").to_s))
+  .map { |p| Pathname.new(p).relative_path_from(SITE).to_s }
+  .sort
+
+# Bilingual note parity: every EN note must have a ZH counterpart and vice versa.
+en_note_slugs = Dir.glob(SITE.join("notes/*/index.html").to_s).map { |p| File.basename(File.dirname(p)) }.sort
+zh_note_slugs = Dir.glob(SITE.join("zh/notes/*/index.html").to_s).map { |p| File.basename(File.dirname(p)) }.sort
+(en_note_slugs - zh_note_slugs).each do |slug|
+  record(failures, "notes: EN note '#{slug}/' has no ZH counterpart (zh/notes/#{slug}/)")
+end
+(zh_note_slugs - en_note_slugs).each do |slug|
+  record(failures, "notes: ZH note '#{slug}/' has no EN counterpart (notes/#{slug}/)")
+end
 
 public_release_labels = PROJECTS.select { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }
 private_release_labels = PROJECTS.reject { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }.compact
