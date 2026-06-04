@@ -39,8 +39,8 @@ summary_outcome: "Typed findings and guarded control act on the same authoritati
 
         <h2>The problem</h2>
         <p>
-            When a self-hosted runner quietly dies on a Mac, the truth is
-            scattered: launchd holds the domain and last-exit state, the process
+            When a {% include glossary-term.html term="self-hosted-runner" %} quietly dies on a Mac, the truth is
+            scattered: {% include glossary-term.html term="launchd" %} holds the domain and last-exit state, the process
             tree says whether a worker is really alive, the install dir holds the
             config behind <code>0700</code> permissions, and the GitHub API knows
             whether the job ever landed. You SSH in and reassemble it by hand —
@@ -52,7 +52,7 @@ summary_outcome: "Typed findings and guarded control act on the same authoritati
         <h2>Constraints &amp; key decisions</h2>
         <p>
             <strong>One-shot observability from authoritative state.</strong>
-            Rather than run a monitoring daemon, <code>ghrunners</code> is a
+            Rather than run a monitoring {% include glossary-term.html term="daemon" %}, <code>ghrunners</code> is a
             single no-state invocation that parses the <code>launchctl print</code>
             body — readable without <code>sudo</code> — so the run-state and
             last-exit it reports are authoritative even for a non-root caller,

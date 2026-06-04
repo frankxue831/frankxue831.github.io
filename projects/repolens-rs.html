@@ -27,7 +27,7 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
         <h2>What it is</h2>
         <p>
             <code>RepoLens</code> scans a repository into structured, immutable
-            "packs," exposes that model through an MCP server, and pairs it with
+            "packs," exposes that model through an {% include glossary-term.html term="mcp" %} server, and pairs it with
             a typed, decaying memory graph. The goal isn't to write code for the
             agent — it's to stop every new session from starting cold. It is a
             private pre-release; the snapshot it describes is named under
@@ -58,8 +58,8 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
             and because packs are immutable they go stale until the next scan.
         </p>
         <p>
-            <strong>Typed, decaying, grounded memory over a flat store.</strong>
-            A flat RAG bucket has no notion of staleness or trust, so agents
+            <strong>Typed, decaying, {% include glossary-term.html term="grounding" %} memory over a flat store.</strong>
+            A flat {% include glossary-term.html term="rag" %} bucket has no notion of staleness or trust, so agents
             re-make rolled-back mistakes. Memory here is a typed graph (five node
             types) with exponential decay and a grounding status checked against
             the current pack — not a flat embedding store.
