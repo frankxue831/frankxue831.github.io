@@ -26,7 +26,7 @@
     zh: "2025 — 至今"
   tags:
     en: ["Rust", "MCP", "Agent tooling"]
-    zh: ["Rust", "MCP", "Agent 工具链"]
+    zh: ["Rust", "MCP", "Agent 工具"]
   status: private-pre-release
   status_label:
     en: "Private pre-release"
@@ -51,7 +51,7 @@
   status: private-local
   status_label:
     en: "Private/local"
-    zh: "本地/私有"
+    zh: "私有/本地"
   release: "local tag v0.4.0"
   release_source: local_tag
   repo_url:
