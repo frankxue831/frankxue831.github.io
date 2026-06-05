@@ -171,13 +171,13 @@ zh:
     intro: "每条涉密路径都对着 |τ| 门禁计时。|τ| 低，表示在该预算下没测到泄漏；核心路径一旦越过门禁就让构建失败（少数几条走更宽松的 nightly 或遥测策略）。"
     axis_label: "|τ|（时序泄漏统计量）"
     gate_label: "PR 门禁 |τ| < 0.20"
-    control_label: "negative_control —— 必须在这里触发（证明检测器不是瞎的）"
+    control_label: "negative_control——必须在这里触发（证明检测器不是瞎的）"
     landscape_heading: "门禁全景"
-    cluster_label: "公开的 ct_* —— 都在 0.20 以下"
+    cluster_label: "公开的 ct_*——都在 0.20 以下"
     leak_heading: "它抓到的那次泄漏"
     leak_label: "crypto-bigint 0.6 → 0.7.3：一次真实的 invert 泄漏，被抓到并修掉"
     context: "18 条真实路径中有 4 条带公开数值；多数压在 0.20 以下（少数几条走更宽松的 nightly 或哨兵策略）。"
-    caveat: "dudect 报的是检测事件 —— |τ| 低只说明在给定预算下没测到泄漏，并不等于不存在。"
+    caveat: "dudect 报的是检测事件——|τ| 低只说明在给定预算下没测到泄漏，并不等于不存在。"
     provenance: "测量环境：v0.2 W0 harness，100K 采样（2026-05-12 之前的 runner）。两个 invert 诊断后来转为遥测 + |τ| ≥ 0.55 的兜底哨兵。"
     source: "来源：gm-crypto-rs SECURITY.md @ v1.0.1"
     table_caption: "公开的 dudect 测量值（gm-crypto-rs @ v1.0.1）"
@@ -193,7 +193,7 @@ zh:
   glossary:
     "constant-time":
       label: "常量时间"
-      def: "运行耗时不随密钥等秘密值变化的代码，这样攻击者就无法靠测量耗时来还原秘密。它是一个设计目标，而非保证——某些硬件仍可能泄露。"
+      def: "运行耗时不随密钥等秘密值变化的代码，这样攻击者就无法靠测量耗时来还原秘密。它是一个设计目标，而非保证——某些硬件仍可能泄漏。"
     "sm2":
       label: "SM2"
       def: "中国商用密码公钥标准（GB/T 32918），基于椭圆曲线，用于数字签名、密钥交换和公钥加密。"
@@ -208,7 +208,7 @@ zh:
       def: "不链接标准库的 Rust 构建，代码因而能运行在嵌入式、内核、WebAssembly 等受限环境中。它只能使用 core；需要堆分配时才显式引入 alloc 并提供分配器。"
     "dudect":
       label: "dudect"
-      def: "一种检测时序泄露的统计方法：对两类输入分别计时，看两组耗时分布是否有差异。它在给定的测量预算下检测泄露，但无法证明泄露不存在。"
+      def: "一种检测时序泄漏的统计方法：对两类输入分别计时，看两组耗时分布是否有差异。它在给定的测量预算下检测泄漏，但无法证明泄漏不存在。"
     "mcp":
       label: "MCP"
       def: "Model Context Protocol（模型上下文协议）——一套开放协议，让 AI agent 通过统一接口发现并调用外部工具，而不必为每个工具单独写胶水代码。"

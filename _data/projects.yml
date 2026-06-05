@@ -30,7 +30,7 @@
   status: private-pre-release
   status_label:
     en: "Private pre-release"
-    zh: "私有预发布版"
+    zh: "私有预发布"
   release: "origin/main @ 5136bbc"
   release_source: private_main
   repo_url:
