@@ -1,5 +1,5 @@
-<svg viewBox="0 0 360 236" role="img" xmlns="http://www.w3.org/2000/svg">
-  <title>sm2 / sm3 / sm4 modules feed gmcrypto-core, which feeds gmcrypto-ffi (C ABI)</title>
+<svg viewBox="0 0 360 236" role="img" aria-labelledby="fig-gm-crates-title" xmlns="http://www.w3.org/2000/svg">
+  <title id="fig-gm-crates-title">sm2 / sm3 / sm4 → gmcrypto-core → gmcrypto-ffi (C ABI)</title>
   <rect class="fig-box" x="12" y="12" width="88" height="34"/>
   <rect class="fig-box" x="136" y="12" width="88" height="34"/>
   <rect class="fig-box" x="260" y="12" width="88" height="34"/>

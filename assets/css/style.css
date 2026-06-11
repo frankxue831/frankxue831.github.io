@@ -2159,7 +2159,7 @@ details.drawer .version-grid {
 .fig-line--dash { stroke-dasharray: 3 3; } /* modifier only — stack on .fig-line/.fig-line--soft, carries no stroke itself */
 .fig-arrow { fill: var(--fg); }
 .fig-label { font-family: var(--mono); font-size: 12px; fill: var(--fg); }
-.fig-label--muted { font-family: var(--mono); font-size: 11px; fill: var(--fg-muted); }
+.fig-label--muted { font-family: var(--mono); font-size: 12px; fill: var(--fg-muted); } /* 12px so ~0.93 mobile scale keeps it >= 11px effective */
 .fig__cap {
     font-family: var(--mono);
     font-size: var(--text-sm);
