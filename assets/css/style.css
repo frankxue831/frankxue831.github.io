@@ -2156,7 +2156,7 @@ details.drawer .version-grid {
 .fig-box { fill: var(--bg-sunk); stroke: var(--fg); stroke-width: 1; }
 .fig-line { stroke: var(--fg); stroke-width: 1; fill: none; }
 .fig-line--soft { stroke: var(--rule); stroke-width: 1; fill: none; }
-.fig-line--dash { stroke-dasharray: 3 3; }
+.fig-line--dash { stroke-dasharray: 3 3; } /* modifier only — stack on .fig-line/.fig-line--soft, carries no stroke itself */
 .fig-arrow { fill: var(--fg); }
 .fig-label { font-family: var(--mono); font-size: 12px; fill: var(--fg); }
 .fig-label--muted { font-family: var(--mono); font-size: 11px; fill: var(--fg-muted); }
