@@ -109,6 +109,7 @@
     --accent-warm: #1e3a8a;
     --accent-cool: #3730a3;
     --danger: #b91c1c;
+    --ghost-ink: rgba(26, 24, 20, 0.07);
 
     /* Semantic status — the dot carries hue; the text label always
        accompanies it, so meaning never depends on color alone. */
@@ -206,6 +207,7 @@
     --status-pre: #f59e0b;
     --status-private: #8a8276;
     --danger: #f87171;
+    --ghost-ink: rgba(237, 228, 204, 0.05);
 }
 /* Paper grain doesn't translate to dark — the multiply blend just
    eats the noise and reads as banding. Suppress in dark. */
@@ -233,6 +235,7 @@
         --status-pre: #f59e0b;
         --status-private: #8a8276;
         --danger: #f87171;
+        --ghost-ink: rgba(237, 228, 204, 0.05);
     }
     :root:not([data-theme]) .grain { display: none; }
 }
@@ -260,6 +263,7 @@
         --status-pre: #b45309;
         --status-private: #8a8276;
         --danger: #b91c1c;
+        --ghost-ink: transparent; /* ghosts must not print */
     }
     .grain { display: none; }
 }
