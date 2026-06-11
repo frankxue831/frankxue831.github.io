@@ -238,6 +238,24 @@
         --ghost-ink: rgba(237, 228, 204, 0.05);
     }
     :root:not([data-theme]) .grain { display: none; }
+    :root:not([data-theme]) .dudect,
+    :root:not([data-theme]) .install {
+        background: var(--bg-elevated);
+    }
+    :root:not([data-theme]) details.drawer {
+        background: var(--bg-elevated);
+    }
+    :root:not([data-theme]) details.drawer > summary:hover,
+    :root:not([data-theme]) details.drawer > summary:focus-visible {
+        background: var(--bg-sunk);
+    }
+    :root:not([data-theme]) .hero-proof {
+        border-top-color: var(--accent);
+    }
+    :root:not([data-theme]) .hero-proof__release,
+    :root:not([data-theme]) .work-list__rel {
+        color: var(--accent);
+    }
 }
 /* Print stays paper no matter the chosen theme. Reset the full token set
    (not just bg/fg) so dark-only values like --accent-cool / --accent-warm
@@ -687,10 +705,11 @@ body.lang-zh .page-header__lede {
 
 /* =========================================================
    Editorial dose — ghost numerals + monograph double rules.
-   Ghosts are aria-hidden decoration painted behind the head
-   (z-index -1; .reveal's transform keeps them inside the
-   section's stacking context). --ghost-ink: ~7% ink light,
-   ~5% dark, transparent in print.
+   Ghosts are aria-hidden decoration painted behind the head:
+   z-index -1 under the position:relative head, and nothing
+   between head and page background paints an opaque box, so
+   the ghost sits behind the text but above the paper.
+   --ghost-ink: ~7% ink light, ~5% dark, transparent in print.
    Spec: docs/superpowers/specs/2026-06-11-visual-evolution-design.md
    ========================================================= */
 .ghost-num {
@@ -848,6 +867,17 @@ body.lang-zh .page-header__lede {
     gap: var(--space-4);
     align-items: center;
     padding: var(--space-4) 0;
+    transition: padding var(--dur) var(--ease),
+                background var(--dur-fast) var(--ease),
+                box-shadow var(--dur-fast) var(--ease);
+}
+/* Parity with the work-list reward (.work-list__item:hover .work-list__row):
+   surface tint + 2px inset accent rail, padding nudge instead of layout shift. */
+.hero-proof__row:hover,
+.hero-proof__row:focus-visible {
+    padding-left: var(--space-3);
+    background: var(--bg-elevated);
+    box-shadow: inset 2px 0 0 var(--accent);
 }
 .hero-proof__row:hover .hero-proof__title,
 .hero-proof__row:focus-visible .hero-proof__title {
@@ -1536,6 +1566,8 @@ body.lang-zh .page-header__lede {
     }
     .work-list__item:hover .work-list__row,
     .work-list__row:focus-visible { padding-left: 0; }
+    .hero-proof__row:hover,
+    .hero-proof__row:focus-visible { padding-left: 0; }
 }
 
 /* Empty state */
@@ -2310,4 +2342,33 @@ details.drawer .version-grid {
     .dudect { padding: var(--space-4); }
     .dudect__table { font-size: var(--text-xs); }
     .dudect__table th, .dudect__table td { padding: var(--space-1) var(--space-2); }
+}
+
+/* =========================================================
+   Second-design dark — deliberate choices, not value flips.
+   Light keeps sunken paper panels; dark raises them to the
+   warm elevated surface and lets accents go moonlit (release
+   numerals, the proof-ledger hairline). Status pills need no
+   override — their dots already carry dark-tuned tokens.
+   Twin rules for the no-JS dark path live in the
+   prefers-color-scheme block near the top of this file.
+   Spec: docs/superpowers/specs/2026-06-11-visual-evolution-design.md
+   ========================================================= */
+[data-theme="dark"] .dudect,
+[data-theme="dark"] .install {
+    background: var(--bg-elevated);
+}
+[data-theme="dark"] details.drawer {
+    background: var(--bg-elevated);
+}
+[data-theme="dark"] details.drawer > summary:hover,
+[data-theme="dark"] details.drawer > summary:focus-visible {
+    background: var(--bg-sunk);
+}
+[data-theme="dark"] .hero-proof {
+    border-top-color: var(--accent);
+}
+[data-theme="dark"] .hero-proof__release,
+[data-theme="dark"] .work-list__rel {
+    color: var(--accent);
 }
