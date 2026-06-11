@@ -58,6 +58,7 @@ en:
     none: "Nothing published yet."
   dudect:
     title: "Constant-time, measured"
+    fig_num: "fig. 3.2"
     intro: "Each secret-touching path is timed against the |τ| gate. Low |τ| = no leak detected under the budget; core paths fail the build if they cross the gate (a few carry looser nightly or telemetry policy)."
     axis_label: "|τ| (timing-leak statistic)"
     gate_label: "PR gate |τ| < 0.20"
@@ -168,6 +169,7 @@ zh:
     none: "还没有发布内容。"
   dudect:
     title: "把常量时间测出来"
+    fig_num: "图 3.2"
     intro: "每条涉密路径都对着 |τ| 门禁计时。|τ| 低，表示在该预算下没测到泄漏；核心路径一旦越过门禁就让构建失败（少数几条走更宽松的 nightly 或遥测策略）。"
     axis_label: "|τ|（时序泄漏统计量）"
     gate_label: "PR 门禁 |τ| < 0.20"

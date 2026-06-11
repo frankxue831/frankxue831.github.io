@@ -2136,6 +2136,39 @@ details.drawer .version-grid {
 }
 
 /* =========================================================
+   Monograph figures — inline SVG plates + mono captions.
+   Drawings live in _includes/figures/ and are styled here
+   (classes + tokens only; CSP style-src 'self' forbids
+   style="" attributes), so they follow light/dark for free.
+   Spec: docs/superpowers/specs/2026-06-11-visual-evolution-design.md
+   ========================================================= */
+.fig {
+    margin: var(--space-8) 0;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--fg);
+    max-width: 30rem;
+}
+.fig svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.fig-box { fill: var(--bg-sunk); stroke: var(--fg); stroke-width: 1; }
+.fig-line { stroke: var(--fg); stroke-width: 1; fill: none; }
+.fig-line--soft { stroke: var(--rule); stroke-width: 1; fill: none; }
+.fig-line--dash { stroke-dasharray: 3 3; }
+.fig-arrow { fill: var(--fg); }
+.fig-label { font-family: var(--mono); font-size: 12px; fill: var(--fg); }
+.fig-label--muted { font-family: var(--mono); font-size: 11px; fill: var(--fg-muted); }
+.fig__cap {
+    font-family: var(--mono);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    margin-top: var(--space-3);
+    letter-spacing: 0.02em;
+}
+
+/* =========================================================
    Constant-time visualizer (Phase 2). Server-rendered inline SVG +
    data table. Tokens only; dark theme adapts via --bg-sunk/--rule/--fg
    overrides. Status hues reinforce position+text, never sole signal.
