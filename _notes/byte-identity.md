@@ -5,7 +5,7 @@ permalink: /notes/byte-identity/
 lang: en
 alternate: /zh/notes/byte-identity/
 description: "How gm-crypto-rs checks its SM2/SM3/SM4 output: byte-for-byte against KAT vectors, gmssl, and OpenSSL — including the mode-semantics traps that make 'looks right' a lie."
-excerpt: "Crypto tests don't ask whether the output looks right. They ask whether it's the same bytes as a reference under the same mode semantics — and the second half is where it gets subtle."
+excerpt: "Crypto tests don't ask whether the output looks right. They ask whether it's the same bytes as a reference under the same mode semantics — the subtle half."
 ---
 
 Most code can be tested by asking "does this look right." Cryptography can't. A

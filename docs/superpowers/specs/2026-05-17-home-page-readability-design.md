@@ -99,3 +99,18 @@ Run these checks before completion:
 - The hero communicates the site purpose without requiring the user to scroll.
 - The selected work list is scannable on desktop and mobile.
 - Project facts and links still come from `_data/projects.yml`.
+
+## Addendum (2026-06-11)
+
+Clarification recorded during a design review: "project row supporting text"
+in the sans-serif list above means the row's interface text — tags, status
+pill, release, year. The prose note under each row (`.work-list__note`) has
+been `var(--serif)` since the version of this spec shipped (PR #4) and stays
+serif by design: it is a short reading passage, not row metadata. Two
+adjustments from the same review: the note no longer drops to `--text-sm` on
+mobile (14px Garamond was the smallest reading text on the site; it now stays
+at `--text-base`), and display headings (`.hero__title`, `.section__title`,
+`.page-header__title`) gained `text-wrap: balance` as a progressive
+enhancement on Latin pages only — Chromium's balancer mishandles mixed
+CJK/Latin display lines (it can open a line with a fullwidth comma), so
+ZH pages keep native wrapping via a `body.lang-zh` override.

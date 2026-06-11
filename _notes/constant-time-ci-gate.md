@@ -5,7 +5,7 @@ permalink: /notes/constant-time-ci-gate/
 lang: en
 alternate: /zh/notes/constant-time-ci-gate/
 description: "A constant-time CI gate built on a dudect-style timing harness — how it works, and why it detects regressions rather than proving their absence."
-excerpt: "Constant-time is a property you can satisfy once and lose without noticing. Here's the CI tripwire that fails the build when a timing leak creeps back — and why it's a detector, not a proof."
+excerpt: "Constant-time is easy to satisfy once and lose without noticing. Here's the CI tripwire that fails the build when a leak creeps back — a detector, not a proof."
 ---
 
 "Constant-time" is one of those properties you can satisfy once and then lose
