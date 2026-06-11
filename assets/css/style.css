@@ -686,6 +686,48 @@ body.lang-zh .page-header__lede {
 }
 
 /* =========================================================
+   Editorial dose — ghost numerals + monograph double rules.
+   Ghosts are aria-hidden decoration painted behind the head
+   (z-index -1; .reveal's transform keeps them inside the
+   section's stacking context). --ghost-ink: ~7% ink light,
+   ~5% dark, transparent in print.
+   Spec: docs/superpowers/specs/2026-06-11-visual-evolution-design.md
+   ========================================================= */
+.ghost-num {
+    position: absolute;
+    top: -0.16em;
+    left: -0.05em;
+    z-index: -1;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(72px, 12vw, 128px);
+    line-height: 1;
+    color: var(--ghost-ink);
+    pointer-events: none;
+    user-select: none;
+}
+.section__head {
+    position: relative;
+    padding-bottom: var(--space-4);
+    border-bottom: 2px solid var(--fg);
+}
+.page-header--plate {
+    position: relative;
+    border-bottom: 2px solid var(--fg);
+}
+.section__head::after,
+.page-header--plate::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -5px;
+    height: 1px;
+    background: var(--rule);
+}
+
+/* =========================================================
    Hero (home)
    ========================================================= */
 .hero {
