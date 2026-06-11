@@ -43,7 +43,8 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         <h2>What it is</h2>
         <p>
             <code>gm-crypto-rs</code> implements GB/T 32905 ({% include glossary-term.html term="sm3" %} hash),
-            GB/T 32918 ({% include glossary-term.html term="sm2" %} public-key sign / verify / encrypt / decrypt),
+            GB/T 32918 ({% include glossary-term.html term="sm2" %} public-key sign / verify / encrypt / decrypt
+            and, since v1.1, key exchange with key confirmation),
             and GB/T 32907 ({% include glossary-term.html term="sm4" %} block cipher) in pure Rust. The crate
             graph is <code>no_std + alloc</code>, builds on
             <code>wasm32-unknown-unknown</code>, and ships RustCrypto-trait
@@ -74,7 +75,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <strong>Verify continuously, don't assert once.</strong>
             Constant-time behavior is treated as a property CI re-checks, not
             a claim review signs off. A <code>dudect-bencher</code> harness
-            exercises eighteen secret-touching paths on every run; a core set
+            exercises nineteen secret-touching paths on every run; a core set
             is <em>gated</em> at <code>|τ|&nbsp;&lt;&nbsp;0.20</code>, so a
             timing regression fails the build instead of waiting for someone
             to notice. The harness reports <em>detection events</em> — a low
@@ -87,13 +88,16 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         <p>
             <strong>Gate the core, observe the rest.</strong> Not every path
             fits a PR's time budget, so the harness splits them. Gated
-            (build-failing): SM2 sign and decrypt, SM4 key schedule, SM4
-            encrypt (default linear-scan and bitsliced SIMD S-box), SM4-CTR,
-            CBC-decrypt fanout, single-shot SM4-GCM / SM4-CCM decrypt,
-            SM4-XTS decrypt, HMAC-SM3, and encrypted-PKCS#8 decrypt.
-            Telemetry-only: field-inversion diagnostics, the k-class sign
-            (gated at <code>0.25</code> on a deeper nightly run), and the
-            buffered-GCM path. <strong>Cost:</strong> the telemetry paths are
+            (build-failing): SM2 sign, decrypt, and key exchange, SM4 key
+            schedule, SM4 encrypt (default linear-scan and bitsliced SIMD
+            S-box), SM4-CTR, CBC-decrypt fanout, single-shot and buffered
+            SM4-GCM / SM4-CCM decrypt, SM4-XTS decrypt, HMAC-SM3, and
+            encrypted-PKCS#8 decrypt. Telemetry-only: the field-inversion
+            diagnostics and the k-class sign, watched on the nightly run
+            against a <code>0.55</code> gross-regression sentinel rather than
+            the <code>0.20</code> gate — shared-runner class-split noise made
+            their tighter gates fire falsely, so they were demoted with the
+            reasoning published. <strong>Cost:</strong> the telemetry paths are
             watched, not enforced, and the two-tier split is a permanent
             surface to maintain.
         </p>
@@ -121,7 +125,8 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             change nothing.</strong> Cipher modes land on a
             <code>core-in-vN / FFI-in-vN+1</code> cadence: the SM4-XTS core
             shipped in v0.12 and its C ABI in v0.13; the in-place multi-sector
-            disk helper in v0.15 and its FFI in v0.16. When a cycle changes no
+            disk helper in v0.15 and its FFI in v0.16; SM2 key exchange in
+            v1.1 and its C ABI in v1.2. When a cycle changes no
             output bytes — v0.14 was a <code>cargo-fuzz</code> parser-fuzzing
             sweep that found zero crashes — it merges as assurance and is never
             published, so crates.io skips <code>0.14.0</code>. The same rule then
@@ -143,9 +148,9 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             for the tweakable mode. The leak-regression gates above run in CI
             on every commit, and the core carries
             <code>#![forbid(unsafe_code)]</code>. The v0.14 cycle added a
-            <code>cargo-fuzz</code> (libFuzzer) harness — sixteen targets over
-            the untrusted-input decode / decrypt surface — run as a nightly
-            sweep. All of it is inspectable: the source, the CI workflow, and
+            <code>cargo-fuzz</code> (libFuzzer) harness over the
+            untrusted-input decode / decrypt surface — sixteen targets then,
+            twenty-six as of v1.2 — run as a nightly sweep. All of it is inspectable: the source, the CI workflow, and
             the {% include glossary-term.html term="dudect" %} harness are public, alongside the published
             <code>gmcrypto-core</code> crate, its <code>docs.rs</code>
             reference, and the runnable demo.
@@ -198,12 +203,18 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
             <dt>v1.0.1</dt>
             <dd>2026-06-03 — patch: the v1.0 readiness cleanup. <strong>No API / ABI / wire change</strong> (<code>cargo-public-api</code> + <code>cargo-semver-checks</code> stayed green; a 1.0.0 consumer upgrades freely). Fixes the C ABI <code>gmcrypto_version()</code> (it returned a stale <code>0.4.0</code>) and lands docs + CI hardening — an x86_64 SIMD test job, ECB-misuse warnings on the raw single-block API, and dependency-coupling disclosures.</dd>
+
+            <dt>v1.1.0</dt>
+            <dd>2026-06-10 — SM2 key exchange (GM/T 0003.3) with key confirmation — the missing third of the SM2 family, after sign and encrypt. Opt-in <code>sm2-key-exchange</code> feature; a new gated dudect target (<code>ct_sm2_key_exchange</code>) and fuzz target (<code>fuzz_sm2_kx</code>). The default-features build is byte-identical to 1.0.1; <code>cargo-semver-checks</code> passes as non-breaking.</dd>
+
+            <dt>v1.2.0</dt>
+            <dd>2026-06-11 — the C ABI for SM2 key exchange, on the usual core-in-vN / FFI-in-vN+1 cadence (63 → 72 FFI entry points). The GM/T 0003.5 recommended-curve KAT reproduces byte-for-byte through the C ABI, and FFI↔Rust handshakes cross-check in both directions. The core build is identical to 1.1.0 — with this, the SM2 family is complete in both Rust and C.</dd>
         </dl>
 
         <h2>Next</h2>
         <dl class="version-grid">
             <dt>Next</dt>
-            <dd>With the public API frozen at 1.0 and <code>cargo-semver-checks</code> now gating forward breaks, candidate post-1.0 scope — not committed — is RustCrypto <code>aead 0.6</code> trait fit (parked while upstream is on <code>0.6.0-rc</code>; v0.11 landed the <code>crypto-common 0.2</code> line it needs), AVX-512 <code>sbox_x64</code>, and streaming / incremental CCM.</dd>
+            <dd>With the SM2 family complete in both Rust and C, the lead v1.3 candidate — not committed, pending its own scope cycle — is X.509-with-SM2 certificate support. Still parked: RustCrypto <code>aead 0.6</code> trait fit (upstream remains on <code>0.6.0-rc</code>; v0.11 landed the <code>crypto-common 0.2</code> line it needs), AVX-512 <code>sbox_x64</code>, and streaming / incremental CCM.</dd>
         </dl>
 
         <h2>What it isn't</h2>

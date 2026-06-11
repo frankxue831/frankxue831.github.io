@@ -10,7 +10,7 @@
   status_label:
     en: "Released"
     zh: "已发布"
-  release: "v1.0.1"
+  release: "v1.2.0"
   release_source: public_tag
   repo_url: "https://github.com/frankxue831/gm-crypto-rs"
   crate_url: "https://crates.io/crates/gmcrypto-core"
