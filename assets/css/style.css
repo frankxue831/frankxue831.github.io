@@ -484,8 +484,8 @@ a { color: inherit; text-decoration: none; }
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 44px; /* match the 44px nav-toggle tap target */
+    height: 44px;
     padding: 0;
     border-radius: 999px;
     color: var(--fg-muted);
@@ -530,12 +530,16 @@ body.lang-zh em {
     color: var(--accent-cool);
 }
 
-/* CJK display headlines breathe better at neutral tracking */
+/* CJK display headlines breathe better at neutral tracking.
+   text-wrap: balance stays Latin-only — Chromium's balancer mishandles
+   mixed CJK/Latin display lines (it can open a line with a fullwidth
+   comma, which native wrapping correctly forbids). */
 body.lang-zh .hero__title,
 body.lang-zh .page-header__title,
 body.lang-zh .section__title {
     letter-spacing: 0;
     line-height: 1.08;
+    text-wrap: wrap;
 }
 
 /* CJK body text reads comfortably with slightly more leading */
@@ -660,6 +664,7 @@ body.lang-zh .page-header__lede {
     letter-spacing: 0;
     color: var(--fg);
     max-width: 16ch;
+    text-wrap: balance;
 }
 .section__title em {
     font-style: italic;
@@ -721,6 +726,9 @@ body.lang-zh .page-header__lede {
     color: var(--fg);
     max-width: 14ch;
     margin-bottom: var(--space-6);
+    /* Evens out ragged display lines; unsupported engines ignore it.
+       ZH pages opt back out (see locale tweaks). */
+    text-wrap: balance;
 }
 .hero__title em {
     font-style: italic;
@@ -1079,7 +1087,8 @@ body.lang-zh .page-header__lede {
         margin-left: 0;
         padding-right: 0;
         margin-top: var(--space-2);
-        font-size: var(--text-sm);
+        /* Stays at --text-base: 14px Garamond (small x-height) was the
+           smallest reading text on the site. */
     }
 }
 .work-list__note em {
@@ -1958,6 +1967,7 @@ body.lang-zh .page-header__lede {
     line-height: 1.02;
     letter-spacing: 0;
     color: var(--fg);
+    text-wrap: balance;
 }
 .page-header__title em {
     font-style: italic;

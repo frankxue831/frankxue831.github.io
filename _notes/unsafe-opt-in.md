@@ -5,7 +5,7 @@ permalink: /notes/unsafe-opt-in/
 lang: en
 alternate: /zh/notes/unsafe-opt-in/
 description: "gm-crypto-rs forbids unsafe in its core crate and quarantines the SIMD code that needs it behind opt-in features in a separate crate."
-excerpt: "The fast paths needed unsafe. Rather than let them into the core, they live in a separate crate you opt into — so the default build stays #![forbid(unsafe_code)]."
+excerpt: "The fast paths needed unsafe. Rather than let them into the core, they live in a crate you opt into — so the default build stays #![forbid(unsafe_code)]."
 ---
 
 `unsafe` in Rust isn't a sin; it's a boundary. It marks the place where the
