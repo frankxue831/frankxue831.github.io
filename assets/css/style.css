@@ -245,7 +245,8 @@
     :root:not([data-theme]) details.drawer {
         background: var(--bg-elevated);
     }
-    :root:not([data-theme]) details.drawer > summary:hover {
+    :root:not([data-theme]) details.drawer > summary:hover,
+    :root:not([data-theme]) details.drawer > summary:focus-visible {
         background: var(--bg-sunk);
     }
     :root:not([data-theme]) .hero-proof {
@@ -2359,7 +2360,8 @@ details.drawer .version-grid {
 [data-theme="dark"] details.drawer {
     background: var(--bg-elevated);
 }
-[data-theme="dark"] details.drawer > summary:hover {
+[data-theme="dark"] details.drawer > summary:hover,
+[data-theme="dark"] details.drawer > summary:focus-visible {
     background: var(--bg-sunk);
 }
 [data-theme="dark"] .hero-proof {
