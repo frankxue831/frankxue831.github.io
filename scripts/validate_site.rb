@@ -706,7 +706,7 @@ end
 
 # dudect i18n parity: every required key present + non-empty in both languages.
 %w[en zh].each do |lang|
-  %w[title intro axis_label gate_label control_label cluster_label caveat
+  %w[title fig_num intro axis_label gate_label control_label cluster_label caveat
      provenance source table_caption col_target col_measures col_tau col_gate
      col_status status_pass status_fire].each do |key|
     record(failures, "i18n.yml: missing #{lang}.dudect.#{key}") if i18n.dig(lang, "dudect", key).to_s.empty?
@@ -739,6 +739,7 @@ if css_path.exist?
 
   # Constant-time visualizer styles must be present.
   record(failures, "style.css: missing .dudect visualizer styles") unless css.include?(".dudect__chart")
+  record(failures, "style.css: missing monograph figure styles (.fig__cap)") unless css.include?(".fig__cap")
 
   # --- Tap-target floor for footer links (WCAG 2.2 SC 2.5.8, target size min) ---
   # Footer social links are standalone targets (not inline-in-prose), so keep
