@@ -109,6 +109,7 @@
     --accent-warm: #1e3a8a;
     --accent-cool: #3730a3;
     --danger: #b91c1c;
+    --ghost-ink: rgba(26, 24, 20, 0.07);
 
     /* Semantic status — the dot carries hue; the text label always
        accompanies it, so meaning never depends on color alone. */
@@ -206,6 +207,7 @@
     --status-pre: #f59e0b;
     --status-private: #8a8276;
     --danger: #f87171;
+    --ghost-ink: rgba(237, 228, 204, 0.05);
 }
 /* Paper grain doesn't translate to dark — the multiply blend just
    eats the noise and reads as banding. Suppress in dark. */
@@ -233,6 +235,7 @@
         --status-pre: #f59e0b;
         --status-private: #8a8276;
         --danger: #f87171;
+        --ghost-ink: rgba(237, 228, 204, 0.05);
     }
     :root:not([data-theme]) .grain { display: none; }
 }
@@ -260,6 +263,7 @@
         --status-pre: #b45309;
         --status-private: #8a8276;
         --danger: #b91c1c;
+        --ghost-ink: transparent; /* ghosts must not print */
     }
     .grain { display: none; }
 }
@@ -679,6 +683,48 @@ body.lang-zh .page-header__lede {
         gap: var(--space-3);
         margin-bottom: var(--space-8);
     }
+}
+
+/* =========================================================
+   Editorial dose — ghost numerals + monograph double rules.
+   Ghosts are aria-hidden decoration painted behind the head
+   (z-index -1; .reveal's transform keeps them inside the
+   section's stacking context). --ghost-ink: ~7% ink light,
+   ~5% dark, transparent in print.
+   Spec: docs/superpowers/specs/2026-06-11-visual-evolution-design.md
+   ========================================================= */
+.ghost-num {
+    position: absolute;
+    top: -0.16em;
+    left: -0.05em;
+    z-index: -1;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(72px, 12vw, 128px);
+    line-height: 1;
+    color: var(--ghost-ink);
+    pointer-events: none;
+    user-select: none;
+}
+.section__head {
+    position: relative;
+    padding-bottom: var(--space-4);
+    border-bottom: 2px solid var(--fg);
+}
+.page-header--plate {
+    position: relative;
+    border-bottom: 2px solid var(--fg);
+}
+.section__head::after,
+.page-header--plate::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -5px;
+    height: 1px;
+    background: var(--rule);
 }
 
 /* =========================================================
