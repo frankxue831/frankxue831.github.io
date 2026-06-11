@@ -52,6 +52,11 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             <code>verify</code>）。
         </p>
 
+        <figure class="fig">
+            {% include figures/gm-crypto-crates.svg %}
+            <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.2.0 共 72 个 FFI 入口）</figcaption>
+        </figure>
+
         <h2>要解决的问题</h2>
         <p>
             国密这几个算法，Rust 社区其实早有实现，写得好的那些，本来也都按

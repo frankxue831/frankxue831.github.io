@@ -21,7 +21,7 @@
 {%- assign before_x = d.leak.before | divided_by: d.axis_max | times: plotw | plus: ml -%}
 {%- assign after_x = d.leak.after | divided_by: d.axis_max | times: plotw | plus: ml -%}
 <figure class="dudect reveal" aria-labelledby="dudect-cap">
-  <figcaption id="dudect-cap" class="dudect__title">{{ t.title | escape }}</figcaption>
+  <figcaption id="dudect-cap" class="dudect__title"><span class="dudect__fignum">{{ t.fig_num | escape }} —</span> {{ t.title | escape }}</figcaption>
   <p class="dudect__intro">{{ t.intro | escape }}</p>
   <svg class="dudect__chart" viewBox="0 0 {{ W }} {{ H }}" role="img"
        aria-label="{{ t.title | escape }}. {{ t.context | escape }}"

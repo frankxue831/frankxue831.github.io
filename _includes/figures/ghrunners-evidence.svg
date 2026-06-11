@@ -1,0 +1,21 @@
+<svg viewBox="0 0 360 218" role="img" aria-labelledby="fig-ghrunners-evidence-title" xmlns="http://www.w3.org/2000/svg">
+  <title id="fig-ghrunners-evidence-title">launchd + ps + logs + api → findings → control</title>
+  <rect class="fig-box" x="8" y="12" width="78" height="30"/>
+  <rect class="fig-box" x="97" y="12" width="78" height="30"/>
+  <rect class="fig-box" x="186" y="12" width="78" height="30"/>
+  <rect class="fig-box" x="275" y="12" width="78" height="30"/>
+  <text class="fig-label" x="47" y="32" text-anchor="middle">launchd</text>
+  <text class="fig-label" x="136" y="32" text-anchor="middle">ps</text>
+  <text class="fig-label" x="225" y="32" text-anchor="middle">logs</text>
+  <text class="fig-label" x="314" y="32" text-anchor="middle">api</text>
+  <line class="fig-line" x1="47" y1="42" x2="140" y2="92"/>
+  <line class="fig-line" x1="136" y1="42" x2="166" y2="92"/>
+  <line class="fig-line" x1="225" y1="42" x2="194" y2="92"/>
+  <line class="fig-line fig-line--dash" x1="314" y1="42" x2="220" y2="92"/>
+  <rect class="fig-box" x="100" y="92" width="160" height="38"/>
+  <text class="fig-label" x="180" y="116" text-anchor="middle">findings</text>
+  <line class="fig-line" x1="180" y1="130" x2="180" y2="158"/>
+  <polygon class="fig-arrow" points="176,158 184,158 180,166"/>
+  <rect class="fig-box" x="100" y="166" width="160" height="38"/>
+  <text class="fig-label" x="180" y="190" text-anchor="middle">control</text>
+</svg>
