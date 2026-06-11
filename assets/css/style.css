@@ -2188,6 +2188,7 @@ details.drawer .version-grid {
     color: var(--fg-subtle);
     margin: 0 0 var(--space-2);
 }
+.dudect__fignum { text-transform: none; color: var(--fg-muted); }
 .dudect__intro {
     font-family: var(--sans);
     font-size: var(--text-sm);
