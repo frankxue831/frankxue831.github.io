@@ -848,6 +848,17 @@ body.lang-zh .page-header__lede {
     gap: var(--space-4);
     align-items: center;
     padding: var(--space-4) 0;
+    transition: padding var(--dur) var(--ease),
+                background var(--dur-fast) var(--ease),
+                box-shadow var(--dur-fast) var(--ease);
+}
+/* Parity with the work-list reward (.work-list__item:hover .work-list__row):
+   surface tint + 2px inset accent rail, padding nudge instead of layout shift. */
+.hero-proof__row:hover,
+.hero-proof__row:focus-visible {
+    padding-left: var(--space-3);
+    background: var(--bg-elevated);
+    box-shadow: inset 2px 0 0 var(--accent);
 }
 .hero-proof__row:hover .hero-proof__title,
 .hero-proof__row:focus-visible .hero-proof__title {
@@ -1536,6 +1547,8 @@ body.lang-zh .page-header__lede {
     }
     .work-list__item:hover .work-list__row,
     .work-list__row:focus-visible { padding-left: 0; }
+    .hero-proof__row:hover,
+    .hero-proof__row:focus-visible { padding-left: 0; }
 }
 
 /* Empty state */
