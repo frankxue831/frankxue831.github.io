@@ -238,6 +238,23 @@
         --ghost-ink: rgba(237, 228, 204, 0.05);
     }
     :root:not([data-theme]) .grain { display: none; }
+    :root:not([data-theme]) .dudect,
+    :root:not([data-theme]) .install {
+        background: var(--bg-elevated);
+    }
+    :root:not([data-theme]) details.drawer {
+        background: var(--bg-elevated);
+    }
+    :root:not([data-theme]) details.drawer > summary:hover {
+        background: var(--bg-sunk);
+    }
+    :root:not([data-theme]) .hero-proof {
+        border-top-color: var(--accent);
+    }
+    :root:not([data-theme]) .hero-proof__release,
+    :root:not([data-theme]) .work-list__rel {
+        color: var(--accent);
+    }
 }
 /* Print stays paper no matter the chosen theme. Reset the full token set
    (not just bg/fg) so dark-only values like --accent-cool / --accent-warm
@@ -2323,4 +2340,32 @@ details.drawer .version-grid {
     .dudect { padding: var(--space-4); }
     .dudect__table { font-size: var(--text-xs); }
     .dudect__table th, .dudect__table td { padding: var(--space-1) var(--space-2); }
+}
+
+/* =========================================================
+   Second-design dark — deliberate choices, not value flips.
+   Light keeps sunken paper panels; dark raises them to the
+   warm elevated surface and lets accents go moonlit (release
+   numerals, the proof-ledger hairline). Status pills need no
+   override — their dots already carry dark-tuned tokens.
+   Twin rules for the no-JS dark path live in the
+   prefers-color-scheme block near the top of this file.
+   Spec: docs/superpowers/specs/2026-06-11-visual-evolution-design.md
+   ========================================================= */
+[data-theme="dark"] .dudect,
+[data-theme="dark"] .install {
+    background: var(--bg-elevated);
+}
+[data-theme="dark"] details.drawer {
+    background: var(--bg-elevated);
+}
+[data-theme="dark"] details.drawer > summary:hover {
+    background: var(--bg-sunk);
+}
+[data-theme="dark"] .hero-proof {
+    border-top-color: var(--accent);
+}
+[data-theme="dark"] .hero-proof__release,
+[data-theme="dark"] .work-list__rel {
+    color: var(--accent);
 }
