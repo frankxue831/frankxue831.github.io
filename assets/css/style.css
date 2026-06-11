@@ -705,10 +705,11 @@ body.lang-zh .page-header__lede {
 
 /* =========================================================
    Editorial dose — ghost numerals + monograph double rules.
-   Ghosts are aria-hidden decoration painted behind the head
-   (z-index -1; .reveal's transform keeps them inside the
-   section's stacking context). --ghost-ink: ~7% ink light,
-   ~5% dark, transparent in print.
+   Ghosts are aria-hidden decoration painted behind the head:
+   z-index -1 under the position:relative head, and nothing
+   between head and page background paints an opaque box, so
+   the ghost sits behind the text but above the paper.
+   --ghost-ink: ~7% ink light, ~5% dark, transparent in print.
    Spec: docs/superpowers/specs/2026-06-11-visual-evolution-design.md
    ========================================================= */
 .ghost-num {
