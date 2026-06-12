@@ -564,11 +564,17 @@ body.lang-zh .section__title {
     text-wrap: wrap;
 }
 
-/* CJK body text reads comfortably with slightly more leading */
+/* CJK body text reads comfortably with slightly more leading — clreq
+   puts comfortable Han leading at 1.5–2.0; the shared 1.6 sits on that
+   floor, so every long-form ZH surface gets 1.75 (the detail-page and
+   note selectors were missing from this list until 2026-06-12). */
 body.lang-zh .prose p,
 body.lang-zh .preview__body,
 body.lang-zh .hero__lede,
-body.lang-zh .page-header__lede {
+body.lang-zh .page-header__lede,
+body.lang-zh .project-detail p,
+body.lang-zh .project-detail li,
+body.lang-zh .note li {
     line-height: 1.75;
 }
 
@@ -1200,7 +1206,7 @@ body.lang-zh .page-header__lede {
    Project detail page
    ========================================================= */
 .project-detail {
-    max-width: 64ch;
+    max-width: 36rem; /* same ~66 cpl reading measure as .prose */
     padding-block: 0 var(--space-8);
 }
 .project-summary {
@@ -1344,7 +1350,7 @@ body.lang-zh .page-header__lede {
 .project-detail h2:first-of-type { margin-top: 0; }
 .project-detail p {
     font-family: var(--serif);
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     line-height: 1.65;
     color: var(--fg);
     margin-bottom: var(--space-5);
@@ -1370,7 +1376,7 @@ body.lang-zh .page-header__lede {
 }
 .project-detail li {
     font-family: var(--serif);
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     line-height: 1.55;
     color: var(--fg);
     padding-left: var(--space-6);
@@ -1602,12 +1608,16 @@ body.lang-zh .page-header__lede {
 /* =========================================================
    About page
    ========================================================= */
+/* Long-form measure + size: EB Garamond's small x-height (~0.435em)
+   makes 18px read like a 16px sans, and 78 cpl sat above the preferred
+   55–70 band — 20px on a 36rem measure lands ~66 cpl with apparent
+   size ≈ 18px sans. See the 2026-06-12 addendum in the readability spec. */
 .prose {
-    max-width: 60ch;
+    max-width: 36rem;
 }
 .prose p {
     font-family: var(--serif);
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     line-height: 1.6;
     color: var(--fg);
     margin-bottom: var(--space-6);
@@ -1648,7 +1658,7 @@ body.lang-zh .page-header__lede {
 }
 .note li {
     font-family: var(--serif);
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     line-height: 1.6;
     color: var(--fg);
     margin-bottom: var(--space-2);
