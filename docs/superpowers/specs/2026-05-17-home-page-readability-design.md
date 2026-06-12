@@ -114,3 +114,44 @@ at `--text-base`), and display headings (`.hero__title`, `.section__title`,
 enhancement on Latin pages only — Chromium's balancer mishandles mixed
 CJK/Latin display lines (it can open a line with a fullwidth comma), so
 ZH pages keep native wrapping via a `body.lang-zh` override.
+
+## Addendum (2026-06-12) — long-form reading sizes
+
+A reader-comfort review (measurement + deep research pass) found the
+long-form pages — about, project details, notes — uncomfortable on
+desktop, and traced it to three causes:
+
+1. **Apparent size, not nominal size.** EB Garamond's x-height is
+   ~0.435 of its em (measured 7.29px at 18px), below even Times' 0.447.
+   The 18px long-form body therefore rendered lowercase *smaller* than
+   the site's own 16px sans UI text, sitting at roughly the 0.2°
+   x-height visual angle that vision science identifies as the critical
+   print size floor (Legge & Bigelow, *Journal of Vision* 2011) — fluent
+   but with no comfort margin.
+2. **Measure.** 605px columns gave ~78 characters per line. Screen
+   studies (Dyson & Kipping 1998; Dyson & Haselgrove 2001) show long
+   lines are not slower, but ~55 cpl wins comprehension and readers
+   consistently *prefer* moderate lines; 78 was above that band.
+3. **ZH leading.** W3C clreq puts comfortable Han body leading at
+   1.5–2.0; the shared 1.6 sat on that floor, and the existing
+   `body.lang-zh` 1.75 override list was missing the detail-page and
+   note selectors entirely.
+
+Decisions (all tokens-only):
+
+- Long-form serif body (`.prose p`, `.project-detail p`, `.project-detail
+  li`, `.note li`) moves `--text-lg` → `--text-xl` (18px → 20px). At
+  20px, EB Garamond's x-height (8.10px) matches an 18px system sans
+  (8.08px) — the apparent size of mainstream long-form practice.
+- Reading measure on `.prose` / `.project-detail` is unified at `36rem`
+  (≈576px → ~66 cpl at the new size), inside the preferred 55–70 band.
+- Every long-form ZH surface now gets `line-height: 1.75`; EN keeps its
+  existing 1.55–1.65 values, which are mid-range for Latin.
+- Headings were deliberately **not** changed: the research pass found no
+  surviving empirical basis to pass or fail the 12px mono eyebrows or
+  the title scale (both candidate heading-benchmark claims failed
+  adversarial verification). Any future heading rebalance is a design
+  judgment, not a readability correction.
+
+Home-page sizes (hero, work-list, previews) are untouched — this
+addendum governs the long-form reading surfaces only.
