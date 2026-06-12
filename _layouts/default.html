@@ -1,6 +1,14 @@
 {%- assign lang = page.lang | default: 'en' -%}
+{%- comment -%}
+  Body slug comes from the URL, not page.slug: Jekyll only sets page.slug
+  for collection documents, so regular pages all fell back to "home", and
+  ZH note documents got dotted, parity-breaking slugs ("byte-identity.zh").
+  Last URL segment after stripping the /zh/ prefix and .html keeps EN/ZH
+  mirrors on the same slug ("/" and "/zh/" both resolve to "home").
+{%- endcomment -%}
+{%- assign page_slug = page.url | remove_first: '/zh/' | remove: '.html' | split: '/' | last | default: 'home' -%}
 {% include head.html %}
-<body class="page page--{{ page.slug | default: 'home' }} lang-{{ lang }}"{% if page.project_slug %} data-toc-label="{{ site.data.i18n[lang].toc.label | escape }}"{% endif %}>
+<body class="page page--{{ page_slug }} lang-{{ lang }}"{% if page.project_slug %} data-toc-label="{{ site.data.i18n[lang].toc.label | escape }}"{% endif %}>
     <div class="grain" aria-hidden="true"></div>
 
     {% include nav.html %}
