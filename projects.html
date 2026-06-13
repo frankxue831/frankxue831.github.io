@@ -45,9 +45,12 @@ alternate: /zh/projects/
                 with constant-time-designed secret paths guarded by an in-CI
                 dudect harness. Public <strong>{{ project.release }}</strong> on
                 <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io</a>
-                as <code>gmcrypto-core</code> — SM4 cipher modes, SM4-GCM/CCM
-                AEAD, SM4-XTS, and the full SM2 family (sign, encrypt, key
-                exchange) have all shipped, in Rust and through the C ABI.
+                across three crates — <code>gmcrypto-core</code>, the
+                <code>gmcrypto-c</code> C ABI, and <code>gmcrypto-simd</code>
+                (AVX2&nbsp;/ NEON SM4). SM4 cipher modes, SM4-GCM/CCM AEAD,
+                SM4-XTS, the full SM2 family (sign, encrypt, key exchange), and
+                X.509-with-SM2 certificate verification have all shipped, in
+                Rust and through the C ABI; v1.6 begins TLCP (GB/T 38636) support.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
                 {% when 'repolens-rs' %}
                 A repository memory and context layer for AI coding agents.
