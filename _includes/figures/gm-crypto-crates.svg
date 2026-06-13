@@ -1,5 +1,5 @@
 <svg viewBox="0 0 360 236" role="img" aria-labelledby="fig-gm-crates-title" xmlns="http://www.w3.org/2000/svg">
-  <title id="fig-gm-crates-title">sm2 / sm3 / sm4 → gmcrypto-core → gmcrypto-ffi (C ABI)</title>
+  <title id="fig-gm-crates-title">sm2 / sm3 / sm4 → gmcrypto-core → gmcrypto-c (C ABI)</title>
   <rect class="fig-box" x="12" y="12" width="88" height="34"/>
   <rect class="fig-box" x="136" y="12" width="88" height="34"/>
   <rect class="fig-box" x="260" y="12" width="88" height="34"/>
@@ -14,6 +14,6 @@
   <line class="fig-line" x1="180" y1="132" x2="180" y2="170"/>
   <polygon class="fig-arrow" points="176,170 184,170 180,178"/>
   <rect class="fig-box" x="84" y="178" width="192" height="44"/>
-  <text class="fig-label" x="180" y="198" text-anchor="middle">gmcrypto-ffi</text>
+  <text class="fig-label" x="180" y="198" text-anchor="middle">gmcrypto-c</text>
   <text class="fig-label--muted" x="180" y="214" text-anchor="middle">C ABI</text>
 </svg>
