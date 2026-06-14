@@ -559,21 +559,21 @@ case_study = {
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
     must_include: ["只给 warning", "不是那张类型化记忆图", "脚手架"]
   },
-  # ghrunners: private/local. The v0.4.0 snapshot reframed it from "read-only"
-  # to observability + guarded control, so guard the current tag + the "guarded"
-  # framing and forbid the stale v0.1.1 label from creeping back.
+  # ghrunners: private/local — observability + guarded control, not read-only.
+  # Guard the current local tag + the "guarded" framing, and forbid the stale
+  # v0.1.1 label from creeping back.
   "projects/ghrunners/index.html" => {
     headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
                "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
                "<h2>Next</h2>", "<h2>What it isn't</h2>"],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
-    must_include: ["v0.4.0", "guarded"], forbid: ["v0.1.1"]
+    must_include: ["v0.5.0", "guarded"], forbid: ["v0.1.1"]
   },
   "zh/projects/ghrunners/index.html" => {
     headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
                "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
-    must_include: ["v0.4.0", "受控"], forbid: ["v0.1.1"]
+    must_include: ["v0.5.0", "受控"], forbid: ["v0.1.1"]
   }
 }
 case_study.each do |relative, spec|
