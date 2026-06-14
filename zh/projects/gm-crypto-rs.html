@@ -104,8 +104,9 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
         </p>
         <p>
             <strong>核心保持可审计，SIMD 单独按需开。</strong>
-            <code>gmcrypto-core</code> 直接上了 <code>#![forbid(unsafe_code)]</code>——
-            整个核心一行 <code>unsafe</code> 都不许有，审计起来省心。可位切片
+            <code>gmcrypto-core</code> 在 <code>[lints]</code> 表里禁掉了 unsafe
+            （<code>unsafe_code = "forbid"</code>）——整个核心一行
+            <code>unsafe</code> 都不许有，审计起来省心。可位切片
             SIMD 的 S-box 偏偏离不开 <code>unsafe</code>，于是把它整段挪进单独的
             <code>gmcrypto-simd</code> crate，用时再通过
             <code>sm4-bitsliced-simd</code> 特性打开。<strong>代价：</strong>
@@ -143,8 +144,8 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             每一处输出都逐字节比对过：标准 KAT 测试向量、gmssl 3.1.1
             （互操作性）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>
             （<code>xts_standard=GB</code> 模式）。上面那套泄漏回归门禁，
-            每次提交的 CI 都会跑一遍，核心则一直带着
-            <code>#![forbid(unsafe_code)]</code>。v0.14 那一轮还加了一套
+            每次提交的 CI 都会跑一遍，核心则在 <code>[lints]</code> 表里
+            禁掉了 unsafe（<code>unsafe_code = "forbid"</code>）。v0.14 那一轮还加了一套
             <code>cargo-fuzz</code>（libFuzzer）模糊测试，专门覆盖不可信
             输入的解码、解密路径——当时 16 个目标，到 v1.3 已经扩到 27
             个——挂在 nightly 上扫。这些都能自己去核：
@@ -152,6 +153,17 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             <code>gmcrypto-core</code> crate、它的 <code>docs.rs</code> 文档、
             以及那个能跑的示例也都在。
         </p>
+        <p>
+            其中三条性质，固定在 <code>v1.7.0</code>，每条都直接链到对应的源码行：
+        </p>
+        <ul class="audit-notes">
+            <li>涉密比较是常量时间实现的（<code>subtle</code> 的 <code>ct_eq</code>）——
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/crates/gmcrypto-core/src/sm4/cipher.rs#L627" rel="noopener noreferrer">cipher.rs:627 <span aria-hidden="true">&#8599;</span></a></li>
+            <li>核心 crate 禁止 unsafe 代码——
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/crates/gmcrypto-core/Cargo.toml#L151" rel="noopener noreferrer">Cargo.toml:151 <span aria-hidden="true">&#8599;</span></a></li>
+            <li>每个 PR 都跑 dudect 计时泄漏门禁——
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/.github/workflows/dudect-pr.yml#L166" rel="noopener noreferrer">dudect-pr.yml:166 <span aria-hidden="true">&#8599;</span></a></li>
+        </ul>
         {% include dudect-chart.html %}
         <details class="drawer">
             <summary>{{ site.data.i18n[page.lang].details.earlier_releases | escape }}</summary>

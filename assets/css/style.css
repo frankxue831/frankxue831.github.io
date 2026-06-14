@@ -2392,3 +2392,6 @@ details.drawer .version-grid {
 [data-theme="dark"] .work-list__rel {
     color: var(--accent);
 }
+
+/* Audit notes: code-reference links read as mono. */
+.audit-notes a { font-family: var(--mono); font-size: 0.9em; white-space: nowrap; }
