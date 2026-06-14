@@ -46,6 +46,15 @@ alternate: /projects/
                 {% when 'ghrunners' %}
                 macOS 上 GitHub Actions self-hosted runner 的单次运行 CLI：把 launchd 状态、进程树、日志和 GitHub API 状态放在一起看，再加上受控的 launchd 控制；即使某一部分读取失败，也会尽量保留可用信息。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                {% when 'explainer-engine' %}
+                一条确定性的流水线，把 YAML storyboard 编译成带旁白的概念讲解
+                视频——每个 beat 可以是一张图、一段带引用的代码标注，或者一张
+                会动的概念图。屏幕上的内容都标着 <em>simplified</em>（简化视图），
+                而且在画第一帧之前，引用校验门会按固定 commit 到源码仓库里逐条
+                核对每个说法，所以视频里那个 <code>verified @ commit</code> 徽标
+                是校验的结论，不是装饰。底层用的是和桌面批量渲染 GUI 同一套、与
+                Qt 解耦的渲染核心。目前私有 / 本地。
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% endcase %}
             </p>
         </li>

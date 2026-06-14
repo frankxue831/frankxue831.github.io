@@ -1,0 +1,93 @@
+---
+layout: default
+title: "Explainer Engine"
+description: 一条确定性的流水线，把 storyboard 编译成带旁白的概念讲解视频；屏幕上每个说法在渲染前都按源码核对过。
+permalink: /zh/projects/explainer-engine/
+lang: zh
+alternate: /projects/explainer-engine/
+project_slug: explainer-engine
+summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码仓库里核对过。"
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(03)  作品 / 详情</p>
+    <h1 class="page-header__title">
+        <em>Explainer Engine</em>
+    </h1>
+    <p class="page-header__lede">
+        一条确定性的流水线，把 storyboard 编译成带旁白的概念讲解视频——屏幕上
+        每个说法，都在画出第一帧之前<em>按源码核对过</em>。
+    </p>
+</section>
+
+<section class="section wrap reveal">
+    <article class="project-detail prose">
+        {% include project-summary.html %}
+
+        <figure class="fig fig--video">
+            <video controls preload="metadata" aria-describedby="fig-video-cap"
+                   poster="{{ '/assets/video/harness-field-explainer.poster.png' | relative_url }}">
+                <source src="{{ '/assets/video/harness-field-explainer.mp4' | relative_url }}" type="video/mp4">
+                <track kind="captions" srclang="en" label="English"
+                       src="{{ '/assets/video/harness-field-explainer.en.vtt' | relative_url }}" default>
+                <a href="{{ '/assets/video/harness-field-explainer.mp4' | relative_url }}">下载讲解视频（mp4）</a>
+            </video>
+            <figcaption class="fig__cap" id="fig-video-cap">图 3.1 — 引擎自己的输出（旁白为英文，可打开英文字幕）。琥珀色
+            标签表示这是<em>简化视图</em>；徽标标注了「memory force」这个说法所核对的
+            源码 commit。</figcaption>
+        </figure>
+
+        <h2>是什么</h2>
+        <p>
+            Explainer Engine 把一份 YAML storyboard 编译成 Manim 的带旁白场景。
+            每个 beat 可以是一张图、一段带引用的代码标注，或者——最新的——一张
+            会动的概念<em>图</em>：把带标签的节点摆在命名好的锚点上，连上力的边、
+            一条路径，再让一个节点沿路径移动。上面这段视频，整条链路都是引擎自己
+            跑出来的。
+        </p>
+
+        <h2>为什么要引用</h2>
+        <p>
+            讲解会和它所描述的代码慢慢脱节，而一张图、一句转述，很容易在细节上
+            出错。所以引擎拒绝画出它无法支撑的说法。渲染之前，<strong>引用校验门</strong>
+            会按固定 commit 从源仓库里读出被引用的行，核对所声称的证据是否真的
+            在那里；还有一道 commit 诚实性检查：如果徽标上的 commit 和仓库
+            <code>HEAD</code> 对不上、或者工作区是脏的又没显式放行，构建就会失败。
+            屏幕上的内容始终标着 <code>simplified</code>——重新整理过的教学视图，
+            绝不冒充逐字源码。那个琥珀色标签和 <code>verified @ commit</code> 徽标
+            不是装饰，而是校验门的结论，被渲染进了画面。
+        </p>
+
+        <h2>怎么工作的</h2>
+        <p>
+            一趟过，中间没有模型：
+            <code>storyboard（YAML）</code> →
+            <code>引用校验门</code>（证据在引用处、commit 诚实） →
+            <code>确定性代码生成</code>（同一份 storyboard 永远生成同一个场景） →
+            <code>Manim 渲染</code> 加合成旁白。图示画布把关系变成动画，而不用手写
+            场景代码——正因如此，能被讲清楚的是一个<em>概念</em>，而不只是一段代码
+            清单，而且它仍然是可核对的。
+        </p>
+
+        <h2>证据</h2>
+        <p>
+            这段视频是引擎的真实输出，不是效果图。里面的五种力来自一份研究 wiki；
+            屏幕上的徽标标注了「memory force」这个说法所核对的具体源码行与 commit，
+            而且渲染开始之前引用校验门已经通过。引擎跑在一套共享、与 Qt 解耦的
+            渲染核心上——和桌面批量渲染 GUI 用的是同一套——所以这条渲染路径
+            是经过统一测试的，而不是一次性脚本。
+        </p>
+
+        <h2>它不是什么</h2>
+        <ul>
+            <li>不是 LLM 视频生成器——代码生成是确定、可复现的。</li>
+            <li>不是幻灯片——图示画布动的是关系，不是要点列表。</li>
+            <li>不是逐字源码查看器——屏幕上的代码是带标记的简化视图，真实的行都给了引用。</li>
+            <li>私有 / 本地——目前还不是公开源码项目。</li>
+        </ul>
+
+        <div class="project-detail__links">
+            <a href="{{ '/zh/projects/' | relative_url }}">← 全部作品</a>
+        </div>
+    </article>
+</section>

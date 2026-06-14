@@ -58,7 +58,7 @@
       "name": {{ project.title | jsonify }},
       "description": {{ page_description | jsonify }},
       "url": {{ page_url | jsonify }},
-      "programmingLanguage": "Rust",
+      "programmingLanguage": {{ project.tags.en | first | jsonify }},
       "author": {
         "@id": {{ person_id | jsonify }}
       },

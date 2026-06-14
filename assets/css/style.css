@@ -2256,6 +2256,16 @@ details.drawer .version-grid {
     letter-spacing: 0.02em;
 }
 
+/* Video figure: a dark explainer clip framed as a deliberate inset. */
+.fig--video { max-width: 40rem; }
+.fig--video video {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--fg);
+    border-radius: 4px;
+    background: #1a1814;
+}
+
 /* =========================================================
    Constant-time visualizer (Phase 2). Server-rendered inline SVG +
    data table. Tokens only; dark theme adapts via --bg-sunk/--rule/--fg

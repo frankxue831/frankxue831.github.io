@@ -1,0 +1,101 @@
+---
+layout: default
+title: "Explainer Engine"
+description: "A deterministic pipeline that turns a storyboard into a narrated concept video, with every on-screen claim cited and verified against the source before render."
+permalink: /projects/explainer-engine/
+lang: en
+alternate: /zh/projects/explainer-engine/
+project_slug: explainer-engine
+summary_outcome: "Every on-screen claim is verified against the source repo at a pinned commit before a frame is drawn."
+---
+
+<section class="page-header wrap">
+    <p class="page-header__eyebrow">(03)  Work / Detail</p>
+    <h1 class="page-header__title">
+        <em>Explainer Engine</em>
+    </h1>
+    <p class="page-header__lede">
+        A deterministic pipeline that turns a storyboard into a narrated concept
+        video — where every on-screen claim is cited and <em>verified against the
+        source</em> before a single frame is drawn.
+    </p>
+</section>
+
+<section class="section wrap reveal">
+    <article class="project-detail prose">
+        {% include project-summary.html %}
+
+        <figure class="fig fig--video">
+            <video controls preload="metadata" aria-describedby="fig-video-cap"
+                   poster="{{ '/assets/video/harness-field-explainer.poster.png' | relative_url }}">
+                <source src="{{ '/assets/video/harness-field-explainer.mp4' | relative_url }}" type="video/mp4">
+                <track kind="captions" srclang="en" label="English"
+                       src="{{ '/assets/video/harness-field-explainer.en.vtt' | relative_url }}" default>
+                <a href="{{ '/assets/video/harness-field-explainer.mp4' | relative_url }}">Download the explainer (mp4)</a>
+            </video>
+            <figcaption class="fig__cap" id="fig-video-cap">fig. 3.1 — the engine's own output. The amber
+            tag marks the view <em>simplified</em>; the badge cites the source commit the
+            "memory force" claim was verified against.</figcaption>
+        </figure>
+
+        <h2>What it is</h2>
+        <p>
+            The Explainer Engine compiles a YAML storyboard into a Manim
+            narrated scene. Each beat is a plot, a cited code callout, or — newest
+            — an animated concept <em>diagram</em>: labeled nodes placed at named
+            anchors, force edges, one path, and a node moving along it. The clip
+            above was produced by the engine itself, end to end.
+        </p>
+
+        <h2>Why it cites</h2>
+        <p>
+            Explanations drift from the code they describe, and a diagram or a
+            paraphrase is easy to get subtly wrong. So the engine refuses to draw
+            a claim it cannot back. Before render, a <strong>citation gate</strong>
+            reads the cited lines from the source repo at a pinned commit and
+            checks that the stated evidence is actually present; a commit-honesty
+            check fails the build if the badge's commit does not match the repo's
+            <code>HEAD</code>, or the tree is dirty without an explicit opt-in. On
+            screen, content is always marked <code>simplified</code> — a reshaped
+            teaching view is never passed off as verbatim source. The amber tag and
+            the <code>verified @ commit</code> badge are not decoration; they are
+            the gate's verdict, rendered into the frame.
+        </p>
+
+        <h2>How it works</h2>
+        <p>
+            One pass, no model in the loop:
+            <code>storyboard (YAML)</code> →
+            <code>citation gate</code> (evidence present at cite, commit honest) →
+            <code>deterministic codegen</code> (the same storyboard always emits
+            the same scene) →
+            <code>Manim render</code> with synthesized narration. The diagram
+            canvas turns relationships into motion without hand-built scene code,
+            which is what lets a concept — not just a code listing — be explained
+            and still be checkable.
+        </p>
+
+        <h2>Evidence</h2>
+        <p>
+            The clip is the engine's output, not a mock-up. Its five forces are
+            drawn from a research wiki; the on-screen badge cites the exact source
+            line and commit the "memory force" claim was verified against, and the
+            citation gate passed before the render ran. The engine sits on a
+            shared, Qt-free render core — the same core a desktop batch-render GUI
+            drives — so the rendering path is one tested surface, not a one-off
+            script.
+        </p>
+
+        <h2>What it isn't</h2>
+        <ul>
+            <li>Not an LLM video generator — codegen is deterministic and reproducible.</li>
+            <li>Not a slideshow — the diagram canvas animates relationships, not bullet points.</li>
+            <li>Not a verbatim source viewer — on-screen code is a marked simplification, with the real lines cited.</li>
+            <li>Private/local — not a public-source project today.</li>
+        </ul>
+
+        <div class="project-detail__links">
+            <a href="{{ '/projects/' | relative_url }}">← All work</a>
+        </div>
+    </article>
+</section>
