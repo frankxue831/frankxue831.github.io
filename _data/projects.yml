@@ -60,3 +60,24 @@
   detail_url: "/projects/ghrunners/"
   zh_detail_url: "/zh/projects/ghrunners/"
   public_source: false
+
+- slug: explainer-engine
+  title: "Explainer Engine"
+  years:
+    en: "2026 — now"
+    zh: "2026 — 至今"
+  tags:
+    en: ["Python", "Manim", "Cited codegen"]
+    zh: ["Python", "Manim", "带引用的代码生成"]
+  status: private-local
+  status_label:
+    en: "Private/local"
+    zh: "私有/本地"
+  release: "local — diagram canvas"
+  release_source: local_tag
+  repo_url: ~
+  crate_url: ~
+  docs_url: ~
+  detail_url: "/projects/explainer-engine/"
+  zh_detail_url: "/zh/projects/explainer-engine/"
+  public_source: false

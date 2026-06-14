@@ -133,6 +133,10 @@ alternate: /
                 只读观测加受控的 launchd 控制，把 launchd 状态、进程树、日志
                 和 API 状态汇到一次输出里；哪怕只读到一部分，也照样列出来。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                {% when 'explainer-engine' %}
+                一条确定性的流水线，渲染带旁白的概念讲解视频——画第一帧之前，
+                屏幕上每个说法都按固定 commit 在源仓库里核对过。私有 / 本地。
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% else %}
                 精选工程项目，状态和项目信息会明确标出来。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>

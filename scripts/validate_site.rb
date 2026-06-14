@@ -179,9 +179,11 @@ project_pages = %w[
   projects/gm-crypto-rs/index.html
   projects/repolens-rs/index.html
   projects/ghrunners/index.html
+  projects/explainer-engine/index.html
   zh/projects/gm-crypto-rs/index.html
   zh/projects/repolens-rs/index.html
   zh/projects/ghrunners/index.html
+  zh/projects/explainer-engine/index.html
 ]
 
 # Individual notes (collection docs), discovered dynamically so adding a note
