@@ -164,6 +164,15 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             <li>每个 PR 都跑 dudect 计时泄漏门禁——
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/.github/workflows/dudect-pr.yml#L166" rel="noopener noreferrer">dudect-pr.yml:166 <span aria-hidden="true">&#8599;</span></a></li>
         </ul>
+        <p>
+            再补两条，专门针对“常量时间”这个说法——也是最容易嘴上说、最难证明的部分：
+        </p>
+        <ul class="audit-notes">
+            <li>门禁不是摆设——专门放一个会漏时的 <code>negative_control</code>，dudect 必须把它揪出来，否则 CI 直接失败——
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a></li>
+            <li>也说得老实——这套门禁只能检测泄露，并不能证明常量时间——
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/README.md#L44" rel="noopener noreferrer">README.md:44 <span aria-hidden="true">&#8599;</span></a></li>
+        </ul>
         {% include dudect-chart.html %}
         <details class="drawer">
             <summary>{{ site.data.i18n[page.lang].details.earlier_releases | escape }}</summary>
