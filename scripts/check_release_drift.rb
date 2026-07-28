@@ -16,10 +16,15 @@
 # not the JSON API (the API enforces a data-access policy that 403s automated
 # clients; the sparse index is the supported way to read publish state).
 #
-# Posture: WARN ONLY. A publish can land at any time, and an unrelated PR must
-# never go red because the registry moved ahead — so this never fails the build.
-# Drift surfaces as a GitHub Actions ::warning:: annotation (visible on the PR
-# and the weekly cron run) and a job-summary line. Exit code is always 0.
+# Posture: warn-only BY DEFAULT. A publish can land at any time, and an
+# unrelated PR must never go red because the registry moved ahead — so on PRs
+# and pushes this only annotates and exits 0.
+#
+# Set DRIFT_STRICT=1 to exit non-zero when drift is found. The weekly cron and
+# manual runs use it: a warning nobody reads is the same as no check (the site
+# sat at v1.6.0 for six weeks while gmcrypto-core shipped 1.9.0, warning green
+# the whole time). A red scheduled run is an actual notification and blocks no
+# one's work. Unverified crates never fail — only real drift does.
 
 require "json"
 require "net/http"
@@ -176,11 +181,16 @@ PROJECTS.each do |project|
   end
 end
 
+strict = !ENV["DRIFT_STRICT"].to_s.strip.empty?
+posture = strict ? "strict" : "warn-only"
+
 if checked.zero?
   puts "No public_tag projects with a crate_url to check."
 else
-  puts "\nChecked #{checked} crate(s); #{drift} with drift; #{unverified} unverified. (warn-only — exit 0)"
+  puts "\nChecked #{checked} crate(s); #{drift} with drift; #{unverified} unverified. (#{posture})"
 end
 
-# Never block: warn-only by design.
+# Unverified crates never fail the run — a network blip is not drift.
+exit 1 if strict && drift.positive?
+
 exit 0

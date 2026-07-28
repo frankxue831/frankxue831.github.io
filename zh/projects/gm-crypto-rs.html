@@ -49,8 +49,10 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             <code>cipher</code> trait，方便直接接入现有的 Rust 生态。从 v1.3 起，
             它还能解析 X.509 v3 证书并验证其 SM2-with-SM3 签名（GM/T 0015 profile，
             严格 DER，不做任何信任判定），对应的 C ABI 入口（在 <code>gmcrypto-c</code>
-            crate 里）在 v1.4 跟上。v1.6 开始铺 TLCP（GB/T 38636）：密钥派生（key schedule），
-            外加一条免密钥确认的 SM2 密钥交换路径。想上手跑
+            crate 里）在 v1.4 跟上。v1.6 到 v1.9 把 TLCP（GB/T 38636）铺成了一套
+            <em>工具集</em>：密钥派生（key schedule）与一条免密钥确认的 SM2 密钥交换路径
+            （v1.6）、记录层的保护 / 解保护（v1.7）、证书对与证书链的签名验证（v1.8），
+            v1.9 起整套都能从 C 调用。想上手跑
             一下，<a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>
             里有现成例子（拿 SM3、SM2 做 <code>hash</code> / <code>sign</code> /
             <code>verify</code>）。
@@ -58,7 +60,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
 
         <figure class="fig">
             {% include figures/gm-crypto-crates.svg %}
-            <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口，至 v1.6 未变）</figcaption>
+            <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口，至 v1.8 未变；v1.9.0 起为 104 个）</figcaption>
         </figure>
 
         <h2>要解决的问题</h2>
@@ -80,7 +82,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             <strong>持续验证，而不是一次性拍板。</strong>
             常量时间不该是评审会上签个字就算数的结论，而该是 CI 每次都重新
             核一遍的性质。所以每次 CI 都会用 <code>dudect-bencher</code>（时序
-            侧信道检测工具）把 19 条涉密路径跑一遍；其中核心那一组
+            侧信道检测工具）把 20 条涉密路径跑一遍；其中核心那一组
             带<em>门禁</em>，阈值是统计量 <code>|τ|&nbsp;&lt;&nbsp;0.20</code>——
             一旦越界就直接让构建挂掉，不用等人去发现。要说清楚的是，它报的是
             <em>「检测事件」</em>：<code>|τ|</code> 低，只说明在当前的检测强度下没测到
@@ -95,7 +97,8 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             <em>带门禁</em>（不达标就让构建失败）的是：SM2 签名、解密与密钥
             交换、SM4 密钥扩展、SM4 加密（线性扫描和位切片 SIMD S-box 两条
             都算）、SM4-CTR、CBC 解密扇出、单次及缓冲式 SM4-GCM / SM4-CCM
-            解密、SM4-XTS 解密、HMAC-SM3、加密 PKCS#8 解密。<em>只做遥测</em>
+            解密、SM4-XTS 解密、HMAC-SM3、加密 PKCS#8 解密，以及 v1.7 起新增的
+            TLCP CBC 记录层解保护（Lucky13 残余风险的看守）。<em>只做遥测</em>
             的是：域求逆诊断和 k-class 签名——挂在 nightly 上、用
             <code>0.55</code> 的粗回归哨兵值盯着，而不是 <code>0.20</code>
             的门禁。共享 runner 上的类分割噪声让它们更紧的阈值频繁误报，
@@ -147,31 +150,31 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             每次提交的 CI 都会跑一遍，核心则在 <code>[lints]</code> 表里
             禁掉了 unsafe（<code>unsafe_code = "forbid"</code>）。v0.14 那一轮还加了一套
             <code>cargo-fuzz</code>（libFuzzer）模糊测试，专门覆盖不可信
-            输入的解码、解密路径——当时 16 个目标，到 v1.3 已经扩到 27
+            输入的解码、解密路径——当时 16 个目标，到 v1.8 已经扩到 30
             个——挂在 nightly 上扫。这些都能自己去核：
             源码、CI 工作流、{% include glossary-term.html term="dudect" %} harness 全是公开的，已发布的
             <code>gmcrypto-core</code> crate、它的 <code>docs.rs</code> 文档、
             以及那个能跑的示例也都在。
         </p>
         <p>
-            其中三条性质，固定在 <code>v1.7.0</code>，每条都直接链到对应的源码行：
+            其中三条性质，固定在 <code>v1.9.0</code>，每条都直接链到对应的源码行：
         </p>
         <ul class="audit-notes">
             <li>涉密比较是常量时间实现的（<code>subtle</code> 的 <code>ct_eq</code>）——
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/crates/gmcrypto-core/src/sm4/cipher.rs#L627" rel="noopener noreferrer">cipher.rs:627 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.9.0/crates/gmcrypto-core/src/sm4/cipher.rs#L627" rel="noopener noreferrer">cipher.rs:627 <span aria-hidden="true">&#8599;</span></a></li>
             <li>核心 crate 禁止 unsafe 代码——
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/crates/gmcrypto-core/Cargo.toml#L151" rel="noopener noreferrer">Cargo.toml:151 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.9.0/crates/gmcrypto-core/Cargo.toml#L151" rel="noopener noreferrer">Cargo.toml:151 <span aria-hidden="true">&#8599;</span></a></li>
             <li>每个 PR 都跑 dudect 计时泄漏门禁——
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/.github/workflows/dudect-pr.yml#L166" rel="noopener noreferrer">dudect-pr.yml:166 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.9.0/.github/workflows/dudect-pr.yml#L166" rel="noopener noreferrer">dudect-pr.yml:166 <span aria-hidden="true">&#8599;</span></a></li>
         </ul>
         <p>
             再补两条，专门针对“常量时间”这个说法——也是最容易嘴上说、最难证明的部分：
         </p>
         <ul class="audit-notes">
             <li>门禁不是摆设——专门放一个会漏时的 <code>negative_control</code>，dudect 必须把它揪出来，否则 CI 直接失败——
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.9.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a></li>
             <li>也说得老实——这套门禁只能检测泄露，并不能证明常量时间——
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/README.md#L44" rel="noopener noreferrer">README.md:44 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.9.0/README.md#L44" rel="noopener noreferrer">README.md:44 <span aria-hidden="true">&#8599;</span></a></li>
         </ul>
         {% include dudect-chart.html %}
         <details class="drawer">
@@ -239,17 +242,27 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
 
             <dt>v1.6.0</dt>
             <dd>2026-06-13 — TLCP（GB/T 38636）的第一个代码轮次：<code>tlcp::key_schedule</code>（基于 HMAC-SM3 的 TLS-1.2 式 PRF——主密钥、密钥块、Finished 校验数据），外加在现有 <code>sm2-key-exchange</code> typestate 上的免密钥确认完成器。新增可选 <code>tlcp</code> 特性（纯核心、<code>no_std</code>）；密钥派生的 KAT 取自 OpenSSL 3.x 的 <code>TLS1-PRF</code>（<code>digest:SM3</code>）。不新增 dudect 目标；带密钥确认的交换流程不变，仍是默认。默认构建逐字节不变。</dd>
+
+            <dt>v1.7.0</dt>
+            <dd>2026-06-14 — TLCP 记录层保护（第二个代码轮次）：<code>tlcp::record</code>，为四个 SM2 系列套件提供逐字节进、逐字节出的保护 / 解保护。SM4-CBC 记录层做了 <strong>Lucky13 加固</strong>——对内层哈希的 SM3 压缩次数保持常量、固定 256 字节的填充合法性扫描、以及与数据无关的 MAC 提取；填充非法时照样跑完整个 MAC，只返回一个 <code>None</code>。记录层字节与 OpenSSL EVP SM4-CBC + GmSSL <code>sm3hmac</code>、以及 GmSSL <code>sm4 -gcm</code> 逐字节交叉验证过。新增带门禁的 dudect 目标 <code>ct_tlcp_cbc_deprotect</code>；模糊测试 census 27 → 29。增量式小版本，无新依赖；默认构建逐字节不变。<code>(key, seq)</code> 的唯一性由调用方保证——这些无状态原语无法自己发现重用。</dd>
+
+            <dt>v1.8.0</dt>
+            <dd>2026-06-14 — TLCP 证书对 / 证书链验证（最后一个核心轮次）：<code>x509::verify_chain</code> 按调用方给定的顺序线性走一遍链——逐边的 SM2 签名与原始 Name 衔接、中间 CA 资格、终止于调用方信任的锚点、拒绝任何未知的关键扩展（RFC 5280 §4.2）、可选的有效期窗口，以及深度上限；外加针对双证书 profile 的 <code>tlcp::chain::verify_pair</code>（角色 keyUsage、叶子非 CA、以及把两张叶子证书绑定到同一个实际 CA）。这是签名验证，<strong>不是校验，也不是服务端身份认证</strong>：端点身份绑定永远留给调用方。不新增 dudect 目标（只吃公开输入）；模糊测试 census 29 → 30。纯核心 / <code>no_std</code>；默认构建逐字节不变。</dd>
+
+            <dt>v1.9.0</dt>
+            <dd>2026-06-16 — TLCP 工具集的 C FFI，这一轮<strong>收束了整条 TLCP 弧线</strong>。把攒下来的工具集——v1.6 的密钥派生与免确认 SM2-KX、v1.7 的记录层保护、v1.8 的链 / 证书对验证——通过 <code>gmcrypto-c</code> ABI 暴露出去，于是 C 调用方可以自己驱动一次完整的 TLCP 握手（KX → 密钥派生 → 记录层 → 证书验证）。新增 19 个符号、2 个不透明句柄、7 个常量：<strong>FFI 入口从 85 个扩到 104 个</strong>。设计上是一层薄壳——所有失败都归一个 <code>GMCRYPTO_ERR</code>，<code>deprotect</code> 不加任何逻辑（Lucky13 那部分留在核心里），而「这不是身份认证」的免责声明在 <code>gmcrypto.h</code> 里写得很显眼。<code>c_smoke</code> 从 84 条扩到 97 条，其中包括「填充错 ≡ MAC 错、只回一个 <code>ERR</code>」的预言机测试；不新增 dudect 目标；census 仍是 30。默认构建逐字节不变。</dd>
         </dl>
 
         <h2>下一步</h2>
         <dl class="version-grid">
             <dt>下一步</dt>
-            <dd>SM2 算法族与 X.509-with-SM2 证书验证在 Rust 和 C 两侧都已齐备；当前方向是把 v1.6 起步的 TLCP（GB/T 38636）工具链继续做下去——其余构件已在项目的分解文档里梳理过，但还没定到具体版本。继续搁置的还有：RustCrypto <code>aead 0.6</code> 的 trait 适配（上游仍在 <code>0.6.0-rc</code>；它需要的 <code>crypto-common 0.2</code> 那条线，v0.11 已经铺好了）、AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。</dd>
+            <dd>v1.6 起步的 TLCP（GB/T 38636）弧线<strong>已在 v1.9 收束</strong>——密钥派生、记录层保护、链 / 证书对验证在核心里齐备，也都能从 C 调用，分解文档里的核心缺口已经用完。下一条弧线还没定到具体版本。继续搁置的还有：RustCrypto <code>aead 0.6</code> 的 trait 适配（上游仍在 <code>0.6.0-rc</code>；它需要的 <code>crypto-common 0.2</code> 那条线，v0.11 已经铺好了）、AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。另有一条是<em>永久</em>不做、而非暂缓：端点身份绑定——相当于 TLCP 里的 hostname 校验——始终留给调用方。</dd>
         </dl>
 
         <h2>它不是什么</h2>
         <ul>
-            <li>不是 TLS / TLCP 协议栈——v1.6 的 <code>tlcp</code> 工作是密钥派生与密钥交换原语，不是握手或记录层。</li>
+            <li>不是 TLS / TLCP 协议栈——<code>tlcp</code> 这部分是一套原语工具集（密钥派生、记录层保护 / 解保护、链与证书对验证）。没有握手状态机、没有协商、也没有会话管理：协议要由调用方自己驱动，v1.9 的 C 示例就是这么做的。</li>
+            <li>不是端点身份认证——<code>verify_chain</code> / <code>verify_pair</code> 只建立结构性信任。把验证过的证书链绑定到具体的对端身份（相当于 TLCP 里的 hostname 校验）永远是调用方的事。</li>
             <li>不包括 SM9、ZUC、后量子算法。</li>
             <li>不是 HSM / SDF / SKF 集成。</li>
             <li>不是经过认证的密码模块。</li>

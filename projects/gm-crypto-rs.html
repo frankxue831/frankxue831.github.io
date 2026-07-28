@@ -52,9 +52,11 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             Since v1.3 it also parses X.509 v3 certificates and verifies their
             SM2-with-SM3 signatures (the GM/T 0015 profile — strict-DER, no
             trust decisions), with the matching C-ABI entry points (in the
-            <code>gmcrypto-c</code> crate) following in v1.4. v1.6 begins
-            TLCP (GB/T 38636) support: the key schedule plus a no-confirmation
-            SM2 key-exchange path.
+            <code>gmcrypto-c</code> crate) following in v1.4. v1.6 through v1.9
+            build out a TLCP (GB/T 38636) <em>toolkit</em>: the key schedule and a
+            no-confirmation SM2 key-exchange path (v1.6), record protect /
+            deprotect (v1.7), certificate-pair and chain signature verification
+            (v1.8), and — since v1.9 — the whole toolkit reachable from C.
             A runnable consumer demo — <code>hash</code> / <code>sign</code> /
             <code>verify</code> over SM3 and SM2 — lives at
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>.
@@ -62,7 +64,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
         <figure class="fig">
             {% include figures/gm-crypto-crates.svg %}
-            <figcaption class="fig__cap">fig. 3.1 — crate &amp; C ABI surface (85 entry points at v1.4.0, unchanged through v1.6)</figcaption>
+            <figcaption class="fig__cap">fig. 3.1 — crate &amp; C ABI surface (85 entry points at v1.4.0, unchanged through v1.8; 104 as of v1.9.0)</figcaption>
         </figure>
 
         <h2>The problem</h2>
@@ -86,7 +88,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <strong>Verify continuously, don't assert once.</strong>
             Constant-time behavior is treated as a property CI re-checks, not
             a claim review signs off. A <code>dudect-bencher</code> harness
-            exercises nineteen secret-touching paths on every run; a core set
+            exercises twenty secret-touching paths on every run; a core set
             is <em>gated</em> at <code>|τ|&nbsp;&lt;&nbsp;0.20</code>, so a
             timing regression fails the build instead of waiting for someone
             to notice. The harness reports <em>detection events</em> — a low
@@ -102,8 +104,9 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             (build-failing): SM2 sign, decrypt, and key exchange, SM4 key
             schedule, SM4 encrypt (default linear-scan and bitsliced SIMD
             S-box), SM4-CTR, CBC-decrypt fanout, single-shot and buffered
-            SM4-GCM / SM4-CCM decrypt, SM4-XTS decrypt, HMAC-SM3, and
-            encrypted-PKCS#8 decrypt. Telemetry-only: the field-inversion
+            SM4-GCM / SM4-CCM decrypt, SM4-XTS decrypt, HMAC-SM3,
+            encrypted-PKCS#8 decrypt, and — since v1.7 — the TLCP CBC record
+            deprotect, the Lucky13 residual guard. Telemetry-only: the field-inversion
             diagnostics and the k-class sign, watched on the nightly run
             against a <code>0.55</code> gross-regression sentinel rather than
             the <code>0.20</code> gate — shared-runner class-split noise made
@@ -163,23 +166,23 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <code>[lints]</code> table. The v0.14 cycle added a
             <code>cargo-fuzz</code> (libFuzzer) harness over the
             untrusted-input decode / decrypt surface — sixteen targets then,
-            twenty-seven as of v1.3 — run as a nightly sweep. All of it is inspectable: the source, the CI workflow, and
+            thirty as of v1.8 — run as a nightly sweep. All of it is inspectable: the source, the CI workflow, and
             the {% include glossary-term.html term="dudect" %} harness are public, alongside the published
             <code>gmcrypto-core</code> crate, its <code>docs.rs</code>
             reference, and the runnable demo.
         </p>
         <p>
-            Three of those properties, pinned to <code>v1.7.0</code>, each a link
+            Three of those properties, pinned to <code>v1.9.0</code>, each a link
             to the exact line:
         </p>
         <ul class="audit-notes">
             <li>Secret-dependent comparison is constant-time
                 (<code>subtle</code>'s <code>ct_eq</code>) —
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/crates/gmcrypto-core/src/sm4/cipher.rs#L627" rel="noopener noreferrer">cipher.rs:627 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.9.0/crates/gmcrypto-core/src/sm4/cipher.rs#L627" rel="noopener noreferrer">cipher.rs:627 <span aria-hidden="true">&#8599;</span></a></li>
             <li>The core crate forbids unsafe code —
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/crates/gmcrypto-core/Cargo.toml#L151" rel="noopener noreferrer">Cargo.toml:151 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.9.0/crates/gmcrypto-core/Cargo.toml#L151" rel="noopener noreferrer">Cargo.toml:151 <span aria-hidden="true">&#8599;</span></a></li>
             <li>A dudect timing-leak gate runs on every PR —
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/.github/workflows/dudect-pr.yml#L166" rel="noopener noreferrer">dudect-pr.yml:166 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.9.0/.github/workflows/dudect-pr.yml#L166" rel="noopener noreferrer">dudect-pr.yml:166 <span aria-hidden="true">&#8599;</span></a></li>
         </ul>
         <p>
             Two more, specific to the constant-time claim &mdash; the parts that are
@@ -188,10 +191,10 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         <ul class="audit-notes">
             <li>The gate has teeth &mdash; a deliberately-leaky <code>negative_control</code>
                 the harness must flag, or CI fails &mdash;
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.9.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a></li>
             <li>Stated honestly &mdash; the harness detects leaks; it does not prove
                 constant-time &mdash;
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.7.0/README.md#L44" rel="noopener noreferrer">README.md:44 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.9.0/README.md#L44" rel="noopener noreferrer">README.md:44 <span aria-hidden="true">&#8599;</span></a></li>
         </ul>
         {% include dudect-chart.html %}
         <details class="drawer">
@@ -259,17 +262,27 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
             <dt>v1.6.0</dt>
             <dd>2026-06-13 — the first code cycle of TLCP (GB/T 38636): the <code>tlcp::key_schedule</code> (the TLS-1.2-style PRF over HMAC-SM3 — master secret, key block, Finished verify-data) plus no-confirmation SM2 key-exchange completers on the existing <code>sm2-key-exchange</code> typestates. New opt-in <code>tlcp</code> feature (pure-core, <code>no_std</code>); key-schedule KATs from OpenSSL 3.x <code>TLS1-PRF</code> with <code>digest:SM3</code>. No new dudect target; the confirmed key-exchange flow is unchanged and remains the default. Default build byte-identical.</dd>
+
+            <dt>v1.7.0</dt>
+            <dd>2026-06-14 — TLCP record protection (the second code cycle): <code>tlcp::record</code>, byte-in/byte-out protect / deprotect for the four SM2-family suites. SM4-CBC record is <strong>Lucky13-hardened</strong> — constant-time over the inner-hash SM3 compression count, a fixed 256-byte pad-validity scan, and a data-independent MAC extraction; bad padding still runs the full MAC and returns a single <code>None</code>. Record bytes cross-validated byte-for-byte against OpenSSL EVP SM4-CBC + GmSSL <code>sm3hmac</code> and GmSSL <code>sm4 -gcm</code>. New dudect gate <code>ct_tlcp_cbc_deprotect</code>; fuzz census 27 → 29. Additive minor, no new dependency; default build byte-identical. <code>(key, seq)</code> uniqueness is the caller's contract — the stateless primitives cannot detect reuse.</dd>
+
+            <dt>v1.8.0</dt>
+            <dd>2026-06-14 — TLCP certificate-pair / chain verification (the last core cycle): <code>x509::verify_chain</code> walks a caller-ordered chain — per-edge SM2 signature and raw-Name linking, intermediate CA-ness, termination at a caller-trusted anchor, refusal of any unknown critical extension (RFC 5280 §4.2), an optional validity window, and a depth cap — plus <code>tlcp::chain::verify_pair</code> for the double-cert profile (role key-usage, leaf-not-CA, and pair binding to one actual CA). This is signature verification, <strong>not validation and not server authentication</strong>: endpoint identity binding stays the caller's, permanently. No new dudect target (public inputs only); fuzz census 29 → 30. Pure-core / <code>no_std</code>; default build byte-identical.</dd>
+
+            <dt>v1.9.0</dt>
+            <dd>2026-06-16 — TLCP toolkit C FFI, the cadence cycle that <strong>closes the TLCP arc</strong>. Exposes the accumulated toolkit — v1.6 key schedule and no-confirmation SM2-KX, v1.7 record protection, v1.8 chain/pair verification — through the <code>gmcrypto-c</code> ABI, so a C caller can drive a full TLCP handshake end to end (KX → key schedule → record → cert-verify). 19 new symbols, 2 opaque handles, 7 consts: <strong>85 → 104 entry points</strong>. A thin shim by design — every failure is one <code>GMCRYPTO_ERR</code>, <code>deprotect</code> adds no logic (the Lucky13 work stays in core), and the not-authentication disclaimer is loud in <code>gmcrypto.h</code>. <code>c_smoke</code> 84 → 97 including a bad-pad ≡ bad-MAC single-<code>ERR</code> oracle test; no new dudect target; census stays 30. Default build byte-identical.</dd>
         </dl>
 
         <h2>Next</h2>
         <dl class="version-grid">
             <dt>Next</dt>
-            <dd>With the SM2 family and X.509-with-SM2 certificate verification both complete in Rust and C, the current direction is the rest of the TLCP (GB/T 38636) toolkit arc begun in v1.6 — the remaining building blocks are mapped in the project's decomposition doc but not yet committed to specific versions. Still parked: RustCrypto <code>aead 0.6</code> trait fit (upstream remains on <code>0.6.0-rc</code>; v0.11 landed the <code>crypto-common 0.2</code> line it needs), AVX-512 <code>sbox_x64</code>, and streaming / incremental CCM.</dd>
+            <dd>The TLCP (GB/T 38636) arc begun in v1.6 <strong>closed with v1.9</strong> — key schedule, record protection, and chain/pair verification are complete in-core and reachable from C, and the decomposition doc's core gaps are spent. No successor arc is committed to a version yet. Still parked: RustCrypto <code>aead 0.6</code> trait fit (upstream remains on <code>0.6.0-rc</code>; v0.11 landed the <code>crypto-common 0.2</code> line it needs), AVX-512 <code>sbox_x64</code>, and streaming / incremental CCM. Permanently out of scope, not deferred: endpoint identity binding — the TLCP equivalent of hostname verification — stays the caller's.</dd>
         </dl>
 
         <h2>What it isn't</h2>
         <ul>
-            <li>Not a TLS/TLCP stack — the v1.6 <code>tlcp</code> work is key-schedule and key-exchange primitives, not a handshake or record layer.</li>
+            <li>Not a TLS/TLCP stack — the <code>tlcp</code> work is a toolkit of primitives (key schedule, record protect / deprotect, chain and pair verification). There is no handshake state machine, no negotiation, and no session management: a caller drives the protocol, as the v1.9 C examples do.</li>
+            <li>Not endpoint authentication — <code>verify_chain</code> / <code>verify_pair</code> establish structural trust only. Binding a verified chain to a peer identity, the TLCP equivalent of hostname verification, stays the caller's permanently.</li>
             <li>Not SM9, ZUC, or post-quantum.</li>
             <li>Not an HSM / SDF / SKF integration.</li>
             <li>Not a certified cryptographic module.</li>
