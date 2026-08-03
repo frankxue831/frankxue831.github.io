@@ -46,7 +46,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             GB/T 32918 ({% include glossary-term.html term="sm2" %} public-key sign / verify / encrypt / decrypt
             and, since v1.1, key exchange with key confirmation),
             and GB/T 32907 ({% include glossary-term.html term="sm4" %} block cipher) in pure Rust. The crate
-            graph is <code>no_std + alloc</code>, builds on
+            graph is {% include glossary-term.html term="no_std" %} + <code>alloc</code>, builds on
             <code>wasm32-unknown-unknown</code>, and ships RustCrypto-trait
             fits for <code>digest</code>, <code>mac</code>, and <code>cipher</code>
             — plus, since v1.11, opt-in <code>aead</code> 0.6 for SM4-GCM /
@@ -200,7 +200,18 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
                 constant-time &mdash;
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/README.md#L76" rel="noopener noreferrer">README.md:76 <span aria-hidden="true">&#8599;</span></a></li>
         </ul>
+        <p>
+            Two notes unpack this:
+            <a href="{{ '/notes/constant-time-ci-gate/' | relative_url }}">how the CI gate works</a>,
+            and <a href="{{ '/notes/constant-time-warrant/' | relative_url }}">why the negative
+            control — not the green checks — is the part worth showing</a>.
+        </p>
         {% include dudect-chart.html %}
+        <p>
+            The version line below carries deliberate gaps — a cycle that
+            changes no output bytes merges unpublished.
+            <a href="{{ '/notes/releases-that-change-nothing/' | relative_url }}">Why, in one note</a>.
+        </p>
         <details class="drawer">
             <summary>{{ site.data.i18n[page.lang].details.earlier_releases | escape }}</summary>
             <dl class="version-grid">

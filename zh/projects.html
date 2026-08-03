@@ -55,9 +55,16 @@ alternate: /projects/
                 是校验门的结论，不是装饰。底层用的是和桌面批量渲染 GUI 同一套、与
                 Qt 解耦的渲染核心。目前私有 / 本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                {% else %}
+                精选工程项目，状态和项目信息会明确标出来。
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% endcase %}
             </p>
         </li>
         {% endfor %}
     </ul>
+
+    <a href="{{ '/zh/notes/' | relative_url }}" class="preview__link preview__link--section">
+        看全部笔记 <span aria-hidden="true">→</span>
+    </a>
 </section>

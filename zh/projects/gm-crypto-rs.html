@@ -44,7 +44,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             <code>gm-crypto-rs</code> 是一套纯 Rust 写的国密算法库，覆盖
             {% include glossary-term.html term="sm3" %} 哈希（GB/T 32905）、{% include glossary-term.html term="sm2" %} 公钥算法（GB/T 32918，签名 / 验签 /
             加密 / 解密，v1.1 起还包括带密钥确认的密钥交换）和 {% include glossary-term.html term="sm4" %} 分组密码（GB/T 32907）。整套依赖都不碰标准库
-            （<code>no_std + alloc</code>），能编译到 <code>wasm32-unknown-unknown</code>，
+            （{% include glossary-term.html term="no_std" %} + <code>alloc</code>），能编译到 <code>wasm32-unknown-unknown</code>，
             也实现了 RustCrypto 的 <code>digest</code> / <code>mac</code> /
             <code>cipher</code> trait，方便直接接入现有的 Rust 生态；从 v1.11 起，
             还可选适配 <code>aead</code> 0.6（SM4-GCM / SM4-CCM）。从 v1.3 起，
@@ -179,7 +179,15 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             <li>也说得老实——这套 harness 只能检测泄漏，并不能证明常量时间——
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/README.md#L76" rel="noopener noreferrer">README.md:76 <span aria-hidden="true">&#8599;</span></a></li>
         </ul>
+        <p>
+            有两篇笔记展开讲这件事：<a href="{{ '/zh/notes/constant-time-ci-gate/' | relative_url }}">CI
+            门禁是怎么接线的</a>，以及<a href="{{ '/zh/notes/constant-time-warrant/' | relative_url }}">为什么值得展示的是负控制，而不是那排绿勾</a>。
+        </p>
         {% include dudect-chart.html %}
+        <p>
+            下面的版本线上有刻意留下的缺口——一轮没改任何输出字节的工作，
+            不发版就直接合进主干。<a href="{{ '/zh/notes/releases-that-change-nothing/' | relative_url }}">为什么，一篇笔记讲清</a>。
+        </p>
         <details class="drawer">
             <summary>{{ site.data.i18n[page.lang].details.earlier_releases | escape }}</summary>
             <dl class="version-grid">

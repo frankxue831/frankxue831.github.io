@@ -82,9 +82,17 @@ alternate: /zh/projects/
                 same Qt-free render core a desktop batch-render GUI drives.
                 Private/local today.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                {% else %}
+                Selected engineering work with status and project facts kept
+                explicit.
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
                 {% endcase %}
             </p>
         </li>
         {% endfor %}
     </ul>
+
+    <a href="{{ '/notes/' | relative_url }}" class="preview__link preview__link--section">
+        Read the notes <span aria-hidden="true">→</span>
+    </a>
 </section>

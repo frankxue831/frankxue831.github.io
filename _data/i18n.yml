@@ -30,7 +30,7 @@ en:
     about: "About"
     work: "Work"
     contact: "Contact"
-    writing: "Writing"
+    writing: "Notes"
   switcher:
     label: "中文"
     aria: "Switch to Chinese"
@@ -158,7 +158,7 @@ zh:
     about: "关于"
     work: "作品"
     contact: "联系"
-    writing: "写作"
+    writing: "笔记"
   switcher:
     label: "EN"
     aria: "切换为英文"

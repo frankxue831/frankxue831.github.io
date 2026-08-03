@@ -49,7 +49,8 @@ interop vectors. The breaking changes in 1.0 are API *shape*, not behavior; a
 `0.16` consumer gets the same bytes out. From there, `cargo-semver-checks` gates
 forward breaks, so the next number means what it says.
 
-There's a cost, and it mirrors the constant-time gate's: a version line with
+There's a cost, and it mirrors the
+[constant-time gate]({{ '/notes/constant-time-ci-gate/' | relative_url }})'s: a version line with
 deliberate holes needs explaining. A reader scanning crates.io sees `0.13` and
 then `0.15`, sees `0.16` and then `1.0`, and has to be told the missing numbers
 aren't abandonment —
