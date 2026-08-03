@@ -85,14 +85,18 @@ Both of those things are *locations*. Line 167 of a benchmark file. A paragraph 
 Their entire evidential value comes from being checkable: a reader clicks, lands on the exact
 line at a pinned tag, and confirms it without taking my word for anything.
 
-I built a [generated explainer video]({{ '/projects/explainer-engine/' | relative_url }}) for
-this material first. It's the wrong medium, and the reason generalizes past my particular
-attempt: narration converts a checkable fact back into an assertion. A video *can* say "there
-is a deliberately-leaky negative control that CI requires to fire." It cannot hand you line
-167. Everything the format does — pacing, voice, motion — is spent making a claim easier to
-absorb, and none of it is spent making the claim easier to *verify*. For a trust problem
-that's the wrong axis, and the polish works against you: a well-produced assertion is still
-an assertion, and it now looks more authoritative than it has earned.
+I tried this material as a generated explainer video first — same
+[engine]({{ '/projects/explainer-engine/' | relative_url }}) as the published clip, which
+explains a different subject. It's the wrong medium for *this*, and the reason generalizes
+past my particular attempt: narration converts a checkable fact back into an assertion. A
+video *can* say "there is a deliberately-leaky negative control that CI requires to fire" —
+the engine's citation gate will even verify that sentence against the source before drawing
+it. But what reaches the viewer is the gate's verdict, not the evidence: a
+`verified @ commit` badge in a frame cannot hand you line 167. Everything the format does —
+pacing, voice, motion — is spent making a claim easier to absorb, and none of it is spent
+making the claim easier to *verify*. For a trust problem that's the wrong axis, and the
+polish works against you: a well-produced assertion is still an assertion, and it now looks
+more authoritative than it has earned.
 
 Video is genuinely good at building intuition for a *concept* — why timing side channels
 exist, what a t-test is doing. It is bad at transferring warrant for a *claim* about specific
