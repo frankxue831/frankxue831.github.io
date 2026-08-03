@@ -13,9 +13,20 @@
       <dt>{{ labels.status }}</dt>
       <dd>{{ status_label }}</dd>
     </div>
+    {%- comment -%}
+      Public projects carry a Release row (a claim about published state).
+      Private projects carry a Snapshot row instead — a bilingual, honestly
+      labeled working-state marker, so no page makes a private release claim
+      (the hero-proof note promises exactly that).
+    {%- endcomment -%}
     <div class="project-summary__item">
+      {%- if project.public_source -%}
       <dt>{{ labels.release }}</dt>
       <dd>{{ project.release }}</dd>
+      {%- else -%}
+      <dt>{{ labels.snapshot }}</dt>
+      <dd>{{ project.snapshot_label[lang] | default: project.release }}</dd>
+      {%- endif -%}
     </div>
     {%- if page.summary_outcome -%}
       <div class="project-summary__item project-summary__item--wide">

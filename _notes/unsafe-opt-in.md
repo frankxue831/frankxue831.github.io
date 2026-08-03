@@ -5,7 +5,7 @@ permalink: /notes/unsafe-opt-in/
 lang: en
 alternate: /zh/notes/unsafe-opt-in/
 description: "gm-crypto-rs forbids unsafe in its core crate and quarantines the SIMD code that needs it behind opt-in features in a separate crate."
-excerpt: "The fast paths needed unsafe. Rather than let them into the core, they live in a crate you opt into — so the default build stays #![forbid(unsafe_code)]."
+excerpt: "The fast paths needed unsafe. Rather than let them into the core, they live in a crate you opt into — so the core keeps unsafe_code = \"forbid\"."
 ---
 
 `unsafe` in Rust isn't a sin; it's a boundary. It marks the place where the
@@ -14,9 +14,9 @@ isn't "did you use it" but "can someone tell, at a glance, where it is and
 whether they signed up for it." [`gm-crypto-rs`]({{ '/projects/gm-crypto-rs/' | relative_url }})
 answers that with crate boundaries.
 
-The core crate, `gmcrypto-core`, carries `#![forbid(unsafe_code)]` — not `deny`,
-which a stray `allow` can loosen, but `forbid`, which holds for the whole crate
-and can't be locally overridden. Every line of the SM2/SM3/SM4 core is checked
+The core crate, `gmcrypto-core`, forbids unsafe in its `Cargo.toml` `[lints]`
+table — `unsafe_code = "forbid"`. Not `deny`, which a stray `allow` can loosen,
+but `forbid`, which holds for the whole crate and can't be locally overridden. Every line of the SM2/SM3/SM4 core is checked
 by the compiler; `forbid` leaves no room for an exception. That's the property I
 want true by default and checkable without reading the code: install the crate
 with its defaults, and none of this project's own code that you run carries
@@ -47,5 +47,5 @@ don't dilute the safety of the thing everyone uses in order to get it. Put the
 exception behind a boundary — a separate crate, a named feature, a stated cost —
 so the safe path stays the default and the unsafe path is a decision someone
 made on purpose. The crate split, the features, and the `forbid` are all in the
-[public source]({{ '/projects/gm-crypto-rs/' | relative_url }}) if you'd rather
+[public source](https://github.com/frankxue831/gm-crypto-rs) if you'd rather
 read the boundary than take my word for it.

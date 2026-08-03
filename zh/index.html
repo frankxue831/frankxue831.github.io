@@ -62,7 +62,7 @@ alternate: /
             </ul>
 
             <p class="hero-proof__note">
-                暂时不公开的项目只保留概览，不展示源码链接或内部版本细节。
+                私有项目只做概览：不放公开源码链接，也不把内部状态当成已发布版本来标。
             </p>
         </aside>
     </div>
@@ -126,12 +126,13 @@ alternate: /
                 {% when 'repolens-rs' %}
                 给 AI 编程 Agent 用的仓库上下文和类型化记忆层，
                 目标是让新的会话不再从零理解项目。
-                <strong>{{ project.status_label.zh }}</strong>——源码尚未公开。
+                <strong>{{ project.status_label.zh }}</strong>——源码目前未公开。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'ghrunners' %}
                 macOS 上 GitHub Actions self-hosted runner 的单次运行 CLI——
                 只读观测加受控的 launchd 控制，把 launchd 状态、进程树、日志
-                和 API 状态汇到一次输出里；哪怕只读到一部分，也照样列出来。
+                和 API 状态汇成类型化 findings 一次输出；哪怕只读到一部分，
+                也照样列出来。目前私有 / 本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'explainer-engine' %}
                 一条确定性的流水线，渲染带旁白的概念讲解视频——画第一帧之前，

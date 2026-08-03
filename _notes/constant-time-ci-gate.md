@@ -40,11 +40,13 @@ that quietly overclaims.
 
 Not every path can be gated. A full leak measurement is expensive, and a pull request
 has a time budget, so the harness splits the work in two. The core set fails the build.
-A second tier — the field-inversion diagnostics and the k-class signing path — is
+A second tier — the field-inversion diagnostics, the k-class signing path, and — since
+2026-06-17 — HMAC-SM3 — is
 measured as telemetry: watched on the nightly run against a **0.55** gross-regression
 sentinel rather than enforced at 0.20 on every PR. The k-class path carried a tighter
 0.25 nightly gate until 2026-06-07, when shared-runner class-split noise kept firing it
-falsely; it was demoted with the reasoning published rather than quietly relaxed. It's
+falsely; HMAC-SM3 followed ten days later for the same noise. Each was demoted with
+the reasoning published rather than quietly relaxed. It's
 an honest trade. Those paths are observed, not enforced, and the split needs ongoing
 maintenance — but it keeps the per-PR signal fast and the gate meaningful.
 

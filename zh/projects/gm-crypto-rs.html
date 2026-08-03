@@ -16,7 +16,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
     </h1>
     <p class="page-header__lede">
         国密 SM2、SM3、SM4 的纯 Rust SDK。
-        关键路径按<em>常量时间</em>设计，CI 里挂了泄漏回归门禁守着。
+        涉密路径按<em>常量时间</em>设计，CI 里挂了一套泄漏回归 harness 守着。
     </p>
 </section>
 
@@ -69,7 +69,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             国密这几个算法，Rust 社区其实早有实现，写得好的那些，本来也都按
             <em>常量时间</em>设计——意思是处理密钥的那段代码，跑多久跟密钥
             无关，免得别人靠测耗时反推出密钥。难点在于，这种「常量时间」常常
-            只在代码评审那一刻成立；之后随便一次重构、一条为了赶进度新增的路径、
+            只在代码评审那一刻成立；之后随便一次重构、新加一条快路径、
             一次依赖升级，时序泄漏都可能悄悄溜回来，还没人当场发现。这个库
             偏偏又卡在一堆容易让它松动的约束里：要逐字节对上 GB/T 标准、核心
             要能跑在 <code>no_std</code> / wasm 上、涉密路径在每次发版之间都得
@@ -95,22 +95,23 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
         <p>
             <strong>核心路径上门禁，其余先观察。</strong>
             不是每条路径都塞得进一个 PR 的时间预算，于是 harness 给它们分了层。
-            <em>带门禁</em>（不达标就让构建失败）的是：SM2 签名、解密与密钥
-            交换、SM4 密钥扩展、SM4 加密（线性扫描和位切片 SIMD S-box 两条
-            都算）、SM4-CTR、CBC 解密扇出、单次及缓冲式 SM4-GCM / SM4-CCM
-            解密、SM4-XTS 解密、HMAC-SM3、加密 PKCS#8 解密，以及 v1.7 起新增的
+            <em>带门禁</em>（不达标就让构建失败）的有 16 条：两条标量乘
+            （定基与变基）、SM2 签名、解密与密钥交换、SM4 密钥扩展、SM4
+            加密（线性扫描和位切片 SIMD S-box 两条都算）、SM4-CTR、CBC 解密
+            扇出、单次 SM4-GCM / SM4-CCM 解密加缓冲式 SM4-GCM 解密、SM4-XTS
+            解密、加密 PKCS#8 解密，以及 v1.7 起新增的
             TLCP CBC 记录层解保护（Lucky13 残余风险的看守）。<em>只做遥测</em>
-            的是：域求逆诊断和 k-class 签名——挂在 nightly 上、用
-            <code>0.55</code> 的粗回归哨兵值盯着，而不是 <code>0.20</code>
-            的门禁。共享 runner 上的类分割噪声让它们更紧的阈值频繁误报，
-            所以降级处理，理由也公开写明了。<strong>代价：</strong>遥测那
+            的有 4 条：域求逆诊断、k-class 签名，以及 2026-06-17 起的
+            HMAC-SM3——挂在 nightly 上、用 <code>0.55</code> 的粗回归哨兵值
+            盯着，而不是 <code>0.20</code> 的门禁。共享 runner 上的类分割噪声
+            让它们更紧的阈值频繁误报，所以逐个降级处理，理由也公开写明了。<strong>代价：</strong>遥测那
             部分只是盯着、并不拦截，而且这套分层本身也得长期维护。
         </p>
         <p>
-            <strong>核心保持可审计，SIMD 单独按需开。</strong>
+            <strong>安全的核心，SIMD 单独按需开。</strong>
             <code>gmcrypto-core</code> 在 <code>[lints]</code> 表里禁掉了 unsafe
             （<code>unsafe_code = "forbid"</code>）——整个核心一行
-            <code>unsafe</code> 都不许有，审计起来省心。可位切片
+            <code>unsafe</code> 都不许有。可位切片
             SIMD 的 S-box 偏偏离不开 <code>unsafe</code>，于是把它整段挪进单独的
             <code>gmcrypto-simd</code> crate，用时再通过
             <code>sm4-bitsliced-simd</code> 特性打开。<strong>代价：</strong>
@@ -145,8 +146,9 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
 
         <h2>证据</h2>
         <p>
-            每一处输出都逐字节比对过：标准 KAT 测试向量、gmssl 3.1.1
-            （互操作性）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>
+            每一处输出都逐字节比对过：标准 KAT 测试向量、GmSSL 3.2.0
+            （互操作性——v1.10 起在 CI 里挂了任务，对着钉在源码构建的
+            oracle 跑）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>
             （<code>xts_standard=GB</code> 模式）。上面那套泄漏回归门禁，
             每次提交的 CI 都会跑一遍，核心则在 <code>[lints]</code> 表里
             禁掉了 unsafe（<code>unsafe_code = "forbid"</code>）。v0.14 那一轮还加了一套
@@ -174,7 +176,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
         <ul class="audit-notes">
             <li>门禁不是摆设——专门放一个会漏时的 <code>negative_control</code>，dudect 必须把它揪出来，否则 CI 直接失败——
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a></li>
-            <li>也说得老实——这套门禁只能检测泄露，并不能证明常量时间——
+            <li>也说得老实——这套 harness 只能检测泄漏，并不能证明常量时间——
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/README.md#L76" rel="noopener noreferrer">README.md:76 <span aria-hidden="true">&#8599;</span></a></li>
         </ul>
         {% include dudect-chart.html %}
@@ -254,7 +256,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             <dd>2026-06-16 — TLCP 工具集的 C FFI，这一轮<strong>收束了整条 TLCP 弧线</strong>。把攒下来的工具集——v1.6 的密钥派生与免确认 SM2-KX、v1.7 的记录层保护、v1.8 的链 / 证书对验证——通过 <code>gmcrypto-c</code> ABI 暴露出去，于是 C 调用方可以自己驱动一次完整的 TLCP 握手（KX → 密钥派生 → 记录层 → 证书验证）。新增 19 个符号、2 个不透明句柄、7 个常量：<strong>FFI 入口从 85 个扩到 104 个</strong>。设计上是一层薄壳——所有失败都归一个 <code>GMCRYPTO_ERR</code>，<code>deprotect</code> 不加任何逻辑（Lucky13 那部分留在核心里），而「这不是身份认证」的免责声明在 <code>gmcrypto.h</code> 里写得很显眼。<code>c_smoke</code> 从 84 条扩到 97 条，其中包括「填充错 ≡ MAC 错、只回一个 <code>ERR</code>」的预言机测试；不新增 dudect 目标；census 仍是 30。默认构建逐字节不变。</dd>
 
             <dt>v1.10.0</dt>
-            <dd><em>未发布。</em>保障性轮次：把 gmssl 互操作测试迁到 GmSSL 3.2.0 的子命令，并在 CI 里加 <code>interop-gmssl</code> 任务、钉住 oracle 标签（关闭审计项 F16——原先套件在 CI 里其实整段自跳过）；合并重复的常量时间 PKCS#7 去填充；把四个 DER 模糊测试加强到字节幂等；模糊测试 census 30 → 32。已发布 crate 的运行时输出没有变化，所以 crates.io 跳过 <code>1.10.0</code>（沿用 v0.14 / v0.20–v0.23 的先例）。改动随 <code>1.11.0</code> 一起发出。</dd>
+            <dd><em>未发布。</em>保障性轮次：把 gmssl 互操作测试迁到 GmSSL 3.2.0 的子命令，并在 CI 里加 <code>interop-gmssl</code> 任务、钉住 oracle 标签（关闭审计项 F16——原先套件在 CI 里其实整段自跳过）；合并重复的常量时间 PKCS#7 去填充；把四个 DER 模糊测试加强到字节幂等；模糊测试 census 30 → 32。已发布 crate 的运行时输出没有变化，所以 crates.io 跳过 <code>1.10.0</code>（沿用 v0.14 / v0.17–v0.23 的先例）。改动随 <code>1.11.0</code> 一起发出。</dd>
 
             <dt>v1.11.0</dt>
             <dd>2026-08-01 — SM4-GCM / SM4-CCM 的 RustCrypto <code>aead</code> 0.6 trait 适配（增量、可选）。新增 <code>sm4::Sm4Gcm</code> 与 <code>sm4::Sm4Ccm&lt;M, N&gt;</code>，是一层盖在固有 AEAD 路径上的薄壳，放在 <code>aead-traits = ["sm4-aead", "dep:aead"]</code> 后面——这是自 v0.11 起就搁置、等上游还停在 <code>0.6.0-rc</code> 的 backlog；现在 <code>aead</code> 0.6.1 已稳定，MSRV 正好是 1.85。实现了 <code>KeySizeUser</code> / <code>KeyInit</code> / <code>AeadCore</code> / <code>AeadInOut</code>（返回 <code>Vec</code> 的 <code>Aead</code> 由 blanket impl 白送）。不新增 dudect 目标（薄壳不加密码学；涉密路径就是原来那套代码）；新增差分模糊测试 <code>fuzz_sm4_aead_traits</code>（census <strong>32 → 33</strong>）。默认构建逐字节不变；C ABI 仍是 104 个入口。</dd>
@@ -273,11 +275,11 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             <li>不包括 SM9、ZUC、后量子算法。</li>
             <li>不是 HSM / SDF / SKF 集成。</li>
             <li>不是经过认证的密码模块。</li>
-            <li>在前面提到的那类 CPU 上（乘法耗时跟操作数有关，常见于部分老 x86、部分嵌入式）不保证常量时间。</li>
+            <li>在乘法耗时跟操作数有关的 CPU 上（部分老 x86、部分嵌入式），不是常量时间的。</li>
         </ul>
 
         <p>
-            个人项目。与 gmssl 3.1.1、OpenSSL 做过逐字节一致性比对，
+            个人项目。与 GmSSL、OpenSSL 做过逐字节一致性比对，
             但并不隶属于这两个项目，也未获它们或任何标准机构、厂商的背书或认证。
         </p>
 

@@ -29,7 +29,10 @@ work: freezing the public API behind a `cargo-public-api` drift-check,
 decoupling `crypto-bigint` from the always-on surface, a multi-model adversarial
 re-audit before committing to stability. Seven version numbers' worth of the
 most consequential work in the project — and crates.io skips all of them. The
-changes shipped together, once, in `1.0.0`.
+changes shipped together, once, in `1.0.0`. The rule has kept applying since:
+`v1.5` (the TLCP decomposition design cycle) and `v1.10` (the assurance cycle
+that wired the GmSSL interop suite into CI at a pinned oracle) are unpublished
+for the same reason.
 
 The discipline underneath is easy to state and easy to violate: publish when the
 artifact someone consumes changes, not when you've been busy. Assurance work —
@@ -47,8 +50,9 @@ interop vectors. The breaking changes in 1.0 are API *shape*, not behavior; a
 forward breaks, so the next number means what it says.
 
 There's a cost, and it mirrors the constant-time gate's: a version line with
-deliberate holes needs explaining. A reader scanning crates.io sees `0.13`, then
-`0.16`, then `1.0`, and has to be told the missing numbers aren't abandonment —
+deliberate holes needs explaining. A reader scanning crates.io sees `0.13` and
+then `0.15`, sees `0.16` and then `1.0`, and has to be told the missing numbers
+aren't abandonment —
 they're cycles that refused to bill assurance churn as a byte-changing release.
 I'd rather owe that explanation than overstate a release. The full history, with
 the skipped cycles named and explained, is on the

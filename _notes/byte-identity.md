@@ -24,7 +24,8 @@ off-by-one in a key schedule. Necessary, but not sufficient: a KAT only covers
 the inputs someone thought to write down.
 
 So the second half is differential testing against independent implementations.
-SM2/SM3/SM4 output is cross-checked byte-for-byte against gmssl 3.1.1, and the
+SM2/SM3/SM4 output is cross-checked byte-for-byte against GmSSL 3.2.0 — an
+in-CI job pinned to a from-source oracle build since the v1.10 cycle — and the
 tweakable disk-encryption mode, SM4-XTS, against OpenSSL 3.x. When two
 implementations written by different people from the same standard agree on the
 bytes across a wide range of inputs, the chance that all of them share my exact
@@ -48,6 +49,7 @@ bytes yourself.
 Byte-identity is a strong conformance signal, not a proof of correctness: it
 shows you agree with your references — including anywhere they are all wrong
 together — and only on the inputs you tested. It sits alongside the
-constant-time gate and the fuzzing, not in place of them. The vectors, the
-interop targets, and the comparison configuration are all in the
-[public repo]({{ '/projects/gm-crypto-rs/' | relative_url }}).
+[constant-time gate]({{ '/notes/constant-time-ci-gate/' | relative_url }}) and
+the fuzzing, not in place of them. The vectors, the interop targets, and the
+comparison configuration are all in the
+[public repo](https://github.com/frankxue831/gm-crypto-rs).

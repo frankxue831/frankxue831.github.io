@@ -7,30 +7,38 @@
 # and inventing them would violate the site's auditability rule.
 gate: 0.20            # PR-smoke blocking gate (|tau| < 0.20)
 sentinel: 0.55        # gross-regression sentinel (invert diagnostics + ct_sign_k_class,
-                      # the latter demoted from its 0.25 nightly gate on 2026-06-07)
+                      # demoted from its 0.25 nightly gate on 2026-06-07, + ct_hmac_sm3,
+                      # demoted 2026-06-17 — see SECURITY.md's recalibration notes)
 control_floor: 1.0    # negative_control must exceed this to prove the detector fires
 axis_max: 1.1
 source_url: "https://github.com/frankxue831/gm-crypto-rs/blob/v1.2.0/SECURITY.md"
 # The four publicly-measured values (v0.2 "W0" harness, 100K samples,
 # pre-2026-05-12 runner image). A baseline snapshot, not a live gate reading.
+# `policy` is each target's CURRENT enforcement tier (gate = 0.20 PR gate;
+# sentinel = 0.55 nightly gross-regression sentinel) — policy metadata, not a
+# measured value, so the four-value publication cap is untouched.
 measured:
   - target: "ct_sign"
     tau: 0.0044
+    policy: gate
     desc:
       en: "SM2 sign, split by private key d"
       zh: "SM2 签名，按私钥 d 分类"
   - target: "ct_sign_k_class"
     tau: 0.0708
+    policy: sentinel
     desc:
       en: "SM2 sign, split by nonce k magnitude"
       zh: "SM2 签名，按随机数 k 的量级分类"
   - target: "ct_fn_invert"
     tau: 0.0071
+    policy: sentinel
     desc:
       en: "Direct Fn::invert diagnostic"
       zh: "Fn::invert 直接诊断"
   - target: "ct_fp_invert"
     tau: 0.0063
+    policy: sentinel
     desc:
       en: "Direct Fp::invert diagnostic"
       zh: "Fp::invert 直接诊断"
