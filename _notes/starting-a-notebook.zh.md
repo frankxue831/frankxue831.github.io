@@ -5,7 +5,7 @@ permalink: /zh/notes/starting-a-notebook/
 lang: zh
 locale: zh_CN
 alternate: /notes/starting-a-notebook/
-description: "这个板块是做什么的，以及之后会写些什么。"
+description: "这个板块是做什么的，以及能期待什么。"
 excerpt: "关于 Rust、密码学、Agent 工具的短笔记——以及做软件里那些不那么光鲜的部分。"
 ---
 
@@ -22,4 +22,4 @@ excerpt: "关于 Rust、密码学、Agent 工具的短笔记——以及做软�
 
 > 趁还觉得烦的时候写下来——那时候细节最清楚。
 
-慢慢来。
+还会再写。

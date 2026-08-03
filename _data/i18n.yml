@@ -31,6 +31,7 @@ en:
     work: "Work"
     contact: "Contact"
     writing: "Notes"
+    primary_aria: "Primary"
   switcher:
     label: "中文"
     aria: "Switch to Chinese"
@@ -152,13 +153,14 @@ en:
     earlier_releases: "Earlier releases (v0.6.0 – v0.13.0)"
 zh:
   html_lang: "zh-CN"
-  tagline: "Frank Xue 的个人主页。软件工程师，记一些笔记，放几个项目。"
+  tagline: "Frank Xue 的个人主页。软件工程师——笔记与精选作品，发布状态与限制写在明面上。"
   nav:
     home: "首页"
     about: "关于"
     work: "作品"
     contact: "联系"
     writing: "笔记"
+    primary_aria: "主导航"
   switcher:
     label: "EN"
     aria: "切换为英文"
@@ -196,11 +198,11 @@ zh:
   notes:
     all: "全部笔记"
     read_more: "阅读 →"
-    none: "还没有发布内容。"
+    none: "目前没有发布内容。"
   dudect:
     title: "把常量时间测出来"
     fig_num: "图 3.2"
-    intro: "每条涉密路径都对着 |τ| 门禁计时。|τ| 低，表示在该预算下没测到泄漏；核心路径一旦越过门禁就让构建失败（少数几条走更宽松的 nightly 或遥测策略）。"
+    intro: "每条涉密路径都对着 |τ| 门禁计时。|τ| 低 = 在该预算下没测到泄漏；核心路径越过门禁就让构建失败（少数走更宽松的 nightly 或遥测策略）。"
     axis_label: "|τ|（时序泄漏统计量）"
     gate_label: "PR 门禁 |τ| < 0.20"
     control_label: "negative_control——必须在这里触发（证明检测器不是瞎的）"

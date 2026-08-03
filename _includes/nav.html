@@ -42,7 +42,7 @@
             <span class="nav-toggle__bar"></span>
         </button>
 
-        <nav class="primary-nav" id="primary-nav" aria-label="Primary">
+        <nav class="primary-nav" id="primary-nav" aria-label="{{ t.nav.primary_aria | escape }}">
             {%- assign here = page.url | default: '/' -%}
             {%- assign nav_items =
               t.nav.home  | append: '|' | append: base | append: '/' | append: '||' |

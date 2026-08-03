@@ -2,7 +2,7 @@
 layout: default
 title: 作品
 permalink: /zh/projects/
-description: Frank Xue 的精选项目——Rust 密码学、Agent 工具、开发者基础设施，以及可核验的讲解。
+description: Frank Xue 的精选作品——Rust 密码学、Agent 工具、开发者基础设施、可核验的讲解；状态与限制写在明面上。
 lang: zh
 alternate: /projects/
 ---
@@ -11,10 +11,12 @@ alternate: /projects/
     <span class="ghost-num" aria-hidden="true">03</span>
     <p class="page-header__eyebrow">(03)  作品</p>
     <h1 class="page-header__title">
-        <em>项目</em>
+        精选
+        <em>作品。</em>
     </h1>
     <p class="page-header__lede">
-        这里不会放很长的清单——做的多是 Rust，多在开发者工具和它们所依赖的底层系统之间的接缝上。项目要等到我能比较诚实地讲清楚它做什么、做到哪一步、还剩哪些限制，才会放上来。
+        一份短而诚实的清单。多是 Rust，多在开发者工具和它们所依赖的底层系统的接缝上。
+        项目要等到我能诚实讲清楚它做什么、做到哪一步、限制在哪，才会放上来。
     </p>
 </section>
 
@@ -37,26 +39,36 @@ alternate: /projects/
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
-                纯 Rust 的国密 SM2 / SM3 / SM4 SDK，对应 GB/T 32905 / 32918 / 32907。除了功能本身，我更关注涉密路径是否按常量时间设计，以及 CI 里是否有 dudect 这样的侧信道泄漏回归检测。公开版本 <strong>{{ project.release }}</strong> 已发布到
-                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>，分三个 crate：<code>gmcrypto-core</code>、作为 C ABI 的 <code>gmcrypto-c</code>，以及 <code>gmcrypto-simd</code>（AVX2 / NEON 的 SM4）；SM4 各分组模式、SM4-GCM/CCM AEAD、SM4-XTS、完整的 SM2 算法族（签名、加密、密钥交换），以及 X.509-with-SM2 证书验证都已发布，Rust 和 C ABI 两侧齐备；v1.6–v1.9 又补上了一套 TLCP（GB/T 38636）工具集——密钥派生、记录层保护、链与证书对验证，核心和 C 两侧都能用；v1.11 起 SM4-GCM / SM4-CCM 还适配了 RustCrypto 的 <code>aead</code> 0.6 trait（可选 <code>aead-traits</code>）。
+                纯 Rust 的国密 SM2 / SM3 / SM4 SDK（GB/T 32905 / 32918 / 32907）。
+                除了功能本身，更关心涉密路径是否按常量时间设计，以及 CI 里有没有 dudect 泄漏回归检测。
+                公开版 <strong>{{ project.release }}</strong> 在
+                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>：
+                <code>gmcrypto-core</code>、<code>gmcrypto-c</code>（C ABI）、
+                <code>gmcrypto-simd</code>（AVX2 / NEON SM4）。
+                SM4 各模式、SM4-GCM/CCM AEAD、SM4-XTS、完整 SM2 族（签名、加密、密钥交换）与 X.509-with-SM2 证书验证已发布，Rust 与 C 两侧齐备；
+                v1.6–v1.9 补上 TLCP（GB/T 38636）工具集——密钥派生（key schedule）、记录层保护、链 / 证书对验证——核心与 C 两侧都有；
+                v1.11 起可选适配 RustCrypto <code>aead</code> 0.6
+                （<code>aead-traits</code>）。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的仓库记忆和上下文层，通过 MCP 暴露 26 个工具，并把结构化的仓库上下文和类型化、会衰减的记忆配在一起，让 Agent 跨会话也能保持一份持久的项目认知，新的编程会话不用每次都从零开始理解项目。私有预发布——源码目前未公开。
+                给 AI 编程 Agent 用的仓库记忆与上下文层：经 MCP 暴露 26 个工具，
+                把结构化仓库上下文和类型化、会衰减的记忆配在一起，跨会话不必从零理解项目。
+                <strong>私有预发布</strong>——源码目前未公开。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'ghrunners' %}
-                macOS 上 GitHub Actions self-hosted runner 的单次运行 CLI——只读观测（launchd 域状态、PID、进程树、日志尾部、可选的 GitHub API）加受控的 launchd 控制。读不到的部分会降级成不完整输出，而不是直接报错退出。源码目前私有 / 本地。
+                macOS 上 GitHub Actions self-hosted runner 的一次性 CLI——
+                只读观测（launchd 域、PID、进程树、日志尾、可选 GitHub API）加受控 launchd 控制。
+                读不到的部分降级成不完整输出，而不是硬失败。源码目前私有 / 本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'explainer-engine' %}
-                一条确定性的流水线，把 YAML storyboard 编译成带旁白的概念讲解
-                视频——每个 beat 可以是一张图、一段带引用的代码标注，或者一张
-                会动的概念图。屏幕上的内容都标着 <em>simplified</em>（简化视图），
-                而且在画第一帧之前，引用校验门会按固定 commit 到源码仓库里逐条
-                核对每个说法，所以视频里那个 <code>verified @ commit</code> 徽标
-                是校验门的结论，不是装饰。底层用的是和桌面批量渲染 GUI 同一套、与
-                Qt 解耦的渲染核心。目前私有 / 本地。
+                确定性流水线：把 YAML storyboard 编译成带旁白的概念讲解视频
+                （图、带引用的代码标注，或会动的概念图）。
+                画面标 <em>simplified</em>；画第一帧前，引用校验门按固定 commit
+                逐条核对源码——视频里的 <code>verified @ commit</code> 是门禁结论，不是装饰。
+                与桌面批量渲染 GUI 共用一套与 Qt 解耦的渲染核心。目前私有 / 本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% else %}
-                精选工程项目，状态和项目信息会明确标出来。
+                精选工程作品——状态与项目信息会明确标出。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% endcase %}
             </p>
