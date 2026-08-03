@@ -33,6 +33,9 @@
     zh: "私有预发布"
   release: "origin/main (private)"
   release_source: private_main
+  snapshot_label:
+    en: "private origin/main"
+    zh: "私有 origin/main"
   repo_url:
   crate_url:
   docs_url:
@@ -54,6 +57,9 @@
     zh: "私有/本地"
   release: "local tag v0.5.0"
   release_source: local_tag
+  snapshot_label:
+    en: "local tag v0.5.0"
+    zh: "本地 tag v0.5.0"
   repo_url:
   crate_url:
   docs_url:
@@ -73,8 +79,14 @@
   status_label:
     en: "Private/local"
     zh: "私有/本地"
+  # "diagram canvas" is a milestone name, not a release state — labeled as
+  # such in snapshot_label. TODO(Frank): replace with the real local snapshot
+  # identifier at review.
   release: "local — diagram canvas"
   release_source: local_tag
+  snapshot_label:
+    en: "local — diagram-canvas milestone"
+    zh: "本地——diagram canvas 里程碑"
   repo_url: ~
   crate_url: ~
   docs_url: ~

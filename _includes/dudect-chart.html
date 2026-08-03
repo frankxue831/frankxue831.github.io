@@ -86,8 +86,13 @@
         <td><code>{{ m.target }}</code></td>
         <td>{{ m.desc[page.lang] | default: m.desc.en | escape }}</td>
         <td>{{ m.tau }}</td>
+        {%- if m.policy == 'sentinel' -%}
+        <td>&lt; {{ d.sentinel }} ({{ t.policy_sentinel_label | escape }})</td>
+        <td>{{ t.status_sentinel | escape }}</td>
+        {%- else -%}
         <td>&lt; {{ d.gate }}</td>
         <td>{{ t.status_pass | escape }}</td>
+        {%- endif -%}
       </tr>
       {%- endfor -%}
       <tr>

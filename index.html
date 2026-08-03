@@ -104,7 +104,6 @@ alternate: /zh/
     </header>
 
     <ul class="work-list">
-        {% assign projects = site.data.projects %}
         {% for project in projects %}
         <li class="work-list__item reveal">
             <a class="work-list__row"
@@ -130,13 +129,14 @@ alternate: /zh/
                 {% when 'repolens-rs' %}
                 Repository context and typed memory for AI coding agents, built
                 to help sessions restart with grounded project understanding.
-                <strong>{{ project.status_label.en }}</strong> — source not yet
-                public.
+                <strong>{{ project.status_label.en }}</strong> — source not
+                public today.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
                 {% when 'ghrunners' %}
                 One-shot macOS observability for GitHub Actions self-hosted
                 runners — launchd state, process trees, logs, and API status as
-                typed findings — plus guarded launchd control.
+                typed findings — plus guarded launchd control. Private/local
+                today.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
                 {% when 'explainer-engine' %}
                 A deterministic pipeline that renders narrated concept videos
@@ -163,7 +163,7 @@ alternate: /zh/
 <section class="section wrap reveal" aria-labelledby="writing-h">
     <header class="section__head">
         <span class="ghost-num" aria-hidden="true">04</span>
-        <p class="section__num">(04)  Writing</p>
+        <p class="section__num">(04)  Notes</p>
         <h2 id="writing-h" class="section__title">
             Latest <em>notes.</em>
         </h2>

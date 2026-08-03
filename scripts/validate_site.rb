@@ -250,6 +250,28 @@ project_pages.each do |relative|
   record(failures, "#{relative}: missing project summary") unless html.include?(%(class="project-summary"))
 end
 
+# A public repository is not necessarily a published release: public_main is a
+# visitor-reachable snapshot. Keep the summary label keyed to release state,
+# not source visibility, so public pre-releases remain honestly labeled.
+project_summary_source = read_file(ROOT.join("_includes/project-summary.html"), failures)
+unless project_summary_source.include?("if project.release_source == 'public_tag'")
+  record(failures, "project-summary.html: Release/Snapshot row must branch on release_source == public_tag")
+end
+
+allowed_release_sources = %w[public_tag public_main private_main local_tag]
+PROJECTS.each do |project|
+  source = project["release_source"]
+  unless allowed_release_sources.include?(source)
+    record(failures, "projects.yml: #{project["slug"]} has invalid release_source #{source.inspect}")
+  end
+  next if source == "public_tag"
+  %w[en zh].each do |lang|
+    if project.dig("snapshot_label", lang).to_s.empty?
+      record(failures, "projects.yml: #{project["slug"]} missing snapshot_label.#{lang}")
+    end
+  end
+end
+
 home_pages.each do |relative|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
@@ -576,6 +598,21 @@ case_study = {
                "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
     must_include: ["v0.5.0", "受控"], forbid: ["v0.1.1"]
+  },
+  # explainer-engine: private/local — the verification story lives in the frame,
+  # so guard the simplified-marking and gate's-verdict phrases that carry it.
+  "projects/explainer-engine/index.html" => {
+    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
+               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
+               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
+    must_include: ["simplified", "gate's verdict"]
+  },
+  "zh/projects/explainer-engine/index.html" => {
+    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
+               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    cost: "代价：", overclaims: ["生产就绪", "保证安全"],
+    must_include: ["简化视图", "校验门的结论"]
   }
 }
 case_study.each do |relative, spec|
@@ -650,7 +687,9 @@ end
 
 %w[
   projects/repolens-rs/index.html projects/ghrunners/index.html
+  projects/explainer-engine/index.html
   zh/projects/repolens-rs/index.html zh/projects/ghrunners/index.html
+  zh/projects/explainer-engine/index.html
 ].each do |relative|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
@@ -674,7 +713,7 @@ end
 # Glossary popover definitions: every term needs a label + def in both languages.
 # gm-crypto terms first, then the repolens-rs / ghrunners extension terms.
 %w[en zh].each do |lang|
-  %w[constant-time sm2 sm3 sm4 no_std dudect
+  %w[constant-time storyboard manim sm2 sm3 sm4 no_std dudect
      mcp rag grounding launchd self-hosted-runner daemon].each do |term|
     %w[label def].each do |key|
       record(failures, "i18n.yml: missing #{lang}.glossary.#{term}.#{key}") if i18n.dig(lang, "glossary", term, key).to_s.empty?
@@ -700,17 +739,36 @@ else
     record(failures, "_data/dudect.yml: #{target} |tau| is #{got.inspect}, expected #{tau} (public v1.2.0)") unless got == tau
   end
   record(failures, "_data/dudect.yml: gate must be 0.2 (public)") unless dd["gate"] == 0.20
+  record(failures, "_data/dudect.yml: sentinel must be 0.55 (public)") unless dd["sentinel"] == 0.55
+  expected_policy = {
+    "ct_sign" => "gate", "ct_sign_k_class" => "sentinel",
+    "ct_fn_invert" => "sentinel", "ct_fp_invert" => "sentinel"
+  }
+  measured_policy = (dd["measured"] || []).each_with_object({}) { |m, h| h[m["target"]] = m["policy"] }
+  expected_policy.each do |target, policy|
+    unless measured_policy[target] == policy
+      record(failures, "_data/dudect.yml: #{target} policy is #{measured_policy[target].inspect}, expected #{policy.inspect}")
+    end
+  end
   record(failures, "_data/dudect.yml: leak.before must be 0.7 (public)") unless dd.dig("leak", "before") == 0.70
   record(failures, "_data/dudect.yml: leak.after must be 0.006 (public)") unless dd.dig("leak", "after") == 0.006
   record(failures, "_data/dudect.yml: must NOT publish more than 4 per-target values (others are unpublished)") if (dd["measured"] || []).length != 4
   record(failures, "_data/dudect.yml: source_url must point at the public v1.2.0 tag") unless dd["source_url"].to_s.include?("v1.2.0")
 end
 
+dudect_chart_source = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
+record(failures, "dudect-chart.html: sentinel threshold must render from dudect.yml") unless dudect_chart_source.include?("{{ d.sentinel }}")
+record(failures, "dudect-chart.html: gate threshold must render from dudect.yml") unless dudect_chart_source.include?("{{ d.gate }}")
+if dudect_chart_source.match?(/&lt;\s+0\.(?:20|55)/)
+  record(failures, "dudect-chart.html: policy threshold is hardcoded instead of rendered from dudect.yml")
+end
+
 # dudect i18n parity: every required key present + non-empty in both languages.
 %w[en zh].each do |lang|
   %w[title fig_num intro axis_label gate_label control_label cluster_label caveat
      provenance source table_caption col_target col_measures col_tau col_gate
-     col_status status_pass status_fire].each do |key|
+     col_status status_pass status_sentinel status_fire
+     policy_sentinel_label].each do |key|
     record(failures, "i18n.yml: missing #{lang}.dudect.#{key}") if i18n.dig(lang, "dudect", key).to_s.empty?
   end
 end
@@ -815,6 +873,21 @@ i18n = YAML.load_file(ROOT.join("_data/i18n.yml"))
   %w[all read_more none].each do |key|
     record(failures, "i18n.yml: missing #{lang}.notes.#{key}") if i18n.dig(lang, "notes", key).to_s.empty?
   end
+end
+
+note_pages.each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  lang = relative.start_with?("zh/") ? "zh" : "en"
+  label = i18n.dig(lang, "nav", "writing")
+  record(failures, "#{relative}: note eyebrow does not use the localized Notes label") unless html.match?(%r{page-header__eyebrow[^>]*>[^<]*#{Regexp.escape(label)}</p>})
+end
+
+{ "about/index.html" => "en", "zh/about/index.html" => "zh" }.each do |relative, lang|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  label = i18n.dig(lang, "nav", "writing")
+  record(failures, "#{relative}: facts list does not use the localized Notes label") unless html.include?("<span>#{label}</span>")
 end
 
 # --- WCAG AA contrast guard ---

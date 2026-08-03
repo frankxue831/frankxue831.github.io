@@ -1,6 +1,26 @@
 # Internationalization strings.
 # Page front matter sets `lang: en` or `lang: zh`; includes pull
 # the matching block.
+#
+# --- ZH terminology of record (claims-parity rule, 2026-08 audit) ----------
+# One EN term → one ZH rendering, applied across zh/, _notes/*.zh.md, and
+# this file. Use these when translating new copy; add a row when a term
+# starts recurring.
+#   secret-touching path    → 涉密路径
+#   key schedule (SM4)      → 密钥扩展
+#   key schedule (TLCP PRF) → 密钥派生（key schedule）
+#   harness                 → harness（不译；不得并入「门禁」）
+#   gate (dudect)           → 门禁
+#   citation gate           → 引用校验门（简称：校验门）
+#   sentinel                → 哨兵值（可加限定语：粗回归哨兵值）
+#   class-split noise       → 类分割噪声
+#   leak                    → 泄漏（不用「泄露」）
+#   typed findings          → 类型化 findings
+#   always-on surface       → 常开接口
+#   At a glance (aria)      → 一览
+# Voice rule: ZH keeps its native register and may add explanatory glosses;
+# disclosures, hedges, numbers, and limitations must match EN exactly.
+# ---------------------------------------------------------------------------
 
 en:
   html_lang: "en"
@@ -10,7 +30,7 @@ en:
     about: "About"
     work: "Work"
     contact: "Contact"
-    writing: "Writing"
+    writing: "Notes"
   switcher:
     label: "中文"
     aria: "Switch to Chinese"
@@ -27,6 +47,7 @@ en:
     status: "Status"
     stack: "Stack"
     release: "Release"
+    snapshot: "Snapshot"
     links: "Links"
     source: "Source"
     owner: "Personal project"
@@ -67,9 +88,9 @@ en:
     cluster_label: "published ct_* — all under 0.20"
     leak_heading: "The leak it caught"
     leak_label: "crypto-bigint 0.6 → 0.7.3: a real invert leak, caught and fixed"
-    context: "4 of 19 real targets shown with published values; most gate under 0.20 (a few carry a looser sentinel policy)."
+    context: "4 of 19 real targets at the v1.2.0 measurement snapshot (20 as of v1.11.0), shown with published values; ct_sign still gates under 0.20, the other three later moved to the looser 0.55 nightly sentinel."
     caveat: "dudect reports detection events — a low |τ| means no leak was detected under the budget given, not that none exists."
-    provenance: "Measured: v0.2 W0 harness, 100K samples (pre-2026-05-12 runner). The two invert diagnostics later moved to telemetry + a |τ| ≥ 0.55 sentinel."
+    provenance: "Measured: v0.2 W0 harness, 100K samples (pre-2026-05-12 runner). The k-class sign and the two invert diagnostics later moved to telemetry + a |τ| ≥ 0.55 sentinel."
     source: "Source: gm-crypto-rs SECURITY.md @ v1.2.0"
     table_caption: "Published dudect measurements (gm-crypto-rs, measured at v1.2.0; unchanged since)"
     col_target: "Target"
@@ -78,7 +99,9 @@ en:
     col_gate: "Gate"
     col_status: "Status"
     status_pass: "under gate"
+    status_sentinel: "under sentinel"
     status_fire: "must fire"
+    policy_sentinel_label: "nightly sentinel"
     leak_before_row: "before (crypto-bigint 0.6)"
     leak_after_row: "after (0.7.3 upgrade)"
 
@@ -86,6 +109,12 @@ en:
     "constant-time":
       label: "constant-time"
       def: "Code whose running time does not depend on secret values, so an attacker can't recover secrets by measuring how long it takes. It's a design target, not a guarantee — some hardware can still leak."
+    "storyboard":
+      label: "storyboard"
+      def: "A declarative script for a video: an ordered list of beats — plots, cited code callouts, concept diagrams — each with narration text. It is the engine's only input; nothing it doesn't specify appears on screen."
+    "manim":
+      label: "Manim"
+      def: "A programmatic animation library for mathematical and technical video. Scenes are code, not timeline edits — which is what lets a generator emit them deterministically."
     "sm2":
       label: "SM2"
       def: "A Chinese national public-key standard (GB/T 32918) built on elliptic curves — used for digital signatures, key exchange, and public-key encryption."
@@ -129,7 +158,7 @@ zh:
     about: "关于"
     work: "作品"
     contact: "联系"
-    writing: "写作"
+    writing: "笔记"
   switcher:
     label: "EN"
     aria: "切换为英文"
@@ -146,6 +175,7 @@ zh:
     status: "状态"
     stack: "技术栈"
     release: "版本"
+    snapshot: "快照"
     links: "链接"
     source: "源码"
     owner: "个人项目"
@@ -178,9 +208,9 @@ zh:
     cluster_label: "公开的 ct_*——都在 0.20 以下"
     leak_heading: "它抓到的那次泄漏"
     leak_label: "crypto-bigint 0.6 → 0.7.3：一次真实的 invert 泄漏，被抓到并修掉"
-    context: "19 条真实路径中有 4 条带公开数值；多数压在 0.20 以下（少数几条走更宽松的哨兵策略）。"
+    context: "v1.2.0 测量快照时共 19 条真实路径（到 v1.11.0 为 20 条），其中 4 条带公开数值；ct_sign 仍在 0.20 门禁内，另外三条后来转到更宽松的 0.55 nightly 哨兵值。"
     caveat: "dudect 报的是检测事件——|τ| 低只说明在给定预算下没测到泄漏，并不等于不存在。"
-    provenance: "测量环境：v0.2 W0 harness，100K 采样（2026-05-12 之前的 runner）。两个 invert 诊断后来转为遥测 + |τ| ≥ 0.55 的兜底哨兵。"
+    provenance: "测量环境：v0.2 W0 harness，100K 采样（2026-05-12 之前的 runner）。k 类签名和两个 invert 诊断后来转为遥测 + |τ| ≥ 0.55 的哨兵值。"
     source: "来源：gm-crypto-rs SECURITY.md @ v1.2.0"
     table_caption: "公开的 dudect 测量值（gm-crypto-rs，测于 v1.2.0；此后未变）"
     col_target: "目标"
@@ -189,13 +219,21 @@ zh:
     col_gate: "门禁"
     col_status: "状态"
     status_pass: "在门禁内"
+    status_sentinel: "在哨兵值内"
     status_fire: "必须触发"
+    policy_sentinel_label: "nightly 哨兵"
     leak_before_row: "修复前（crypto-bigint 0.6）"
     leak_after_row: "修复后（升级到 0.7.3）"
   glossary:
     "constant-time":
       label: "常量时间"
       def: "运行耗时不随密钥等秘密值变化的代码，这样攻击者就无法靠测量耗时来还原秘密。它是一个设计目标，而非保证——某些硬件仍可能泄漏。"
+    "storyboard":
+      label: "storyboard"
+      def: "视频的声明式脚本：一列有序的 beat——图表、带引用的代码标注、概念图——每个都配旁白文本。它是引擎唯一的输入；它没写的东西不会出现在画面上。"
+    "manim":
+      label: "Manim"
+      def: "用代码生成数学、技术类动画的库。场景是代码而不是时间线剪辑——正因如此，生成器才能确定性地产出它。"
     "sm2":
       label: "SM2"
       def: "中国商用密码公钥标准（GB/T 32918），基于椭圆曲线，用于数字签名、密钥交换和公钥加密。"
