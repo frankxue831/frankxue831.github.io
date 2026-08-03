@@ -1,6 +1,26 @@
 # Internationalization strings.
 # Page front matter sets `lang: en` or `lang: zh`; includes pull
 # the matching block.
+#
+# --- ZH terminology of record (claims-parity rule, 2026-08 audit) ----------
+# One EN term → one ZH rendering, applied across zh/, _notes/*.zh.md, and
+# this file. Use these when translating new copy; add a row when a term
+# starts recurring.
+#   secret-touching path    → 涉密路径
+#   key schedule (SM4)      → 密钥扩展
+#   key schedule (TLCP PRF) → 密钥派生（key schedule）
+#   harness                 → harness（不译；不得并入「门禁」）
+#   gate (dudect)           → 门禁
+#   citation gate           → 引用校验门（简称：校验门）
+#   sentinel                → 哨兵值（可加限定语：粗回归哨兵值）
+#   class-split noise       → 类分割噪声
+#   leak                    → 泄漏（不用「泄露」）
+#   typed findings          → 类型化 findings
+#   always-on surface       → 常开接口
+#   At a glance (aria)      → 一览
+# Voice rule: ZH keeps its native register and may add explanatory glosses;
+# disclosures, hedges, numbers, and limitations must match EN exactly.
+# ---------------------------------------------------------------------------
 
 en:
   html_lang: "en"
