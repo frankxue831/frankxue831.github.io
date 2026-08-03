@@ -14,18 +14,19 @@
       <dd>{{ status_label }}</dd>
     </div>
     {%- comment -%}
-      Public projects carry a Release row (a claim about published state).
-      Private projects carry a Snapshot row instead — a bilingual, honestly
-      labeled working-state marker, so no page makes a private release claim
-      (the hero-proof note promises exactly that).
+      Public tags carry a Release row (a claim about published state).
+      Public-main, private, and local projects carry a Snapshot row instead —
+      a bilingual, honestly labeled working-state marker, so source visibility
+      is never mistaken for release state.
     {%- endcomment -%}
     <div class="project-summary__item">
-      {%- if project.public_source -%}
+      {%- if project.release_source == 'public_tag' -%}
       <dt>{{ labels.release }}</dt>
       <dd>{{ project.release }}</dd>
       {%- else -%}
+      {%- assign snapshot_label = project.snapshot_label[lang] | default: project.snapshot_label.en | default: project.release -%}
       <dt>{{ labels.snapshot }}</dt>
-      <dd>{{ project.snapshot_label[lang] | default: project.release }}</dd>
+      <dd>{{ snapshot_label }}</dd>
       {%- endif -%}
     </div>
     {%- if page.summary_outcome -%}
