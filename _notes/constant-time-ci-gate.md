@@ -26,8 +26,8 @@ execution-time distributions, and reduces "how different are they" to a single
 statistic, *t* (I'll call it τ). If the timing doesn't depend on the secret, the
 distributions overlap and \|τ\| stays small. If it does, \|τ\| climbs.
 
-The harness covers eighteen secret-touching paths. A core set is *gated* on every
-pull request: if \|τ\| crosses **0.20**, the build fails. Not a warning in a log
+The harness covers twenty secret-touching paths as of `v1.11.0`. A core set is *gated*
+on every pull request: if \|τ\| crosses **0.20**, the build fails. Not a warning in a log
 nobody reads — a red check on the PR. The leak has to be dealt with before the change
 can land.
 
@@ -40,15 +40,21 @@ that quietly overclaims.
 
 Not every path can be gated. A full leak measurement is expensive, and a pull request
 has a time budget, so the harness splits the work in two. The core set fails the build.
-A second tier — field-inversion diagnostics, the k-class signing path, the buffered-GCM
-path — is measured as telemetry: watched on a deeper nightly run (at a looser 0.25
-threshold) rather than enforced on every PR. It's an honest trade. Those paths are
-observed, not enforced, and the split needs ongoing maintenance — but it keeps the
-per-PR signal fast and the gate meaningful.
+A second tier — the field-inversion diagnostics and the k-class signing path — is
+measured as telemetry: watched on the nightly run against a **0.55** gross-regression
+sentinel rather than enforced at 0.20 on every PR. The k-class path carried a tighter
+0.25 nightly gate until 2026-06-07, when shared-runner class-split noise kept firing it
+falsely; it was demoted with the reasoning published rather than quietly relaxed. It's
+an honest trade. Those paths are observed, not enforced, and the split needs ongoing
+maintenance — but it keeps the per-PR signal fast and the gate meaningful.
 
 None of this makes the crate "provably constant-time." Nothing does, on real hardware;
 on a CPU whose multiply latency depends on its operands, the guarantee doesn't even hold
 in principle. What the harness buys is a tripwire: the day a change reintroduces a
 secret-dependent timing difference, a build goes red instead of a weakness shipping
-silently. The harness, the eighteen-path list, and the threshold are all in the public
+silently. The harness, the target list, and the thresholds are all in the public
 repo if you want to read the wiring rather than take my word for it.
+
+That covers what the gate *does*. The harder half is why anyone should believe a
+"no leak detected" result at all — which needs a detector you can watch fail on
+purpose. That's [a separate note]({{ '/notes/constant-time-warrant/' | relative_url }}).

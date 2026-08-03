@@ -25,7 +25,10 @@
         obs.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    // threshold 0, not a fraction: a section taller than ~8x the viewport can
+    // never show 12% of itself at rest, so a fractional threshold strands it
+    // hidden. The -8% bottom margin is what enforces "meaningfully visible".
+  }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
 
   targets.forEach((el) => {
     if (!el.classList.contains('is-revealed')) io.observe(el);
