@@ -576,6 +576,21 @@ case_study = {
                "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
     must_include: ["v0.5.0", "受控"], forbid: ["v0.1.1"]
+  },
+  # explainer-engine: private/local — the verification story lives in the frame,
+  # so guard the simplified-marking and gate's-verdict phrases that carry it.
+  "projects/explainer-engine/index.html" => {
+    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
+               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
+               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
+    must_include: ["simplified", "gate's verdict"]
+  },
+  "zh/projects/explainer-engine/index.html" => {
+    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
+               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    cost: "代价：", overclaims: ["生产就绪", "保证安全"],
+    must_include: ["简化视图", "校验门的结论"]
   }
 }
 case_study.each do |relative, spec|
@@ -650,7 +665,9 @@ end
 
 %w[
   projects/repolens-rs/index.html projects/ghrunners/index.html
+  projects/explainer-engine/index.html
   zh/projects/repolens-rs/index.html zh/projects/ghrunners/index.html
+  zh/projects/explainer-engine/index.html
 ].each do |relative|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?

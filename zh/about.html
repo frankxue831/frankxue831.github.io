@@ -24,7 +24,7 @@ alternate: /about/
             我叫 Frank，是软件工程师。主要写 Rust，做的多是开发者工具，以及这些工具所依赖的底层系统。
         </p>
         <p>
-最近主要在做三件事。第一件是 gm-crypto-rs，一套纯 Rust 的国密 SM2 / SM3 / SM4 SDK。我特别在意时序侧信道这类容易被忽略的安全风险：代码处理密钥时，执行时间不能跟密钥内容有关，否则别人可能靠测耗时反推出密钥。为此，CI 里一直用 dudect 自动盯防。第二件是 RepoLens，给 AI 编程 Agent 用的仓库上下文层，让新开的会话不必每次都从头理解项目。第三件是 ghrunners，macOS 上的一个小工具，把一台机器上 GitHub Actions self-hosted runner 的 launchd 状态、进程、日志和 GitHub API 信息凑到一块儿看。
+最近主要在做四件事。第一件是 gm-crypto-rs，一套纯 Rust 的国密 SM2 / SM3 / SM4 SDK。我特别在意时序侧信道这类容易被忽略的安全风险：代码处理密钥时，执行时间不能跟密钥内容有关，否则别人可能靠测耗时反推出密钥。为此，CI 里一直用 dudect 自动盯防。第二件是 RepoLens，给 AI 编程 Agent 用的仓库上下文层，让新开的会话不必每次都从头理解项目。第三件是 ghrunners，macOS 上的一个小工具，把一台机器上 GitHub Actions self-hosted runner 的 launchd 状态、进程、日志和 GitHub API 信息凑到一块儿看。第四件是 Explainer Engine，一条把 storyboard 渲染成概念讲解视频的确定性流水线——讲解里的每个说法，画出来之前都得先按源码核对，核对不过就不渲染。
         </p>
         <p>
             我做的工具，都想让它的正确性、当前状态和出错方式保持<em>可查</em>。几个项目方向不一样，但惦记的是同一件事：软件应该讲得清楚自己知道什么、改动了什么、以及哪些事它做不到。
@@ -33,10 +33,11 @@ alternate: /about/
             落到手上，就是我关心的东西比较一致：命名要清楚，状态要讲明白；不确定的地方不要装确定，出问题前最好有检查能先拦一下。代码里的注释也应该解释<em>「为什么」</em>，而不只是重复<em>「做了什么」</em>。
         </p>
         <p>
-            这个网站会慢慢补起来。想看我最近在做什么，<a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">GitHub</a> 最直接。
+            想看每个项目做到哪一步，<a href="{{ '/zh/projects/' | relative_url }}">这里的项目页</a>写得最全——发布状态、证据、还有哪些做不到，都在页面上，没公开的项目也一样；已经公开的部分，源码在 <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">GitHub</a>。
         </p>
     </div>
 
+    {% assign public_project = site.data.projects | where: 'release_source', 'public_tag' | first %}
     <ul class="facts" aria-label="一览">
         <li>
             <span>领域</span>
@@ -44,7 +45,7 @@ alternate: /about/
         </li>
         <li>
             <span>兴趣</span>
-            <span>密码学、Agent 工具、CLI</span>
+            <span>密码学、Agent 工具、CLI、可核验的讲解</span>
         </li>
         <li>
             <span>写作</span>
@@ -60,7 +61,7 @@ alternate: /about/
         </li>
         <li>
             <span>最近</span>
-            <span>发布了 gm-crypto-rs v1.11.0</span>
+            <span>发布了 {{ public_project.title }} {{ public_project.release }}</span>
         </li>
     </ul>
 </section>

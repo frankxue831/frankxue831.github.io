@@ -89,6 +89,12 @@ en:
     "constant-time":
       label: "constant-time"
       def: "Code whose running time does not depend on secret values, so an attacker can't recover secrets by measuring how long it takes. It's a design target, not a guarantee — some hardware can still leak."
+    "storyboard":
+      label: "storyboard"
+      def: "A declarative script for a video: an ordered list of beats — plots, cited code callouts, concept diagrams — each with narration text. It is the engine's only input; nothing it doesn't specify appears on screen."
+    "manim":
+      label: "Manim"
+      def: "A programmatic animation library for mathematical and technical video. Scenes are code, not timeline edits — which is what lets a generator emit them deterministically."
     "sm2":
       label: "SM2"
       def: "A Chinese national public-key standard (GB/T 32918) built on elliptic curves — used for digital signatures, key exchange, and public-key encryption."
@@ -202,6 +208,12 @@ zh:
     "constant-time":
       label: "常量时间"
       def: "运行耗时不随密钥等秘密值变化的代码，这样攻击者就无法靠测量耗时来还原秘密。它是一个设计目标，而非保证——某些硬件仍可能泄漏。"
+    "storyboard":
+      label: "storyboard"
+      def: "视频的声明式脚本：一列有序的 beat——图表、带引用的代码标注、概念图——每个都配旁白文本。它是引擎唯一的输入；它没写的东西不会出现在画面上。"
+    "manim":
+      label: "Manim"
+      def: "用代码生成数学、技术类动画的库。场景是代码而不是时间线剪辑——正因如此，生成器才能确定性地产出它。"
     "sm2":
       label: "SM2"
       def: "中国商用密码公钥标准（GB/T 32918），基于椭圆曲线，用于数字签名、密钥交换和公钥加密。"
