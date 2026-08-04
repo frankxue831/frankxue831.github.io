@@ -61,6 +61,10 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             A runnable consumer demo — <code>hash</code> / <code>sign</code> /
             <code>verify</code> over SM3 and SM2 — lives at
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>.
+            One caveat: the demo pins <code>gmcrypto-core</code> at
+            <code>1.9.0</code>, behind the v1.11.0 this page describes — the
+            calls it demonstrates are unchanged across that gap, but nothing
+            from v1.10 onward (including the <code>aead</code> fit) appears in it.
         </p>
 
         <figure class="fig">
