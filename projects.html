@@ -19,6 +19,10 @@ alternate: /zh/projects/
         in Rust, mostly at the seam between developer tools and the systems
         they sit on top of. A project lands here once I can state honestly
         what it does, where it stands, and what its limits are.
+        And one asymmetry, stated plainly: only gm-crypto-rs can be
+        independently verified today — public tags, public evidence. The
+        other three are private or local; their pages keep the same
+        discipline, but until they ship you are taking the page's word.
     </p>
 </section>
 
@@ -45,17 +49,9 @@ alternate: /zh/projects/
                 Chinese national crypto standards (GB/T 32905&nbsp;/ 32918&nbsp;/ 32907),
                 with constant-time-designed secret paths guarded by an in-CI
                 dudect harness. Public <strong>{{ project.release }}</strong> on
-                <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io</a>
-                across three crates — <code>gmcrypto-core</code>, the
-                <code>gmcrypto-c</code> C ABI, and <code>gmcrypto-simd</code>
-                (AVX2&nbsp;/ NEON SM4). SM4 cipher modes, SM4-GCM/CCM AEAD,
-                SM4-XTS, the full SM2 family (sign, encrypt, key exchange), and
-                X.509-with-SM2 certificate verification have all shipped, in
-                Rust and through the C ABI. v1.6–v1.9 add a TLCP (GB/T 38636)
-                toolkit — key schedule, record protection, and chain/pair
-                verification — in-core and from C. v1.11 adds the RustCrypto
-                <code>aead</code> 0.6 trait fit for SM4-GCM / SM4-CCM
-                (opt-in <code>aead-traits</code>).
+                <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io</a>,
+                in Rust and through a C ABI, TLCP toolkit included — the
+                version-by-version evidence lives on the project page.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
                 {% when 'repolens-rs' %}
                 A repository memory and context layer for AI coding agents.
@@ -77,10 +73,8 @@ alternate: /zh/projects/
                 animated concept diagram per beat. On-screen content is marked
                 <em>simplified</em>, and a citation gate verifies every claim
                 against the source repo at a pinned commit <em>before</em> a
-                frame is drawn, so the <code>verified @ commit</code> badge in
-                the video is the gate's verdict, not decoration. Built on the
-                same Qt-free render core a desktop batch-render GUI drives.
-                Private/local today.
+                frame is drawn — the <code>verified @ commit</code> badge is
+                the gate's verdict, not decoration. Private/local today.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
                 {% else %}
                 Selected engineering work with status and project facts kept

@@ -17,6 +17,8 @@ alternate: /projects/
     <p class="page-header__lede">
         一份短而诚实的清单。多是 Rust，多在开发者工具和它们所依赖的底层系统的接缝上。
         项目要等到我能诚实讲清楚它做什么、做到哪一步、限制在哪，才会放上来。
+        还有一处不对称，直说：目前只有 gm-crypto-rs 可以被独立核验——tag 公开、证据公开。
+        另外三个还在私有 / 本地，页面守着同一套纪律，但在它们发布之前，你只能先信页面这份说法。
     </p>
 </section>
 
@@ -39,16 +41,11 @@ alternate: /projects/
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
-                纯 Rust 的国密 SM2 / SM3 / SM4 SDK（GB/T 32905 / 32918 / 32907）。
-                除了功能本身，更关心涉密路径是否按常量时间设计，以及 CI 里有没有 dudect 泄漏回归检测。
+                纯 Rust 的国密 SM2 / SM3 / SM4 SDK（GB/T 32905 / 32918 / 32907），
+                涉密路径按常量时间设计，由 CI 里的 dudect harness 做泄漏回归把关。
                 公开版 <strong>{{ project.release }}</strong> 在
-                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>：
-                <code>gmcrypto-core</code>、<code>gmcrypto-c</code>（C ABI）、
-                <code>gmcrypto-simd</code>（AVX2 / NEON SM4）。
-                SM4 各模式、SM4-GCM/CCM AEAD、SM4-XTS、完整 SM2 族（签名、加密、密钥交换）与 X.509-with-SM2 证书验证已发布，Rust 与 C 两侧齐备；
-                v1.6–v1.9 补上 TLCP（GB/T 38636）工具集——密钥派生（key schedule）、记录层保护、链 / 证书对验证——核心与 C 两侧都有；
-                v1.11 起可选适配 RustCrypto <code>aead</code> 0.6
-                （<code>aead-traits</code>）。
+                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>，
+                Rust 与 C ABI 两侧齐备，TLCP 工具集也在其中——逐版本的证据都放在项目页里。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'repolens-rs' %}
                 给 AI 编程 Agent 用的仓库记忆与上下文层：经 MCP 暴露 26 个工具，
@@ -65,7 +62,7 @@ alternate: /projects/
                 （图、带引用的代码标注，或会动的概念图）。
                 画面标 <em>simplified</em>；画第一帧前，引用校验门按固定 commit
                 逐条核对源码——视频里的 <code>verified @ commit</code> 是门禁结论，不是装饰。
-                与桌面批量渲染 GUI 共用一套与 Qt 解耦的渲染核心。目前私有 / 本地。
+                目前私有 / 本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% else %}
                 精选工程作品——状态与项目信息会明确标出。
