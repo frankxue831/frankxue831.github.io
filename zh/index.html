@@ -31,9 +31,9 @@ alternate: /
             </a>
         </div>
 
-        <aside class="hero-proof" aria-label="精选项目凭证">
+        <aside class="hero-proof" aria-label="精选作品">
             <div class="hero-proof__header">
-                <p class="hero-proof__label">凭证台账</p>
+                <p class="hero-proof__label">作品凭证</p>
                 {% if public_project %}
                 <p class="hero-proof__recent">
                     最新公开版本：
@@ -63,7 +63,8 @@ alternate: /
             </ul>
 
             <p class="hero-proof__note">
-                私有项目只做概览：不放公开源码链接，也不把内部状态标成已发布版本。
+                别人能自己核对的，只有已打公开 tag 的作品。
+                私有项目只写概览——不挂源码链接，也不把本地状态写成正式发布。
             </p>
         </aside>
     </div>
@@ -96,7 +97,7 @@ alternate: /
         <span class="ghost-num" aria-hidden="true">03</span>
         <p class="section__num">(03)  作品</p>
         <h2 id="work-h" class="section__title">
-            做成的结果，<em>大多用 Rust。</em>
+            做出来的东西，<em>大多用 Rust。</em>
         </h2>
     </header>
 
@@ -118,27 +119,25 @@ alternate: /
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
-                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK，
-                重点是按常量时间设计的涉密路径，以及 CI 里的泄漏回归门禁。
-                公开版 <strong>{{ project.release }}</strong> 已发布到
+                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK。
+                涉密路径按常量时间设计，CI 里用 dudect 盯泄漏回归。
+                公开版 <strong>{{ project.release }}</strong> 在
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的仓库上下文与类型化记忆，
-                让新会话不必从零理解项目。
-                <strong>{{ project.status_label.zh }}</strong>——源码目前未公开。
+                给 AI 编程 Agent 用的仓库记忆：新会话不必从零摸项目。
+                <strong>{{ project.status_label.zh }}</strong>——源码未公开。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'ghrunners' %}
-                macOS 上 GitHub Actions self-hosted runner 的一次性观测 CLI——
-                launchd 状态、进程树、日志和 API 汇成类型化 findings，外加受控的
-                launchd 控制。目前私有 / 本地。
+                macOS 上查 self-hosted runner 的一次性工具：状态、进程、日志凑一处看，
+                要动 launchd 也受约束。目前私有 / 本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'explainer-engine' %}
-                确定性流水线：渲染带旁白的概念讲解视频；画第一帧前，
-                每个说法都按固定 commit 在源仓库里核对过。私有 / 本地。
+                把 storyboard 渲成讲解视频；每个说法画出来之前，
+                都按固定 commit 对过源码。私有 / 本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% else %}
-                精选工程作品——状态与项目信息会明确标出。
+                精选工程作品——做到哪一步、限制在哪，会写清楚。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% endcase %}
             </p>
