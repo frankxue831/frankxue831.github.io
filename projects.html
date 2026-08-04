@@ -19,10 +19,10 @@ alternate: /zh/projects/
         in Rust, mostly at the seam between developer tools and the systems
         they sit on top of. A project lands here once I can state honestly
         what it does, where it stands, and what its limits are.
-        And one asymmetry, stated plainly: only gm-crypto-rs can be
-        independently verified today — public tags, public evidence. The
-        other three are private or local; their pages keep the same
-        discipline, but until they ship you are taking the page's word.
+        Only one entry is independently verifiable from outside today:
+        gm-crypto-rs — public tags, public evidence. The other three are
+        private or local; their pages keep the same discipline, but until
+        they ship you are reading a self-report, not an external audit trail.
     </p>
 </section>
 
@@ -46,12 +46,11 @@ alternate: /zh/projects/
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
                 Pure-Rust SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 SDK for the
-                Chinese national crypto standards (GB/T 32905&nbsp;/ 32918&nbsp;/ 32907),
-                with constant-time-designed secret paths guarded by an in-CI
-                dudect harness. Public <strong>{{ project.release }}</strong> on
-                <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io</a>,
-                in Rust and through a C ABI, TLCP toolkit included — the
-                version-by-version evidence lives on the project page.
+                Chinese national crypto standards, with constant-time-designed
+                secret paths and an in-CI dudect leak-regression harness.
+                Public <strong>{{ project.release }}</strong> on
+                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>
+                — version-by-version evidence on the project page.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
                 {% when 'repolens-rs' %}
                 A repository memory and context layer for AI coding agents.
