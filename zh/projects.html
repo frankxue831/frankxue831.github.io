@@ -2,7 +2,7 @@
 layout: default
 title: 作品
 permalink: /zh/projects/
-description: Frank Xue 的精选作品——Rust 密码学、Agent 工具、开发者基础设施、可核验的讲解；状态与限制写在明面上。
+description: Frank Xue 的精选作品——Rust 密码学、Agent 工具、开发者基础设施、能按源码核对的讲解；状态与限制写在明面上。
 lang: zh
 alternate: /projects/
 ---
@@ -15,10 +15,10 @@ alternate: /projects/
         <em>作品。</em>
     </h1>
     <p class="page-header__lede">
-        一份短而诚实的清单。多是 Rust，多在开发者工具和它们所依赖的底层系统的接缝上。
-        项目要等到我能诚实讲清楚它做什么、做到哪一步、限制在哪，才会放上来。
+        一份短而诚实的清单。多是 Rust，多在开发者工具和底层系统的接缝上。
+        讲不清做什么、做到哪、限制在哪的，不会放上来。
         有一点先说清：眼下别人能自己核对的，只有 gm-crypto-rs——版本 tag 公开，证据也公开。
-        另外三个还在私有或本地。写法一样较真，但在它们公开之前，你读到的是我的自述，
+        另外三个还在私有或本地。写法一样较真；在公开之前，你读到的是我的自述，
         不是外面能跟着查的材料。
     </p>
 </section>
@@ -49,24 +49,22 @@ alternate: /projects/
                 按版本拆开的证据，写在项目页。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的仓库记忆与上下文层：经 MCP 暴露 26 个工具，
-                把结构化仓库上下文和类型化、会衰减的记忆配在一起，跨会话不必从零理解项目。
-                <strong>私有预发布</strong>——源码目前未公开。
+                给 AI 编程 Agent 用的仓库记忆与上下文：经 MCP 提供 26 个工具，
+                记忆有类型、会过期。私有预发布——源码未公开。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'ghrunners' %}
-                macOS 上 GitHub Actions self-hosted runner 的一次性 CLI——
-                只读观测（launchd 域、PID、进程树、日志尾、可选 GitHub API）加受控 launchd 控制。
-                读不到的部分降级成不完整输出，而不是硬失败。源码目前私有 / 本地。
+                macOS 上查 GitHub Actions self-hosted runner 的一次性 CLI：
+                只读看状态，要动 launchd 也绑在观测结果上；读不到就降级，不硬崩。
+                目前私有 / 本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'explainer-engine' %}
-                确定性流水线：把 YAML storyboard 编译成带旁白的概念讲解视频
-                （图、带引用的代码标注，或会动的概念图）。
-                画面标 <em>simplified</em>；画第一帧前，引用校验门按固定 commit
-                逐条核对源码——视频里的 <code>verified @ commit</code> 是门禁结论，不是装饰。
+                确定性流水线：把 YAML storyboard 渲成带旁白的讲解视频。
+                画面标 <em>simplified</em>；画帧前，引用校验门按固定 commit 对源码——
+                视频里的 <code>verified @ commit</code> 是门禁结论，不是装饰。
                 目前私有 / 本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% else %}
-                精选工程作品——状态与项目信息会明确标出。
+                精选工程作品——做到哪一步、限制在哪，会写清楚。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% endcase %}
             </p>
