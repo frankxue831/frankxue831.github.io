@@ -29,9 +29,11 @@ collections:
 # Atom feed. jekyll-feed's main feed is _posts-only (and there are none, so it
 # was empty). Move that empty posts feed aside and let the notes collection
 # feed claim /feed.xml — head.html already links /feed.xml. One combined feed,
-# both languages.
+# both languages. posts_limit lifts jekyll-feed's default 10-entry cap, which
+# silently dropped the oldest EN+ZH note pair once the corpus hit 12 documents.
 feed:
   path: feed/posts.xml
+  posts_limit: 50
   collections:
     notes:
       path: feed.xml

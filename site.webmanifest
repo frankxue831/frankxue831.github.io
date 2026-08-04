@@ -2,6 +2,9 @@
   "name": "Frank Xue",
   "short_name": "Frank Xue",
   "description": "Personal site of Frank Xue — software engineer. Notes and selected work.",
+  "description_localized": {
+    "zh-CN": { "value": "Frank Xue 的个人主页。软件工程师——笔记与精选作品，发布状态与限制写在明面上。", "lang": "zh-CN" }
+  },
   "lang": "en",
   "start_url": "/",
   "scope": "/",

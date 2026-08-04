@@ -69,7 +69,15 @@
     <meta name="theme-color" content="#f5f1e8" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1a1814" media="(prefers-color-scheme: dark)">
 
-    {% seo %}
+    {%- comment -%} jekyll-seo-tag has no option to suppress its JSON-LD
+        (jekyll/jekyll-seo-tag#364), whose WebSite node would duplicate
+        structured-data.html's @graph with no shared @id. Its JSON-LD script
+        is the final element of the seo-tag output, so capture the tags
+        and keep only what precedes the script — every meta survives, the
+        duplicate graph does not. structured-data.html is the single JSON-LD
+        source of truth. {%- endcomment -%}
+    {%- capture seo_tags -%}{% seo %}{%- endcapture -%}
+    {{ seo_tags | split: '<script type="application/ld+json">' | first }}
     {% include structured-data.html %}
 
     {%- comment -%} hreflang alternates for SEO {%- endcomment -%}
@@ -84,6 +92,14 @@
     {%- elsif page.alternate -%}
       <link rel="alternate" hreflang="{% if lang == 'en' %}zh-CN{% else %}en{% endif %}" href="{{ page.alternate | absolute_url }}">
       <link rel="alternate" hreflang="{{ t.html_lang }}" href="{{ page.url | absolute_url }}">
+      {%- comment -%} x-default is per page cluster (Google guidance): the
+          fallback for readers in neither language is this page's EN member,
+          not the site root. {%- endcomment -%}
+      {%- if lang == 'en' -%}
+      <link rel="alternate" hreflang="x-default" href="{{ page.url | absolute_url }}">
+      {%- else -%}
+      <link rel="alternate" hreflang="x-default" href="{{ page.alternate | absolute_url }}">
+      {%- endif -%}
     {%- endif -%}
 
     {%- comment -%} Icons: scalable SVG for modern browsers, PNG fallbacks,

@@ -116,61 +116,71 @@ core_pages = {
   "about/index.html" => {
     alternates: [
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/about/" },
-      { hreflang: "en", href: "#{BASE_URL}/about/" }
+      { hreflang: "en", href: "#{BASE_URL}/about/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/about/" }
     ]
   },
   "zh/about/index.html" => {
     alternates: [
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/about/" },
-      { hreflang: "en", href: "#{BASE_URL}/about/" }
+      { hreflang: "en", href: "#{BASE_URL}/about/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/about/" }
     ]
   },
   "projects/index.html" => {
     alternates: [
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/projects/" },
-      { hreflang: "en", href: "#{BASE_URL}/projects/" }
+      { hreflang: "en", href: "#{BASE_URL}/projects/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/projects/" }
     ]
   },
   "zh/projects/index.html" => {
     alternates: [
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/projects/" },
-      { hreflang: "en", href: "#{BASE_URL}/projects/" }
+      { hreflang: "en", href: "#{BASE_URL}/projects/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/projects/" }
     ]
   },
   "contact/index.html" => {
     alternates: [
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/contact/" },
-      { hreflang: "en", href: "#{BASE_URL}/contact/" }
+      { hreflang: "en", href: "#{BASE_URL}/contact/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/contact/" }
     ]
   },
   "zh/contact/index.html" => {
     alternates: [
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/contact/" },
-      { hreflang: "en", href: "#{BASE_URL}/contact/" }
+      { hreflang: "en", href: "#{BASE_URL}/contact/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/contact/" }
     ]
   },
   "notes/index.html" => {
     alternates: [
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/notes/" },
-      { hreflang: "en", href: "#{BASE_URL}/notes/" }
+      { hreflang: "en", href: "#{BASE_URL}/notes/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/notes/" }
     ]
   },
   "zh/notes/index.html" => {
     alternates: [
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/notes/" },
-      { hreflang: "en", href: "#{BASE_URL}/notes/" }
+      { hreflang: "en", href: "#{BASE_URL}/notes/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/notes/" }
     ]
   },
   "colophon/index.html" => {
     alternates: [
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/colophon/" },
-      { hreflang: "en", href: "#{BASE_URL}/colophon/" }
+      { hreflang: "en", href: "#{BASE_URL}/colophon/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/colophon/" }
     ]
   },
   "zh/colophon/index.html" => {
     alternates: [
       { hreflang: "zh-CN", href: "#{BASE_URL}/zh/colophon/" },
-      { hreflang: "en", href: "#{BASE_URL}/colophon/" }
+      { hreflang: "en", href: "#{BASE_URL}/colophon/" },
+      { hreflang: "x-default", href: "#{BASE_URL}/colophon/" }
     ]
   }
 }
@@ -782,10 +792,12 @@ end
 # users get the same feedback as the mouse (matching the nav-link pattern).
 if css_path.exist?
   css = css_path.read
+  # No .btn entry: the contact-form styles (.form/.field/.btn) shipped unused
+  # — contact is GitHub-first with no form markup — and were removed. If a
+  # form ever returns, its button needs a :focus-visible rule and a guard here.
   {
     ".work-list__row:focus-visible"  => "work-list row focus parity",
-    ".hero__cta:focus-visible"       => "hero CTA focus parity",
-    ".btn:focus-visible"             => "button focus parity"
+    ".hero__cta:focus-visible"       => "hero CTA focus parity"
   }.each do |selector, label|
     record(failures, "style.css: missing #{label} (#{selector})") unless css.include?(selector)
   end

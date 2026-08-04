@@ -65,7 +65,10 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             想上手跑一下，
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>
             里有现成例子（拿 SM3、SM2 做 <code>hash</code> / <code>sign</code> /
-            <code>verify</code>）。
+            <code>verify</code>）。有一点要说明：demo 目前把 <code>gmcrypto-core</code>
+            固定在 <code>1.9.0</code>，落后于本页所讲的 v1.11.0——它演示的那几个调用
+            在这个跨度里没有变化，但 v1.10 之后的内容（包括 <code>aead</code> 适配）
+            在 demo 里是看不到的。
         </p>
 
         <figure class="fig">

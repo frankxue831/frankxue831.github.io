@@ -605,9 +605,25 @@ body.lang-zh .note li {
 }
 
 @media (max-width: 759px) {
-    .nav-toggle { display: block; }
+    /* The collapse (and the toggle that undoes it) is a JS enhancement:
+       both are scoped to html:not(.no-js), which only matches after the
+       pre-paint theme gate strips `no-js`. With JS unavailable the nav
+       renders as a static stacked list under the masthead — reachable,
+       just not collapsible. */
+    html:not(.no-js) .nav-toggle { display: block; }
 
-    .primary-nav {
+    /* no-js layout: the nav leaves the masthead row and stacks full-width
+       beneath the site mark — the same composition as the JS-opened menu,
+       it just cannot close. The header must not stay sticky here: expanded
+       it is most of the viewport, and sticky would pin it over the page.
+       The list drops its own gutter padding (the header inner already
+       provides it). */
+    html.no-js .site-header { position: static; }
+    html.no-js .site-header__inner { flex-wrap: wrap; }
+    html.no-js .primary-nav { flex-basis: 100%; }
+    html.no-js .primary-nav__list { padding-left: 0; padding-right: 0; }
+
+    html:not(.no-js) .primary-nav {
         position: absolute;
         top: 100%;
         left: 0;
@@ -1797,90 +1813,6 @@ body.lang-zh .note li {
 }
 .contact-direct a:hover { color: var(--accent); }
 
-/* Form */
-.form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-}
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-}
-.field__label {
-    font-family: var(--mono);
-    font-size: var(--text-xs);
-    color: var(--fg-muted);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-.field__label .req {
-    color: var(--accent);
-    margin-left: 4px;
-}
-.field__input,
-.field__textarea {
-    font-family: var(--sans);
-    font-size: var(--text-base);
-    color: var(--fg);
-    background: transparent;
-    border: 0;
-    border-bottom: 1px solid var(--rule);
-    padding: var(--space-3) 0;
-    transition: border-color var(--dur) var(--ease);
-}
-.field__input::placeholder,
-.field__textarea::placeholder { color: var(--fg-subtle); }
-.field__input:focus,
-.field__textarea:focus {
-    outline: none;
-    border-bottom-color: var(--accent);
-}
-.field__textarea { resize: vertical; min-height: 140px; line-height: 1.5; }
-.field__input[aria-invalid="true"],
-.field__textarea[aria-invalid="true"] {
-    border-bottom-color: var(--danger);
-}
-
-.btn {
-    align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-6);
-    font-family: var(--mono);
-    font-size: var(--text-sm);
-    letter-spacing: 0.04em;
-    color: var(--bg);
-    background: var(--fg);
-    border-radius: 0;
-    transition: background var(--dur) var(--ease), color var(--dur) var(--ease), gap var(--dur) var(--ease);
-    margin-top: var(--space-4);
-}
-.btn:hover,
-.btn:focus-visible {
-    background: var(--accent);
-    color: var(--bg);
-    gap: var(--space-4);
-}
-.btn:disabled,
-.btn[aria-disabled="true"] {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-.btn__arrow { transition: transform var(--dur) var(--ease); }
-.btn:hover .btn__arrow,
-.btn:focus-visible .btn__arrow { transform: translateX(3px); }
-
-.form__note {
-    font-family: var(--mono);
-    font-size: var(--text-xs);
-    color: var(--fg-subtle);
-    line-height: 1.5;
-    margin-top: var(--space-4);
-}
-
 /* =========================================================
    Footer
    ========================================================= */
@@ -2158,11 +2090,25 @@ body.lang-zh .note li {
     border-radius: 2px;
 }
 
-/* Definition card. Hidden by default; shown only when the popover is open. The
-   :popover-open rule is dropped by browsers without the Popover API, so the
-   definition stays hidden there (never leaks inline) — graceful, no JS. UA
-   styles centre it in the top layer (CSP forbids per-term anchor tethers). */
-.gloss-def { display: none; }
+/* Definition card. Browsers without the Popover API ignore the popover
+   attribute entirely, so the trigger button would do nothing there — hiding
+   the definition would strand sighted readers. Instead the unsupported
+   default renders it inline as a quiet parenthetical gloss, and only
+   Popover-capable browsers hide it until open (UA styles centre the open
+   card in the top layer; CSP forbids per-term anchor tethers). */
+.gloss-def {
+    display: inline;
+    font-family: var(--sans);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+}
+.gloss-def::before { content: "\00a0("; }
+.gloss-def::after { content: ")"; }
+@supports selector(:popover-open) {
+    .gloss-def { display: none; }
+    .gloss-def::before,
+    .gloss-def::after { content: none; }
+}
 .gloss-def:popover-open {
     display: block;
     inline-size: max-content;
