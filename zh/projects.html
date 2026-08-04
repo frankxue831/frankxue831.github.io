@@ -17,8 +17,9 @@ alternate: /projects/
     <p class="page-header__lede">
         一份短而诚实的清单。多是 Rust，多在开发者工具和它们所依赖的底层系统的接缝上。
         项目要等到我能诚实讲清楚它做什么、做到哪一步、限制在哪，才会放上来。
-        目前只有 gm-crypto-rs 能从外部独立核验——公开 tag、公开证据。
-        另外三个仍是私有或本地：页面守同一套纪律，但在公开之前，你读到的是自述，不是可外部审计的轨迹。
+        有一点先说清：眼下别人能自己核对的，只有 gm-crypto-rs——版本 tag 公开，证据也公开。
+        另外三个还在私有或本地。写法一样较真，但在它们公开之前，你读到的是我的自述，
+        不是外面能跟着查的材料。
     </p>
 </section>
 
@@ -41,11 +42,11 @@ alternate: /projects/
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
-                国密 SM2 / SM3 / SM4 的纯 Rust SDK，涉密路径按常量时间设计，
-                CI 里用 dudect 做泄漏回归门禁。公开版
+                国密 SM2 / SM3 / SM4 的纯 Rust SDK。涉密路径按常量时间设计，
+                CI 里用 dudect 盯泄漏回归。公开版
                 <strong>{{ project.release }}</strong> 在
-                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>——
-                逐版本的证据在项目页。
+                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
+                按版本拆开的证据，写在项目页。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'repolens-rs' %}
                 给 AI 编程 Agent 用的仓库记忆与上下文层：经 MCP 暴露 26 个工具，
