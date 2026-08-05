@@ -212,90 +212,19 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         </p>
         {% include dudect-chart.html %}
         <p>
-            The version line below carries deliberate gaps — a cycle that
-            changes no output bytes merges unpublished.
+            The release line carries deliberate gaps: a cycle that changes no
+            output bytes merges without a published version.
             <a href="{{ '/notes/releases-that-change-nothing/' | relative_url }}">Why, in one note</a>.
         </p>
-        <details class="drawer">
-            <summary>{{ site.data.i18n[page.lang].details.earlier_releases | escape }}</summary>
-            <dl class="version-grid">
-            <dt>v0.6.0</dt>
-            <dd>2026-05-14 — AVX2 <code>sbox_x32</code>, NEON <code>sbox_x16</code>, CBC-decrypt fanout.</dd>
-
-            <dt>v0.7.0</dt>
-            <dd>2026-05-14 — user-callable cipher modes: public batch APIs, single-shot &amp; streaming SM4-CTR.</dd>
-
-            <dt>v0.8.0</dt>
-            <dd>2026-05-15 — AEAD core: single-shot SM4-GCM + SM4-CCM, constant-time GHASH.</dd>
-
-            <dt>v0.9.0</dt>
-            <dd>2026-05-17 — GCM tag-length parameterization, incremental-input buffered GCM, single-shot AEAD C FFI.</dd>
-
-            <dt>v0.10.0</dt>
-            <dd>2026-05-21 — streaming SM4-GCM AEAD FFI (C / C++ / Go / Zig / Python).</dd>
-
-            <dt>v0.11.0</dt>
-            <dd>2026-05-23 — RustCrypto trait fit on <code>digest 0.11</code> / <code>cipher 0.5</code>; outputs byte-identical (KAT + gmssl 3.1.1).</dd>
-
-            <dt>v0.12.0</dt>
-            <dd>2026-05-23 — SM4-XTS core (GB/T 17964-2021): single-shot, full ciphertext stealing, byte-identical to OpenSSL SM4-XTS (<code>xts_standard=GB</code>); opt-in <code>sm4-xts</code>.</dd>
-
-            <dt>v0.13.0</dt>
-            <dd>2026-05-24 — single-shot SM4-XTS C ABI (the deferred FFI half of v0.12); default build byte-unchanged.</dd>
-            </dl>
-        </details>
-
         <dl class="version-grid">
-            <dt>v0.14.0</dt>
-            <dd><em>Not published.</em> A <code>cargo-fuzz</code> parser-fuzzing sweep (16 targets, zero crashes) merged as assurance — no output change, no version bump.</dd>
+            <dt>Current</dt>
+            <dd><strong>v1.11.0</strong>, 2026-08-01 — opt-in RustCrypto <code>aead</code> 0.6 trait fit for SM4-GCM / SM4-CCM. The C ABI surface stays 104 entry points.</dd>
 
-            <dt>v0.15.0</dt>
-            <dd>2026-05-28 — in-place multi-sector (disk) SM4-XTS helper; pure-core, opt-in <code>sm4-xts</code>.</dd>
+            <dt>Unpublished</dt>
+            <dd>Four cycles merged with no crates.io release — v0.14, 0.17–0.23, v1.5, v1.10 — because none of them changed an output byte.</dd>
 
-            <dt>v0.16.0</dt>
-            <dd>2026-05-29 — multi-sector SM4-XTS C FFI; every cipher mode now reachable from C / C++ / Go / Zig / Python.</dd>
-
-            <dt>0.17 – 0.23</dt>
-            <dd><em>Not published.</em> Assurance &amp; API-finalization cycles — public-API freeze with a <code>cargo-public-api</code> drift-check, <code>crypto-bigint</code> decoupled from the always-on surface, and a multi-model adversarial pre-1.0 re-audit. crates.io skips them; their changes ship together in <code>1.0.0</code>.</dd>
-
-            <dt>v1.0.0</dt>
-            <dd>2026-06-01 — first stable release: all three crates published lockstep at <code>=1.0.0</code>. The only published migration is 0.16 → 1.0; the runtime wire output (SM2 signatures / ciphertexts, SM4 mode bytes) is byte-identical to 0.16.0 (KAT + gmssl 3.1.1 interop 11/11), so the breaking changes are API <em>shape</em> only. From 1.0, <code>cargo-semver-checks</code> gates forward breaking changes.</dd>
-
-            <dt>v1.0.1</dt>
-            <dd>2026-06-03 — patch: the v1.0 readiness cleanup. <strong>No API / ABI / wire change</strong> (<code>cargo-public-api</code> + <code>cargo-semver-checks</code> stayed green; a 1.0.0 consumer upgrades freely). Fixes the C ABI <code>gmcrypto_version()</code> (it returned a stale <code>0.4.0</code>) and lands docs + CI hardening — an x86_64 SIMD test job, ECB-misuse warnings on the raw single-block API, and dependency-coupling disclosures.</dd>
-
-            <dt>v1.1.0</dt>
-            <dd>2026-06-10 — SM2 key exchange (GM/T 0003.3) with key confirmation — the missing third of the SM2 family, after sign and encrypt. Opt-in <code>sm2-key-exchange</code> feature; a new gated dudect target (<code>ct_sm2_key_exchange</code>) and fuzz target (<code>fuzz_sm2_kx</code>). The default-features build is byte-identical to 1.0.1; <code>cargo-semver-checks</code> passes as non-breaking.</dd>
-
-            <dt>v1.2.0</dt>
-            <dd>2026-06-11 — the C ABI for SM2 key exchange, on the usual core-in-vN / FFI-in-vN+1 cadence (63 → 72 FFI entry points). The GM/T 0003.5 recommended-curve KAT reproduces byte-for-byte through the C ABI, and FFI↔Rust handshakes cross-check in both directions. The core build is identical to 1.1.0 — with this, the SM2 family is complete in both Rust and C.</dd>
-
-            <dt>v1.3.0</dt>
-            <dd>2026-06-11 — X.509-with-SM2: strict-DER parse of a v3 leaf certificate (GM/T 0015 profile) plus SM2-with-SM3 signature verification over the exact wire <code>tbsCertificate</code> bytes. <strong>No trust decisions</strong> — no chain building, no clock, no extension interpretation, no revocation. New opt-in <code>x509</code> feature on <code>gmcrypto-core</code> (no new dependency); a new fuzz target (<code>fuzz_x509</code>, census 26 → 27) and no new dudect target — certificate verification consumes only public inputs. Default build byte-identical; all three crates bump lockstep to 1.3.0.</dd>
-
-            <dt>v1.4.0</dt>
-            <dd>2026-06-12 — the C ABI for X.509-with-SM2, on the usual core-in-vN / FFI-in-vN+1 cadence (72 → 85 FFI entry points): an opaque certificate handle, signature verify, and raw copy-out accessors. The no-trust-decisions contract crosses the ABI intact. The core build is identical to 1.3.0.</dd>
-
-            <dt>v1.5.0</dt>
-            <dd><em>Not published.</em> The TLCP decomposition design cycle — scope and gap-mapping only, no output change. crates.io skips it; its plan ships with <code>1.6.0</code>.</dd>
-
-            <dt>v1.6.0</dt>
-            <dd>2026-06-13 — the first code cycle of TLCP (GB/T 38636): the <code>tlcp::key_schedule</code> (the TLS-1.2-style PRF over HMAC-SM3 — master secret, key block, Finished verify-data) plus no-confirmation SM2 key-exchange completers on the existing <code>sm2-key-exchange</code> typestates. New opt-in <code>tlcp</code> feature (pure-core, <code>no_std</code>); key-schedule KATs from OpenSSL 3.x <code>TLS1-PRF</code> with <code>digest:SM3</code>. No new dudect target; the confirmed key-exchange flow is unchanged and remains the default. Default build byte-identical.</dd>
-
-            <dt>v1.7.0</dt>
-            <dd>2026-06-14 — TLCP record protection (the second code cycle): <code>tlcp::record</code>, byte-in/byte-out protect / deprotect for the four SM2-family suites. SM4-CBC record is <strong>Lucky13-hardened</strong> — constant-time over the inner-hash SM3 compression count, a fixed 256-byte pad-validity scan, and a data-independent MAC extraction; bad padding still runs the full MAC and returns a single <code>None</code>. Record bytes cross-validated byte-for-byte against OpenSSL EVP SM4-CBC + GmSSL <code>sm3hmac</code> and GmSSL <code>sm4 -gcm</code>. New dudect gate <code>ct_tlcp_cbc_deprotect</code>; fuzz census 27 → 29. Additive minor, no new dependency; default build byte-identical. <code>(key, seq)</code> uniqueness is the caller's contract — the stateless primitives cannot detect reuse.</dd>
-
-            <dt>v1.8.0</dt>
-            <dd>2026-06-14 — TLCP certificate-pair / chain verification (the last core cycle): <code>x509::verify_chain</code> walks a caller-ordered chain — per-edge SM2 signature and raw-Name linking, intermediate CA-ness, termination at a caller-trusted anchor, refusal of any unknown critical extension (RFC 5280 §4.2), an optional validity window, and a depth cap — plus <code>tlcp::chain::verify_pair</code> for the double-cert profile (role key-usage, leaf-not-CA, and pair binding to one actual CA). This is signature verification, <strong>not validation and not server authentication</strong>: endpoint identity binding stays the caller's, permanently. No new dudect target (public inputs only); fuzz census 29 → 30. Pure-core / <code>no_std</code>; default build byte-identical.</dd>
-
-            <dt>v1.9.0</dt>
-            <dd>2026-06-16 — TLCP toolkit C FFI, the cadence cycle that <strong>closes the TLCP arc</strong>. Exposes the accumulated toolkit — v1.6 key schedule and no-confirmation SM2-KX, v1.7 record protection, v1.8 chain/pair verification — through the <code>gmcrypto-c</code> ABI, so a C caller can drive a full TLCP handshake end to end (KX → key schedule → record → cert-verify). 19 new symbols, 2 opaque handles, 7 consts: <strong>85 → 104 entry points</strong>. A thin shim by design — every failure is one <code>GMCRYPTO_ERR</code>, <code>deprotect</code> adds no logic (the Lucky13 work stays in core), and the not-authentication disclaimer is loud in <code>gmcrypto.h</code>. <code>c_smoke</code> 84 → 97 including a bad-pad ≡ bad-MAC single-<code>ERR</code> oracle test; no new dudect target; census stays 30. Default build byte-identical.</dd>
-
-            <dt>v1.10.0</dt>
-            <dd><em>Not published.</em> Assurance cycle: migrate the gmssl interop suite to GmSSL 3.2.0 subcommands and wire an <code>interop-gmssl</code> CI job at a pinned oracle tag (closes audit F16 — the suite had been self-skipping in CI); dedupe the constant-time PKCS#7 unpad; strengthen four DER fuzz targets to byte-idempotence; fuzz census 30 → 32. No published crate's runtime output changes, so crates.io skips <code>1.10.0</code> (the v0.14 / v0.17–v0.23 precedent). Changes ship with <code>1.11.0</code>.</dd>
-
-            <dt>v1.11.0</dt>
-            <dd>2026-08-01 — RustCrypto <code>aead</code> 0.6 trait fit for SM4-GCM / SM4-CCM (additive, opt-in). New <code>sm4::Sm4Gcm</code> and <code>sm4::Sm4Ccm&lt;M, N&gt;</code> as thin wrappers over the inherent AEAD paths, behind <code>aead-traits = ["sm4-aead", "dep:aead"]</code> — the backlog item parked since v0.11 while upstream sat on <code>0.6.0-rc</code>; <code>aead</code> 0.6.1 is now stable at MSRV 1.85. Implements <code>KeySizeUser</code> / <code>KeyInit</code> / <code>AeadCore</code> / <code>AeadInOut</code> (the <code>Vec</code>-returning <code>Aead</code> arrives free via blanket impl). No new dudect target (wrappers add no cryptography; secret-touching bodies are the same code); new differential fuzz target <code>fuzz_sm4_aead_traits</code> (census <strong>32 → 33</strong>). Default build byte-identical; C ABI surface stays 104.</dd>
+            <dt>Full history</dt>
+            <dd><a href="{{ '/projects/gm-crypto-rs/releases/' | relative_url }}">Every cycle from v0.6.0 →</a></dd>
         </dl>
 
         <h2>Next</h2>
