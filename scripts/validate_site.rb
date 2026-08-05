@@ -581,7 +581,10 @@ case_study = {
     # Non-affiliation note ties to the named interop targets (trademark-disclaimer
     # convention) instead of denying ties to unnamed parties. "either project" is
     # the tell; if it reverts to the generic enumerated form, this guard trips.
-    must_include: ["either project"],
+    # "/projects/gm-crypto-rs/releases/" guards the split's only inbound link (the
+    # "Full history" row, 2026-08-05) — delete that row and the release page
+    # becomes orphaned with nothing else to catch it.
+    must_include: ["either project", "/projects/gm-crypto-rs/releases/"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "zh/projects/gm-crypto-rs/index.html" => {
@@ -591,7 +594,8 @@ case_study = {
     caveat: "检测事件", version_before: ["<h2>下一步</h2>", "v1.11.0"],
     # ZH mirror of the interop-tied non-affiliation guard ("这两个项目" = the two
     # named projects gmssl/OpenSSL); trips if it reverts to the enumerated form.
-    must_include: ["这两个项目"],
+    # ZH mirror of the releases-page inbound-link guard above (2026-08-05).
+    must_include: ["这两个项目", "/zh/projects/gm-crypto-rs/releases/"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "projects/repolens-rs/index.html" => {
@@ -713,11 +717,21 @@ end
 # never wrap an <h2> — the check is carried alongside as a latent guard that
 # protects the case-study pages (which build a contents rail from h2s) and is
 # currently inert on the releases pages (which have no h2s).
-%w[projects/gm-crypto-rs/releases/index.html zh/projects/gm-crypto-rs/releases/index.html].each do |relative|
+#
+# The split also made the return trip load-bearing (2026-08-05): the case study's
+# "Full history" row is each release page's only inbound link (guarded above via
+# case_study's must_include), and each release page must link back to its own
+# case study or a reader who lands there has nowhere onward. Keyed per locale so
+# each page is checked against its own case-study path, not both against one.
+{
+  "projects/gm-crypto-rs/releases/index.html" => "/projects/gm-crypto-rs/",
+  "zh/projects/gm-crypto-rs/releases/index.html" => "/zh/projects/gm-crypto-rs/"
+}.each do |relative, back_link|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
   record(failures, "#{relative}: missing <details> audit drawer") unless html.include?("<details")
   record(failures, "#{relative}: <h2> inside <details> breaks the contents rail") if html.match?(/<details\b[^>]*>(?:(?!<\/details>).)*?<h2/m)
+  record(failures, "#{relative}: missing back-link to case study (#{back_link})") unless html.include?(%(href="#{back_link}"))
 end
 
 %w[
