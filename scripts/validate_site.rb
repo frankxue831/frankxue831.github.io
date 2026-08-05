@@ -705,12 +705,14 @@ end
   record(failures, "#{relative}: missing constant-time visualizer figure (class=\"dudect\")") unless html.include?('class="dudect')
   record(failures, "#{relative}: visualizer missing data-table fallback (.dudect__table)") unless html.include?("dudect__table")
   record(failures, "#{relative}: visualizer missing public source link (v1.2.0)") unless html.include?("SECURITY.md @ v1.2.0")
+  record(failures, "#{relative}: <h2> inside <details> breaks the contents rail") if html.match?(/<details\b[^>]*>(?:(?!<\/details>).)*?<h2/m)
 end
 
 # The <details> audit drawer (earlier releases) moved to the dedicated releases
-# page (2026-08-05 content-expression split); it must survive there instead,
-# and a drawer must never wrap an <h2> (contents.js builds the rail from h2s,
-# so a collapsed one would break scroll-spy on that page too).
+# page (2026-08-05 content-expression split) and must survive there. A drawer must
+# never wrap an <h2> — the check is carried alongside as a latent guard that
+# protects the case-study pages (which build a contents rail from h2s) and is
+# currently inert on the releases pages (which have no h2s).
 %w[projects/gm-crypto-rs/releases/index.html zh/projects/gm-crypto-rs/releases/index.html].each do |relative|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
