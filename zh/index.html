@@ -157,12 +157,12 @@ alternate: /
         <span class="ghost-num" aria-hidden="true">04</span>
         <p class="section__num">(04)  笔记</p>
         <h2 id="writing-h" class="section__title">
-            最新的<em>笔记。</em>
+            把一个问题<em>想透。</em>
         </h2>
     </header>
 
     <ul class="work-list">
-        {%- for note in latest_notes limit: 2 -%}
+        {%- for note in latest_notes limit: 3 -%}
         <li class="work-list__item reveal">
             <a class="work-list__row" href="{{ note.url | relative_url }}">
                 <span class="work-list__head">

@@ -166,12 +166,12 @@ alternate: /zh/
         <span class="ghost-num" aria-hidden="true">04</span>
         <p class="section__num">(04)  Notes</p>
         <h2 id="writing-h" class="section__title">
-            Latest <em>notes.</em>
+            Working through <em>a problem.</em>
         </h2>
     </header>
 
     <ul class="work-list">
-        {%- for note in latest_notes limit: 2 -%}
+        {%- for note in latest_notes limit: 3 -%}
         <li class="work-list__item reveal">
             <a class="work-list__row" href="{{ note.url | relative_url }}">
                 <span class="work-list__head">
