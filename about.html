@@ -27,15 +27,27 @@ alternate: /zh/about/
             they sit on top of.
         </p>
         <p>
-            Lately that's meant four things: a pure-Rust SDK for the
-            <em>Chinese national crypto standards</em> with constant-time-designed
-            secret-handling paths guarded by an in-CI leak harness; a
-            <em>repository memory layer</em> for AI coding agents that
-            exposes a typed, decaying memory graph over MCP; a small
-            observability CLI that exists because debugging
-            self-hosted GitHub Actions runners on macOS shouldn't take
-            an hour; and a <em>rendering pipeline</em> for concept videos
-            that refuses to draw an explanatory claim it can't verify
+            Lately that's meant four things.
+        </p>
+        <p>
+            <em>gm-crypto-rs</em> is a pure-Rust SDK for the Chinese national
+            crypto standards. Its secret-handling paths are designed to run in
+            constant time, and an in-CI leak harness re-checks that on every
+            commit rather than trusting the design review.
+        </p>
+        <p>
+            <em>RepoLens</em> is a repository memory layer for AI coding
+            agents — a typed, decaying memory graph exposed over MCP, so a new
+            session doesn't start cold.
+        </p>
+        <p>
+            <em>ghrunners</em> is a small observability CLI that exists
+            because debugging self-hosted GitHub Actions runners on macOS
+            shouldn't take an hour.
+        </p>
+        <p>
+            <em>Explainer Engine</em> is a rendering pipeline for concept
+            videos that refuses to draw an explanatory claim it can't verify
             against the source.
         </p>
         <p>
@@ -53,9 +65,7 @@ alternate: /zh/about/
         <p>
             The <a href="{{ '/projects/' | relative_url }}">project pages here</a>
             are the honest snapshot — each states its release state, evidence,
-            and limits, including for the work that isn't public. Today only
-            gm-crypto-rs has public source and public tags; the others stay
-            private, with the same discipline on the page.
+            and limits, including for the work that isn't public.
             <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">GitHub</a>
             carries the source for what is public.
         </p>

@@ -16,13 +16,12 @@ alternate: /
             <p class="hero__eyebrow">Frank Xue / 软件工程师，主要写 Rust</p>
 
             <h1 class="hero__title">
-                为代码、系统和 Agent，写可审计、
-                <em>状态清晰的工具。</em>
+                为代码、系统和 Agent，写可审计、<em>状态清晰的工具。</em>
             </h1>
 
             <p class="hero__lede">
-                独立项目：仓库上下文、密码学软件、本地开发基础设施——
-                发布到哪一步、凭什么这么说、还有哪些做不到，都写在明面上。
+                密码学软件、给编程 Agent 用的仓库上下文、本地开发基础设施——
+                做的工具都想让正确性、当前状态和限制保持可查。每个项目页都写清发布到哪一步、凭什么这么说；没公开的项目也一样。
             </p>
 
             <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
@@ -63,8 +62,7 @@ alternate: /
             </ul>
 
             <p class="hero-proof__note">
-                别人能自己核对的，只有已打公开 tag 的作品。
-                私有项目只写概览——不挂源码链接，也不把本地状态写成正式发布。
+                别人能自己核对的，只有已打公开 tag 的作品。私有项目只写概览——不挂源码链接，也不把本地状态写成正式发布。
             </p>
         </aside>
     </div>
@@ -119,22 +117,17 @@ alternate: /
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
-                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK。
-                涉密路径按常量时间设计，CI 里用 dudect 盯泄漏回归。
-                公开版 <strong>{{ project.release }}</strong> 在
+                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK。涉密路径按常量时间设计，CI 里用 dudect 盯泄漏回归。公开版 <strong>{{ project.release }}</strong> 在
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的仓库记忆：新会话不必从零摸项目。
-                <strong>{{ project.status_label.zh }}</strong>——源码未公开。
+                给 AI 编程 Agent 用的仓库记忆：新会话不必从零摸项目。<strong>{{ project.status_label.zh }}</strong>——源码未公开。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'ghrunners' %}
-                macOS 上查 self-hosted runner 的一次性工具：状态、进程、日志凑一处看，
-                要动 launchd 也受约束。目前私有 / 本地。
+                macOS 上查 self-hosted runner 的一次性工具：状态、进程、日志凑一处看，要动 launchd 也受约束。目前私有 / 本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% when 'explainer-engine' %}
-                把 storyboard 渲成讲解视频；每个说法画出来之前，
-                都按固定 commit 对过源码。私有 / 本地。
+                把 storyboard 渲成讲解视频；每个说法画出来之前，都按固定 commit 对过源码。私有 / 本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
@@ -157,12 +150,12 @@ alternate: /
         <span class="ghost-num" aria-hidden="true">04</span>
         <p class="section__num">(04)  笔记</p>
         <h2 id="writing-h" class="section__title">
-            最新的<em>笔记。</em>
+            把一个问题<em>想透。</em>
         </h2>
     </header>
 
     <ul class="work-list">
-        {%- for note in latest_notes limit: 2 -%}
+        {%- for note in latest_notes limit: 3 -%}
         <li class="work-list__item reveal">
             <a class="work-list__row" href="{{ note.url | relative_url }}">
                 <span class="work-list__head">
@@ -200,8 +193,7 @@ alternate: /
         <div class="preview__body">
             <p>
                 眼下最直接的是 <em>GitHub</em>：
-                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>。
-                在任意仓库开 issue 或 discussion，我都会看到。
+                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>。在任意仓库开 issue 或 discussion，我都会看到。
             </p>
             <a href="{{ '/zh/contact/' | relative_url }}" class="preview__link">
                 其他联系方式 <span aria-hidden="true">→</span>

@@ -57,5 +57,5 @@ aren't abandonment —
 they're cycles that refused to bill assurance churn as a byte-changing release.
 I'd rather owe that explanation than overstate a release. The full history, with
 the skipped cycles named and explained, is on the
-[project page]({{ '/projects/gm-crypto-rs/' | relative_url }}) and in the public
+[release history]({{ '/projects/gm-crypto-rs/releases/' | relative_url }}) and in the public
 repo.
