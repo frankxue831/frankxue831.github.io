@@ -7,3 +7,6 @@ _site/
 vendor/
 .worktrees/
 .superpowers/
+
+# macOS folder metadata
+.DS_Store
