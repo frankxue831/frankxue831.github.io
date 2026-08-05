@@ -617,4 +617,4 @@ Open `http://localhost:4000/projects/gm-crypto-rs/` and `http://localhost:4000/p
 git diff main --stat
 ```
 
-Expected: exactly 12 files — 2 created pages, 6 modified pages, `scripts/validate_site.rb`, the spec, the plan, and nothing under `assets/`, `_data/`, `_includes/`, or `_layouts/`.
+Expected: exactly 15 files — 2 created pages (`projects/gm-crypto-rs-releases.html`, `zh/projects/gm-crypto-rs-releases.html`), 10 modified pages (`projects/gm-crypto-rs.html`, `zh/projects/gm-crypto-rs.html`, `notes.html`, `zh/notes.html`, `index.html`, `zh/index.html`, `about.html`, `zh/about.html`, `projects.html`, `zh/projects.html`), `scripts/validate_site.rb`, the spec, and the plan — and nothing under `assets/`, `_data/`, `_includes/`, or `_layouts/`.
