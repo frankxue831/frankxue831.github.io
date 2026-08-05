@@ -1,8 +1,13 @@
-{%- assign lang = page.lang | default: 'en' -%}
+{%- comment -%} `lang_override` / `locale_attr` exist for the shared 404, which
+    serves both locale trees and so renders one footer per locale, letting
+    locale-404.js hide the one that doesn't match the requested path. Every
+    other page includes this with no parameters and behaves as before. This
+    include carries no `id`, so rendering it twice stays valid. {%- endcomment -%}
+{%- assign lang = include.lang_override | default: page.lang | default: 'en' -%}
 {%- assign t = site.data.i18n[lang] -%}
 {%- assign base = '' -%}{% if lang == 'zh' %}{% assign base = '/zh' %}{% endif %}
 
-<footer class="site-footer">
+<footer class="site-footer"{% if include.locale_attr %} data-error-locale="{{ include.locale_attr }}" lang="{{ t.html_lang }}" aria-label="{{ t.footer.locale_label | escape }}"{% endif %}>
     <div class="site-footer__inner">
         <div class="site-footer__col site-footer__col--brand">
             <p class="site-footer__name"><em>{{ site.title }}</em></p>

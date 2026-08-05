@@ -1,0 +1,29 @@
+<!-- ZH variant of ghrunners-evidence.svg. Geometry is identical; only
+     human-readable labels and the accessible title are localized. `launchd`,
+     `ps`, `.runner`, `API` and `findings` stay Latin — CLI/OS tokens and this
+     site's ZH term of record for typed findings (see the terminology header in
+     _data/i18n.yml and the figcaption on zh/projects/ghrunners.html). -->
+<svg viewBox="0 0 360 218" role="img" aria-labelledby="fig-ghrunners-evidence-title" xmlns="http://www.w3.org/2000/svg">
+  <title id="fig-ghrunners-evidence-title">launchd + ps + .runner + 日志 + API → 类型化 findings → 受约束的控制动作</title>
+  <rect class="fig-box" x="8" y="12" width="64" height="30"/>
+  <rect class="fig-box" x="80" y="12" width="64" height="30"/>
+  <rect class="fig-box" x="152" y="12" width="64" height="30"/>
+  <rect class="fig-box" x="224" y="12" width="64" height="30"/>
+  <rect class="fig-box" x="296" y="12" width="56" height="30"/>
+  <text class="fig-label" x="40" y="32" text-anchor="middle">launchd</text>
+  <text class="fig-label" x="112" y="32" text-anchor="middle">ps</text>
+  <text class="fig-label" x="184" y="32" text-anchor="middle">.runner</text>
+  <text class="fig-label" x="256" y="32" text-anchor="middle">日志</text>
+  <text class="fig-label" x="324" y="32" text-anchor="middle">API</text>
+  <line class="fig-line" x1="40" y1="42" x2="136" y2="92"/>
+  <line class="fig-line" x1="112" y1="42" x2="160" y2="92"/>
+  <line class="fig-line" x1="184" y1="42" x2="184" y2="92"/>
+  <line class="fig-line" x1="256" y1="42" x2="208" y2="92"/>
+  <line class="fig-line fig-line--dash" x1="324" y1="42" x2="230" y2="92"/>
+  <rect class="fig-box" x="100" y="92" width="160" height="38"/>
+  <text class="fig-label" x="180" y="116" text-anchor="middle">findings</text>
+  <line class="fig-line" x1="180" y1="130" x2="180" y2="158"/>
+  <polygon class="fig-arrow" points="176,158 184,158 180,166"/>
+  <rect class="fig-box" x="100" y="166" width="160" height="38"/>
+  <text class="fig-label" x="180" y="190" text-anchor="middle">控制</text>
+</svg>

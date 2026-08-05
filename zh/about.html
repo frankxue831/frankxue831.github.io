@@ -27,13 +27,13 @@ alternate: /about/
             最近主要在做四件事。
         </p>
         <p>
-            第一件是 gm-crypto-rs，一套纯 Rust 的国密 SM2 / SM3 / SM4 SDK。我特别在意时序侧信道这类容易被忽略的安全风险：代码处理密钥时，执行时间不能跟密钥内容有关，否则别人可能靠测耗时反推出密钥。为此，CI 里一直用 dudect 自动盯防。
+            第一件是 gm-crypto-rs，一套纯 Rust 的国密 SM2 / SM3 / SM4 SDK。我特别在意时序侧信道这类容易被忽略的安全风险：代码处理密钥时，执行时间不能跟密钥内容有关，否则别人可能靠测耗时反推出密钥。所以涉密路径按常量时间设计，CI 里挂着一套 dudect 泄漏 harness，每次提交都重跑一遍门禁——而不是只相信设计评审。
         </p>
         <p>
-            第二件是 RepoLens，给 AI 编程 Agent 用的仓库上下文层，让新开的会话不必每次都从头理解项目。
+            第二件是 RepoLens，给 AI 编程 Agent 用的仓库记忆层——一张类型化、会衰减的记忆图，通过 MCP 交出去，让新开的会话不必每次都从头理解项目。
         </p>
         <p>
-            第三件是 ghrunners，macOS 上的一个小工具，把一台机器上 GitHub Actions self-hosted runner 的 launchd 状态、进程、日志和 GitHub API 信息凑到一块儿看。
+            第三件是 ghrunners，macOS 上的一个可观测性小工具，把一台机器上 GitHub Actions self-hosted runner 的 launchd 状态、进程、日志和 GitHub API 信息凑到一块儿看。它存在的理由很简单：查这件事不该耗掉一个小时。
         </p>
         <p>
             第四件是 Explainer Engine，一条把 storyboard 渲染成概念讲解视频的确定性流水线——讲解里的每个说法，画出来之前都得先按源码核对，核对不过就不渲染。
@@ -42,7 +42,7 @@ alternate: /about/
             我做的工具，都想让它的正确性、当前状态和出错方式保持<em>可查</em>。几个项目方向不一样，但惦记的是同一件事：软件应该讲得清楚自己知道什么、改动了什么、以及哪些事它做不到。
         </p>
         <p>
-            落到手上，就是那些不那么光鲜、却有态度的部分：命名要清楚，状态要讲明白；不确定的地方不要装确定，出问题前最好有检查能先拦一下。代码里的注释也应该解释<em>「为什么」</em>，而不只是重复<em>「做了什么」</em>。
+            落到手上，就是那些不那么光鲜、却有态度的部分：一个说得清楚的名字；一道能在发布前拦住泄漏回归的门禁；以及一行终于解释了<em>「为什么」</em>、而不只是重复<em>「做了什么」</em>的注释。都是有主张的那部分。
         </p>
         <p>
             想看每个项目做到哪一步，<a href="{{ '/zh/projects/' | relative_url }}">这里的项目页</a>是最诚实的快照——发到哪了、凭什么这么说、哪些做不到，都写在页面上；没公开的项目也一样。已经公开的部分，源码在
@@ -74,7 +74,7 @@ alternate: /about/
         </li>
         <li>
             <span>最近</span>
-            <span>发布 {{ public_project.title }} {{ public_project.release }}</span>
+            <span>已发布 {{ public_project.title }} {{ public_project.release }}</span>
         </li>
     </ul>
 </section>

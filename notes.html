@@ -7,6 +7,7 @@ lang: en
 alternate: /zh/notes/
 ---
 
+{% assign t = site.data.i18n[page.lang] %}
 <section class="page-header page-header--plate wrap">
     <span class="ghost-num" aria-hidden="true">04</span>
     <p class="page-header__eyebrow">(04)  Notes</p>
@@ -40,7 +41,7 @@ alternate: /zh/notes/
             </a>
             <p class="work-list__note">
                 {{ note.excerpt | default: note.description | strip_html | truncate: 160 }}
-                <a href="{{ note.url | relative_url }}" class="work-list__more">{{ site.data.i18n.en.notes.read_more }}</a>
+                <a href="{{ note.url | relative_url }}" class="work-list__more">{{ t.notes.read_more }}</a>
             </p>
         </li>
         {%- endfor -%}

@@ -6,7 +6,9 @@ layout: default
 {%- if page.lang == 'zh' -%}{%- assign notes_index = '/zh/notes/' -%}{%- endif -%}
 
 <section class="page-header wrap">
-    <p class="page-header__eyebrow">{% if page.lang == 'zh' %}（04）{{ t.nav.writing }}{% else %}(04)  {{ t.nav.writing }}{% endif %}</p>
+    {%- comment -%} Section numerals are monospace chrome, not prose: halfwidth
+        parentheses in both locales, matching every static ZH page header. {%- endcomment -%}
+    <p class="page-header__eyebrow">(04)  {{ t.nav.writing }}</p>
     <h1 class="page-header__title">{{ page.title }}</h1>
     <p class="page-header__lede">
         <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>

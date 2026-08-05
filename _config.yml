@@ -62,12 +62,21 @@ defaults:
         width: 1200
         height: 630
         alt: "Frank Xue — software engineer. Building auditable tools for code, systems, and agents."
-  # ZH page tree: override og:locale to zh_CN. More-specific path scope wins
-  # over the global "" scope above.
+  # ZH page tree: override og:locale to zh_CN, and swap in the Chinese share
+  # card so a shared /zh/ URL doesn't preview as an English site. More-specific
+  # path scope wins over the global "" scope above. NOTE: this matches *source*
+  # paths, so it does not reach the ZH notes (they live in _notes/*.zh.md and
+  # only their permalink is under /zh/) — those carry `image:` in their own
+  # front matter, next to the `locale:` they already declare for the same reason.
   - scope:
       path: "zh"
     values:
       locale: zh_CN
+      image:
+        path: /assets/img/social-card.zh.png
+        width: 1200
+        height: 630
+        alt: "Frank Xue——软件工程师。为代码、密码学与 Agent，写可审计的工具。"
   # Notes are long-form documents; the more-specific scope sets their layout
   # while inheriting the share image above.
   - scope:

@@ -17,7 +17,15 @@
         {{ content }}
     </main>
 
+    {%- comment -%} The shared 404 answers both locale trees, so it renders a
+        footer per locale and lets locale-404.js keep the matching one. Every
+        other page gets exactly one, as before. {%- endcomment -%}
+    {% if page.bilingual_chrome %}
+    {% include footer.html lang_override='en' locale_attr='en' %}
+    {% include footer.html lang_override='zh' locale_attr='zh' %}
+    {% else %}
     {% include footer.html %}
+    {% endif %}
 
     <script src="{{ '/assets/js/main.js' | relative_url }}" defer></script>
     <script src="{{ '/assets/js/theme.js' | relative_url }}" defer></script>

@@ -34,8 +34,8 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
         </p>
 
         <figure class="fig">
-            {% include figures/ghrunners-evidence.svg %}
-            <figcaption class="fig__cap">图 3.1 — 五路证据 → 类型化 findings → 受控的 launchd 控制</figcaption>
+            {% include figures/ghrunners-evidence.zh.svg %}
+            <figcaption class="fig__cap">图 3.1 — 五路证据 → 类型化 findings → 受约束的 launchd 控制</figcaption>
         </figure>
 
         <h2>要解决的问题</h2>
@@ -44,7 +44,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             {% include glossary-term.html term="launchd" %} 记着域和上次退出状态，进程树才知道 worker 是不是真活着，安装目录用 <code>0700</code> 把配置挡在外面，而任务到底有没有真正落地，只有 GitHub API 知道。
         </p>
         <p>
-            你 SSH 上去一点点拼，可最顺手的修法——重启 runner——恰恰最危险：一条不小心的命令，就可能干掉正在跑的构建，或者把它 bootstrap 进错误的 launchd 域。
+            你 SSH 上去一点点拼，可最顺手的修法——重启 runner——恰恰最危险：一条不小心的命令，就可能干掉正在跑的构建，或者把它加载（<code>bootstrap</code>）到错误的 launchd 域。
         </p>
 
         <h2>约束与关键决策</h2>
@@ -59,7 +59,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             到底是权限不够，还是真的没有——而且少了 <code>sudo</code>，输出就不那么完整。
         </p>
         <p>
-            <strong>受控的 control，绑在它观测到的状态上。</strong>最顺手的下一步——start / stop / restart——恰恰是危险的那一步，所以
+            <strong>受约束的控制动作，绑在它观测到的状态上。</strong>最顺手的下一步——start / stop / restart——恰恰是危险的那一步，所以
             <code>control</code>（bootstrap / unload / restart）的目标，是从观测核心那份权威状态里解析出来的，而不是随手敲 <code>launchctl</code>。
         </p>
         <p>
@@ -99,7 +99,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
         <ul>
             <li>不是 runner 安装或注销工具。</li>
             <li>不是 daemon 或持续监控器。</li>
-            <li>不是 fleet 管理——控制是单 runner、受控的，不是批量编排。</li>
+            <li>不做机群管理——控制面向单个 runner，受约束，不做批量编排。</li>
             <li>不支持 Linux 或 Windows。</li>
             <li>私有 / 本地——目前不是公开源码项目。</li>
         </ul>

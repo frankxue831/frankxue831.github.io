@@ -4,6 +4,13 @@ date: 2026-08-03
 permalink: /zh/notes/constant-time-warrant/
 lang: zh
 locale: zh_CN
+# ZH share card. Notes live in _notes/ (not under zh/), so the _config.yml
+# path-scoped default cannot reach them — same reason `locale` is set here.
+image:
+  path: /assets/img/social-card.zh.png
+  width: 1200
+  height: 630
+  alt: "Frank Xue——软件工程师。为代码、密码学与 Agent，写可审计的工具。"
 alternate: /notes/constant-time-warrant/
 description: "每个密码库都说自己的涉密路径是常量时间的。要把这句话的可信度真正交到读者手上，靠的是两样东西——一个你能让它当场报警的检测器，和一份你自己写下的边界说明。两样都不是「解释」。"
 excerpt: "解释「常量时间」是最容易的部分，也不是有疑心的读者真正需要的。能把可信度传递出去的，是一个必须故障的泄漏检测器，和一句在别人追问之前就先写下的但书。"
@@ -17,7 +24,7 @@ excerpt: "解释「常量时间」是最容易的部分，也不是有疑心的�
 
 ## 这个测试真的有牙齿吗？
 
-这个库在 CI 里挂着一套 [dudect-bencher](https://docs.rs/dudect-bencher/) harness：20 个目标，每个把输入分成两类，量出两组执行时间的分布，再把「两组差多少」压成一个 t 统计量。多数目标的门禁是 `|tau| < 0.20`。这道门禁怎么接线、每个 PR 要为它付出多少代价，写在[另一篇]({{ '/zh/notes/constant-time-ci-gate/' | relative_url }})。
+这个库在 CI 里挂着一套 [dudect-bencher](https://docs.rs/dudect-bencher/) harness：20 个目标，每个把输入分成两类，量出两组执行时间的分布，再把「两组差多少」压成一个 t 统计量。多数目标的门禁是 `|τ| < 0.20`。这道门禁怎么接线、每个 PR 要为它付出多少代价，写在[另一篇]({{ '/zh/notes/constant-time-ci-gate/' | relative_url }})。
 
 一个只会报「没发现泄漏」的检测器，单看这句话是没有信息量的。它坏掉的时候这么报，配错的时候这么报，压根没接上的时候也这么报。所以真正值得摆出来的，不是那 20 个通过的目标，而是那一个**必须失败**的目标：
 
@@ -37,7 +44,7 @@ fn negative_control(runner: &mut CtRunner, rng: &mut BenchRng) {
 }
 ```
 
-`leaky_function` 直接按密钥的某个字节分支：一条路跑一千次空转循环，另一条立刻返回。它就是要漏，而且要漏得很张扬。这个目标的门禁跟其他所有目标反着来——要求 \|tau\| **大于** 1.0——而且取的是多轮里的**最小值**，不是中位数，也就是说它每一轮都得响。哪一轮它安静了，就说明接线断了，那一轮其他所有的绿勾也就一起失去意义。负控制一旦不再报警，CI 直接失败。
+`leaky_function` 直接按密钥的某个字节分支：一条路跑一千次空转循环，另一条立刻返回。它就是要漏，而且要漏得很张扬。这个目标的门禁跟其他所有目标反着来——要求 \|τ\| **大于** 1.0——而且取的是多轮里的**最小值**，不是中位数，也就是说它每一轮都得响。哪一轮它安静了，就说明接线断了，那一轮其他所有的绿勾也就一起失去意义。负控制一旦不再报警，CI 直接失败。
 
 这才是值得展示的东西。它把「我们的时序 harness 跑过了」换成了「我们的时序 harness 现在仍然确实能测到它要找的东西」。
 
@@ -45,7 +52,7 @@ fn negative_control(runner: &mut CtRunner, rng: &mut BenchRng) {
 
 有疑心的读者需要的第二样东西，是这句话的边界——而且得由说这话的人自己划出来。README 里是这么写的（原文为英文）：
 
-> 这套 harness 报告的是时序泄漏的**检测事件**。**它并不证明常量时间。**\|tau\| 低，只意味着在给定的测量预算下没能检测到泄漏，而不是不存在泄漏。
+> 这套 harness 报告的是时序泄漏的**检测事件**。**它并不证明常量时间。**\|τ\| 低，只意味着在给定的测量预算下没能检测到泄漏，而不是不存在泄漏。
 
 这段话是直接从 `dudect-bencher` 自己的文档里搬过来的，原样留着，没有往软的方向改写。同一个文件里还有一张跟成熟方案的对比表，这个库自己那两行写的是：**外部安全审计：无**，以及**生产环境记录：薄——2026 年才首次发布**。
 

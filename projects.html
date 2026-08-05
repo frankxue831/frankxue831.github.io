@@ -7,6 +7,7 @@ lang: en
 alternate: /zh/projects/
 ---
 
+{% assign t = site.data.i18n[page.lang] %}
 <section class="page-header page-header--plate wrap">
     <span class="ghost-num" aria-hidden="true">03</span>
     <p class="page-header__eyebrow">(03)  Work</p>
@@ -49,21 +50,21 @@ alternate: /zh/projects/
                 Public <strong>{{ project.release }}</strong> on
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>
                 — version-by-version evidence on its release-history page.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'repolens-rs' %}
                 A repository memory and context layer for AI coding agents.
                 It exposes 26 MCP tools and pairs structured repository context
                 with typed, decaying memory so agents can keep a durable model
                 of a project across sessions. Private pre-release — source not
                 public today.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
                 A one-shot macOS CLI for GitHub Actions self-hosted runners —
                 read-only observability (launchd domain, PID, process tree, log
                 tails, optional GitHub API) plus guarded launchd control.
                 Missing pieces degrade to partial output rather than a hard
                 failure. Source is private/local today.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
                 A deterministic pipeline that turns a YAML storyboard into a
                 narrated concept video — a plot, a cited code callout, or an
@@ -72,11 +73,11 @@ alternate: /zh/projects/
                 against the source repo at a pinned commit <em>before</em> a
                 frame is drawn — the <code>verified @ commit</code> badge is
                 the gate's verdict, not decoration. Private/local today.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 Selected engineering work with status and project facts kept
                 explicit.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">Read more →</a>
+                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% endcase %}
             </p>
         </li>

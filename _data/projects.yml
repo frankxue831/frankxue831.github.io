@@ -86,7 +86,7 @@
   release_source: local_tag
   snapshot_label:
     en: "local — diagram-canvas milestone"
-    zh: "本地——diagram canvas 里程碑"
+    zh: "本地——图示画布里程碑"
   repo_url: ~
   crate_url: ~
   docs_url: ~

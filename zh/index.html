@@ -1,6 +1,6 @@
 ---
 layout: default
-title: 个人主页
+title: Frank Xue
 description: Frank Xue 的个人主页。软件工程师——笔记与精选作品，发布状态与限制写在明面上。
 permalink: /zh/
 lang: zh
@@ -10,6 +10,7 @@ alternate: /
 <section class="hero wrap">
     {% assign projects = site.data.projects %}
     {% assign public_project = projects | where: 'release_source', 'public_tag' | first %}
+    {% assign t = site.data.i18n[page.lang] %}
 
     <div class="hero__grid">
         <div class="hero__copy">
@@ -35,7 +36,7 @@ alternate: /
                 <p class="hero-proof__label">作品凭证</p>
                 {% if public_project %}
                 <p class="hero-proof__recent">
-                    最新公开版本：
+                    公开版本：
                     <span>{{ public_project.title }} {{ public_project.release }}</span>
                 </p>
                 {% endif %}
@@ -119,19 +120,19 @@ alternate: /
                 {% when 'gm-crypto-rs' %}
                 国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK。涉密路径按常量时间设计，CI 里用 dudect 盯泄漏回归。公开版 <strong>{{ project.release }}</strong> 在
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的仓库记忆：新会话不必从零摸项目。<strong>{{ project.status_label.zh }}</strong>——源码未公开。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对回当前代码，新会话不必从零摸项目。<strong>{{ project.status_label.zh }}</strong>——源码未公开。
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
-                macOS 上查 self-hosted runner 的一次性工具：状态、进程、日志凑一处看，要动 launchd 也受约束。目前私有 / 本地。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                macOS 上查 self-hosted runner 的一次性工具：launchd 状态、进程树、日志和 GitHub API 收成类型化 findings，控制动作另受门禁约束。目前私有 / 本地。
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
                 把 storyboard 渲成讲解视频；每个说法画出来之前，都按固定 commit 对过源码。私有 / 本地。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">继续读 →</a>
+                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% endcase %}
             </p>
         </li>
@@ -167,7 +168,7 @@ alternate: /
             </a>
             <p class="work-list__note">
                 {{ note.excerpt | default: note.description | strip_html | truncate: 160 }}
-                <a href="{{ note.url | relative_url }}" class="work-list__more">{{ site.data.i18n.zh.notes.read_more }}</a>
+                <a href="{{ note.url | relative_url }}" class="work-list__more">{{ t.notes.read_more }}</a>
             </p>
         </li>
         {%- endfor -%}
