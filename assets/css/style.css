@@ -1956,6 +1956,26 @@ body.lang-zh .note li {
     display: inline-block;
     padding-bottom: 2px;
 }
+/* Bilingual recovery blocks. One static 404 answers both locale trees, so both
+   render with JS off; locale-404.js hides the block that doesn't match the
+   requested path. The rule only appears in that JS-off (or fail-open) state,
+   where the two blocks are stacked and need separating. :not([hidden]) on
+   both sides matters: once locale-404.js hides one block the separator has
+   nothing left to separate, and a bare rule would float under the heading. */
+.error-page__title [data-error-locale]:not([hidden]) + [data-error-locale]:not([hidden]) {
+    margin-left: var(--space-3);
+}
+.error-page__locale:not([hidden]) + .error-page__locale:not([hidden]) {
+    margin-top: var(--space-10);
+    padding-top: var(--space-10);
+    border-top: var(--rule-w) solid var(--rule);
+}
+.error-page__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: var(--space-6);
+}
 
 /* =========================================================
    Page header (interior pages)

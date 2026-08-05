@@ -26,7 +26,7 @@ That needs exactly two things, and neither of them is an explanation.
 
 The crate gates on an in-CI [dudect-bencher](https://docs.rs/dudect-bencher/) harness:
 twenty targets that split inputs into two classes, measure the two timing distributions, and
-reduce "how different are they" to a t-statistic. Most gate at `|tau| < 0.20`. How that gate
+reduce "how different are they" to a t-statistic. Most gate at `|τ| < 0.20`. How that gate
 is wired, and what it costs on every pull request, is
 [its own note]({{ '/notes/constant-time-ci-gate/' | relative_url }}).
 
@@ -53,7 +53,7 @@ fn negative_control(runner: &mut CtRunner, rng: &mut BenchRng) {
 
 `leaky_function` branches on a secret byte: one path runs a thousand-iteration busy loop,
 the other returns immediately. It is supposed to leak, floridly. The gate on this target runs
-the opposite direction from every other one — it requires `|tau| > 1.0` — and it is gated on
+the opposite direction from every other one — it requires `|τ| > 1.0` — and it is gated on
 the *minimum* across runs rather than the median, so it has to fire every single time. One
 quiet run means the wiring is broken, and every green result from that run is meaningless.
 If the negative control ever stops firing, CI fails.
@@ -67,7 +67,7 @@ The second thing a skeptical reader needs is the boundary of the claim, stated b
 making it. From the README:
 
 > The harness reports timing-leak detection events. **It does not prove constant-time.** Low
-> `|tau|` values mean the test could not detect a leak with the budget given, not that no
+> `|τ|` values mean the test could not detect a leak with the budget given, not that no
 > leak exists.
 
 The language is lifted directly from `dudect-bencher`'s own docs, and it is kept verbatim

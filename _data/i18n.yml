@@ -18,6 +18,11 @@
 #   typed findings          → 类型化 findings
 #   always-on surface       → 常开接口
 #   At a glance (aria)      → 一览
+#   fleet management        → 机群管理
+#   review (human)          → 复核（人工复核；不留英文 review）
+#   diagram canvas          → 图示画布（首次可加括注 diagram canvas）
+#   validation (PKIX path)  → 路径构建 / 信任判定（不与「验证」互换）
+#   verification (signature)→ 签名验证
 # Voice rule: ZH keeps its native register and may add explanatory glosses;
 # disclosures, hedges, numbers, and limitations must match EN exactly.
 # ---------------------------------------------------------------------------
@@ -25,6 +30,14 @@
 en:
   html_lang: "en"
   tagline: "Personal site of Frank Xue — software engineer. Notes and selected work."
+  # Short suffix for the <title> element on the home page, where page title ==
+  # site title. head.html builds the document title so the suffix follows the
+  # page locale; jekyll-seo-tag can only read the single global site.tagline.
+  short_tagline: "Software engineer."
+  # Shared more-link for work-list project rows (home + projects index). Note
+  # rows keep their own, shorter `notes.read_more` in English.
+  list:
+    read_more: "Read more →"
   nav:
     home: "Index"
     about: "About"
@@ -38,6 +51,10 @@ en:
   footer:
     elsewhere: "Elsewhere"
     colophon: "Colophon"
+    # Landmark label used only when a page renders one footer per locale (the
+    # shared 404): distinguishes the two contentinfo landmarks at the JS-off
+    # baseline. Each locale names itself in its own language.
+    locale_label: "English"
     set_in: "Set in"
     built_with: "Built with Jekyll. Hosted on GitHub Pages."
     colophon_more: "How it's built"
@@ -154,6 +171,11 @@ en:
 zh:
   html_lang: "zh-CN"
   tagline: "Frank Xue 的个人主页。软件工程师——笔记与精选作品，发布状态与限制写在明面上。"
+  short_tagline: "软件工程师。"
+  # ZH uses one more-link phrase for every list row — project rows and note
+  # rows alike (`notes.read_more` below carries the same string).
+  list:
+    read_more: "继续读 →"
   nav:
     home: "首页"
     about: "关于"
@@ -167,6 +189,7 @@ zh:
   footer:
     elsewhere: "其他平台"
     colophon: "本站说明"
+    locale_label: "中文"
     set_in: "字体使用"
     built_with: "Jekyll 构建，托管于 GitHub Pages。"
     colophon_more: "本站如何构建"
@@ -197,7 +220,7 @@ zh:
     aria: "复制安装命令"
   notes:
     all: "全部笔记"
-    read_more: "阅读 →"
+    read_more: "继续读 →"
     none: "目前没有发布内容。"
   dudect:
     title: "把常量时间测出来"
@@ -253,7 +276,7 @@ zh:
       def: "一种检测时序泄漏的统计方法：对两类输入分别计时，看两组耗时分布是否有差异。它在给定的测量预算下检测泄漏，但无法证明泄漏不存在。"
     "mcp":
       label: "MCP"
-      def: "Model Context Protocol（模型上下文协议）——一套开放协议，让 AI agent 通过统一接口发现并调用外部工具，而不必为每个工具单独写胶水代码。"
+      def: "Model Context Protocol（模型上下文协议）——一套开放协议，让 AI Agent 通过统一接口发现并调用外部工具，而不必为每个工具单独写胶水代码。"
     "rag":
       label: "RAG"
       def: "Retrieval-Augmented Generation（检索增强生成）——在查询时从存储里取出相关片段，喂给模型。最朴素的做法不记录新鲜度和可信度，已经回滚掉的旧事实可能又冒出来。"

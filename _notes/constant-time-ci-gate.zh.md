@@ -4,6 +4,13 @@ date: 2026-05-31
 permalink: /zh/notes/constant-time-ci-gate/
 lang: zh
 locale: zh_CN
+# ZH share card. Notes live in _notes/ (not under zh/), so the _config.yml
+# path-scoped default cannot reach them — same reason `locale` is set here.
+image:
+  path: /assets/img/social-card.zh.png
+  width: 1200
+  height: 630
+  alt: "Frank Xue——软件工程师。为代码、密码学与 Agent，写可审计的工具。"
 alternate: /notes/constant-time-ci-gate/
 description: "用一套 dudect 式的时序检测 harness 在 CI 里守住常量时间——它怎么工作，以及为什么它是在检测回归，而不是证明回归不存在。"
 excerpt: "「常量时间」是那种你做对一次、又会悄悄丢掉的性质。这篇讲 CI 里那根绊线：时序泄漏一回来就让构建变红——以及为什么它是检测，不是证明。"

@@ -64,7 +64,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
         </p>
 
         <figure class="fig">
-            {% include figures/gm-crypto-crates.svg %}
+            {% include figures/gm-crypto-crates.zh.svg %}
             <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口，至 v1.8 未变；v1.9.0 起为 104 个，v1.11.0 仍为 104）</figcaption>
         </figure>
 
@@ -183,13 +183,13 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
         <h2>下一步</h2>
         <dl class="version-grid">
             <dt>下一步</dt>
-            <dd>v1.6 起步的 TLCP（GB/T 38636）弧线<strong>已在 v1.9 收束</strong>；v1.11 又收掉了长期搁置的 RustCrypto <code>aead</code> 0.6 trait 适配。目前没有下一条弧线定到具体版本。继续搁置：AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。另有一条是<em>永久</em>不做、而非暂缓：端点身份绑定——相当于 TLCP 里的 hostname 校验——始终留给调用方。</dd>
+            <dd>v1.6 起步的 TLCP（GB/T 38636）弧线<strong>已在 v1.9 收束</strong>；v1.11 又收掉了长期搁置的 RustCrypto <code>aead</code> 0.6 trait 适配。目前没有下一条弧线定到具体版本。继续搁置：AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。另有一条是<em>永久</em>不做、而非暂缓：端点身份绑定——相当于 TLCP 里的 hostname 验证——始终留给调用方。</dd>
         </dl>
 
         <h2>它不是什么</h2>
         <ul>
             <li>不是 TLS / TLCP 协议栈——<code>tlcp</code> 这部分是一套原语工具集（密钥派生、记录层保护 / 解保护、链与证书对验证）。没有握手状态机、没有协商、也没有会话管理：协议要由调用方自己驱动，v1.9 的 C 示例就是这么做的。</li>
-            <li>不是端点身份认证——<code>verify_chain</code> / <code>verify_pair</code> 只建立结构性信任。把验证过的证书链绑定到具体的对端身份（相当于 TLCP 里的 hostname 校验）永远是调用方的事。</li>
+            <li>不是端点身份认证——<code>verify_chain</code> / <code>verify_pair</code> 只建立结构性信任。把验证过的证书链绑定到具体的对端身份（相当于 TLCP 里的 hostname 验证）永远是调用方的事。</li>
             <li>不包括 SM9、ZUC、后量子算法。</li>
             <li>不是 HSM / SDF / SKF 集成。</li>
             <li>不是经过认证的密码模块。</li>

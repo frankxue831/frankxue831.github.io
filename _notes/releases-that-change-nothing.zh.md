@@ -4,6 +4,13 @@ date: 2026-06-03
 permalink: /zh/notes/releases-that-change-nothing/
 lang: zh
 locale: zh_CN
+# ZH share card. Notes live in _notes/ (not under zh/), so the _config.yml
+# path-scoped default cannot reach them — same reason `locale` is set here.
+image:
+  path: /assets/img/social-card.zh.png
+  width: 1200
+  height: 630
+  alt: "Frank Xue——软件工程师。为代码、密码学与 Agent，写可审计的工具。"
 alternate: /notes/releases-that-change-nothing/
 description: "为什么 gm-crypto-rs 的版本线上有刻意留下的缺口——只做了保障、没改一个输出字节的周期，不配单独发一个版本。"
 excerpt: "发出去的版本号是对字节的承诺，不是工作量的流水账。这篇讲 gm-crypto-rs 里几个最硬的周期，为什么干脆没发。"

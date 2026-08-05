@@ -1,0 +1,25 @@
+<!-- ZH variant of gm-crypto-crates.svg. Geometry is identical; only the one
+     human-readable label ("opt-in SIMD") and the accessible title are
+     localized. Algorithm names, crate names and `C ABI` stay Latin. -->
+<svg viewBox="0 0 360 236" role="img" aria-labelledby="fig-gm-crates-title" xmlns="http://www.w3.org/2000/svg">
+  <title id="fig-gm-crates-title">sm2 / sm3 / sm4 → gmcrypto-core → gmcrypto-c（C ABI）与 gmcrypto-simd（可选 SIMD）</title>
+  <rect class="fig-box" x="12" y="12" width="88" height="34"/>
+  <rect class="fig-box" x="136" y="12" width="88" height="34"/>
+  <rect class="fig-box" x="260" y="12" width="88" height="34"/>
+  <text class="fig-label" x="56" y="34" text-anchor="middle">sm2</text>
+  <text class="fig-label" x="180" y="34" text-anchor="middle">sm3</text>
+  <text class="fig-label" x="304" y="34" text-anchor="middle">sm4</text>
+  <line class="fig-line" x1="56" y1="46" x2="152" y2="94"/>
+  <line class="fig-line" x1="180" y1="46" x2="180" y2="94"/>
+  <line class="fig-line" x1="304" y1="46" x2="208" y2="94"/>
+  <rect class="fig-box" x="104" y="94" width="152" height="38"/>
+  <text class="fig-label" x="180" y="118" text-anchor="middle">gmcrypto-core</text>
+  <line class="fig-line" x1="152" y1="132" x2="96" y2="178"/>
+  <line class="fig-line fig-line--dash" x1="208" y1="132" x2="264" y2="178"/>
+  <rect class="fig-box" x="16" y="178" width="160" height="44"/>
+  <text class="fig-label" x="96" y="198" text-anchor="middle">gmcrypto-c</text>
+  <text class="fig-label--muted" x="96" y="214" text-anchor="middle">C ABI</text>
+  <rect class="fig-box" x="184" y="178" width="160" height="44"/>
+  <text class="fig-label" x="264" y="198" text-anchor="middle">gmcrypto-simd</text>
+  <text class="fig-label--muted" x="264" y="214" text-anchor="middle">可选 SIMD</text>
+</svg>

@@ -244,8 +244,12 @@ home_pages = %w[index.html zh/index.html]
   record(failures, "#{relative}: missing Open Graph title") unless html.match?(%r{<meta property="og:title" content="[^"]+"})
   record(failures, "#{relative}: missing Open Graph description") unless html.match?(%r{<meta property="og:description" content="[^"]+"})
   # Share card must be a raster PNG — SVG og:images do not render in
-  # link previews on iMessage, Slack, X, LinkedIn, WhatsApp, or Discord.
-  record(failures, "#{relative}: missing PNG Open Graph image") unless html.match?(%r{<meta property="og:image" content="#{Regexp.escape(BASE_URL)}/assets/img/social-card\.png"})
+  # link previews on iMessage, Slack, X, LinkedIn, WhatsApp, or Discord —
+  # and it must match the page's locale. A /zh/ URL shared with the English
+  # card previews the Chinese tree as an English site, whatever the title says.
+  expected_card = relative.start_with?("zh/") ? "social-card.zh.png" : "social-card.png"
+  record(failures, "#{relative}: missing PNG Open Graph image (expected #{expected_card})") unless html.match?(%r{<meta property="og:image" content="#{Regexp.escape(BASE_URL)}/assets/img/#{Regexp.escape(expected_card)}"})
+  record(failures, "#{relative}: missing og:image:alt") unless html.match?(%r{<meta property="og:image:alt" content="[^"]+"})
   record(failures, "#{relative}: og:image must not be an SVG (link previews won't render it)") if html.match?(%r{<meta property="og:image" content="[^"]+\.svg"})
   record(failures, "#{relative}: missing apple-touch-icon") unless html.match?(%r{<link rel="apple-touch-icon"[^>]*href="/assets/img/apple-touch-icon\.png"})
   record(failures, "#{relative}: missing web manifest link") unless html.include?(%(<link rel="manifest" href="/site.webmanifest">))
@@ -369,6 +373,32 @@ end
   record(failures, "#{relative}: hero__title missing") unless html.include?(%(class="hero__title"))
 end
 
+# The locale-aware <title> splice in _includes/head.html rebuilds jekyll-seo-tag's
+# document title so the home-page suffix follows the page locale. Pin both
+# branches (home suffix / interior "page | site") in both locales: if a
+# github-pages bump changes seo-tag's output shape, or the splice regresses,
+# this fails loudly instead of shipping an English tagline in the Chinese tab.
+{
+  "index.html" => "Frank Xue | Software engineer.",
+  "zh/index.html" => "Frank Xue | 软件工程师。",
+  "about/index.html" => "About | Frank Xue",
+  "zh/about/index.html" => "关于 | Frank Xue"
+}.each do |relative, expected_title|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: <title> is not #{expected_title.inspect}") unless html.include?("<title>#{expected_title}</title>")
+end
+
+# The splice's failure mode if seo-tag ever emits no <title> is duplicated head
+# meta. Exactly one document title per page; SVG <title> elements all carry an
+# id attribute, so the bare form counts only the document title.
+Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
+  html = path.read
+  source = path.relative_path_from(SITE).to_s
+  count = html.scan("<title>").length
+  record(failures, "#{source}: expected exactly one document <title>, found #{count}") unless count == 1
+end
+
 # Reveal targets must be template-declared (no FOUC), one level only.
 %w[
   about/index.html zh/about/index.html
@@ -401,6 +431,7 @@ end
 # actually be generated, and the social card must be the right dimensions.
 %w[
   assets/img/social-card.png
+  assets/img/social-card.zh.png
   assets/img/apple-touch-icon.png
   assets/img/icon-192.png
   assets/img/icon-512.png
@@ -411,18 +442,20 @@ end
   record(failures, "Missing share/icon asset: #{rel}") unless SITE.join(rel).exist?
 end
 
-card = SITE.join("assets/img/social-card.png")
-if card.exist?
+%w[social-card.png social-card.zh.png].each do |card_name|
+  card = SITE.join("assets/img", card_name)
+  next unless card.exist?
+
   # PNG IHDR: width/height are big-endian uint32 at byte offsets 16 and 20.
   header = card.binread(24)
   if header && header.byteslice(0, 8) == "\x89PNG\r\n\x1a\n".b
     width = header.byteslice(16, 4).unpack1("N")
     height = header.byteslice(20, 4).unpack1("N")
     unless width == 1200 && height == 630
-      record(failures, "social-card.png must be 1200x630 (Open Graph), got #{width}x#{height}")
+      record(failures, "#{card_name} must be 1200x630 (Open Graph), got #{width}x#{height}")
     end
   else
-    record(failures, "social-card.png is not a valid PNG")
+    record(failures, "#{card_name} is not a valid PNG")
   end
 end
 

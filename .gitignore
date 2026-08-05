@@ -10,3 +10,6 @@ vendor/
 
 # macOS folder metadata
 .DS_Store
+
+# Claude Code session config (launch.json points at per-session scratch paths)
+.claude/

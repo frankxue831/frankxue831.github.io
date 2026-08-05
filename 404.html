@@ -5,27 +5,89 @@ permalink: /404.html
 description: The page you're looking for doesn't exist.
 lang: en
 sitemap: false
+nav_aria: "Primary / 主导航"
+bilingual_chrome: true
 ---
 
+{%- comment -%}
+  One static 404 serves both locale trees, so its no-JavaScript baseline is
+  bilingual: a reader who mistypes a /zh/ path must not land in English-only
+  chrome. locale-404.js narrows the page to the requested locale when JS is
+  available — with it off, both recovery blocks stay usable. No `alternate:`
+  and no hreflang: this is a recovery surface, not an indexed content page.
+{%- endcomment -%}
+
+{%- comment -%} Both locales' nav chrome, so the gate below can relabel the
+    header in place. Built from _data/i18n.yml, never hardcoded. {%- endcomment -%}
+{%- assign en = site.data.i18n.en -%}
+{%- assign zh = site.data.i18n.zh -%}
+{%- capture nav_en -%}
+[{"label":{{ en.nav.home | jsonify }},"href":{{ '/' | relative_url | jsonify }}},{"label":{{ en.nav.about | jsonify }},"href":{{ '/about/' | relative_url | jsonify }}},{"label":{{ en.nav.work | jsonify }},"href":{{ '/projects/' | relative_url | jsonify }}},{"label":{{ en.nav.writing | jsonify }},"href":{{ '/notes/' | relative_url | jsonify }}},{"label":{{ en.nav.contact | jsonify }},"href":{{ '/contact/' | relative_url | jsonify }}}]
+{%- endcapture -%}
+{%- capture nav_zh -%}
+[{"label":{{ zh.nav.home | jsonify }},"href":{{ '/zh/' | relative_url | jsonify }}},{"label":{{ zh.nav.about | jsonify }},"href":{{ '/zh/about/' | relative_url | jsonify }}},{"label":{{ zh.nav.work | jsonify }},"href":{{ '/zh/projects/' | relative_url | jsonify }}},{"label":{{ zh.nav.writing | jsonify }},"href":{{ '/zh/notes/' | relative_url | jsonify }}},{"label":{{ zh.nav.contact | jsonify }},"href":{{ '/zh/contact/' | relative_url | jsonify }}}]
+{%- endcapture -%}
+
 <section class="error-page">
-    <div>
+    <div class="error-page__inner"
+         data-nav-aria-en="{{ en.nav.primary_aria | escape }}"
+         data-nav-aria-zh="{{ zh.nav.primary_aria | escape }}"
+         data-nav-items-en="{{ nav_en | strip_newlines | escape }}"
+         data-nav-items-zh="{{ nav_zh | strip_newlines | escape }}"
+         data-home-en="{{ '/' | relative_url }}"
+         data-home-zh="{{ '/zh/' | relative_url }}"
+         data-skip-en="Skip to content"
+         data-skip-zh="跳到正文"
+         data-menu-en="Menu"
+         data-menu-zh="菜单"
+         data-title-en="{{ page.title | append: ' | ' | append: site.title | escape }}"
+         data-title-zh="页面没有找到 | {{ site.title | escape }}">
         <p class="error-page__code"><em>404</em></p>
-        <h1 class="error-page__title">Page not found.</h1>
-        <p class="error-page__body">
-            The page you're looking for has moved, or maybe it never
-            existed. Either way — not here.
-        </p>
-        <a href="{{ '/' | relative_url }}" class="error-page__link">
-            ← Back to the homepage
-        </a>
-        <a href="{{ '/projects/' | relative_url }}" class="error-page__link">
-            Selected work →
-        </a>
-        <a href="{{ '/notes/' | relative_url }}" class="error-page__link">
-            Notes →
-        </a>
-        <p class="error-page__body" lang="zh">
-            这个页面不存在。<a href="{{ '/zh/' | relative_url }}" class="error-page__link">中文首页 →</a>
-        </p>
+
+        <h1 class="error-page__title">
+            <span data-error-locale="en">Page not found.</span>
+            <span data-error-locale="zh" lang="zh-CN">页面没有找到。</span>
+        </h1>
+
+        <div class="error-page__locale" data-error-locale="en">
+            <p class="error-page__body">
+                The page you're looking for has moved, or maybe it never
+                existed. Either way — not here.
+            </p>
+            <p class="error-page__links">
+                <a href="{{ '/' | relative_url }}" class="error-page__link">
+                    ← Back to the homepage
+                </a>
+                <a href="{{ '/projects/' | relative_url }}" class="error-page__link">
+                    Selected work →
+                </a>
+                <a href="{{ '/notes/' | relative_url }}" class="error-page__link">
+                    Notes →
+                </a>
+            </p>
+        </div>
+
+        <div class="error-page__locale" data-error-locale="zh" lang="zh-CN">
+            <p class="error-page__body">
+                链接可能已经移动，也可能从来就不存在。你可以回到中文首页，或者继续看作品和笔记。
+            </p>
+            <p class="error-page__links">
+                <a href="{{ '/zh/' | relative_url }}" class="error-page__link">
+                    ← 回到中文首页
+                </a>
+                <a href="{{ '/zh/projects/' | relative_url }}" class="error-page__link">
+                    精选作品 →
+                </a>
+                <a href="{{ '/zh/notes/' | relative_url }}" class="error-page__link">
+                    笔记 →
+                </a>
+            </p>
+        </div>
     </div>
 </section>
+
+{%- comment -%} External file, so script-src 'self' covers it and no new CSP
+    hash is needed. Loaded here rather than in the layout because no other page
+    uses it; parsed after the blocks above so it can narrow them immediately.
+    {%- endcomment -%}
+<script src="{{ '/assets/js/locale-404.js' | relative_url }}"></script>

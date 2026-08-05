@@ -77,7 +77,24 @@
         duplicate graph does not. structured-data.html is the single JSON-LD
         source of truth. {%- endcomment -%}
     {%- capture seo_tags -%}{% seo %}{%- endcapture -%}
-    {{ seo_tags | split: '<script type="application/ld+json">' | first }}
+    {%- assign seo_meta = seo_tags | split: '<script type="application/ld+json">' | first -%}
+
+    {%- comment -%} Locale-aware <title>. jekyll-seo-tag builds the document
+        title from the single global `site.tagline`, which it appends whenever
+        page title == site title (the home pages). That is correct for EN and
+        wrong for ZH — it would put an English tagline in the Chinese tab.
+        Rebuild the title here with seo-tag's own rule, taking the suffix from
+        the page's locale, then splice it back over seo-tag's <title>. Every
+        other meta it emits survives untouched; og:title / twitter:title /
+        JSON-LD name already derive from page.title, so they need no fixup.
+        {%- endcomment -%}
+    {%- assign page_doc_title = page.title | default: site.title -%}
+    {%- if page_doc_title == site.title -%}
+      {%- assign doc_title = site.title | append: ' | ' | append: t.short_tagline -%}
+    {%- else -%}
+      {%- assign doc_title = page_doc_title | append: ' | ' | append: site.title -%}
+    {%- endif -%}
+    {{ seo_meta | split: '<title>' | first }}<title>{{ doc_title | escape }}</title>{{ seo_meta | split: '</title>' | last }}
     {% include structured-data.html %}
 
     {%- comment -%} hreflang alternates for SEO {%- endcomment -%}

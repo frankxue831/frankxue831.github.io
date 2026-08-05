@@ -42,7 +42,10 @@
             <span class="nav-toggle__bar"></span>
         </button>
 
-        <nav class="primary-nav" id="primary-nav" aria-label="{{ t.nav.primary_aria | escape }}">
+        {%- comment -%} `page.nav_aria` lets a page that serves both locales
+            (the shared 404) label its nav bilingually at the JS-off baseline
+            rather than claiming to be English-only. {%- endcomment -%}
+        <nav class="primary-nav" id="primary-nav" aria-label="{{ page.nav_aria | default: t.nav.primary_aria | escape }}">
             {%- assign here = page.url | default: '/' -%}
             {%- assign nav_items =
               t.nav.home  | append: '|' | append: base | append: '/' | append: '||' |
