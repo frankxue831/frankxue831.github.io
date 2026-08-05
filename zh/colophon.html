@@ -13,8 +13,7 @@ alternate: /colophon/
         这个站是<em>怎么搭的。</em>
     </h1>
     <p class="page-header__lede">
-        做出来是为了好读，也为了能核对。没有构建魔法，不向外发一个请求，
-        整套源码都摆在外面。
+        做出来是为了好读，也为了能核对。没有构建魔法，不向外发一个请求，整套源码都摆在外面。
     </p>
 </section>
 
@@ -23,31 +22,25 @@ alternate: /colophon/
         <h2>构建</h2>
         <p>
             一个用 <em>Jekyll</em> 生成、托管在 GitHub Pages 上的静态站点——
-            没有 JavaScript 框架，不做客户端渲染，除了 Jekyll 本身再没有别的
-            构建步骤。零件保持得少：<code>github-pages</code> gem，外加
+            没有 JavaScript 框架，不做客户端渲染，除了 Jekyll 本身再没有别的构建步骤。零件保持得少：<code>github-pages</code> gem，外加
             <code>jekyll-feed</code>、<code>jekyll-seo-tag</code> 和
-            <code>jekyll-sitemap</code>；一份手写、基于设计 token 的样式表；
-            以及分散在六个小文件里、约 500 行的原生 JavaScript。这些
+            <code>jekyll-sitemap</code>；一份手写、基于设计 token 的样式表；以及分散在六个小文件里、约 500 行的原生 JavaScript。这些
             JavaScript 全是渐进增强——把它关掉，每个页面照样能用。
         </p>
 
         <h2>字体</h2>
         <p>
-            标题字用 <em>EB Garamond</em>，中文回退到 Noto Serif SC 或系统衬线体；
-            正文用系统无衬线体；小号技术标签用 <em>IBM Plex Mono</em>。
+            标题字用 <em>EB Garamond</em>，中文回退到 Noto Serif SC 或系统衬线体；正文用系统无衬线体；小号技术标签用 <em>IBM Plex Mono</em>。
         </p>
         <p>
-            拉丁字体都自托管在本站——不走字体 CDN，不向 Google Fonts 发请求。
-            中文字形由你自己的系统提供。
+            拉丁字体都自托管在本站——不走字体 CDN，不向 Google Fonts 发请求。中文字形由你自己的系统提供。
         </p>
 
         <h2>如何核对</h2>
         <p>
-            「这里不追踪你」不是一句空话，而是被强制执行的。
-            一条严格的 <em>Content-Security-Policy</em> 把 <code>script-src</code>
+            「这里不追踪你」不是一句空话，而是被强制执行的。一条严格的 <em>Content-Security-Policy</em> 把 <code>script-src</code>
             钉死在本站（外加两段内联的主题与动效脚本，按哈希放行），并设了
-            <code>connect-src 'self'</code>——页面无法向别处发起请求：没有分析、
-            没有 CDN、没有远程调用。
+            <code>connect-src 'self'</code>——页面无法向别处发起请求：没有分析、没有 CDN、没有远程调用。
         </p>
         <p>
             每一处改动都由构建后校验器（<code>scripts/validate_site.rb</code>）把关，
@@ -57,8 +50,7 @@ alternate: /colophon/
 
         <h2>隐私</h2>
         <p>
-            没有分析，没有 cookie，没有第三方资源——没有追踪。
-            也没有联系表单、不收集邮箱；找我的方式是在 GitHub 上开公开的 issue 或
+            没有分析，没有 cookie，没有第三方资源——没有追踪。也没有联系表单、不收集邮箱；找我的方式是在 GitHub 上开公开的 issue 或
             discussion，让对话留在代码旁边。
         </p>
     </div>
