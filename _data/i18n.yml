@@ -30,6 +30,10 @@
 #   FFI entry points        → 入口（不用「入口点」）
 #   decaying (memory)       → 会衰减（不用「会过期」）
 #   failure modes           → 失败模式
+#   Not published. (marker) → 未单独发版（不用「未发布」；≠ 不单独发版 叙述句）
+#   Unpublished (grid dt)   → 版本缺口
+#   census (fuzz targets)   → 模糊测试 census（计数器；不另造「模糊目标数」）
+#   backlog (parked work)   → 待办（backlog）
 # Voice rule: ZH keeps its native register and may add explanatory glosses;
 # disclosures, hedges, numbers, and limitations must match EN exactly.
 # ---------------------------------------------------------------------------

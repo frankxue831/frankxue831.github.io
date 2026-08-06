@@ -125,10 +125,10 @@ alternate: /
                 给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对回当前代码，新会话不必从零摸项目。<strong>{{ project.status_label.zh }}</strong>——源码未公开。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
-                macOS 上查 self-hosted runner 的单次运行工具：launchd 状态、进程树、日志和 GitHub API 汇总成类型化 findings，控制动作另受门禁约束。目前私有、本地。
+                macOS 上查 self-hosted runner 的单次运行工具：launchd 状态、进程树、日志和 GitHub API 汇总成类型化 findings，控制动作另受门禁约束。目前{{ project.status_label.zh }}。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
-                把 storyboard 渲成讲解视频；每个说法画出来之前，都按固定 commit 对过源码。私有、本地。
+                把 storyboard 渲成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。{{ project.status_label.zh }}。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。

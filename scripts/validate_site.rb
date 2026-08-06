@@ -352,6 +352,17 @@ Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   end
 end
 
+# ZH status term of record: "Private/local" → 私有、本地 (顿号). Slash forms
+# already regressed once across blurbs + detail copy; ban them site-wide under
+# /zh/ so the next label tweak can't reintroduce 私有 / 本地 or 私有/本地.
+slash_private_local = /私有\s*[\/／]\s*本地/
+Pathname.glob(SITE.join("zh/**/*.html").to_s).each do |path|
+  html = path.read
+  if html.match?(slash_private_local)
+    record(failures, "#{path.relative_path_from(SITE)}: slash form of 私有、本地 (use 顿号, not /)")
+  end
+end
+
 # --- Interactive motion (decrypt + scroll reveal) regression checks ---
 %w[assets/js/reveal.js assets/js/decrypt.js].each do |rel|
   record(failures, "Missing motion script: #{rel}") unless SITE.join(rel).exist?
@@ -658,7 +669,9 @@ case_study = {
     headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
                "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
-    must_include: ["v0.5.0", "受控"], forbid: ["v0.1.1"]
+    # 单次运行 is the one-shot term of record; 一次性 regressed on this page's
+    # description + lede before the 2026-08-06 readthrough closed it.
+    must_include: ["v0.5.0", "受控", "单次运行"], forbid: ["v0.1.1", "一次性"]
   },
   # explainer-engine: private/local — the verification story lives in the frame,
   # so guard the simplified-marking and gate's-verdict phrases that carry it.
@@ -765,6 +778,33 @@ end
   record(failures, "#{relative}: missing <details> audit drawer") unless html.include?("<details")
   record(failures, "#{relative}: <h2> inside <details> breaks the contents rail") if html.match?(/<details\b[^>]*>(?:(?!<\/details>).)*?<h2/m)
   record(failures, "#{relative}: missing back-link to case study (#{back_link})") unless html.include?(%(href="#{back_link}"))
+end
+
+# ZH releases page once forked 免确认 SM2-KX next to 免密钥确认完成器 in the
+# same file. Forbid the shortened form (not a substring of 免密钥确认) so the
+# term of record can't re-split on the next release-history sync.
+zh_releases = "zh/projects/gm-crypto-rs/releases/index.html"
+zh_releases_html = read_file(SITE.join(zh_releases), failures)
+unless zh_releases_html.empty?
+  normalized = zh_releases_html.gsub(/\s+/, " ")
+  if normalized.include?("免确认")
+    record(failures, "#{zh_releases}: shortened 免确认 present (use 免密钥确认)")
+  end
+end
+
+# High-churn ZH work-list blurbs sit outside case_study and have re-hosted the
+# same terminology regressions (会过期, 一次性, 对过源码). Pin the current
+# terms of record so the next blurb edit keeps them.
+{
+  "zh/index.html" => %w[会衰减 单次运行 核对源码],
+  "zh/projects/index.html" => %w[会衰减 单次运行 核对源码]
+}.each do |relative, phrases|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  normalized = html.gsub(/\s+/, " ")
+  phrases.each do |phrase|
+    record(failures, "#{relative}: required blurb phrase #{phrase.inspect} missing") unless normalized.include?(phrase)
+  end
 end
 
 %w[
