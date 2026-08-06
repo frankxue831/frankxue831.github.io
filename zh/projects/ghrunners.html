@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "ghrunners"
-description: ghrunners——macOS 上 GitHub Actions self-hosted runner 的一次性 CLI：只读观测 + 受控 launchd 控制（私有/本地）。
+description: ghrunners——macOS 上 GitHub Actions self-hosted runner 的单次运行 CLI：只读观测 + 受控 launchd 控制（私有、本地）。
 permalink: /zh/projects/ghrunners/
 lang: zh
 alternate: /projects/ghrunners/
@@ -15,7 +15,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
         <em>ghrunners</em>
     </h1>
     <p class="page-header__lede">
-        macOS 上 GitHub Actions self-hosted runner 的一次性、无守护进程 CLI——
+        macOS 上 GitHub Actions self-hosted runner 的单次运行、无守护进程 CLI——
         只读观测，外加<em>受控的</em> launchd 控制。
     </p>
 </section>
@@ -63,9 +63,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             <code>control</code>（bootstrap / unload / restart）的目标，是从观测核心那份权威状态里解析出来的，而不是随手敲 <code>launchctl</code>。
         </p>
         <p>
-            <code>--dry-run</code> 只打印解析出来的命令，并不执行；除了
-            <code>DoubleLoaded</code> 情况下的 unload，<code>--domain</code>
-            一律按用法错误拒绝（其余每个 verb 的目标都是确定的，再去覆盖只会搞乱）；而在某个 verb 可能干掉正在运行的 <code>Runner.Worker</code> 之前，必须显式传 <code>--yes</code>。<strong>代价：</strong>要多记一串前置条件和参数，而且有些直接用
+            <code>--dry-run</code> 只打印解析出来的命令，并不执行。<code>--domain</code> 一律按用法错误拒绝，唯一的例外是 <code>DoubleLoaded</code> 情况下的 unload——其余每个 verb 的目标都是确定的，再去覆盖只会搞乱。而在某个 verb 可能干掉正在运行的 <code>Runner.Worker</code> 之前，必须显式传 <code>--yes</code>。<strong>代价：</strong>要多记一串前置条件和参数，而且有些直接用
             <code>launchctl</code> 照样能跑的命令，工具会故意拒掉。
         </p>
         <p>
@@ -98,10 +96,10 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
         <h2>它不是什么</h2>
         <ul>
             <li>不是 runner 安装或注销工具。</li>
-            <li>不是 daemon 或持续监控器。</li>
+            <li>不是守护进程或持续监控器。</li>
             <li>不做机群管理——控制面向单个 runner，受约束，不做批量编排。</li>
             <li>不支持 Linux 或 Windows。</li>
-            <li>私有 / 本地——目前不是公开源码项目。</li>
+            <li>{{ status_label }}——目前不是公开源码项目。</li>
         </ul>
 
         <div class="project-detail__links">

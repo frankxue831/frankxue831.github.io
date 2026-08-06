@@ -74,7 +74,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
         </p>
         <p>
             难点在于，这种「常量时间」常常只在代码评审那一刻成立；之后随便一次重构、新加一条快路径、一次依赖升级，时序泄漏都可能悄悄溜回来，当场没人发现。这个库偏偏又卡在一堆容易让它松动的约束里：要逐字节对上 GB/T 标准、核心要能跑在 <code>no_std</code> / wasm 上、涉密路径在每次发版之间都得守住{% include glossary-term.html term="constant-time" %}，还要通过一层 C ABI
-            把这些路径暴露给 C、C++、Go、Zig、Python 调用。
+            把这些路径暴露出来，供 C、C++、Go、Zig、Python 调用。
         </p>
         <p>
             所以它真正要回答的，不是<em>「今天是不是常量时间」</em>，而是<em>「靠什么保证每次提交之后它还是常量时间」</em>。
@@ -156,7 +156,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             再补两条，专门针对“常量时间”这个说法——也是最容易嘴上说、最难证明的部分：
         </p>
         <ul class="audit-notes">
-            <li>门禁不是摆设——专门放一个会漏时的 <code>negative_control</code>，dudect 必须把它揪出来，否则 CI 直接失败——
+            <li>门禁不是摆设——专门放一个故意泄漏时序的 <code>negative_control</code>，dudect 必须把它揪出来，否则 CI 直接失败——
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a></li>
             <li>也说得老实——这套 harness 只能检测泄漏，并不能证明常量时间——
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/README.md#L76" rel="noopener noreferrer">README.md:76 <span aria-hidden="true">&#8599;</span></a></li>
@@ -171,9 +171,9 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
         </p>
         <dl class="version-grid">
             <dt>当前版本</dt>
-            <dd><strong>v1.11.0</strong>，2026-08-01——SM4-GCM / SM4-CCM 的 RustCrypto <code>aead</code> 0.6 trait 适配（可选特性）。C ABI 仍是 104 个入口点。</dd>
+            <dd><strong>v1.11.0</strong>，2026-08-01——SM4-GCM / SM4-CCM 的 RustCrypto <code>aead</code> 0.6 trait 适配（可选特性）。C ABI 仍是 104 个入口。</dd>
 
-            <dt>未发布</dt>
+            <dt>版本缺口</dt>
             <dd>已发布的版本线上有四处缺口——v0.14、0.17–0.23、v1.5、v1.10——它们都没改动任何输出字节。</dd>
 
             <dt>完整版本线</dt>
@@ -183,7 +183,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
         <h2>下一步</h2>
         <dl class="version-grid">
             <dt>下一步</dt>
-            <dd>v1.6 起步的 TLCP（GB/T 38636）弧线<strong>已在 v1.9 收束</strong>；v1.11 又收掉了长期搁置的 RustCrypto <code>aead</code> 0.6 trait 适配。目前没有下一条弧线定到具体版本。继续搁置：AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。另有一条是<em>永久</em>不做、而非暂缓：端点身份绑定——相当于 TLCP 里的 hostname 验证——始终留给调用方。</dd>
+            <dd>v1.6 起步的 TLCP（GB/T 38636）弧线<strong>已在 v1.9 收束</strong>；v1.11 又落地了长期搁置的 RustCrypto <code>aead</code> 0.6 trait 适配。目前没有下一条弧线定到具体版本。继续搁置：AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。另有一条是<em>永久</em>不做、而非暂缓：端点身份绑定——相当于 TLCP 里的 hostname 验证——始终留给调用方。</dd>
         </dl>
 
         <h2>它不是什么</h2>

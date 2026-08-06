@@ -25,7 +25,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
 
         <h2>是什么</h2>
         <p>
-            <code>RepoLens</code> 会把整个仓库扫描成一份结构化、不可变的「pack」（一份给 Agent 看的仓库快照），通过 {% include glossary-term.html term="mcp" %} server 提供出来，同时维护一张会随时间衰减的类型化记忆图。它不替 Agent 写代码，只是让每个新会话不必从零开始。目前是私有预发布；对应的快照写在下面的<em>「证据」</em>里。
+            <code>RepoLens</code> 会把整个仓库扫描成一份结构化、不可变的「pack」（一份给 Agent 看的仓库快照），通过 {% include glossary-term.html term="mcp" %} 服务端提供出来，同时维护一张会随时间衰减的类型化记忆图。它不替 Agent 写代码，只是让每个新会话不必从零开始。目前是私有预发布；对应的快照写在下面的<em>「证据」</em>里。
         </p>
 
         <figure class="fig">
@@ -55,7 +55,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             <strong>在能力补齐之前，先把现在的状态如实讲清。</strong>
             Agent 工具普遍爱夸大，可工具一旦说过了头，反而会侵蚀它想建立的信任。所以已经交付到哪、边界在哪，都摊开写明：
             <code>validate-plan</code> 只给 warning（跑干净并不等于计划成立），<code>remember</code> 是工作区里的 markdown
-            交接——不是那张类型化记忆图，<code>eval</code> 是脚手架（它不启动 Agent、也不打分，评分卡由人来填），<code>state</code>
+            交接笔记——不是那张类型化记忆图，<code>eval</code> 是脚手架（它不启动 Agent、也不打分，评分卡由人来填），<code>state</code>
             是只读检查。<strong>代价：</strong>这一页读起来不如含糊其辞的版本唬人——因为缺口是讲出来的，而不是糊过去的。
         </p>
         <p>
@@ -74,7 +74,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             现在都能从 CLI 和 MCP 调到，连同 26 个 MCP 工具和那张类型化记忆图。
         </p>
         <p>
-            最强的信号，是项目自带的<em>「诚实状态」准则</em>：一张按功能逐条列出「已交付 vs 脚手架」的清单，刻意保持校准，好让日后的夸大一眼露馅。再加上一份 <code>dogfood</code> eval 契约（五个用例，其中一个专门防回归），一起守住上下文质量这条线。
+            最强的信号，是项目自带的<em>「诚实状态」准则</em>：一张按功能逐条标明「已交付还是脚手架」的清单，刻意保持校准，好让日后的夸大一眼露馅。再加上一份 <code>dogfood</code> eval 契约（五个用例，其中一个专门防回归），一起守住上下文质量这条线。
         </p>
 
         <h2>下一步</h2>
@@ -84,7 +84,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             <code>FrictionFinding</code>——以及一个明确的
             <code>Confidence</code> 枚举（<code>TestValidated</code> /
             <code>HumanVerified</code> / <code>ScanExtracted</code> /
-            <code>AgentAsserted</code>）。在它们落到公开 release 或公开 main 快照之前，仍只是规划。
+            <code>AgentAsserted</code>）。在它们落到公开发版或公开 main 快照之前，仍只是规划。
         </p>
 
         <h2>它不是什么</h2>
@@ -94,7 +94,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             <li>不是通用 RAG 存储——记忆有类型、能对上代码、会衰减。</li>
             <li>目前不做多仓库或组织级记忆。</li>
             <li>不保证召回出来的记忆一定对。</li>
-            <li>私有预发布——目前不是公开源码项目。</li>
+            <li>{{ status_label }}——目前不是公开源码项目。</li>
         </ul>
 
         <div class="project-detail__links">

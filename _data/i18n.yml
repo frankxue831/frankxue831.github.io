@@ -23,6 +23,17 @@
 #   diagram canvas          → 图示画布（首次可加括注 diagram canvas）
 #   validation (PKIX path)  → 路径构建 / 信任判定（不与「验证」互换）
 #   verification (signature)→ 签名验证
+#   one-shot (CLI)          → 单次运行（不用「一次性」）
+#   MCP server              → MCP 服务端
+#   Private/local (status)  → 私有、本地（不用斜杠）
+#   no-confirmation (KX)    → 免密钥确认（不得缩成「免确认」）
+#   FFI entry points        → 入口（不用「入口点」）
+#   decaying (memory)       → 会衰减（不用「会过期」）
+#   failure modes           → 失败模式
+#   Not published. (marker) → 未单独发版（不用「未发布」；≠ 不单独发版 叙述句）
+#   Unpublished (grid dt)   → 版本缺口
+#   census (fuzz targets)   → 模糊测试 census（计数器；不另造「模糊目标数」）
+#   backlog (parked work)   → 待办（backlog）
 # Voice rule: ZH keeps its native register and may add explanatory glosses;
 # disclosures, hedges, numbers, and limitations must match EN exactly.
 # ---------------------------------------------------------------------------
@@ -204,7 +215,7 @@ zh:
     links: "链接"
     source: "源码"
     owner: "个人项目"
-    key_outcome: "核心结论"
+    key_outcome: "关键结果"
   theme:
     label: "主题"
     auto: "跟随系统"
@@ -267,7 +278,7 @@ zh:
       def: "中国商用密码杂凑（哈希）标准（GB/T 32905），输出 256 位摘要，在国密体系中大致对应 SHA-256 的角色。"
     "sm4":
       label: "SM4"
-      def: "中国商用密码分组密码标准（GB/T 32907），分组长 128 位、密钥长 128 位，用于大批量对称加密。"
+      def: "中国商用密码分组密码标准（GB/T 32907），分组长 128 位、密钥长 128 位，用于批量对称加密。"
     "no_std":
       label: "no_std"
       def: "不链接标准库的 Rust 构建，代码因而能运行在嵌入式、内核、WebAssembly 等受限环境中。它只能使用 core；需要堆分配时才显式引入 alloc 并提供分配器。"
@@ -291,6 +302,6 @@ zh:
       def: "你自己运行、用来执行 GitHub Actions 任务的机器，区别于 GitHub 托管的云端 runner——操作系统、网络，以及任务之间保留什么，都由你掌控。"
     "daemon":
       label: "守护进程"
-      def: "在任务之间常驻后台的程序。ghrunners 刻意反其道而行——一次性运行：跑一次、做完动作就退出，不保留长期状态。"
+      def: "在任务之间常驻后台的程序。ghrunners 刻意反其道而行——单次运行：跑一次、做完动作就退出，不保留长期状态。"
   details:
     earlier_releases: "更早的版本（v0.6.0 – v0.13.0）"

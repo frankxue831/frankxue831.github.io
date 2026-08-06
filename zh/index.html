@@ -22,7 +22,7 @@ alternate: /
 
             <p class="hero__lede">
                 密码学软件、给编程 Agent 用的仓库上下文、本地开发基础设施——
-                做的工具都想让正确性、当前状态和限制保持可查。每个项目页都写清发布到哪一步、凭什么这么说；没公开的项目也一样。
+                做出来的工具，正确性、当前状态和限制都保持可查。每个项目页都写清发布到哪一步、凭什么这么说；没公开的项目也一样。
             </p>
 
             <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
@@ -82,7 +82,7 @@ alternate: /
         <p class="preview__label">一句话</p>
         <div class="preview__body">
             <p>
-                我是软件工程师，在意的是<em>清楚</em>：代码能不能被审计，工具有没有把自身状态说清楚，界面是不是别把日常工作弄得神秘兮兮。
+                我是软件工程师，在意的是<em>清楚</em>：代码能不能被审计，工具有没有把自身状态说清楚，界面会不会把日常工作弄得神秘兮兮。
             </p>
             <a href="{{ '/zh/about/' | relative_url }}" class="preview__link">
                 看长一点的版本 <span aria-hidden="true">→</span>
@@ -125,10 +125,10 @@ alternate: /
                 给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对回当前代码，新会话不必从零摸项目。<strong>{{ project.status_label.zh }}</strong>——源码未公开。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
-                macOS 上查 self-hosted runner 的一次性工具：launchd 状态、进程树、日志和 GitHub API 收成类型化 findings，控制动作另受门禁约束。目前私有 / 本地。
+                macOS 上查 self-hosted runner 的单次运行工具：launchd 状态、进程树、日志和 GitHub API 汇总成类型化 findings，控制动作另受门禁约束。目前{{ project.status_label.zh }}。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
-                把 storyboard 渲成讲解视频；每个说法画出来之前，都按固定 commit 对过源码。私有 / 本地。
+                把 storyboard 渲成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。{{ project.status_label.zh }}。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
