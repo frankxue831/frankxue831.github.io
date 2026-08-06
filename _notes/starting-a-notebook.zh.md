@@ -10,7 +10,7 @@ image:
   path: /assets/img/social-card.zh.png
   width: 1200
   height: 630
-  alt: "Frank Xue——软件工程师。为代码、密码学与 Agent，写可审计的工具。"
+  alt: "Frank Xue——软件工程师。为代码、系统和 Agent，写可审计、状态清晰的工具。"
 alternate: /notes/starting-a-notebook/
 description: "这个笔记本写什么：可核对的工作笔记，不是发版通告，也不是精修长文。"
 excerpt: "公开的工程笔记本要站得住，每篇至少得有一个有用的判断、一个具体决定，以及让多疑读者能顺着查的证据。"

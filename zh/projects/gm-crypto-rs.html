@@ -1,12 +1,12 @@
 ---
 layout: default
 title: "gm-crypto-rs"
-description: gm-crypto-rs——国密 SM2 / SM3 / SM4 纯 Rust SDK；涉密路径按常量时间设计，CI 用 dudect 泄漏回归门禁守着。
+description: gm-crypto-rs——国密 SM2 / SM3 / SM4 纯 Rust SDK；涉密路径按常量时间设计，CI 用 dudect 泄漏回归门禁把关。
 permalink: /zh/projects/gm-crypto-rs/
 lang: zh
 alternate: /projects/gm-crypto-rs/
 project_slug: gm-crypto-rs
-summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
+summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
 ---
 
 <section class="page-header wrap">
@@ -77,13 +77,13 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
             把这些路径暴露出来，供 C、C++、Go、Zig、Python 调用。
         </p>
         <p>
-            所以它真正要回答的，不是<em>「今天是不是常量时间」</em>，而是<em>「靠什么保证每次提交之后它还是常量时间」</em>。
+            所以它真正要回答的，不是<em>「今天是不是常量时间」</em>，而是<em>「靠什么让每次提交之后它还是常量时间」</em>。
         </p>
 
         <h2>约束与关键决策</h2>
         <p>
             <strong>持续验证，而不是一次性拍板。</strong>常量时间不该是评审会上签个字就算数的结论，而该是 CI 每次都重新核一遍的性质。所以每次 CI 都会用 <code>dudect-bencher</code>（时序侧信道检测工具）把 20 条涉密路径跑一遍；其中核心那一组带<em>门禁</em>，阈值是统计量 <code>|τ|&nbsp;&lt;&nbsp;0.20</code>——
-            一旦越界就直接让构建挂掉，不用等人去发现。要说清楚的是，它报的是<em>「检测事件」</em>：<code>|τ|</code> 低，只说明在当前的检测强度下没测到泄漏，<em>并不能</em>证明泄漏不存在（这句措辞直接照搬了
+            一旦越界就直接让构建挂掉，不用等人去发现。要说清楚的是，它报的是<em>「检测事件」</em>：<code>|τ|</code> 低，只说明在当前的测量预算下没测到泄漏，<em>并不能</em>证明泄漏不存在（措辞沿用
             <code>dudect-bencher</code> 自己的文档）。<strong>代价：</strong>每个
             PR 都要付出这份测量开销；而且统计永远只能说「没测到」，证明不了「不存在」。
         </p>
@@ -111,7 +111,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
         </p>
         <p>
             <strong>算术按常量时间设计，但把前提摆明。</strong>涉密的大数运算搭在 <code>subtle</code> 和 <code>crypto-bigint</code>
-            之上，密钥材料一到 <code>Drop</code> 就由 <code>zeroize</code> 抹零。整体是奔着常量时间设计的，但有些地方确实做不到。<strong>代价：</strong>在那些「乘法耗时跟操作数有关」的 CPU 上（部分老款 x86、部分嵌入式芯片），这些时序保证并不成立——这一条我明写在<em>「它不是什么」</em>里，没藏着掖着。
+            之上，密钥材料一到 <code>Drop</code> 就由 <code>zeroize</code> 抹零。整体是奔着常量时间设计的，但有些地方确实做不到。<strong>代价：</strong>在那些「乘法耗时跟操作数有关」的 CPU 上（部分老款 x86、部分嵌入式芯片），这些时序性质并不成立——这一条我明写在<em>「它不是什么」</em>里，没藏着掖着。
         </p>
         <p>
             <strong>先发核心、再发 FFI——这一轮输出没变就不发版。</strong>每个密码模式都按「核心在 vN、FFI 在 vN+1」的节奏走：SM4-XTS 的核心在 v0.12、对应的 C ABI 在 v0.13；面向磁盘的多扇区原地辅助在
@@ -130,7 +130,7 @@ summary_outcome: "用 CI 泄漏回归门禁守住涉密路径。"
         <h2>证据</h2>
         <p>
             每一处输出都逐字节比对过：标准 KAT 测试向量、GmSSL 3.2.0
-            （互操作性——v1.10 起在 CI 里挂了任务，对着钉在源码构建的 oracle 跑）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>（<code>xts_standard=GB</code> 模式）。
+            （互操作性——v1.10 起在 CI 里挂了任务，对着钉在源码构建的 oracle 跑）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>（可调模式，<code>xts_standard=GB</code>）。
         </p>
         <p>
             上面那套泄漏回归门禁，每次提交的 CI 都会跑一遍；核心在 <code>[lints]</code>
