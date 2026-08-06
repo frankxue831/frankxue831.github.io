@@ -76,7 +76,7 @@ defaults:
         path: /assets/img/social-card.zh.png
         width: 1200
         height: 630
-        alt: "Frank Xue——软件工程师。为代码、密码学与 Agent，写可审计的工具。"
+        alt: "Frank Xue——软件工程师。为代码、系统和 Agent，写可审计、状态清晰的工具。"
   # Notes are long-form documents; the more-specific scope sets their layout
   # while inheriting the share image above.
   - scope:

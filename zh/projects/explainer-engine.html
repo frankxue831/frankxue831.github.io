@@ -52,7 +52,7 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
 
         <h2>约束与关键决策</h2>
         <p>
-            <strong>引用不上的说法，拒绝画。</strong>渲染之前，<strong>引用校验门</strong>会按固定 commit 从源仓库里读出被引用的行，核对所声称的证据是否真的在那里；还有一道 commit 诚实性检查：如果徽标上的 commit 和仓库 <code>HEAD</code> 对不上、或者工作区是脏的又没显式放行，构建就会失败。<strong>代价：</strong>写 storyboard 变慢了——每个说法都得配一条能解析的引用，一份跑在源码前头的
+            <strong>引用不上的说法，拒绝画。</strong>渲染之前，<strong>引用校验门</strong>会按固定 commit 从源仓库里读出被引用的行，核对所声称的证据是否真的在那里；还有一道 commit 诚实性检查：如果徽标上的 commit 和仓库 <code>HEAD</code> 对不上、或者工作区是脏的又没显式放行，构建就会失败。<strong>代价：</strong>写 storyboard 变慢了——每个说法都得配一条能解析的引用，一份跑得比源码还快、对不上引用的
             storyboard 根本渲染不出来。
         </p>
         <p>

@@ -73,8 +73,8 @@ GEORGIA_IT = "/System/Library/Fonts/Supplemental/Georgia Italic.ttf"
 # the English card's colour semantics, where the closing clause takes accent.
 EYEBROW_LATIN = "FRANK XUE  /  "
 EYEBROW_CJK = "软件工程师"
-HEAD_INK = "为代码、密码学与 Agent，"
-HEAD_ACCENT = "写可审计的工具。"
+HEAD_INK = "为代码、系统和 Agent，"
+HEAD_ACCENT = "写可审计、状态清晰的工具。"
 URL = "frankxue.dev"
 TAGS = (("Rust  ·  ", "latin"), ("密码学", "cjk"), ("  ·  ", "latin"), ("Agent 工具", "cjk"))
 

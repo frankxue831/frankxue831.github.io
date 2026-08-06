@@ -10,7 +10,7 @@ image:
   path: /assets/img/social-card.zh.png
   width: 1200
   height: 630
-  alt: "Frank Xue——软件工程师。为代码、密码学与 Agent，写可审计的工具。"
+  alt: "Frank Xue——软件工程师。为代码、系统和 Agent，写可审计、状态清晰的工具。"
 alternate: /notes/unsafe-opt-in/
 description: "gm-crypto-rs 的核心 crate 禁用 unsafe，把需要它的 SIMD 代码隔到另一个 crate 里、藏在需要显式开启的 feature 后面。"
 excerpt: "快路径需要 unsafe。与其让它们进核心，不如把它们放进一个你主动选用的 crate——这样核心始终顶着 unsafe_code = \"forbid\"。"
