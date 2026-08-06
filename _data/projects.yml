@@ -54,7 +54,7 @@
   status: private-local
   status_label:
     en: "Private/local"
-    zh: "私有/本地"
+    zh: "私有、本地"
   release: "local tag v0.5.0"
   release_source: local_tag
   snapshot_label:
@@ -78,7 +78,7 @@
   status: private-local
   status_label:
     en: "Private/local"
-    zh: "私有/本地"
+    zh: "私有、本地"
   # "diagram canvas" is a milestone name, not a release state — labeled as
   # such in snapshot_label. TODO(Frank): replace with the real local snapshot
   # identifier at review.

@@ -15,7 +15,7 @@ alternate: /projects/
         精选<em>作品。</em>
     </h1>
     <p class="page-header__lede">
-        一份短而诚实的清单。多是 Rust，多在开发者工具和底层系统的接缝上。讲不清做什么、做到哪、限制在哪的，不会放上来。每个项目页都写着自己的发布状态和证据——外面能核对到哪一步，看各自的页面，不在这里一句话打包。
+        一份短而诚实的清单。多是 Rust，多在开发者工具和底层系统的接缝上。讲不清做什么、做到哪、限制在哪的，不会放上来。每个项目页都写着自己的发布状态和证据——外面能核对到哪一步，看各自的页面，不在这里用一句话概括。
     </p>
 </section>
 
@@ -44,14 +44,14 @@ alternate: /projects/
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。按版本拆开的证据，写在版本线那一页。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的仓库记忆与上下文：经 MCP 提供 26 个工具，记忆有类型、会过期。私有预发布——源码未公开。
+                给 AI 编程 Agent 用的仓库记忆与上下文：经 MCP 提供 26 个工具，记忆有类型、会衰减。私有预发布——源码未公开。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
-                macOS 上查 GitHub Actions self-hosted runner 的一次性 CLI：只读看状态，要动 launchd 也绑在观测结果上；读不到就降级，不硬崩。目前私有 / 本地。
+                macOS 上查 GitHub Actions self-hosted runner 的单次运行 CLI：只读看状态，要动 launchd 也绑在观测结果上；读不到就降级，不硬崩。目前私有、本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
-                确定性流水线：把 YAML storyboard 渲成带旁白的讲解视频。画面标 <em>simplified</em>；画帧前，引用校验门按固定 commit 对源码——
-                视频里的 <code>verified @ commit</code> 是门禁结论，不是装饰。目前私有 / 本地。
+                确定性流水线：把 YAML storyboard 渲成带旁白的讲解视频。画面标 <em>simplified</em>；画帧前，引用校验门按固定 commit 核对源码——
+                视频里的 <code>verified @ commit</code> 是门禁结论，不是装饰。目前私有、本地。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
