@@ -79,14 +79,13 @@
   status_label:
     en: "Private/local"
     zh: "私有、本地"
-  # "diagram canvas" is a milestone name, not a release state — labeled as
-  # such in snapshot_label. TODO(Frank): replace with the real local snapshot
-  # identifier at review.
-  release: "local — diagram canvas"
+  # Private ManimSimpleRender tag `diagram-canvas` @ 74fb1f4 (merge of PR #34
+  # feat/diagram-canvas). Tag is on the private repo only; no public source link.
+  release: "local tag diagram-canvas"
   release_source: local_tag
   snapshot_label:
-    en: "local — diagram-canvas milestone"
-    zh: "本地——图示画布里程碑"
+    en: "local tag diagram-canvas"
+    zh: "本地 tag diagram-canvas"
   repo_url: ~
   crate_url: ~
   docs_url: ~
