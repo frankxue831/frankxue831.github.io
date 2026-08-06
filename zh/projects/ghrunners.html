@@ -30,17 +30,17 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             （跑 GitHub Actions 任务的执行器），交叉核对 <code>launchctl</code>
             域状态、进程树、<code>.runner</code> JSON、worker 日志，以及（可选的）GitHub API。观测核心——<code>status</code>、
             <code>describe</code>、<code>doctor</code>、<code>logs</code>——会把查出来的问题整理成一条条类型化的 finding；另外还有个独立、受控的
-            <code>control</code> 子命令，动的也是同一份状态。这是私有本地工具；对应的快照写在下面的<em>「证据」</em>里。
+            <code>control</code> 子命令，动的也是同一份状态。这是私有、本地工具；对应的快照写在下面的<em>「证据」</em>里。
         </p>
 
         <figure class="fig">
             {% include figures/ghrunners-evidence.zh.svg %}
-            <figcaption class="fig__cap">图 3.1 — 五路证据 → 类型化 findings → 受约束的 launchd 控制</figcaption>
+            <figcaption class="fig__cap">图 3.1 — 五路证据 → 类型化 findings → 受控的 launchd 控制</figcaption>
         </figure>
 
         <h2>要解决的问题</h2>
         <p>
-            Mac 上一台 {% include glossary-term.html term="self-hosted-runner" %} 悄无声息地挂掉时，线索是散落各处的：
+            Mac 上一台 {% include glossary-term.html term="self-hosted-runner" %} 悄无声息地挂掉时，真相是散落各处的：
             {% include glossary-term.html term="launchd" %} 记着域和上次退出状态，进程树才知道 worker 是不是真活着，安装目录用 <code>0700</code> 把配置挡在外面，而任务到底有没有真正落地，只有 GitHub API 知道。
         </p>
         <p>
@@ -59,7 +59,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             到底是权限不够，还是真的没有——而且少了 <code>sudo</code>，输出就不那么完整。
         </p>
         <p>
-            <strong>受约束的控制动作，绑在它观测到的状态上。</strong>最顺手的下一步——start / stop / restart——恰恰是危险的那一步，所以
+            <strong>受控的控制动作，绑在它观测到的状态上。</strong>最顺手的下一步——start / stop / restart——恰恰是危险的那一步，所以
             <code>control</code>（bootstrap / unload / restart）的目标，是从观测核心那份权威状态里解析出来的，而不是随手敲 <code>launchctl</code>。
         </p>
         <p>
@@ -76,7 +76,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
 
         <h2>证据</h2>
         <p>
-            私有快照 <code>local tag v0.5.0</code>——没有可查看的公开源码。支撑这些说法的，是真正跑起来的功能：<code>status</code>、
+            私有快照 <code>local tag v0.5.0</code>——没有可查看的公开源码。支撑这些说法的，是真正跑起来的界面：<code>status</code>、
             <code>describe</code>、<code>doctor</code>、<code>logs</code>
             和受控的 <code>control</code> 现在都能用。
         </p>
@@ -97,8 +97,8 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
         <ul>
             <li>不是 runner 安装或注销工具。</li>
             <li>不是守护进程或持续监控器。</li>
-            <li>不做机群管理——控制面向单个 runner，受约束，不做批量编排。</li>
-            <li>不支持 Linux 或 Windows。</li>
+            <li>不做机群管理——控制面向单个 runner，受控，不做批量编排。</li>
+            <li>不是 Linux 或 Windows 工具。</li>
             <li>{{ status_label }}——目前不是公开源码项目。</li>
         </ul>
 

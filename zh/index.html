@@ -14,14 +14,14 @@ alternate: /
 
     <div class="hero__grid">
         <div class="hero__copy">
-            <p class="hero__eyebrow">Frank Xue / 软件工程师，主要写 Rust</p>
+            <p class="hero__eyebrow">Frank Xue — 软件工程师，主要写 Rust</p>
 
             <h1 class="hero__title">
                 为代码、系统和 Agent，写可审计、<em>状态清晰的工具。</em>
             </h1>
 
             <p class="hero__lede">
-                密码学软件、给编程 Agent 用的仓库上下文、本地开发基础设施——
+                密码学软件、给 AI 编程 Agent 用的仓库上下文、本地开发基础设施——
                 做出来的工具，正确性、当前状态和限制都保持可查。每个项目页都写清发布到哪一步、凭什么这么说；没公开的项目也一样。
             </p>
 
@@ -31,12 +31,12 @@ alternate: /
             </a>
         </div>
 
-        <aside class="hero-proof" aria-label="精选作品">
+        <aside class="hero-proof" aria-label="作品凭证">
             <div class="hero-proof__header">
                 <p class="hero-proof__label">作品凭证</p>
                 {% if public_project %}
                 <p class="hero-proof__recent">
-                    公开版本：
+                    公开发布：
                     <span>{{ public_project.title }} {{ public_project.release }}</span>
                 </p>
                 {% endif %}
@@ -63,7 +63,7 @@ alternate: /
             </ul>
 
             <p class="hero-proof__note">
-                别人能自己核对的，只有已打公开 tag 的作品。私有项目只写概览——不挂源码链接，也不把本地状态写成正式发布。
+                别人能自己核对的，只有已打公开标签（tag）的作品。私有项目只写概览——不挂源码链接，也不把本地状态写成正式发布。
             </p>
         </aside>
     </div>
@@ -118,17 +118,17 @@ alternate: /
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
-                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK。涉密路径按常量时间设计，CI 里用 dudect 盯泄漏回归。公开版 <strong>{{ project.release }}</strong> 在
+                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK。涉密路径按常量时间设计，CI 里用 dudect 门禁拦泄漏回归。公开版 <strong>{{ project.release }}</strong> 在
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对回当前代码，新会话不必从零摸项目。<strong>{{ project.status_label.zh }}</strong>——源码未公开。
+                给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对上当前代码，新会话不必冷启动重新摸清项目。<strong>{{ project.status_label.zh }}</strong>——源码未公开。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
                 macOS 上查 self-hosted runner 的单次运行工具：launchd 状态、进程树、日志和 GitHub API 汇总成类型化 findings，外加受控的 launchd 控制。目前{{ project.status_label.zh }}。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
-                把 storyboard 渲成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。{{ project.status_label.zh }}。
+                把 storyboard 渲染成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。{{ project.status_label.zh }}。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
@@ -140,7 +140,7 @@ alternate: /
     </ul>
 
     <a href="{{ '/zh/projects/' | relative_url }}" class="preview__link preview__link--section">
-        看精选作品 <span aria-hidden="true">→</span>
+        看全部作品 <span aria-hidden="true">→</span>
     </a>
 </section>
 
@@ -151,7 +151,7 @@ alternate: /
         <span class="ghost-num" aria-hidden="true">04</span>
         <p class="section__num">(04)  笔记</p>
         <h2 id="writing-h" class="section__title">
-            把一个问题<em>想透。</em>
+            把一个问题<em>写透。</em>
         </h2>
     </header>
 

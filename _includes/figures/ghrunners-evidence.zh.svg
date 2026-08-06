@@ -4,7 +4,7 @@
      site's ZH term of record for typed findings (see the terminology header in
      _data/i18n.yml and the figcaption on zh/projects/ghrunners.html). -->
 <svg viewBox="0 0 360 218" role="img" aria-labelledby="fig-ghrunners-evidence-title" xmlns="http://www.w3.org/2000/svg">
-  <title id="fig-ghrunners-evidence-title">launchd + ps + .runner + 日志 + API → 类型化 findings → 受约束的控制动作</title>
+  <title id="fig-ghrunners-evidence-title">launchd + ps + .runner + 日志 + API → 类型化 findings → 受控的控制动作</title>
   <rect class="fig-box" x="8" y="12" width="64" height="30"/>
   <rect class="fig-box" x="80" y="12" width="64" height="30"/>
   <rect class="fig-box" x="152" y="12" width="64" height="30"/>
