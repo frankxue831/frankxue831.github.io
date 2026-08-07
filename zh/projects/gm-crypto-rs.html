@@ -101,7 +101,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             HMAC-SM3——挂在 nightly 上、用 <code>0.55</code> 的粗回归哨兵值监视，而不是 <code>0.20</code> 的门禁。共享 runner 上的类分割噪声让它们更紧的阈值频繁误报，所以逐个降级处理，理由也公开写明了。<strong>代价：</strong>遥测那部分只是监视、并不拦截，而且这套分层本身也得长期维护。
         </p>
         <p>
-            <strong>安全的核心，SIMD 单独按需开。</strong>
+            <strong>核心禁止 unsafe，SIMD 单独按需开。</strong>
             <code>gmcrypto-core</code> 在 <code>[lints]</code> 表里禁掉了 unsafe
             （<code>unsafe_code = "forbid"</code>）——整个核心一行
             <code>unsafe</code> 都不许有。可位切片
@@ -124,7 +124,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             <code>0.17</code>–<code>0.23</code> 这一段都没单独发版——主要是
             <code>v0.21</code>–<code>v0.23</code> 的发版准备工作（冻结公开 API、把
             <code>crypto-bigint</code> 从常开接口解耦、再做一轮多模型对抗式的 1.0 前复审）——
-            一起并进了刻意的 <code>1.0.0</code> 正式发布。<strong>代价：</strong>版本号因此留了个需要解释的缺口；而且多出一层 C ABI，每个模式都得在三个已发布的 crate 里测一遍、维护一遍，工作量等于翻倍。
+            一起并进了刻意的 <code>1.0.0</code> 正式发布。<strong>代价：</strong>版本号因此留了个需要解释的缺口；而且多出一层 C ABI，每个模式都得在三个已发布的 crate 里测一遍、维护一遍，测试和维护面也随之翻倍。
         </p>
 
         <h2>证据</h2>
