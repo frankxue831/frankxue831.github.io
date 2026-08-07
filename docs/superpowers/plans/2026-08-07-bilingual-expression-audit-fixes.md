@@ -246,7 +246,7 @@ Reject the commit if the diff changes a number, link, tag, source-visibility fac
 Run:
 
 ```bash
-rg -n "最吃紧的几篇|私下游记|藏在需要显式开启|拿 feature 把它们一关|链接可能已经移动|Other ways to get in touch|其他联系方式|Source is .*private/local" _notes 404.html index.html zh/index.html projects.html
+rg -n "最吃紧的几篇|私下游记|藏在需要显式开启|拿 feature 把它们一关|链接可能已经移动|Other ways to get in touch|其他联系方式|Source is \{\{|Source is private/local" _notes 404.html index.html zh/index.html projects.html
 ```
 
 Expected: eight findings across the files listed for this task.
@@ -318,7 +318,7 @@ Remove the Liquid `downcase` interpolation only from this sentence; keep `_data/
 Run:
 
 ```bash
-rg -n "最吃紧的几篇|私下游记|藏在需要显式开启|拿 feature 把它们一关|链接可能已经移动|Other ways to get in touch|其他联系方式|Source is .*private/local" _notes 404.html index.html zh/index.html projects.html
+rg -n "最吃紧的几篇|私下游记|藏在需要显式开启|拿 feature 把它们一关|链接可能已经移动|Other ways to get in touch|其他联系方式|Source is \{\{|Source is private/local" _notes 404.html index.html zh/index.html projects.html
 ```
 
 Expected: exit status 1 and no matches.
@@ -419,7 +419,7 @@ rg -n -B 1 -A 1 "Constraint blocks bad actions" assets/video/harness-field-expla
 rg -n "受控操作" zh/projects/ghrunners.html _includes/figures/ghrunners-evidence.zh.svg
 ```
 
-Expected: the first command has no matches; the cue remains at `00:32.300 --> 00:34.480`; `受控操作` appears exactly once in each ZH source.
+Expected: the first command has no matches; the cue remains at `00:32.300 --> 00:34.480`; the target heading and SVG title both use `受控操作`. The page also uses the same term in `summary_outcome`, so more than one page match is valid.
 
 - [ ] **Step 5: Build and validate**
 
@@ -526,7 +526,7 @@ Run:
 
 ```bash
 rg -n "No runtime output of any published crate changed|crates.io skipped|Changes shipped with" projects/gm-crypto-rs-releases.html
-rg -n "No published crate's runtime output changes|crates.io skips|Changes ship with" projects/gm-crypto-rs-releases.html
+rg -n "No published crate's runtime output changes|so crates.io skips <code>1.10.0</code>|Changes ship with <code>1.11.0</code>" projects/gm-crypto-rs-releases.html
 rg -n "GmSSL" _notes projects zh/projects
 ```
 
@@ -586,7 +586,7 @@ Expected: clean `codex/fix-bilingual-expression-audit` plus four content commits
 Run:
 
 ```bash
-rg -n "Every crypto library|exactly two things|evidence in itself|took an afternoon less|每个密码库都会说|这需要两样东西|本身就成了一种证据|它是不是和一个可信参考实现|私下游记|最吃紧的几篇|藏在需要显式开启|拿 feature 把它们一关|链接可能已经移动|Other ways to get in touch|其他联系方式|Source is .*private/local|一个概念能有多少|受控的控制动作|Constraint blocks bad action\\.$|No published crate's runtime output changes|crates.io skips|Changes ship with" 404.html index.html zh/index.html projects.html _notes projects zh/projects _includes/figures assets/video
+rg -n "Every crypto library|exactly two things|evidence in itself|took an afternoon less|每个密码库都会说|这需要两样东西|本身就成了一种证据|它是不是和一个可信参考实现|私下游记|最吃紧的几篇|藏在需要显式开启|拿 feature 把它们一关|链接可能已经移动|Other ways to get in touch|其他联系方式|Source is \{\{|Source is private/local|一个概念能有多少|受控的控制动作|Constraint blocks bad action\\.$|No published crate's runtime output changes|so crates.io skips <code>1.10.0</code>|Changes ship with <code>1.11.0</code>" 404.html index.html zh/index.html projects.html _notes projects zh/projects _includes/figures assets/video
 ```
 
 Expected: exit status 1 and no matches.
