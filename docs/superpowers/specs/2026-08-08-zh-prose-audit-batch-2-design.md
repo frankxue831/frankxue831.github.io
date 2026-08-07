@@ -233,4 +233,3 @@ detect the current problems.
 The implementation should use one focused content branch. Commit logical file
 groups separately, update Notion only after the repository validation is green,
 then run the full validation suite again before publishing a draft pull request.
-
