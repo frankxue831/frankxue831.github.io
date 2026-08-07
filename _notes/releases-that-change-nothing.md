@@ -44,7 +44,7 @@ users' attention on your bookkeeping.
 
 `1.0.0` is where it converged: all three crates published lockstep at `=1.0.0`,
 with the runtime wire output — SM2 signatures and ciphertexts, SM4 mode bytes —
-byte-identical to `0.16.0` and cross-checked against gmssl on eleven of eleven
+byte-identical to `0.16.0` and cross-checked against GmSSL on eleven of eleven
 interop vectors. The breaking changes in 1.0 are API *shape*, not behavior; a
 `0.16` consumer gets the same bytes out. From there, `cargo-semver-checks` gates
 forward breaks, so the next number means what it says.
