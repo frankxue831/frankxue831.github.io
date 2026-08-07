@@ -81,8 +81,9 @@ Files: `projects/explainer-engine.html` and
 - Keep the checkable facts: the clip is a real rendered artifact, and the
   `simplified` and `verified @ commit` markers are visible.
 - State plainly that the cited private source line and private gate result are
-  not independently checkable today. Say they could become externally
-  checkable if the source is later published; do not promise publication.
+  not independently checkable today. If the source is later published, the
+  cited line could become externally checkable; the historical gate result
+  would still require public run evidence. Do not promise publication.
 - Do not add a source link or imply a publication date.
 
 ### Byte-identity note
