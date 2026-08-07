@@ -98,7 +98,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
         </p>
         <p>
             <em>只做遥测</em>的有 4 条：域求逆诊断、k-class 签名，以及 2026-06-17 起的
-            HMAC-SM3——挂在 nightly 上、用 <code>0.55</code> 的粗回归哨兵值盯着，而不是 <code>0.20</code> 的门禁。共享 runner 上的类分割噪声让它们更紧的阈值频繁误报，所以逐个降级处理，理由也公开写明了。<strong>代价：</strong>遥测那部分只是盯着、并不拦截，而且这套分层本身也得长期维护。
+            HMAC-SM3——挂在 nightly 上、用 <code>0.55</code> 的粗回归哨兵值监视，而不是 <code>0.20</code> 的门禁。共享 runner 上的类分割噪声让它们更紧的阈值频繁误报，所以逐个降级处理，理由也公开写明了。<strong>代价：</strong>遥测那部分只是监视、并不拦截，而且这套分层本身也得长期维护。
         </p>
         <p>
             <strong>安全的核心，SIMD 单独按需开。</strong>
@@ -130,7 +130,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
         <h2>证据</h2>
         <p>
             每一处输出都逐字节比对过：标准 KAT 测试向量、GmSSL 3.2.0
-            （互操作性——v1.10 起在 CI 里挂了任务，对着钉在源码构建的 oracle 跑）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>（可调模式，<code>xts_standard=GB</code>）。
+            （互操作性——v1.10 起在 CI 里挂了任务，对照钉在源码构建的 oracle 跑）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>（可调模式，<code>xts_standard=GB</code>）。
         </p>
         <p>
             上面那套泄漏回归门禁，每次提交的 CI 都会跑一遍；核心在 <code>[lints]</code>

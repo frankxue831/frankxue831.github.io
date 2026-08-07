@@ -3,7 +3,7 @@
      stay Latin: they are this site's ZH terms of record (see the terminology
      header in _data/i18n.yml and the figcaption on zh/projects/repolens-rs.html). -->
 <svg viewBox="0 0 360 260" role="img" aria-labelledby="fig-repolens-flow-title" xmlns="http://www.w3.org/2000/svg">
-  <title id="fig-repolens-flow-title">仓库 → packs + 记忆 → MCP × 26 → Agent</title>
+  <title id="fig-repolens-flow-title">仓库 → packs 与记忆 → MCP × 26 → Agent</title>
   <rect class="fig-box" x="120" y="10" width="120" height="34"/>
   <text class="fig-label" x="180" y="32" text-anchor="middle">仓库</text>
   <line class="fig-line" x1="180" y1="44" x2="100" y2="76"/>

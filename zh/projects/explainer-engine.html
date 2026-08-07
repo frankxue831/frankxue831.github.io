@@ -28,7 +28,7 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
             Explainer Engine 把一份 YAML {% include glossary-term.html term="storyboard" %}
             编译成 {% include glossary-term.html term="manim" %} 的带旁白场景。每个 beat 可以是一张图、一段带引用的代码标注，或者——最新的——一张会动的<em>概念图</em>：把带标签的节点摆在命名好的锚点上，连上力的边、一条路径，再让一个节点沿路径移动。整条链路一次跑完，中间没有模型：
             <code>storyboard</code> → <code>引用校验门</code> →
-            <code>确定性代码生成</code> → <code>Manim 渲染</code>加合成旁白。这是私有本地工具；对应的快照写在下面的<em>「证据」</em>里。
+            <code>确定性代码生成</code> → <code>Manim 渲染</code>并合成旁白。这是私有、本地工具；对应的快照写在下面的<em>「证据」</em>里。
         </p>
 
         <figure class="fig fig--video">
@@ -65,13 +65,13 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
         </p>
         <p>
             <strong>一套渲染核心，两个使用方。</strong>引擎跑在一套共享、与
-            Qt 解耦的渲染核心上——和桌面批量渲染 GUI 用的是同一套——所以这条渲染路径是经过统一测试的，而不是一次性脚本。<strong>代价：</strong>核心的每次改动都有两个使用方要照顾，引擎不能走那种会把 GUI 卡死的捷径。
+            Qt 无关的渲染核心上——和桌面批量渲染 GUI 用的是同一套——所以这条渲染路径是经过统一测试的，而不是单次脚本。<strong>代价：</strong>核心的每次改动都有两个使用方要照顾，引擎不能走那种会把 GUI 卡死的捷径。
         </p>
 
         <h2>证据</h2>
         <p>
             私有快照 <code>local tag diagram-canvas</code>——没有可查看的公开源码。支撑这些说法的是产物本身：上面这段视频是引擎的真实输出，不是效果图。里面的五种力来自一份研究 wiki；屏幕上的徽标标注了「memory force」所核对的具体源码行与 commit，且渲染开始前引用校验门已通过。披露装置——<code>simplified</code> 标签、<code>verified @ commit</code>
-            徽标——每一帧都看得见，核对流程对不对，拿视频本身就能对着查。
+            徽标——每一帧都看得见，核对流程对不对，拿视频本身就能对照查。
         </p>
 
         <h2>下一步</h2>

@@ -35,13 +35,13 @@ measured:
     policy: sentinel
     desc:
       en: "Direct Fn::invert diagnostic"
-      zh: "Fn::invert 直接诊断"
+      zh: "Fn::invert 直接域求逆诊断"
   - target: "ct_fp_invert"
     tau: 0.0063
     policy: sentinel
     desc:
       en: "Direct Fp::invert diagnostic"
-      zh: "Fp::invert 直接诊断"
+      zh: "Fp::invert 直接域求逆诊断"
 leak:
   before: 0.70
   after: 0.006

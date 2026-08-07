@@ -6,7 +6,7 @@ permalink: /zh/projects/repolens-rs/
 lang: zh
 alternate: /projects/repolens-rs/
 project_slug: repolens-rs
-summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能拿到有根据的上下文。"
+summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能拿到对上代码的上下文。"
 ---
 
 <section class="page-header wrap">
@@ -15,7 +15,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
         <em>RepoLens</em>
     </h1>
     <p class="page-header__lede">
-        给编程 Agent 用的仓库记忆与上下文层——让新会话不必每次都从零开始理解项目。
+        给 AI 编程 Agent 用的仓库记忆与上下文层——让新会话能恢复对项目的理解，不必每次冷启动。
     </p>
 </section>
 
@@ -25,7 +25,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
 
         <h2>是什么</h2>
         <p>
-            <code>RepoLens</code> 会把整个仓库扫描成一份结构化、不可变的「pack」（一份给 Agent 看的仓库快照），通过 {% include glossary-term.html term="mcp" %} 服务端提供出来，同时维护一张会随时间衰减的类型化记忆图。它不替 Agent 写代码，只是让每个新会话不必从零开始。目前是私有预发布；对应的快照写在下面的<em>「证据」</em>里。
+            <code>RepoLens</code> 会把整个仓库扫描成一份结构化、不可变的「pack」（一份给 Agent 看的仓库快照），通过 {% include glossary-term.html term="mcp" %} 服务端暴露出来，同时维护一张会随时间衰减的类型化记忆图。它不替 Agent 写代码，只是让每个新会话不必冷启动。目前是私有预发布；对应的快照写在下面的<em>「证据」</em>里。
         </p>
 
         <figure class="fig">
@@ -35,7 +35,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
 
         <h2>要解决的问题</h2>
         <p>
-            编程 Agent 写代码不差，但会话一结束，项目上下文就丢了。每个新会话都得冷启动：重新 grep 同样的文件、重新推导同样的约定、重新犯几周前就发现并回滚过的老错——没人来纠偏，Agent 就把似是而非的猜测当真。
+            AI 编程 Agent 写代码不差，但会话一结束，项目上下文就丢了。每个新会话都得冷启动：重新 grep 同样的文件、重新推导同样的约定、重新犯几周前就发现并回滚过的老错——没人来纠偏，Agent 就把似是而非的猜测当真。
         </p>
         <p>
             最朴素的办法——把上下文窗口开大、把更多文件塞进提示词——只会让信号淹没在噪声里（<em>「lost in the middle」</em>，中段迷失）。瓶颈不在模型够不够聪明，而在它有没有一份<em>持久、有结构的感知</em>。
@@ -55,18 +55,18 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             <strong>能力还没补齐的部分，先按现状如实讲清。</strong>
             Agent 工具普遍爱夸大，可工具一旦说过了头，反而会侵蚀它想建立的信任。所以已经交付到哪、边界在哪，都摊开写明：
             <code>validate-plan</code> 只给 warning（跑干净并不等于计划成立），<code>remember</code> 是工作区里的 markdown
-            交接笔记——不是那张类型化记忆图，<code>eval</code> 是脚手架（它不启动 Agent、也不打分，评分卡由人来填），<code>state</code>
-            是只读检查。<strong>代价：</strong>这一页读起来不如含糊其辞的版本唬人——因为缺口是讲出来的，而不是糊过去的。
+            交接笔记——不是那张类型化记忆图，<code>eval</code>（评估脚手架）不启动 Agent、也不打分，评分卡由人来填，<code>state</code>
+            是只读检查。<strong>代价：</strong>这一页读起来不如说满的版本唬人——因为缺口是讲出来的，而不是糊过去的。
         </p>
         <p>
             <strong>拿一条专门防回归的基准说话，而不是默认「上下文越多越好」。</strong>Agent 的上下文到底有没有变好，不度量就没有答案，所以 RepoLens 会输出校准过的证据（findings，
-            Agent 可读），并维护一份 eval 契约：五个用例，其中一个专门防回归。<strong>代价：</strong>这份契约要长期维护，而且
-            eval 还是脚手架——由人打分，不是自动证明。
+            Agent 可读），并维护一份评估（eval）契约：五个用例，其中一个专门防回归。<strong>代价：</strong>这份契约要长期维护，而且
+            评估还是脚手架——由人打分，不是自动证明。
         </p>
 
         <h2>证据</h2>
         <p>
-            <code>origin/main</code> 的私有工作快照——没有可查看的公开源码、crate 或文档页。支撑这些说法的，是真正跑起来的功能：
+            <code>origin/main</code> 的私有工作快照——没有可查看的公开源码、crate 或文档页。支撑这些说法的，是真正跑起来的界面：
             <code>scan</code>、<code>init</code>、<code>brief --task</code>、
             <code>remember --file</code>、<code>eval list / start</code>、
             <code>validate-plan --file</code>、<code>state</code>、
@@ -74,7 +74,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             现在都能从 CLI 和 MCP 调到，连同 26 个 MCP 工具和那张类型化记忆图。
         </p>
         <p>
-            最强的信号，是项目自带的<em>「诚实状态」准则</em>：一张按能力面逐条标明「已交付还是脚手架」的清单，刻意保持校准，好让日后的夸大一眼露馅。再加上一份 <code>dogfood</code> eval 契约（五个用例，其中一个专门防回归），一起守住上下文质量这条线。
+            最强的信号，是项目自带的<em>「诚实状态」准则</em>：一张按能力面逐条标明「已交付还是脚手架」的清单，刻意保持校准，好让日后的夸大一眼露馅。再加上一份自用（dogfood）评估契约（五个用例，其中一个专门防回归），一起守住上下文质量这条线。
         </p>
 
         <h2>下一步</h2>
@@ -84,7 +84,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             <code>FrictionFinding</code>——以及一个明确的
             <code>Confidence</code> 枚举（<code>TestValidated</code> /
             <code>HumanVerified</code> / <code>ScanExtracted</code> /
-            <code>AgentAsserted</code>）。在它们落到公开发版或公开 main 快照之前，仍只是规划。
+            <code>AgentAsserted</code>）。在它们落到公开发版或公开 main 快照之前，仍只是规划——读起来还不完全像产品。
         </p>
 
         <h2>它不是什么</h2>

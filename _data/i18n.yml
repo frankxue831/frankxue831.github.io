@@ -34,6 +34,18 @@
 #   Unpublished (grid dt)   → 版本缺口
 #   census (fuzz targets)   → 模糊测试 census（计数器；不另造「模糊目标数」）
 #   backlog (parked work)   → 待办（backlog）
+#   AI coding agent         → AI 编程 Agent（首次可括注；不混用裸「编程 Agent」）
+#   untrusted input         → 不可信输入（不用「不受信」）
+#   freeze (public API)     → 冻结（不用「冻住」）
+#   k-class (signatures)    → k-class（与 EN 一致；不写「k 类」）
+#   invert diagnostics      → 域求逆诊断（不用 bare invert 诊断）
+#   render (video verb)     → 渲染（默认完整；不省作「渲」）
+#   cold start              → 冷启动
+#   wire output             → 协议输出（wire）（不用单独的「线上输出」）
+#   overclaim               → 夸大 / 说满（极性勿与「含糊」互换）
+#   load-bearing            → 最吃紧 / 最关键（不用「承重」calque）
+#   private/local (body)    → 私有、本地（顿号；与 status 一致）
+#   guarded (control)       → 受控（不用「受约束」作同一概念）
 # Voice rule: ZH keeps its native register and may add explanatory glosses;
 # disclosures, hedges, numbers, and limitations must match EN exactly.
 # ---------------------------------------------------------------------------
@@ -201,7 +213,7 @@ zh:
     elsewhere: "其他平台"
     colophon: "本站说明"
     locale_label: "中文"
-    set_in: "字体使用"
+    set_in: "排印"
     built_with: "Jekyll 构建，托管于 GitHub Pages。"
     colophon_more: "本站如何构建"
     last_built: "最近构建"
@@ -210,7 +222,7 @@ zh:
     role: "角色"
     status: "状态"
     stack: "技术栈"
-    release: "版本"
+    release: "发布"
     snapshot: "快照"
     links: "链接"
     source: "源码"
@@ -232,21 +244,21 @@ zh:
   notes:
     all: "全部笔记"
     read_more: "继续读 →"
-    none: "目前没有发布内容。"
+    none: "还没有笔记。"
   dudect:
     title: "把常量时间测出来"
     fig_num: "图 3.2"
-    intro: "每条涉密路径都对着 |τ| 门禁计时。|τ| 低 = 在该预算下没测到泄漏；核心路径越过门禁就让构建失败（少数走更宽松的 nightly 或遥测策略）。"
+    intro: "每条涉密路径都按 |τ| 门禁计时。|τ| 低 = 在该预算下没测到泄漏；核心路径越过门禁就让构建失败（少数走更宽松的 nightly 或遥测策略）。"
     axis_label: "|τ|（时序泄漏统计量）"
     gate_label: "PR 门禁 |τ| < 0.20"
-    control_label: "negative_control——必须在这里触发（证明检测器不是瞎的）"
+    control_label: "negative_control——必须在这里故意失败（证明检测器不是瞎的）"
     landscape_heading: "门禁全景"
     cluster_label: "公开的 ct_*——都在 0.20 以下"
     leak_heading: "它抓到的那次泄漏"
-    leak_label: "crypto-bigint 0.6 → 0.7.3：一次真实的 invert 泄漏，被抓到并修掉"
+    leak_label: "crypto-bigint 0.6 → 0.7.3：一次真实的域求逆泄漏，被抓到并修掉"
     context: "v1.2.0 测量快照时共 19 条真实路径（到 v1.11.0 为 20 条），其中 4 条带公开数值；ct_sign 仍在 0.20 门禁内，另外三条后来转到更宽松的 0.55 nightly 哨兵值。"
     caveat: "dudect 报的是检测事件——|τ| 低只说明在给定预算下没测到泄漏，并不等于不存在。"
-    provenance: "测量环境：v0.2 W0 harness，100K 采样（2026-05-12 之前的 runner）。k 类签名和两个 invert 诊断后来转为遥测 + |τ| ≥ 0.55 的哨兵值。"
+    provenance: "测量环境：v0.2 W0 harness，100K 采样（2026-05-12 之前的 runner）。k-class 签名和两个域求逆诊断后来转为遥测 + |τ| ≥ 0.55 的哨兵值。"
     source: "来源：gm-crypto-rs SECURITY.md @ v1.2.0"
     table_caption: "公开的 dudect 测量值（gm-crypto-rs，测于 v1.2.0；此后未变）"
     col_target: "目标"
@@ -256,7 +268,7 @@ zh:
     col_status: "状态"
     status_pass: "在门禁内"
     status_sentinel: "在哨兵值内"
-    status_fire: "必须触发"
+    status_fire: "必须故意失败"
     policy_sentinel_label: "nightly 哨兵"
     leak_before_row: "修复前（crypto-bigint 0.6）"
     leak_after_row: "修复后（升级到 0.7.3）"
@@ -266,10 +278,10 @@ zh:
       def: "运行耗时不随密钥等秘密值变化的代码，这样攻击者就无法靠测量耗时来还原秘密。它是一个设计目标，而非保证——某些硬件仍可能泄漏。"
     "storyboard":
       label: "storyboard"
-      def: "视频的声明式脚本：一列有序的 beat——图表、带引用的代码标注、概念图——每个都配旁白文本。它是引擎唯一的输入；它没写的东西不会出现在画面上。"
+      def: "视频的声明式脚本：一列有序的 beat——图示、带引用的代码标注、概念图——每个都配旁白文本。它是引擎唯一的输入；它没写的东西不会出现在画面上。"
     "manim":
       label: "Manim"
-      def: "用代码生成数学、技术类动画的库。场景是代码而不是时间线剪辑——正因如此，生成器才能确定性地产出它。"
+      def: "用代码生成数学、技术类动画的库。场景是代码而不是时间线剪辑——正因如此，生成器才能确定性地产出这些场景。"
     "sm2":
       label: "SM2"
       def: "中国商用密码公钥标准（GB/T 32918），基于椭圆曲线，用于数字签名、密钥交换和公钥加密。"
@@ -281,7 +293,7 @@ zh:
       def: "中国商用密码分组密码标准（GB/T 32907），分组长 128 位、密钥长 128 位，用于批量对称加密。"
     "no_std":
       label: "no_std"
-      def: "不链接标准库的 Rust 构建，代码因而能运行在嵌入式、内核、WebAssembly 等受限环境中。它只能使用 core；需要堆分配时才显式引入 alloc 并提供分配器。"
+      def: "不链接标准库的 Rust 构建，代码因而能运行在嵌入式、内核、WebAssembly 等受限环境中。它只能使用 core（标准库的子集）；需要堆分配时才显式引入 alloc 并提供分配器。"
     "dudect":
       label: "dudect"
       def: "一种检测时序泄漏的统计方法：对两类输入分别计时，看两组耗时分布是否有差异。它在给定的测量预算下检测泄漏，但无法证明泄漏不存在。"
