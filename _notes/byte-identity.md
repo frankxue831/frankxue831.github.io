@@ -4,7 +4,7 @@ date: 2026-06-01
 permalink: /notes/byte-identity/
 lang: en
 alternate: /zh/notes/byte-identity/
-description: "How gm-crypto-rs checks its SM2/SM3/SM4 output: byte-for-byte against KAT vectors, gmssl, and OpenSSL — including the mode-semantics traps that make 'looks right' a lie."
+description: "How gm-crypto-rs checks its SM2/SM3/SM4 output: byte-for-byte against KAT vectors, GmSSL, and OpenSSL — including the mode-semantics traps that make 'looks right' a lie."
 excerpt: "Crypto tests don't ask whether the output looks right. They ask whether it's the same bytes as a reference under the same mode semantics — the subtle half."
 ---
 
@@ -42,7 +42,7 @@ comparison harness right is half the work.
 
 This is also what let `1.0.0` make a claim a user can check: the wire output is
 byte-identical to `0.16.0` — same SM2 signatures and ciphertexts, same SM4 mode
-bytes — verified against gmssl on eleven of eleven interop vectors, so the 1.0
+bytes — verified against GmSSL on eleven of eleven interop vectors, so the 1.0
 breaking changes are API shape only, not behavior. You can upgrade and diff the
 bytes yourself.
 

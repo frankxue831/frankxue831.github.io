@@ -4,11 +4,11 @@ date: 2026-08-03
 permalink: /notes/constant-time-warrant/
 lang: en
 alternate: /zh/notes/constant-time-warrant/
-description: "Every crypto library claims its secret-touching paths are constant-time. Transferring warrant for that claim takes two things — a detector you can watch fire on purpose, and limits you state yourself — and neither one is an explanation."
+description: "Constant-time claims are common in cryptographic libraries. Two artifacts do more to transfer warrant for a particular claim than explanation: a detector you can watch fire on purpose, and limits stated before anyone asks."
 excerpt: "Explaining constant-time execution is the easy part, and it isn't what a skeptical reader needs. What transfers warrant is a leak detector that must fail on purpose, and a caveat written before anyone asks for it."
 ---
 
-Every crypto library says its secret-touching paths are constant-time. The phrase costs
+Constant-time claims are common in cryptographic libraries. The phrase costs
 nothing to write, and that is most of what's wrong with it: it is one of the easiest claims
 to assert and one of the hardest to substantiate. A reader has no way to tell a library that
 *measured* the property from one that merely *intended* it.
@@ -20,7 +20,7 @@ cares already knows what it means, and anyone who doesn't can find a better expl
 mine in thirty seconds. The question was how to transfer *warrant* — how to give a skeptical
 reader grounds to believe this particular claim about this particular code.
 
-That needs exactly two things, and neither of them is an explanation.
+Two artifacts do more work here than explanation.
 
 ## Does the test have teeth?
 
@@ -75,9 +75,9 @@ rather than softened. The same file carries a comparison table against the estab
 alternatives in which this crate's own rows read **External security audit: none** and
 **Production track record: thin — first published 2026**.
 
-Volunteering the limits of your own evidence is unusual enough that it functions as evidence
-in itself. A reader who finds that caveat *before* they find it themselves updates
-differently than one who finds it after.
+Volunteering the limits of your own evidence is evidence of calibration, not evidence that
+the code is constant-time. A reader who finds that caveat *before* they find it themselves
+updates differently than one who finds it after.
 
 ## Why these are links and not narration
 
@@ -111,4 +111,4 @@ The two anchors that shipped are about forty words of HTML and two URLs —
 [`timing_leaks.rs:167`](https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167)
 and
 [`README.md:76`](https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/README.md#L76).
-They do more for the claim than the video did, and they took an afternoon less.
+They do more for the claim than the video did, and took one less afternoon to make.
