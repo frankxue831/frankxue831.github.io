@@ -6,7 +6,7 @@ permalink: /zh/projects/ghrunners/
 lang: zh
 alternate: /projects/ghrunners/
 project_slug: ghrunners
-summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 launchd 状态上。"
+summary_outcome: "类型化 findings 与受控操作，都基于同一份权威的 launchd 状态。"
 ---
 
 <section class="page-header wrap">
@@ -30,7 +30,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             （跑 GitHub Actions 任务的执行器），交叉核对 <code>launchctl</code>
             域状态、进程树、<code>.runner</code> JSON、worker 日志，以及（可选的）GitHub API。观测核心——<code>status</code>、
             <code>describe</code>、<code>doctor</code>、<code>logs</code>——会把查出来的问题整理成一条条类型化的 finding；另外还有个独立、受控的
-            <code>control</code> 子命令，动的也是同一份状态。这是私有、本地工具；对应的快照写在下面的<em>「证据」</em>里。
+            <code>control</code> 子命令（verb），动的也是同一份状态。这是私有、本地工具；对应的快照写在下面的<em>「证据」</em>里。
         </p>
 
         <figure class="fig">
@@ -63,7 +63,7 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             <code>control</code>（bootstrap / unload / restart）的目标，是从观测核心那份权威状态里解析出来的，而不是随手敲 <code>launchctl</code>。
         </p>
         <p>
-            <code>--dry-run</code> 只打印解析出来的命令，并不执行。<code>--domain</code> 一律按用法错误拒绝，唯一的例外是 <code>DoubleLoaded</code> 情况下的 unload——其余每个 verb 的目标都是确定的，再去覆盖只会搞乱。而在某个 verb 可能干掉正在运行的 <code>Runner.Worker</code> 之前，必须显式传 <code>--yes</code>。<strong>代价：</strong>要多记一串前置条件和参数，而且有些直接用
+            <code>--dry-run</code> 只打印解析出来的命令，并不执行。<code>--domain</code> 一律按用法错误拒绝，唯一的例外是 <code>DoubleLoaded</code> 情况下的 unload——其余每个子命令的目标都是确定的，再去覆盖只会搞乱。而在某个子命令可能干掉正在运行的 <code>Runner.Worker</code> 之前，必须显式传 <code>--yes</code>。<strong>代价：</strong>要多记一串前置条件和参数，而且有些直接用
             <code>launchctl</code> 照样能跑的命令，工具会故意拒掉。
         </p>
         <p>
@@ -84,13 +84,13 @@ summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 
             背后是一份 13 种类型化 findings 的目录（从 <code>LoadedNotRunning</code>、
             <code>OrphanListener</code> 到 <code>DoubleLoaded</code>、
             <code>Unreadable</code>），外加 cron 友好的退出码、JSON 输出，以及每个控制动作都给的 <code>--dry-run</code> 预览。这套能力是一步步落地的：
-            v0.2 加了控制 verb，v0.3 让运行态从 print 正文里读出来、变得权威，
+            v0.2 加了控制子命令，v0.3 让运行态从 print 正文里读出来、变得权威，
             v0.4 加了 <code>doctor</code> 巡检和 <code>OrphanListener</code>。
         </p>
 
         <h2>下一步</h2>
         <p>
-            候选范围，不作承诺：更深的 GitHub API 接入，以及把真实机器上冒出来的边角情况沉淀成新的 findings。仓库若变为公开可访问，再补源码链接。
+            候选范围，不作承诺：更深的 GitHub API 信息补全，以及把真实机器上冒出来的边角情况沉淀成新的 findings。仓库若变为公开可访问，再补源码链接。
         </p>
 
         <h2>它不是什么</h2>
