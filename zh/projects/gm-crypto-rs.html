@@ -16,7 +16,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
     </h1>
     <p class="page-header__lede">
         国密 SM2 / SM3 / SM4 的纯 Rust SDK——涉密路径按<em>常量时间</em>设计，
-        CI 里用泄漏回归 harness 守着。
+        CI 里用 dudect 泄漏回归 harness 把关。
     </p>
 </section>
 
@@ -59,13 +59,13 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             想上手跑一下，
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>
             里有现成例子（拿 SM3、SM2 做 <code>hash</code> / <code>sign</code> /
-            <code>verify</code>）。有一点要说明：demo 目前把 <code>gmcrypto-core</code>
+            <code>verify</code>）。先说清一点：demo 目前把 <code>gmcrypto-core</code>
             固定在 <code>1.9.0</code>，落后于本页所讲的 v1.11.0——它演示的那几个调用在这个跨度里没有变化，但 v1.10 之后的内容（包括 <code>aead</code> 适配）在 demo 里是看不到的。
         </p>
 
         <figure class="fig">
             {% include figures/gm-crypto-crates.zh.svg %}
-            <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口，至 v1.8 未变；v1.9.0 起为 104 个，v1.11.0 仍为 104）</figcaption>
+            <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口点，至 v1.8 未变；v1.9.0 起为 104 个，v1.11.0 仍为 104）</figcaption>
         </figure>
 
         <h2>要解决的问题</h2>
@@ -73,7 +73,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             国密这几个算法，Rust 社区其实早有实现，写得好的那些，本来也都按<em>常量时间</em>设计——处理密钥的那段代码，跑多久跟密钥无关，免得别人靠测耗时反推出密钥。
         </p>
         <p>
-            难点在于，这种「常量时间」常常只在代码评审那一刻成立；之后随便一次重构、新加一条快路径、一次依赖升级，时序泄漏都可能悄悄溜回来，当场没人发现。这个库偏偏又卡在一堆容易让它松动的约束里：要逐字节对上 GB/T 标准、核心要能跑在 <code>no_std</code> / wasm 上、涉密路径在每次发版之间都得守住{% include glossary-term.html term="constant-time" %}，还要通过一层 C ABI
+            难点在于，这种「常量时间」常常只在代码评审那一刻成立；之后随便一次重构、新加一条快路径、一次依赖升级，时序泄漏都可能悄悄溜回来，当场没人发现。这个库偏偏又卡在一堆容易让它松动的约束里：要逐字节对上 GB/T 标准、核心要能跑在 <code>no_std</code> / wasm 上、涉密路径在每次发版之间都得把关{% include glossary-term.html term="constant-time" %}，还要通过一层 C ABI
             把这些路径暴露出来，供 C、C++、Go、Zig、Python 调用。
         </p>
         <p>
@@ -92,9 +92,9 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
         </p>
         <p>
             <em>带门禁</em>（不达标就让构建失败）的有 16 条：两条标量乘（定基与变基）、SM2 签名、解密与密钥交换、SM4 密钥扩展、SM4
-            加密（线性扫描和位切片 SIMD S-box 两条都算）、SM4-CTR、CBC 解密扇出、单次 SM4-GCM / SM4-CCM 解密加缓冲式 SM4-GCM 解密、SM4-XTS
+            加密（线性扫描和位切片 SIMD S-box 两条都算）、SM4-CTR、CBC 解密扇出（fanout）、单次 SM4-GCM / SM4-CCM 解密、缓冲式 SM4-GCM 解密、SM4-XTS
             解密、加密 PKCS#8 解密，以及 v1.7 起新增的
-            TLCP CBC 记录层解保护（Lucky13 残余风险的看守）。
+            TLCP CBC 记录层解保护（Lucky13 残余风险的约束）。
         </p>
         <p>
             <em>只做遥测</em>的有 4 条：域求逆诊断、k-class 签名，以及 2026-06-17 起的
@@ -110,11 +110,11 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             <code>sm4-bitsliced-simd</code> 特性打开。<strong>代价：</strong>快路径不是默认值——你得自己去开 SIMD，否则开箱跑的是更慢的线性扫描 S-box。
         </p>
         <p>
-            <strong>算术按常量时间设计，但把前提摆明。</strong>涉密的大数运算搭在 <code>subtle</code> 和 <code>crypto-bigint</code>
-            之上，密钥材料一到 <code>Drop</code> 就由 <code>zeroize</code> 抹零。整体是奔着常量时间设计的，但有些地方确实做不到。<strong>代价：</strong>在那些「乘法耗时跟操作数有关」的 CPU 上（部分老款 x86、部分嵌入式芯片），这些时序性质并不成立——这一条我明写在<em>「它不是什么」</em>里，没藏着掖着。
+            <strong>算术按常量时间设计，但前提写在明处。</strong>涉密的大数运算搭在 <code>subtle</code> 和 <code>crypto-bigint</code>
+            之上，密钥材料一到 <code>Drop</code> 就由 <code>zeroize</code> 抹零。整体是奔着常量时间设计的，但有些地方确实做不到。<strong>代价：</strong>在那些「乘法耗时跟操作数有关」的 CPU 上（部分较老的 x86、部分嵌入式芯片），这些时序性质并不成立——这一条我明写在<em>「它不是什么」</em>里，没藏着掖着。
         </p>
         <p>
-            <strong>先发核心、再发 FFI——这一轮输出没变就不发版。</strong>每个密码模式都按「核心在 vN、FFI 在 vN+1」的节奏走：SM4-XTS 的核心在 v0.12、对应的 C ABI 在 v0.13；面向磁盘的多扇区原地辅助在
+            <strong>先发核心、再发 FFI——这一轮输出没变就不发版。</strong>每个密码模式都按「核心在 vN、FFI 在 vN+1」的节奏走：SM4-XTS 的核心在 v0.12、对应的 C ABI 在 v0.13；面向磁盘的多扇区原地（in-place）辅助函数在
             v0.15、它的 FFI 在 v0.16；SM2 密钥交换在 v1.1、它的 C ABI 在
             v1.2；X.509 与 SM2 的结合在 v1.3、它的 C ABI 在 v1.4。
         </p>
@@ -130,36 +130,36 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
         <h2>证据</h2>
         <p>
             每一处输出都逐字节比对过：标准 KAT 测试向量、GmSSL 3.2.0
-            （互操作性——v1.10 起在 CI 里挂了任务，对照钉在源码构建的 oracle 跑）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>（可调模式，<code>xts_standard=GB</code>）。
+            （互操作性——v1.10 起在 CI 里挂了任务，对照从源码构建的 oracle 跑）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>（可调模式，<code>xts_standard=GB</code>）。
         </p>
         <p>
             上面那套泄漏回归门禁，每次提交的 CI 都会跑一遍；核心在 <code>[lints]</code>
             表里禁掉了 unsafe（<code>unsafe_code = "forbid"</code>）。v0.14 那一轮还加了一套
-            <code>cargo-fuzz</code>（libFuzzer）模糊测试，覆盖不可信输入的解码、解密路径——
+            <code>cargo-fuzz</code>（libFuzzer）模糊测试，覆盖不可信输入上的解码 / 解密路径——
             当时 16 个目标，到 v1.8 扩到 30 个，到 v1.11 是 33 个——挂在 nightly 上扫。
         </p>
         <p>
-            这些都能自己去核：源码、CI 工作流、{% include glossary-term.html term="dudect" %} harness 全是公开的；已发布的 <code>gmcrypto-core</code> crate、它的 <code>docs.rs</code> 文档、以及能跑的示例也都在。
+            这些都能自己去核对：源码、CI 工作流、{% include glossary-term.html term="dudect" %} harness 全是公开的；已发布的 <code>gmcrypto-core</code> crate、它的 <code>docs.rs</code> 文档、以及能跑的示例也都在。
         </p>
         <p>
             其中三条性质，固定在 <code>v1.11.0</code>，每条都直接链到对应的源码行：
         </p>
         <ul class="audit-notes">
-            <li>涉密比较是常量时间实现的（<code>subtle</code> 的 <code>ct_eq</code>）——
+            <li>涉密比较是常量时间实现的（<code>subtle</code> 的 <code>ct_eq</code>）：
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/src/sm4/cipher.rs#L627" rel="noopener noreferrer">cipher.rs:627 <span aria-hidden="true">&#8599;</span></a></li>
-            <li>核心 crate 禁止 unsafe 代码——
+            <li>核心 crate 禁止 unsafe 代码：
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/Cargo.toml#L177" rel="noopener noreferrer">Cargo.toml:177 <span aria-hidden="true">&#8599;</span></a></li>
-            <li>每个 PR 都跑 dudect 计时泄漏门禁——
+            <li>每个 PR 都跑 dudect 计时泄漏门禁：
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/.github/workflows/dudect-pr.yml#L166" rel="noopener noreferrer">dudect-pr.yml:166 <span aria-hidden="true">&#8599;</span></a></li>
         </ul>
         <p>
-            再补两条，专门针对“常量时间”这个说法——也是最容易嘴上说、最难证明的部分：
+            再补两条，专门针对「常量时间」这个说法——也是最容易嘴上说、最难证明的部分：
         </p>
         <ul class="audit-notes">
-            <li>门禁不是摆设——专门放一个故意泄漏时序的 <code>negative_control</code>，dudect 必须把它揪出来，否则 CI 直接失败——
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a></li>
-            <li>也说得老实——这套 harness 只能检测泄漏，并不能证明常量时间——
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/README.md#L76" rel="noopener noreferrer">README.md:76 <span aria-hidden="true">&#8599;</span></a></li>
+            <li>门禁不是摆设：专门放一个故意泄漏时序的 <code>negative_control</code>，dudect 必须把它揪出来，否则 CI 直接失败（
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a>）。</li>
+            <li>也说得老实：这套 harness 只能检测泄漏，并不能证明常量时间（
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/README.md#L76" rel="noopener noreferrer">README.md:76 <span aria-hidden="true">&#8599;</span></a>）。</li>
         </ul>
         <p>
             有两篇笔记展开讲这件事：<a href="{{ '/zh/notes/constant-time-ci-gate/' | relative_url }}">CI
@@ -183,17 +183,17 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
         <h2>下一步</h2>
         <dl class="version-grid">
             <dt>下一步</dt>
-            <dd>v1.6 起步的 TLCP（GB/T 38636）弧线<strong>已在 v1.9 收束</strong>；v1.11 又落地了长期搁置的 RustCrypto <code>aead</code> 0.6 trait 适配。目前没有下一条弧线定到具体版本。继续搁置：AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。另有一条是<em>永久</em>不做、而非暂缓：端点身份绑定——相当于 TLCP 里的 hostname 验证——始终留给调用方。</dd>
+            <dd>v1.6 起步的 TLCP（GB/T 38636）路线<strong>已在 v1.9 收官</strong>；v1.11 又落地了长期搁置的 RustCrypto <code>aead</code> 0.6 trait 适配。目前没有下一条路线定到具体版本。继续搁置：AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。另有一条是<em>永久</em>不做、而非暂缓：端点身份绑定——相当于 TLCP 里的主机名验证（hostname）——始终留给调用方。</dd>
         </dl>
 
         <h2>它不是什么</h2>
         <ul>
             <li>不是 TLS / TLCP 协议栈——<code>tlcp</code> 这部分是一套原语工具集（密钥派生、记录层保护 / 解保护、链与证书对验证）。没有握手状态机、没有协商、也没有会话管理：协议要由调用方自己驱动，v1.9 的 C 示例就是这么做的。</li>
-            <li>不是端点身份认证——<code>verify_chain</code> / <code>verify_pair</code> 只建立结构性信任。把验证过的证书链绑定到具体的对端身份（相当于 TLCP 里的 hostname 验证）永远是调用方的事。</li>
+            <li>不是端点身份认证——<code>verify_chain</code> / <code>verify_pair</code> 只建立证书结构上的信任。把验证过的证书链绑定到具体的对端身份（相当于 TLCP 里的主机名验证）永远是调用方的事。</li>
             <li>不包括 SM9、ZUC、后量子算法。</li>
             <li>不是 HSM / SDF / SKF 集成。</li>
-            <li>不是经过认证的密码模块。</li>
-            <li>在乘法耗时跟操作数有关的 CPU 上（部分老 x86、部分嵌入式），不是常量时间的。</li>
+            <li>不是通过认证的密码模块（FIPS 一类认证）。</li>
+            <li>在乘法耗时跟操作数有关的 CPU 上（部分较老的 x86、部分嵌入式），不是常量时间的。</li>
         </ul>
 
         <p>

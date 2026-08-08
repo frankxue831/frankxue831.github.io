@@ -40,7 +40,7 @@ alternate: /colophon/
         <p>
             「这里不追踪你」不是一句空话，而是被强制执行的。一条严格的 <em>Content-Security-Policy</em> 把 <code>script-src</code>
             钉死在本站（外加两段内联的主题与动效脚本，按哈希放行），并设了
-            <code>connect-src 'self'</code>——页面无法向别处发起请求：没有分析、没有 CDN、没有远程调用。
+            <code>connect-src 'self'</code>——页面无法向别处发起请求：没有站点分析（analytics）、没有 CDN、没有远程调用。
         </p>
         <p>
             每一处改动都由构建后校验器（<code>scripts/validate_site.rb</code>）把关，
@@ -50,7 +50,7 @@ alternate: /colophon/
 
         <h2>隐私</h2>
         <p>
-            没有分析，没有 cookie，没有第三方资源——没有追踪。也没有联系表单、不收集邮箱；找我的方式是在 GitHub 上开公开的 issue 或
+            没有站点分析（analytics），没有 cookie，没有第三方资源——没有追踪。也没有联系表单、不收集邮箱；找我的方式是在 GitHub 上开公开的 issue 或
             discussion，让对话留在代码旁边。
         </p>
     </div>
@@ -60,7 +60,7 @@ alternate: /colophon/
         <li><span>托管</span><span>GitHub Pages</span></li>
         <li><span>字体</span><span>EB Garamond 与 IBM Plex Mono</span></li>
         <li><span>JavaScript</span><span>约 500 行，渐进增强</span></li>
-        <li><span>分析</span><span>无</span></li>
+        <li><span>站点分析</span><span>无</span></li>
         <li><span>源码</span><span><a href="https://github.com/{{ site.github_username }}/{{ site.github_username }}.github.io" rel="noopener noreferrer" class="facts__link">在 GitHub 上查看</a></span></li>
     </ul>
 
