@@ -78,7 +78,7 @@ Use `apply_patch` to make these exact substitutions in `zh/projects/ghrunners.ht
 
 ```text
 summary_outcome: "类型化 findings 与受控操作，落在同一份权威的 launchd 状态上。"
-→ summary_outcome: "类型化检查结果与受控操作，都基于同一份权威的 launchd 状态。"
+→ summary_outcome: "类型化 findings 与受控操作，都基于同一份权威的 launchd 状态。"
 
 <code>control</code> 子命令
 → <code>control</code> 子命令（verb）
@@ -170,7 +170,7 @@ trait 适配（增量、可选）
 → 是在既有 AEAD 路径之上的轻量包装层
 
 薄壳不加密码学；涉密路径就是原来那套代码
-→ 包装层不引入新的密码逻辑；涉密路径仍是原来那套代码
+→ 包装层不引入新的密码学实现；涉密路径仍是原来那套代码
 ```
 
 Leave all feature flags, type names, dependency versions, MSRV, fuzz target names, census values, and ABI counts unchanged.
@@ -181,10 +181,10 @@ Use `apply_patch` for these exact substitutions:
 
 ```text
 把四个 DER 模糊测试加强到字节幂等
-→ 把四个 DER 模糊测试加强为字节级幂等检查（同一变换重复执行后，字节结果不再变化）
+→ 把四个 DER 模糊测试加强为字节级幂等检查（同一变换重复执行后，字节结果保持不变）
 
 逐边的 SM2 签名与原始 Name（名称）衔接、中间 CA 资格
-→ 逐边的 SM2 签名、证书原始 Name 字段的衔接，以及中间证书必须具备 CA 资格
+→ 逐边的 SM2 签名、证书原始 Name 字段的衔接、中间证书的 CA 资格
 
 为四个 SM2 系列套件提供字节流进、字节流出的保护 / 解保护
 → 为四个 SM2 系列套件提供以字节串为输入和输出的保护 / 解保护
@@ -201,7 +201,7 @@ Expected: exit `1` with no matches.
 Then run:
 
 ```sh
-rg -n '非破坏式新增、需显式启用|既有 AEAD 路径|包装层不引入新的密码逻辑|字节级幂等检查|证书原始 Name 字段|中间证书必须具备 CA 资格|以字节串为输入和输出' \
+rg -n '非破坏式新增、需显式启用|既有 AEAD 路径|包装层不引入新的密码学实现|字节级幂等检查|字节结果保持不变|证书原始 Name 字段|中间证书的 CA 资格|以字节串为输入和输出' \
   zh/projects/gm-crypto-rs-releases.html
 ```
 
@@ -527,10 +527,10 @@ Use this row-to-resolution map; the strings in the right column replace the thre
 | `3b4a01fccd2b81118ec0c85fb145e217` | `zh/projects/ghrunners.html`: `GitHub API 接入` → `GitHub API 信息补全` |
 | `3b4a01fccd2b8164b31cee3610e5f3fe` | `zh/projects/gm-crypto-rs-releases.html`: `增量、可选` → `非破坏式新增、需显式启用` |
 | `3b4a01fccd2b816b93fbca512a66b776` | `zh/projects/gm-crypto-rs-releases.html`: `固有 AEAD 路径` → `既有 AEAD 路径` |
-| `3b4a01fccd2b816e80daed9991c3c6ba` | `zh/projects/gm-crypto-rs-releases.html`: `薄壳不加密码学` → `包装层不引入新的密码逻辑` |
+| `3b4a01fccd2b816e80daed9991c3c6ba` | `zh/projects/gm-crypto-rs-releases.html`: `薄壳不加密码学` → `包装层不引入新的密码学实现` |
 | `3b4a01fccd2b81469979e32492d7ad92` | `zh/projects/gm-crypto-rs-releases.html`: `字节幂等` → `字节级幂等检查` plus gloss |
 | `3b4a01fccd2b8102af8fc36f1e829ea6` | `zh/projects/gm-crypto-rs-releases.html`: `原始 Name（名称）衔接` → `证书原始 Name 字段的衔接` |
-| `3b4a01fccd2b8112a5a4c76d73233b2e` | `zh/projects/gm-crypto-rs-releases.html`: `中间 CA 资格` → `中间证书必须具备 CA 资格` |
+| `3b4a01fccd2b8112a5a4c76d73233b2e` | `zh/projects/gm-crypto-rs-releases.html`: `中间 CA 资格` → `中间证书的 CA 资格` |
 | `3b4a01fccd2b81aa9adbee8d8c67eba0` | `zh/projects/gm-crypto-rs-releases.html`: `逐字节进、逐字节出` → `以字节串为输入和输出` |
 | `3b4a01fccd2b813c907ac591fdc6f9a4` | `zh/projects/gm-crypto-rs.html`: `安全的核心` → `核心禁止 unsafe` |
 | `3b4a01fccd2b8195aa51f0f85414d252` | `zh/projects/gm-crypto-rs.html`: `工作量等于翻倍` → `测试和维护面也随之翻倍` |

@@ -72,7 +72,7 @@ Selected Notion rows:
 ### `zh/projects/ghrunners.html`
 
 - `summary_outcome` becomes
-  `类型化检查结果与受控操作，都基于同一份权威的 launchd 状态。`
+  `类型化 findings 与受控操作，都基于同一份权威的 launchd 状态。`
 - The first product-model use becomes `control 子命令（verb）`; later prose uses
   `子命令` rather than bare `verb`.
 - `更深的 GitHub API 接入` becomes `更深的 GitHub API 信息补全` so the next
@@ -92,11 +92,11 @@ Selected Notion rows:
 
 - `增量、可选` becomes `非破坏式新增、需显式启用`.
 - `固有 AEAD 路径` becomes `既有 AEAD 路径`.
-- `薄壳不加密码学` becomes `包装层不引入新的密码逻辑`.
+- `薄壳不加密码学` becomes `包装层不引入新的密码学实现`.
 - `字节幂等` becomes `字节级幂等检查`, followed by a short clarification that
   the same bytes remain stable through the tested transformation.
 - `原始 Name（名称）衔接` becomes `证书原始 Name 字段的衔接`.
-- `中间 CA 资格` becomes `中间证书必须具备 CA 资格`.
+- `中间 CA 资格` becomes `中间证书的 CA 资格`.
 - `逐字节进、逐字节出` becomes `以字节串为输入和输出`.
 
 Selected Notion rows:
@@ -117,7 +117,7 @@ Selected Notion rows:
 - The decision heading becomes `核心禁止 unsafe，SIMD 单独按需开。` This makes
   the memory-safety boundary explicit and avoids reading `safe core` as a broad
   cryptographic-security guarantee.
-- `工作量等于翻倍` becomes `每种模式的测试和维护面都翻倍`, matching the
+- `工作量等于翻倍` becomes `测试和维护面也随之翻倍`, matching the
   English claim about owned surface rather than promising an exact labor ratio.
 
 Selected Notion rows:
