@@ -1,6 +1,6 @@
 # frankxue.dev
 
-Personal site for **Frank Xue** — a Rust engineer working on cryptography, agent
+Personal site for **Frank Xue** — a software engineer, mostly in Rust, working on cryptography, agent
 tooling, and CLIs. A bilingual (English / 中文), hand-built Jekyll site deployed on
 GitHub Pages at **[www.frankxue.dev](https://www.frankxue.dev)**.
 
@@ -15,9 +15,10 @@ No framework, no CSS preprocessor, no build step beyond Jekyll. The aesthetic is
 - **Light / dark theme.** Three-state toggle (light · dark · auto) that persists a
   preference and follows the OS when set to auto, with a pre-paint script to avoid
   a flash of the wrong theme.
-- **Progressive enhancement.** A handful of small vanilla JS files in `assets/js/`
-  (~500 lines total) add scroll reveals, a decrypt-on-reveal effect, a contents
-  rail with scroll-spy, a copy-to-clipboard install button, and the mobile nav.
+- **Progressive enhancement.** Seven focused vanilla JavaScript files in
+  `assets/js/` (approximately 570 lines total) add scroll reveals, a
+  decrypt-on-reveal effect, shared-404 locale handling, a contents rail with
+  scroll-spy, a copy-to-clipboard install button, theme controls, and mobile nav.
   Every page works with JavaScript disabled, and all motion respects
   `prefers-reduced-motion`.
 - **Self-hosted fonts, zero third-party requests.** EB Garamond and IBM Plex Mono

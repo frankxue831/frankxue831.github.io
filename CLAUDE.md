@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository
 
-Personal site for Frank Xue at https://www.frankxue.dev — a Jekyll static site deployed via GitHub Pages (custom domain via `CNAME`). No JS framework and no build step beyond Jekyll; interactivity is a handful of small vanilla JS files in `assets/js/` (~500 lines total: mobile nav, scroll reveal, decrypt cells, theme toggle, contents rail, copy button) used purely as progressive enhancement — every page works with JavaScript disabled.
+Personal site for Frank Xue at https://www.frankxue.dev — a Jekyll static site deployed via GitHub Pages (custom domain via `CNAME`). No JS framework and no build step beyond Jekyll; interactivity is seven focused vanilla JavaScript files in `assets/js/` (approximately 570 lines total: contents rail, install copy, home decrypt cells, shared-404 locale handling, mobile nav, scroll reveal, and theme toggle) used purely as progressive enhancement — every page works with JavaScript disabled.
 
 ## Commands
 
@@ -63,7 +63,7 @@ When adding interactivity, reach for the lightest tool that fits, in this order:
 
 1. **CSS only** — hover/affordance states, transitions, reveals (all gated by `prefers-reduced-motion`).
 2. **Native HTML** — `<details>` (audit drawer), the Popover API (glossary), `@view-transition` (cross-document fade). Declarative, zero JS, no new CSP hash.
-3. **A small vanilla-JS IIFE** in `assets/js/` — only when 1–2 can't do it. The six files are `main.js` (mobile nav), `reveal.js` (scroll reveal), `decrypt.js` (hero), `theme.js` (theme toggle), `contents.js` (contents rail), `copy.js` (install copy). External `.js` is governed by `script-src 'self'` and needs no hash.
+3. **A small vanilla-JS IIFE** in `assets/js/` — only when 1–2 can't do it. The seven files are `contents.js` (contents rail), `copy.js` (install copy), `decrypt.js` (home hero), `locale-404.js` (shared-404 locale handling), `main.js` (mobile nav), `reveal.js` (scroll reveal), and `theme.js` (theme toggle). External `.js` is governed by `script-src 'self'` and needs no hash.
 4. **A new inline script** — last resort; add its sha256 to the CSP in `head.html` (the validator pins it).
 
 External CDNs, web fonts, and analytics are out — fonts are self-hosted and `connect-src` is `'self'`.
@@ -82,8 +82,10 @@ The portfolio spec defines a strict **source-of-truth** rule for project copy:
 When editing project pages, version numbers, release notes, or shipped-feature claims:
 
 - Tie every claim to a public release tag or public `origin/main`. Don't promote unreleased local work to "shipped."
-- `gm-crypto-rs`: current shipped version is what's tagged at public `origin/main`; v0.8 AEAD work is "next," not shipped.
+- `gm-crypto-rs`: `v1.11.0` is the current published evidence snapshot used by the site; AEAD support is shipped. Future roadmap statements must be sourced from the public repository rather than inferred from this site's older release narrative.
 - `ghrunners`: repo is currently private/local-only — describe as local/private and **do not** add a public source link until the GitHub repo is reachable.
+
+For a public release date, prefer crates.io publication metadata when the page means publication, and the immutable annotated tagger timestamp when the page means the signed/tagged release. Record which meaning the page uses; do not substitute a mutable commit date or a review observation.
 
 When the user asks to update a project page, verify the public release state (e.g. `git ls-remote --tags`, crates.io, the project's own repo) before changing version numbers or feature claims.
 
