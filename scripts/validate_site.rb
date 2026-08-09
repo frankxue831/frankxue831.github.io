@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cgi"
+require "date"
 require "json"
 require "pathname"
 require "set"
@@ -19,6 +20,7 @@ SITE = ROOT.join("_site")
 HOST = "www.frankxue.dev"
 BASE_URL = "https://#{HOST}"
 PROJECTS = YAML.load_file(ROOT.join("_data/projects.yml"))
+I18N = YAML.load_file(ROOT.join("_data/i18n.yml"))
 
 failures = []
 
@@ -84,6 +86,21 @@ def json_ld_documents(html, failures, source)
     record(failures, "Invalid JSON-LD in #{source}: #{error.message}")
     nil
   end.compact
+end
+
+def json_ld_graph(html, failures, source)
+  json_ld_documents(html, failures, source).flat_map { |document| Array(document["@graph"]) }
+end
+
+def graph_nodes_of_type(graph, type)
+  graph.select { |node| node["@type"] == type }
+end
+
+def png_dimensions(path)
+  header = path.binread(24)
+  return nil unless header && header.byteslice(0, 8) == "\x89PNG\r\n\x1a\n".b
+
+  [header.byteslice(16, 4).unpack1("N"), header.byteslice(20, 4).unpack1("N")]
 end
 
 unless SITE.directory?
@@ -228,6 +245,63 @@ end
   record(failures, "notes: ZH note '#{slug}/' has no EN counterpart (notes/#{slug}/)")
 end
 
+note_specs = {}
+Pathname.glob(ROOT.join("_notes/*.md").to_s).each do |path|
+  front_matter = path.read[/\A---\s*\n(.*?)\n---\s*\n/m, 1]
+  next unless front_matter
+
+  data = YAML.safe_load(front_matter, permitted_classes: [Date, Time], aliases: true)
+  permalink = data["permalink"].to_s
+  next if permalink.empty?
+
+  relative = "#{permalink.delete_prefix('/')}index.html"
+  note_specs[relative] = data
+end
+
+note_pages.each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  graph = json_ld_graph(html, failures, relative)
+  articles = graph_nodes_of_type(graph, "BlogPosting")
+  spec = note_specs[relative]
+  if spec.nil?
+    record(failures, "#{relative}: missing source note front matter")
+    next
+  end
+
+  unless articles.length == 1
+    record(failures, "#{relative}: expected exactly one BlogPosting node, found #{articles.length}")
+    next
+  end
+
+  article = articles.first
+  page_url = expected_url_for(relative)
+  lang = relative.start_with?("zh/") ? "zh-CN" : "en"
+  expected_date = spec["date"].is_a?(Date) ? spec["date"] : Date.parse(spec["date"].to_s)
+  published = article["datePublished"].to_s
+  record(failures, "#{relative}: BlogPosting @id must end #article") unless article["@id"].to_s == "#{page_url}#article"
+  record(failures, "#{relative}: BlogPosting url mismatch") unless article["url"] == page_url
+  record(failures, "#{relative}: BlogPosting headline mismatch") unless article["headline"] == spec["title"]
+  record(failures, "#{relative}: BlogPosting description missing") if article["description"].to_s.empty?
+  unless published.match?(/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})\z/) && Date.parse(published) == expected_date
+    record(failures, "#{relative}: BlogPosting datePublished #{published.inspect} must be XML Schema date for #{expected_date}")
+  end
+  record(failures, "#{relative}: BlogPosting inLanguage must be #{lang}") unless article["inLanguage"] == lang
+  record(failures, "#{relative}: BlogPosting author must reference #person") unless article.dig("author", "@id").to_s.end_with?("#person")
+  record(failures, "#{relative}: BlogPosting isPartOf must reference #website") unless article.dig("isPartOf", "@id").to_s.end_with?("#website")
+  record(failures, "#{relative}: BlogPosting mainEntityOfPage must reference #webpage") unless article.dig("mainEntityOfPage", "@id").to_s.end_with?("#webpage")
+end
+
+blogposting_negative_pages = %w[
+  notes/index.html zh/notes/index.html
+  projects/gm-crypto-rs/releases/index.html zh/projects/gm-crypto-rs/releases/index.html
+  404.html
+] + project_pages
+blogposting_negative_pages.each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  articles = graph_nodes_of_type(json_ld_graph(html, failures, relative), "BlogPosting")
+  record(failures, "#{relative}: non-note route must not emit BlogPosting") unless articles.empty?
+end
+
 public_release_labels = PROJECTS.select { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }
 private_release_labels = PROJECTS.reject { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }.compact
 home_pages = %w[index.html zh/index.html]
@@ -254,11 +328,19 @@ home_pages = %w[index.html zh/index.html]
   record(failures, "#{relative}: missing apple-touch-icon") unless html.match?(%r{<link rel="apple-touch-icon"[^>]*href="/assets/img/apple-touch-icon\.png"})
   record(failures, "#{relative}: missing web manifest link") unless html.include?(%(<link rel="manifest" href="/site.webmanifest">))
 
-  docs = json_ld_documents(html, failures, relative)
-  graph_types = docs.flat_map { |doc| Array(doc["@graph"]).map { |node| node["@type"] } }
-  record(failures, "#{relative}: missing WebPage JSON-LD") unless graph_types.include?("WebPage")
-  record(failures, "#{relative}: missing Person JSON-LD") unless graph_types.include?("Person")
-  record(failures, "#{relative}: missing WebSite JSON-LD") unless graph_types.include?("WebSite")
+  graph = json_ld_graph(html, failures, relative)
+  webpage_nodes = graph_nodes_of_type(graph, "WebPage")
+  website_nodes = graph_nodes_of_type(graph, "WebSite")
+  person_nodes = graph_nodes_of_type(graph, "Person")
+  record(failures, "#{relative}: expected exactly one WebPage JSON-LD node, found #{webpage_nodes.length}") unless webpage_nodes.length == 1
+  record(failures, "#{relative}: expected exactly one Person JSON-LD node, found #{person_nodes.length}") unless person_nodes.length == 1
+  record(failures, "#{relative}: expected exactly one WebSite JSON-LD node, found #{website_nodes.length}") unless website_nodes.length == 1
+
+  lang = relative.start_with?("zh/") ? "zh" : "en"
+  expected_site_description = I18N.dig(lang, "meta", "site_description").to_s
+  if website_nodes.length == 1 && website_nodes.first["description"] != expected_site_description
+    record(failures, "#{relative}: WebSite description must equal localized #{lang}.meta.site_description")
+  end
 end
 
 core_pages.each do |relative, config|
@@ -270,11 +352,51 @@ core_pages.each do |relative, config|
   end
 end
 
+(core_pages.keys + project_pages + note_pages).each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+
+  alternate_locales = html.scan(%r{<meta property="og:locale:alternate" content="([^"]+)">}).flatten
+  expected_alternate = relative.start_with?("zh/") ? "en_US" : "zh_CN"
+  unless alternate_locales == [expected_alternate]
+    record(failures, "#{relative}: expected one og:locale:alternate #{expected_alternate}, got #{alternate_locales.inspect}")
+  end
+
+  descriptions = html.scan(%r{<meta name="description" content="([^"]*)"}).flatten
+  twitter_descriptions = html.scan(%r{<meta name="twitter:description" content="([^"]*)"}).flatten
+  unless twitter_descriptions.length == 1 && descriptions.length == 1 &&
+         CGI.unescapeHTML(twitter_descriptions.first) == CGI.unescapeHTML(descriptions.first)
+    record(failures, "#{relative}: twitter:description must occur once and equal the page description")
+  end
+end
+
+not_found_html = read_file(SITE.join("404.html"), failures)
+unless not_found_html.empty?
+  robots = not_found_html.scan(%r{<meta name="robots" content="([^"]+)">}).flatten
+  record(failures, "404.html: expected exactly one noindex, follow robots meta") unless robots == ["noindex, follow"]
+  record(failures, "404.html: must not emit hreflang alternates") if not_found_html.include?(%(<link rel="alternate" hreflang=))
+  record(failures, "404.html: must not emit og:locale:alternate") if not_found_html.include?(%(property="og:locale:alternate"))
+end
+
 project_pages.each do |relative|
   html = read_file(SITE.join(relative), failures)
-  docs = json_ld_documents(html, failures, relative)
-  graph_types = docs.flat_map { |doc| Array(doc["@graph"]).map { |node| node["@type"] } }
-  record(failures, "#{relative}: missing SoftwareSourceCode JSON-LD") unless graph_types.include?("SoftwareSourceCode")
+  graph = json_ld_graph(html, failures, relative)
+  software_nodes = graph_nodes_of_type(graph, "SoftwareSourceCode")
+  slug = Pathname.new(relative).dirname.basename.to_s
+  project = PROJECTS.find { |entry| entry["slug"] == slug }
+  if project.nil?
+    record(failures, "#{relative}: no matching project data row for #{slug}")
+  elsif project["public_source"]
+    record(failures, "#{relative}: expected exactly one public SoftwareSourceCode node, found #{software_nodes.length}") unless software_nodes.length == 1
+    if software_nodes.length == 1 && software_nodes.first["codeRepository"].to_s.empty?
+      record(failures, "#{relative}: public SoftwareSourceCode missing codeRepository")
+    end
+  else
+    record(failures, "#{relative}: private project must not emit SoftwareSourceCode") unless software_nodes.empty?
+    if graph.any? { |node| node.key?("codeRepository") }
+      record(failures, "#{relative}: private project graph exposes codeRepository")
+    end
+  end
   record(failures, "#{relative}: missing project summary") unless html.include?(%(class="project-summary"))
 end
 
@@ -363,16 +485,35 @@ Pathname.glob(SITE.join("zh/**/*.html").to_s).each do |path|
   end
 end
 
-# --- Interactive motion (decrypt + scroll reveal) regression checks ---
-%w[assets/js/reveal.js assets/js/decrypt.js].each do |rel|
-  record(failures, "Missing motion script: #{rel}") unless SITE.join(rel).exist?
+# --- Route-aware progressive-enhancement scripts ---
+global_scripts = %w[main.js theme.js reveal.js].freeze
+home_only_scripts = %w[decrypt.js].freeze
+case_study_scripts = %w[contents.js].freeze
+gm_only_scripts = %w[copy.js].freeze
+known_scripts = global_scripts + home_only_scripts + case_study_scripts + gm_only_scripts
+
+known_scripts.each do |script|
+  record(failures, "Missing script asset: assets/js/#{script}") unless SITE.join("assets/js", script).exist?
 end
 
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
   source = path.relative_path_from(SITE).to_s
-  record(failures, "#{source}: missing reveal.js include") unless html.include?("/assets/js/reveal.js")
-  record(failures, "#{source}: missing decrypt.js include") unless html.include?("/assets/js/decrypt.js")
+  actual = html.scan(%r{<script\s+src="/assets/js/([^"]+)"[^>]*></script>}).flatten
+  expected = global_scripts.dup
+  expected.concat(home_only_scripts) if home_pages.include?(source)
+  expected.concat(case_study_scripts) if project_pages.include?(source)
+  expected.concat(gm_only_scripts) if %w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].include?(source)
+
+  known_scripts.each do |script|
+    count = actual.count(script)
+    wanted = expected.include?(script)
+    if wanted && count != 1
+      record(failures, "#{source}: expected exactly one #{script} include, found #{count}")
+    elsif !wanted && count != 0
+      record(failures, "#{source}: optional #{script} must not load on this route")
+    end
+  end
   record(failures, "#{source}: missing inline motion gate") unless html.include?("classList.add('motion')")
 end
 
@@ -446,6 +587,8 @@ end
   assets/img/apple-touch-icon.png
   assets/img/icon-192.png
   assets/img/icon-512.png
+  assets/img/icon-maskable-192.png
+  assets/img/icon-maskable-512.png
   assets/img/favicon-32.png
   assets/img/favicon-16.png
   site.webmanifest
@@ -457,17 +600,27 @@ end
   card = SITE.join("assets/img", card_name)
   next unless card.exist?
 
-  # PNG IHDR: width/height are big-endian uint32 at byte offsets 16 and 20.
-  header = card.binread(24)
-  if header && header.byteslice(0, 8) == "\x89PNG\r\n\x1a\n".b
-    width = header.byteslice(16, 4).unpack1("N")
-    height = header.byteslice(20, 4).unpack1("N")
+  dimensions = png_dimensions(card)
+  if dimensions
+    width, height = dimensions
     unless width == 1200 && height == 630
       record(failures, "#{card_name} must be 1200x630 (Open Graph), got #{width}x#{height}")
     end
   else
     record(failures, "#{card_name} is not a valid PNG")
   end
+  record(failures, "#{card_name} must be at most 175000 bytes, got #{card.size}") if card.size > 175_000
+end
+
+{
+  "icon-maskable-192.png" => [192, 192],
+  "icon-maskable-512.png" => [512, 512]
+}.each do |icon_name, expected_dimensions|
+  icon = SITE.join("assets/img", icon_name)
+  next unless icon.exist?
+
+  dimensions = png_dimensions(icon)
+  record(failures, "#{icon_name} must be #{expected_dimensions.join('x')}, got #{dimensions.inspect}") unless dimensions == expected_dimensions
 end
 
 manifest = SITE.join("site.webmanifest")
@@ -478,6 +631,13 @@ if manifest.exist?
     icons = Array(data["icons"])
     record(failures, "site.webmanifest: needs 192px and 512px icons") unless
       icons.any? { |i| i["sizes"] == "192x192" } && icons.any? { |i| i["sizes"] == "512x512" }
+    {
+      "/assets/img/icon-maskable-192.png" => "192x192",
+      "/assets/img/icon-maskable-512.png" => "512x512"
+    }.each do |src, sizes|
+      matches = icons.select { |icon| icon["src"] == src && icon["sizes"] == sizes && icon["purpose"] == "maskable" }
+      record(failures, "site.webmanifest: expected one dedicated maskable entry for #{src}") unless matches.length == 1
+    end
     icons.each do |icon|
       src = icon["src"].to_s.sub(%r{\A/}, "")
       record(failures, "site.webmanifest: icon missing on disk: #{icon["src"]}") unless src.empty? || SITE.join(src).exist?
@@ -538,17 +698,12 @@ Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
 end
 
 # --- Contents rail ("On this page") scroll-spy ---
-# contents.js must ship and load site-wide (it self-guards to detail pages).
+# contents.js must ship and load on case studies only (the route matrix above
+# guards inclusion). The script still self-guards as progressive enhancement.
 # The CSS must carry the rail styles, the sticky-header scroll-margin, and the
 # print rule that drops the rail. The bilingual label must exist in i18n and be
 # emitted as data-toc-label on the detail-page bodies the rail attaches to.
 record(failures, "Missing contents script: assets/js/contents.js") unless SITE.join("assets/js/contents.js").exist?
-
-Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
-  html = path.read
-  source = path.relative_path_from(SITE).to_s
-  record(failures, "#{source}: missing contents.js include") unless html.include?("/assets/js/contents.js")
-end
 
 if css_path.exist?
   css = css_path.read
@@ -560,7 +715,7 @@ if css_path.exist?
     css.match?(/@media print\s*\{\s*\.toc\s*\{\s*display:\s*none/)
 end
 
-i18n = YAML.load_file(ROOT.join("_data/i18n.yml"))
+i18n = I18N
 %w[en zh].each do |lang|
   label = i18n.dig(lang, "toc", "label").to_s
   record(failures, "i18n.yml: missing #{lang}.toc.label") if label.empty?
@@ -588,16 +743,10 @@ record(failures, "theme.js: missing theme-anim hook") unless
   SITE.join("assets/js/theme.js").read.include?("theme-anim")
 
 # --- Copy-to-clipboard install command (gm-crypto-rs only) ---
-# copy.js must ship and load site-wide. The gm-crypto-rs pages (EN + ZH) must
+# copy.js must ship and load on gm-crypto-rs only. The gm pages (EN + ZH) must
 # carry the install block; the private/local projects must NOT — only the
 # public crate gets an install command (source-of-truth boundary).
 record(failures, "Missing copy script: assets/js/copy.js") unless SITE.join("assets/js/copy.js").exist?
-
-Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
-  html = path.read
-  source = path.relative_path_from(SITE).to_s
-  record(failures, "#{source}: missing copy.js include") unless html.include?("/assets/js/copy.js")
-end
 
 %w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
   html = read_file(SITE.join(relative), failures)
@@ -994,7 +1143,7 @@ note_pages.each do |relative|
   record(failures, "#{relative}: missing zh-CN hreflang alternate") unless html.match?(%r{<link rel="alternate" hreflang="zh-CN" href="#{Regexp.escape(BASE_URL)}/zh/notes/[^"]+">})
 end
 
-i18n = YAML.load_file(ROOT.join("_data/i18n.yml"))
+i18n = I18N
 %w[en zh].each do |lang|
   record(failures, "i18n.yml: missing #{lang}.nav.writing") if i18n.dig(lang, "nav", "writing").to_s.empty?
   %w[all read_more none].each do |key|
@@ -1077,12 +1226,20 @@ end
 
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
-  html.scan(/<link\b[^>]*\bas="font"[^>]*>/i).each do |tag|
-    next unless tag.include?('rel="preload"')
+  source = path.relative_path_from(SITE).to_s
+  font_preloads = html.scan(/<link\b[^>]*\bas="font"[^>]*>/i).select { |tag| tag.include?('rel="preload"') }
+  expected_count = home_pages.include?(source) ? 2 : 0
+  unless font_preloads.length == expected_count
+    record(failures, "#{source}: expected #{expected_count} font preloads, found #{font_preloads.length}")
+  end
+
+  font_preloads.each do |tag|
+    record(failures, "#{source}: font preload missing type=font/woff2") unless tag.include?('type="font/woff2"')
+    record(failures, "#{source}: font preload missing crossorigin") unless tag.match?(/\bcrossorigin(?:\s|=|>)/)
     href = tag[/href="([^"]+)"/, 1]
     next unless href
     rel = href.sub(%r{\Ahttps?://[^/]+}, "").sub(%r{\A/}, "")
-    record(failures, "#{path.relative_path_from(SITE)}: preload font missing on disk: #{href}") unless SITE.join(rel).exist?
+    record(failures, "#{source}: preload font missing on disk: #{href}") unless SITE.join(rel).exist?
   end
 end
 
@@ -1110,6 +1267,8 @@ end
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
   source = path.relative_path_from(SITE).to_s
+  json_ld_count = html.scan(%r{<script type="application/ld\+json">}).length
+  record(failures, "#{source}: expected exactly one JSON-LD script, found #{json_ld_count}") unless json_ld_count == 1
   record(failures, "#{source}: missing Content-Security-Policy meta") unless html.include?(%(http-equiv="Content-Security-Policy"))
   record(failures, "#{source}: missing referrer policy meta") unless html.include?(%(name="referrer"))
   record(failures, "#{source}: inline style= attribute (breaks strict style-src CSP)") if html.match?(/\sstyle="/)
