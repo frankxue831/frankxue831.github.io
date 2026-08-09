@@ -26,7 +26,7 @@ alternate: /
             </p>
 
             <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
-                看精选作品
+                查看精选作品
                 <span class="hero__cta__arrow" aria-hidden="true">→</span>
             </a>
         </div>
@@ -122,13 +122,13 @@ alternate: /
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对上当前代码，新会话不必冷启动重新摸清项目。<strong>{{ project.status_label.zh }}</strong>——源码未公开。
+                给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对上当前代码，新会话不必冷启动重新摸清项目。<strong>{{ project.status_label.zh }}</strong>。私有项目——暂无公开源码链接。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
-                macOS 上查 self-hosted runner 的单次运行工具：launchd 状态、进程树、日志和 GitHub API 汇总成类型化 findings，外加受控的 launchd 控制。目前{{ project.status_label.zh }}。
+                macOS 上查 self-hosted runner 的单次运行工具：launchd 状态、进程树、日志和 GitHub API 汇总成类型化 findings，外加受控的 launchd 控制。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
-                把 storyboard 渲染成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。{{ project.status_label.zh }}。
+                把 storyboard 渲染成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
@@ -175,7 +175,7 @@ alternate: /
     </ul>
 
     <a href="{{ '/zh/notes/' | relative_url }}" class="preview__link preview__link--section">
-        看全部笔记 <span aria-hidden="true">→</span>
+        浏览全部笔记 <span aria-hidden="true">→</span>
     </a>
 </section>
 {%- endif -%}

@@ -44,14 +44,14 @@ alternate: /projects/
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。按版本展开的证据，写在发布历史那一页。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的仓库记忆与上下文：经 MCP 暴露 26 个工具，记忆有类型、会衰减。{{ project.status_label.zh }}——源码未公开。
+                给 AI 编程 Agent 用的仓库记忆与上下文：经 MCP 暴露 26 个工具，记忆有类型、会衰减。{{ project.status_label.zh }}。私有项目——暂无公开源码链接。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
-                macOS 上查 GitHub Actions self-hosted runner 的单次运行 CLI：只读观测（launchd 域、PID、进程树、日志、可选 GitHub API），外加受控的 launchd 控制；缺项降级为部分输出，而不是硬失败。源码目前{{ project.status_label.zh }}。
+                macOS 上查 GitHub Actions self-hosted runner 的单次运行 CLI：只读观测（launchd 域、PID、进程树、日志、可选 GitHub API），外加受控的 launchd 控制；缺项降级为部分输出，而不是硬失败。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
                 确定性流水线：把 YAML storyboard 渲染成带旁白的讲解视频——每个 beat 可以是图示、带引用的代码标注，或会动的概念图。画面标 <em>simplified</em>（简化视图）；画帧前，引用校验门按固定 commit 核对源码——
-                视频里的 <code>verified @ commit</code> 是校验门的结论，不是装饰。目前{{ project.status_label.zh }}。
+                视频里的 <code>verified @ commit</code> 是校验门的结论，不是装饰。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
@@ -63,6 +63,6 @@ alternate: /projects/
     </ul>
 
     <a href="{{ '/zh/notes/' | relative_url }}" class="preview__link preview__link--section">
-        看全部笔记 <span aria-hidden="true">→</span>
+        浏览全部笔记 <span aria-hidden="true">→</span>
     </a>
 </section>

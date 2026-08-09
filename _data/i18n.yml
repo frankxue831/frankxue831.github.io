@@ -52,11 +52,11 @@
 
 en:
   html_lang: "en"
-  tagline: "Personal site of Frank Xue — software engineer. Notes and selected work."
+  tagline: "Software engineer, mostly in Rust. I publish selected work with its status, evidence, and limits visible."
   # Short suffix for the <title> element on the home page, where page title ==
   # site title. head.html builds the document title so the suffix follows the
   # page locale; jekyll-seo-tag can only read the single global site.tagline.
-  short_tagline: "Software engineer."
+  short_tagline: "Software engineer, mostly in Rust"
   # Shared more-link for work-list project rows (home + projects index). Note
   # rows keep their own, shorter `notes.read_more` in English.
   list:
@@ -194,8 +194,8 @@ en:
     earlier_releases: "Earlier releases (v0.6.0 – v0.13.0)"
 zh:
   html_lang: "zh-CN"
-  tagline: "Frank Xue 的个人主页。软件工程师——笔记与精选作品，发布状态与限制写在明面上。"
-  short_tagline: "软件工程师。"
+  tagline: "软件工程师，主要使用 Rust。我会公开一部分作品，并把状态、证据和限制写在明面上。"
+  short_tagline: "软件工程师，主要使用 Rust"
   # ZH uses one more-link phrase for every list row — project rows and note
   # rows alike (`notes.read_more` below carries the same string).
   list:

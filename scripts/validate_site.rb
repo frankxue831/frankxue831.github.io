@@ -390,8 +390,8 @@ end
 # github-pages bump changes seo-tag's output shape, or the splice regresses,
 # this fails loudly instead of shipping an English tagline in the Chinese tab.
 {
-  "index.html" => "Frank Xue | Software engineer.",
-  "zh/index.html" => "Frank Xue | 软件工程师。",
+  "index.html" => "Frank Xue | Software engineer, mostly in Rust",
+  "zh/index.html" => "Frank Xue | 软件工程师，主要使用 Rust",
   "about/index.html" => "About | Frank Xue",
   "zh/about/index.html" => "关于 | Frank Xue"
 }.each do |relative, expected_title|
@@ -1195,6 +1195,82 @@ rejected_content.each do |relative, phrases|
   phrases.each do |phrase|
     record(failures, "#{relative}: rejected reviewed phrase remains: #{phrase.inspect}") if source.include?(phrase)
   end
+end
+
+i18n_content = YAML.load_file(ROOT.join("_data/i18n.yml"))
+expected_identity = {
+  "en" => {
+    "tagline" => "Software engineer, mostly in Rust. I publish selected work with its status, evidence, and limits visible.",
+    "short_tagline" => "Software engineer, mostly in Rust"
+  },
+  "zh" => {
+    "tagline" => "软件工程师，主要使用 Rust。我会公开一部分作品，并把状态、证据和限制写在明面上。",
+    "short_tagline" => "软件工程师，主要使用 Rust"
+  }
+}.freeze
+expected_identity.each do |lang, values|
+  values.each do |key, expected|
+    actual = i18n_content.dig(lang, key)
+    record(failures, "i18n.yml: #{lang}.#{key} must be #{expected.inspect}") unless actual == expected
+  end
+end
+
+source_contracts = {
+  "about.html" => [
+    'description: "How I work, what I optimize for, and how I present evidence and limitations across public and private projects."'
+  ],
+  "zh/about.html" => [
+    'description: "我的工作方式、取舍，以及公开与私有项目如何呈现证据和限制。"'
+  ],
+  "contact.html" => [
+    'description: "Ways to contact Frank Xue, with response expectations and links to public work."'
+  ],
+  "zh/contact.html" => [
+    'description: "联系 Frank Xue 的方式、回复预期，以及公开作品链接。"'
+  ],
+  "index.html" => ["View selected work", "Browse all notes", "Private project — no public source link.", "Local prototype — no public source link."],
+  "zh/index.html" => ["查看精选作品", "浏览全部笔记", "私有项目——暂无公开源码链接。", "本地原型——暂无公开源码链接。"],
+  "projects.html" => ["Private project — no public source link.", "Local prototype — no public source link."],
+  "zh/projects.html" => ["私有项目——暂无公开源码链接。", "本地原型——暂无公开源码链接。"],
+  "notes.html" => [
+    'description: "Working notes on software engineering: evidence, interfaces, reliability, cryptography, CI, and the choices behind shipped systems."',
+    "These are working notes on how software claims become inspectable"
+  ],
+  "zh/notes.html" => [
+    'description: "软件工程工作笔记：证据、接口、可靠性、密码学、CI，以及已交付系统背后的取舍。"',
+    "这些工作笔记关心的是：软件说法怎样变得可核对"
+  ],
+  "_notes/starting-a-notebook.md" => ["Put the most decision-relevant evidence first, then make its limits easy to find."],
+  "_notes/starting-a-notebook.zh.md" => ["先放最影响判断的证据，再让它的边界也容易找到。"],
+  "projects/repolens-rs.html" => ["Planned work remains uncommitted until it is tied to a public milestone."],
+  "zh/projects/repolens-rs.html" => ["后续工作在绑定公开里程碑之前，不写成已承诺计划。"]
+}.freeze
+
+source_contracts.each do |relative, phrases|
+  source = read_file(ROOT.join(relative), failures)
+  normalized = source.gsub(/\s+/, " ")
+  phrases.each do |phrase|
+    record(failures, "#{relative}: missing reviewed content contract #{phrase.inspect}") unless normalized.include?(phrase)
+  end
+end
+
+gm_en = read_file(ROOT.join("projects/gm-crypto-rs.html"), failures)
+gm_zh = read_file(ROOT.join("zh/projects/gm-crypto-rs.html"), failures)
+record(failures, "projects/gm-crypto-rs.html: missing immutable LICENSE link") unless gm_en.include?("v1.11.0/LICENSE")
+record(failures, "zh/projects/gm-crypto-rs.html: missing immutable LICENSE link") unless gm_zh.include?("v1.11.0/LICENSE")
+record(failures, "projects/gm-crypto-rs.html: missing FIPS expansion") unless gm_en.include?("U.S. Federal Information Processing Standards (FIPS)")
+record(failures, "zh/projects/gm-crypto-rs.html: missing FIPS expansion") unless gm_zh.include?("美国联邦信息处理标准（FIPS）")
+
+%w[colophon.html zh/colophon.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: missing localStorage privacy disclosure") unless source.include?("frankxue.theme")
+end
+
+%w[about.html zh/about.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  normalized = source.gsub(/\s+/, " ")
+  record(failures, "#{relative}: missing published-gate build-failure claim") unless
+    normalized.include?(relative.start_with?("zh/") ? "越过公开门槛，构建就会失败" : "fails the build when it crosses the published gate")
 end
 
 if failures.empty?
