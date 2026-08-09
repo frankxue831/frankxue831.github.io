@@ -437,8 +437,8 @@ if source.size != (512, 512):
 
 background = source.getpixel((0, 0))
 canvas = Image.new("RGB", (512, 512), background)
-inner = source.resize((448, 448), Image.Resampling.LANCZOS)
-canvas.paste(inner, (32, 32))
+inner = source.resize((432, 432), Image.Resampling.LANCZOS)
+canvas.paste(inner, (40, 40))
 canvas.save(OUT_512, format="PNG", optimize=True, compress_level=9)
 canvas.resize((192, 192), Image.Resampling.LANCZOS).save(
     OUT_192, format="PNG", optimize=True, compress_level=9
@@ -464,7 +464,7 @@ for path in (OUT_192, OUT_512):
     print(f"{path.relative_to(ROOT)}: {image.size}, safe")
 ```
 
-This scales the complete existing canvas to 87.5%, preserving the mark and background while keeping non-background pixels inside the maskable safe circle.
+This scales the complete existing canvas to 84.375%, preserving the mark and background while keeping non-background pixels—including Lanczos antialiasing at 192px—inside the maskable safe circle. The original mark reaches about 236px from center; 87.5% scaling was rejected by the builder because it left edge pixels outside the 40% safe radius.
 
 - [ ] **Step 2: Build and visually inspect both icons**
 
