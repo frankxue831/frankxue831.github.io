@@ -1,6 +1,7 @@
 {%- assign lang = page.lang | default: 'en' -%}
 {%- assign html_lang = site.data.i18n[lang].html_lang | default: lang -%}
 {%- assign page_description = page.description | default: site.description | strip_newlines | strip -%}
+{%- assign site_description = site.data.i18n[lang].meta.site_description | default: site.description | strip_newlines | strip -%}
 {%- assign page_title = page.title | default: site.title -%}
 {%- assign page_url = page.url | absolute_url -%}
 {%- assign site_url = '/' | absolute_url -%}
@@ -32,7 +33,7 @@
       "@id": {{ website_id | jsonify }},
       "url": {{ site_url | jsonify }},
       "name": {{ site.title | jsonify }},
-      "description": {{ site.description | strip_newlines | strip | jsonify }},
+      "description": {{ site_description | jsonify }},
       "inLanguage": ["en", "zh-CN"],
       "publisher": {
         "@id": {{ person_id | jsonify }}
@@ -51,7 +52,7 @@
       "about": {
         "@id": {{ person_id | jsonify }}
       }
-    }{% if project %},
+    }{% if project and project.public_source %},
     {
       "@type": "SoftwareSourceCode",
       "@id": {{ page_url | append: '#software' | jsonify }},
@@ -64,10 +65,31 @@
       },
       "isPartOf": {
         "@id": {{ webpage_id | jsonify }}
-      }{% if project.public_source and project.repo_url %},
+      }{% if project.repo_url %},
       "codeRepository": {{ project.repo_url | jsonify }}{% endif %}{% if project.crate_url or project.docs_url %},
       "sameAs": [{% assign emitted_same_as = false %}{% if project.crate_url %}{{ project.crate_url | jsonify }}{% assign emitted_same_as = true %}{% endif %}{% if project.docs_url %}{% if emitted_same_as %}, {% endif %}{{ project.docs_url | jsonify }}{% endif %}]
       {% endif %}
+    }{% endif %}{% if page.collection == 'notes' %},
+    {
+      "@type": "BlogPosting",
+      "@id": {{ page_url | append: '#article' | jsonify }},
+      "url": {{ page_url | jsonify }},
+      "headline": {{ page_title | jsonify }},
+      "description": {{ page_description | jsonify }},
+      "datePublished": {{ page.date | date_to_xmlschema | jsonify }},
+      "inLanguage": {{ html_lang | jsonify }},
+      "mainEntityOfPage": {
+        "@id": {{ webpage_id | jsonify }}
+      },
+      "author": {
+        "@id": {{ person_id | jsonify }}
+      },
+      "publisher": {
+        "@id": {{ person_id | jsonify }}
+      },
+      "isPartOf": {
+        "@id": {{ website_id | jsonify }}
+      }
     }{% endif %}
   ]
 }
