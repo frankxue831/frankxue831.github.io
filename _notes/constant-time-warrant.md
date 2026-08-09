@@ -70,6 +70,10 @@ making it. From the README:
 > `|τ|` values mean the test could not detect a leak with the budget given, not that no
 > leak exists.
 
+The telemetry shows that the harness can catch its deliberate negative control and records
+one historical regression it caught; low observed values support the implementation claim
+but do not prove constant-time behavior.
+
 The language is lifted directly from `dudect-bencher`'s own docs, and it is kept verbatim
 rather than softened. The same file carries a comparison table against the established
 alternatives in which this crate's own rows read **External security audit: none** and

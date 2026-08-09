@@ -879,8 +879,8 @@ else
 end
 
 dudect_chart_source = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
-record(failures, "dudect-chart.html: sentinel threshold must render from dudect.yml") unless dudect_chart_source.include?("{{ d.sentinel }}")
-record(failures, "dudect-chart.html: gate threshold must render from dudect.yml") unless dudect_chart_source.include?("{{ d.gate }}")
+record(failures, "dudect-chart.html: sentinel threshold must preserve display precision from dudect.yml") unless dudect_chart_source.include?("{{ d.sentinel_display }}")
+record(failures, "dudect-chart.html: gate threshold must preserve display precision from dudect.yml") unless dudect_chart_source.include?("{{ d.gate_display }}")
 if dudect_chart_source.match?(/&lt;\s+0\.(?:20|55)/)
   record(failures, "dudect-chart.html: policy threshold is hardcoded instead of rendered from dudect.yml")
 end
@@ -889,7 +889,7 @@ end
 %w[en zh].each do |lang|
   %w[title fig_num intro axis_label gate_label control_label cluster_label caveat
      provenance source table_caption col_target col_measures col_tau col_gate
-     col_status status_pass status_sentinel status_fire
+     col_status status_pass status_sentinel status_fire status_caught
      policy_sentinel_label].each do |key|
     record(failures, "i18n.yml: missing #{lang}.dudect.#{key}") if i18n.dig(lang, "dudect", key).to_s.empty?
   end

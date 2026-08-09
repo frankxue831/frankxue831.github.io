@@ -12,7 +12,7 @@ image:
   height: 630
   alt: "Frank Xue——软件工程师。为代码、系统和 Agent，写可审计、状态清晰的工具。"
 alternate: /notes/constant-time-ci-gate/
-description: "用一套 dudect 式的时序检测 harness 在 CI 里把关常量时间——它怎么工作，以及为什么它是在检测回归，而不是证明回归不存在。"
+description: "一条可信的常量时间 CI 门，不只要在正常路径上通过，还要让负对照故意触发，并把测量值、阈值和证据边界一起公开。"
 excerpt: "「常量时间」是那种你做对一次、又会悄悄丢掉的性质。这篇讲 CI 里那根绊线：时序泄漏一回来就让构建变红——以及为什么它是检测，不是证明。"
 ---
 

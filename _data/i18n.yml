@@ -121,7 +121,7 @@ en:
   dudect:
     title: "Constant-time, measured"
     fig_num: "fig. 3.2"
-    intro: "Each secret-touching path is timed against the |τ| gate. Low |τ| = no leak detected under the budget; core paths fail the build if they cross the gate (a few carry looser nightly or telemetry policy)."
+    intro: "Published measurements and current policy share one view: observed values are evidence from a named run, while the gate and sentinel are enforcement thresholds rather than proof."
     axis_label: "|τ| (timing-leak statistic)"
     gate_label: "PR gate |τ| < 0.20"
     control_label: "negative_control — must fire here (proof the detector isn't blind)"
@@ -142,6 +142,7 @@ en:
     status_pass: "under gate"
     status_sentinel: "under sentinel"
     status_fire: "must fire"
+    status_caught: "Over gate — caught"
     policy_sentinel_label: "nightly sentinel"
     leak_before_row: "before (crypto-bigint 0.6)"
     leak_after_row: "after (0.7.3 upgrade)"
@@ -248,7 +249,7 @@ zh:
   dudect:
     title: "把常量时间测出来"
     fig_num: "图 3.2"
-    intro: "每条涉密路径都按 |τ| 门禁计时。|τ| 低 = 在该预算下没测到泄漏；核心路径越过门禁就让构建失败（少数走更宽松的 nightly 或遥测策略）。"
+    intro: "这张图把已发布测量值与当前策略放在一起：观测值来自一轮明确的运行，门槛与哨兵值是执行策略，不是证明。"
     axis_label: "|τ|（时序泄漏统计量）"
     gate_label: "PR 门禁 |τ| < 0.20"
     control_label: "negative_control——必须在这里故意失败（证明检测器不是瞎的）"
@@ -269,6 +270,7 @@ zh:
     status_pass: "在门禁内"
     status_sentinel: "在哨兵值内"
     status_fire: "必须故意失败"
+    status_caught: "超过门槛——已捕获"
     policy_sentinel_label: "nightly 哨兵"
     leak_before_row: "修复前（crypto-bigint 0.6）"
     leak_after_row: "修复后（升级到 0.7.3）"
