@@ -56,11 +56,13 @@
 
 en:
   html_lang: "en"
-  tagline: "Personal site of Frank Xue — software engineer. Notes and selected work."
+  tagline: "Software engineer, mostly in Rust. I publish selected work with its status, evidence, and limits visible."
   # Short suffix for the <title> element on the home page, where page title ==
   # site title. head.html builds the document title so the suffix follows the
   # page locale; jekyll-seo-tag can only read the single global site.tagline.
-  short_tagline: "Software engineer."
+  short_tagline: "Software engineer, mostly in Rust"
+  meta:
+    site_description: "Personal site of Frank Xue — software engineer. Notes and selected work."
   # Shared more-link for work-list project rows (home + projects index). Note
   # rows keep their own, shorter `notes.read_more` in English.
   list:
@@ -72,6 +74,8 @@ en:
     contact: "Contact"
     writing: "Notes"
     primary_aria: "Primary"
+    menu: "Menu"
+    skip: "Skip to content"
   switcher:
     label: "中文"
     aria: "Switch to Chinese"
@@ -102,11 +106,11 @@ en:
     auto: "Auto"
     light: "Light"
     dark: "Dark"
-    # {current} and {next} are substituted by theme.js on load. The whole
+    # {current}, {effective}, and {next} are substituted by theme.js on load. The whole
     # sentence is localized so each language owns its own punctuation +
     # word order. Server-rendered aria-label uses `label` as a generic
     # fallback for the brief window before theme.js runs.
-    aria_template: "Theme: {current}. Switch to {next}."
+    aria_template: "Theme preference: {current}. Current appearance: {effective}. Switch to {next}."
   toc:
     # Contents rail on project detail pages. Built by contents.js from the
     # page's <h2> headings; this label is the rail heading + nav aria-label.
@@ -117,6 +121,9 @@ en:
     copy: "Copy"
     copied: "Copied"
     aria: "Copy install command"
+    copied_aria: "Install command copied"
+    manual: "Copy manually"
+    manual_aria: "Command selected. Copy manually."
   notes:
     # Writing/Notes section.
     all: "All notes"
@@ -125,7 +132,7 @@ en:
   dudect:
     title: "Constant-time, measured"
     fig_num: "fig. 3.2"
-    intro: "Each secret-touching path is timed against the |τ| gate. Low |τ| = no leak detected under the budget; core paths fail the build if they cross the gate (a few carry looser nightly or telemetry policy)."
+    intro: "Published measurements and current policy share one view: observed values are evidence from a named run, while the gate and sentinel are enforcement thresholds rather than proof."
     axis_label: "|τ| (timing-leak statistic)"
     gate_label: "PR gate |τ| < 0.20"
     control_label: "negative_control — must fire here (proof the detector isn't blind)"
@@ -138,6 +145,7 @@ en:
     provenance: "Measured: v0.2 W0 harness, 100K samples (pre-2026-05-12 runner). The k-class sign and the two invert diagnostics later moved to telemetry + a |τ| ≥ 0.55 sentinel."
     source: "Source: gm-crypto-rs SECURITY.md @ v1.2.0"
     table_caption: "Published dudect measurements (gm-crypto-rs, measured at v1.2.0; unchanged since)"
+    table_scroll_label: "Constant-time measurement table; scroll horizontally when needed"
     col_target: "Target"
     col_measures: "What it measures"
     col_tau: "|τ|"
@@ -146,6 +154,7 @@ en:
     status_pass: "under gate"
     status_sentinel: "under sentinel"
     status_fire: "must fire"
+    status_caught: "Over gate — caught"
     policy_sentinel_label: "nightly sentinel"
     leak_before_row: "before (crypto-bigint 0.6)"
     leak_after_row: "after (0.7.3 upgrade)"
@@ -197,8 +206,10 @@ en:
     earlier_releases: "Earlier releases (v0.6.0 – v0.13.0)"
 zh:
   html_lang: "zh-CN"
-  tagline: "Frank Xue 的个人主页。软件工程师——笔记与精选作品，发布状态与限制写在明面上。"
-  short_tagline: "软件工程师。"
+  tagline: "软件工程师，主要使用 Rust。我会公开一部分作品，并把状态、证据和限制写在明面上。"
+  short_tagline: "软件工程师，主要使用 Rust"
+  meta:
+    site_description: "Frank Xue 的个人主页。软件工程师——笔记与精选作品，发布状态与限制写在明面上。"
   # ZH uses one more-link phrase for every list row — project rows and note
   # rows alike (`notes.read_more` below carries the same string).
   list:
@@ -210,6 +221,8 @@ zh:
     contact: "联系"
     writing: "笔记"
     primary_aria: "主导航"
+    menu: "菜单"
+    skip: "跳到正文"
   switcher:
     label: "EN"
     aria: "切换为英文"
@@ -237,7 +250,7 @@ zh:
     auto: "跟随系统"
     light: "浅色"
     dark: "深色"
-    aria_template: "主题：{current}。切换到{next}。"
+    aria_template: "主题偏好：{current}。当前显示：{effective}。切换到{next}。"
   toc:
     label: "本页内容"
   install:
@@ -245,6 +258,9 @@ zh:
     copy: "复制"
     copied: "已复制"
     aria: "复制安装命令"
+    copied_aria: "安装命令已复制"
+    manual: "手动复制"
+    manual_aria: "命令已选中，请手动复制。"
   notes:
     all: "全部笔记"
     read_more: "继续读 →"
@@ -252,7 +268,7 @@ zh:
   dudect:
     title: "把常量时间测出来"
     fig_num: "图 3.2"
-    intro: "每条涉密路径都按 |τ| 门禁计时。|τ| 低 = 在该预算下没测到泄漏；核心路径越过门禁就让构建失败（少数走更宽松的 nightly 或遥测策略）。"
+    intro: "这张图把已发布测量值与当前策略放在一起：观测值来自一轮明确的运行，门槛与哨兵值是执行策略，不是证明。"
     axis_label: "|τ|（时序泄漏统计量）"
     gate_label: "PR 门禁 |τ| < 0.20"
     control_label: "negative_control——必须在这里故意失败（证明检测器不是瞎的）"
@@ -265,6 +281,7 @@ zh:
     provenance: "测量环境：v0.2 W0 harness，100K 采样（2026-05-12 之前的 runner）。k-class 签名和两个域求逆诊断后来转为遥测 + |τ| ≥ 0.55 的哨兵值。"
     source: "来源：gm-crypto-rs SECURITY.md @ v1.2.0"
     table_caption: "公开的 dudect 测量值（gm-crypto-rs，测于 v1.2.0；此后未变）"
+    table_scroll_label: "常量时间测量表；空间不足时可横向滚动"
     col_target: "目标"
     col_measures: "测的是什么"
     col_tau: "|τ|"
@@ -273,6 +290,7 @@ zh:
     status_pass: "在门禁内"
     status_sentinel: "在哨兵值内"
     status_fire: "必须故意失败"
+    status_caught: "超过门槛——已捕获"
     policy_sentinel_label: "nightly 哨兵"
     leak_before_row: "修复前（crypto-bigint 0.6）"
     leak_after_row: "修复后（升级到 0.7.3）"

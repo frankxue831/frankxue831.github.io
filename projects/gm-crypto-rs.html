@@ -33,6 +33,10 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
                         data-copy-target="install-cmd"
                         data-label-copy="{{ inst.copy | escape }}"
                         data-label-done="{{ inst.copied | escape }}"
+                        data-label-manual="{{ inst.manual | escape }}"
+                        data-aria-copy="{{ inst.aria | escape }}"
+                        data-aria-done="{{ inst.copied_aria | escape }}"
+                        data-aria-manual="{{ inst.manual_aria | escape }}"
                         aria-label="{{ inst.aria | escape }}">
                     <span class="install__copy-text" aria-hidden="true">{{ inst.copy | escape }}</span>
                 </button>
@@ -40,7 +44,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <span class="install__status" role="status" aria-live="polite"></span>
         </div>
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
         <p>
             <code>gm-crypto-rs</code> implements GB/T 32905 ({% include glossary-term.html term="sm3" %} hash),
             GB/T 32918 ({% include glossary-term.html term="sm2" %} public-key sign / verify / encrypt / decrypt
@@ -58,13 +62,13 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             no-confirmation SM2 key-exchange path (v1.6), record protect /
             deprotect (v1.7), certificate-pair and chain signature verification
             (v1.8), and — since v1.9 — the whole toolkit reachable from C.
-            A runnable consumer demo — <code>hash</code> / <code>sign</code> /
-            <code>verify</code> over SM3 and SM2 — lives at
-            <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>.
-            One caveat: the demo pins <code>gmcrypto-core</code> at
-            <code>1.9.0</code>, behind the v1.11.0 this page describes — the
-            calls it demonstrates are unchanged across that gap, but nothing
-            from v1.10 onward (including the <code>aead</code> fit) appears in it.
+            The published
+            <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>
+            is a consumer and smoke-test tour of representative crate
+            capabilities, including hashing, signing and verification,
+            encryption and decryption, key exchange, and encoding flows. Its
+            dependency is pinned to <code>gmcrypto-core = "=1.11.0"</code> so
+            the demo and this evidence snapshot refer to the same release.
         </p>
 
         <figure class="fig">
@@ -72,7 +76,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <figcaption class="fig__cap">fig. 3.1 — crate &amp; C ABI surface (85 entry points at v1.4.0, unchanged through v1.8; 104 as of v1.9.0, still 104 at v1.11.0)</figcaption>
         </figure>
 
-        <h2>The problem</h2>
+        <h2 id="problem">The problem</h2>
         <p>
             Rust already has SM2 / SM3 / SM4 implementations, and the good
             ones are <em>designed</em> for {% include glossary-term.html term="constant-time" %} secret-dependent
@@ -88,7 +92,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <em>what keeps it constant-time on every commit.</em>
         </p>
 
-        <h2>Constraints &amp; key decisions</h2>
+        <h2 id="decisions">Constraints &amp; key decisions</h2>
         <p>
             <strong>Verify continuously, don't assert once.</strong>
             Constant-time behavior is treated as a property CI re-checks, not
@@ -163,7 +167,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             tested and owned across three published crates.
         </p>
 
-        <h2>Evidence</h2>
+        <h2 id="evidence">Evidence</h2>
         <p>
             Every output is checked for byte-identity: against the standard
             KAT vectors, against GmSSL 3.2.0 for interop — an in-CI job
@@ -184,13 +188,15 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             to the exact line:
         </p>
         <ul class="audit-notes">
-            <li>Secret-dependent comparison is constant-time
-                (<code>subtle</code>'s <code>ct_eq</code>) —
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/src/sm4/cipher.rs#L627" rel="noopener noreferrer">cipher.rs:627 <span aria-hidden="true">&#8599;</span></a></li>
+            <li>Secret-derived equality uses the crate's constant-time
+                comparison path; the linked source shows that implementation
+                choice, while the dudect evidence below remains empirical
+                rather than a proof —
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/src/sm4/cipher.rs#L627" rel="noopener noreferrer">cipher.rs:627 <span aria-hidden="true">&#8599;</span></a>.</li>
             <li>The core crate forbids unsafe code —
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/Cargo.toml#L177" rel="noopener noreferrer">Cargo.toml:177 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/Cargo.toml#L177" rel="noopener noreferrer">Cargo.toml:177 <span aria-hidden="true">&#8599;</span></a>.</li>
             <li>A dudect timing-leak gate runs on every PR —
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/.github/workflows/dudect-pr.yml#L166" rel="noopener noreferrer">dudect-pr.yml:166 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/.github/workflows/dudect-pr.yml#L169" rel="noopener noreferrer">dudect-pr.yml:169 <span aria-hidden="true">&#8599;</span></a>.</li>
         </ul>
         <p>
             Two more, specific to the constant-time claim &mdash; the parts that are
@@ -199,16 +205,18 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         <ul class="audit-notes">
             <li>The gate has teeth &mdash; a deliberately-leaky <code>negative_control</code>
                 the harness must flag, or CI fails &mdash;
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a>.</li>
             <li>Stated honestly &mdash; the harness detects leaks; it does not prove
                 constant-time &mdash;
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/README.md#L76" rel="noopener noreferrer">README.md:76 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/README.md#L76" rel="noopener noreferrer">README.md:76 <span aria-hidden="true">&#8599;</span></a>.</li>
         </ul>
         <p>
-            Two notes unpack this:
+            Four notes unpack the evidence boundary:
             <a href="{{ '/notes/constant-time-ci-gate/' | relative_url }}">how the CI gate works</a>,
             and <a href="{{ '/notes/constant-time-warrant/' | relative_url }}">why the negative
-            control — not the green checks — is the part worth showing</a>.
+            control — not the green checks — is the part worth showing</a>;
+            <a href="{{ '/notes/byte-identity/' | relative_url }}">byte identity as an interop test</a>;
+            and <a href="{{ '/notes/unsafe-opt-in/' | relative_url }}">unsafe as an explicit opt-in</a>.
         </p>
         {% include dudect-chart.html %}
         <p>
@@ -227,19 +235,19 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <dd><a href="{{ '/projects/gm-crypto-rs/releases/' | relative_url }}">Every cycle from v0.6.0 →</a></dd>
         </dl>
 
-        <h2>Next</h2>
+        <h2 id="next">Next</h2>
         <dl class="version-grid">
             <dt>Next</dt>
             <dd>The TLCP (GB/T 38636) arc begun in v1.6 <strong>closed with v1.9</strong>; v1.11 then closed the long-parked RustCrypto <code>aead</code> 0.6 trait fit. No successor arc is committed to a version yet. Still parked: AVX-512 <code>sbox_x64</code>, and streaming / incremental CCM. Permanently out of scope, not deferred: endpoint identity binding — the TLCP equivalent of hostname verification — stays the caller's.</dd>
         </dl>
 
-        <h2>What it isn't</h2>
+        <h2 id="limits">What it isn't</h2>
         <ul>
             <li>Not a TLS/TLCP stack — the <code>tlcp</code> work is a toolkit of primitives (key schedule, record protect / deprotect, chain and pair verification). There is no handshake state machine, no negotiation, and no session management: a caller drives the protocol, as the v1.9 C examples do.</li>
             <li>Not endpoint authentication — <code>verify_chain</code> / <code>verify_pair</code> establish structural trust only. Binding a verified chain to a peer identity, the TLCP equivalent of hostname verification, stays the caller's permanently.</li>
             <li>Not SM9, ZUC, or post-quantum.</li>
             <li>Not an HSM / SDF / SKF integration.</li>
-            <li>Not a certified cryptographic module.</li>
+            <li>Not a certified cryptographic module under the U.S. Federal Information Processing Standards (FIPS) or another certification program.</li>
             <li>Not constant-time on CPUs with data-dependent multiply latencies (some older x86, some embedded).</li>
         </ul>
 
@@ -253,6 +261,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <a href="https://github.com/frankxue831/gm-crypto-rs" rel="noopener noreferrer">Source ↗</a>
             <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io ↗</a>
             <a href="https://docs.rs/gmcrypto-core" rel="noopener noreferrer">docs.rs ↗</a>
+            <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/LICENSE" rel="noopener noreferrer">LICENSE ↗</a>
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">Demo ↗</a>
             <a href="{{ '/projects/' | relative_url }}">← All work</a>
         </div>

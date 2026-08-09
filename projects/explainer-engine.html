@@ -25,7 +25,7 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
     <article class="project-detail prose">
         {% include project-summary.html %}
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
         <p>
             The Explainer Engine compiles a YAML {% include glossary-term.html term="storyboard" %}
             into a {% include glossary-term.html term="manim" %} narrated scene.
@@ -56,7 +56,7 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             "memory force" claim was verified against.</figcaption>
         </figure>
 
-        <h2>The problem</h2>
+        <h2 id="problem">The problem</h2>
         <p>
             Explanations drift from the code they describe, and a rendered
             explanation drifts <em>silently</em>: the video still plays, the
@@ -69,7 +69,7 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             it takes for a rendered explanation to refuse to drift.</em>
         </p>
 
-        <h2>Constraints &amp; key decisions</h2>
+        <h2 id="decisions">Constraints &amp; key decisions</h2>
         <p>
             <strong>Refuse to draw a claim that can't be cited.</strong> Before
             render, a <strong>citation gate</strong> reads the cited lines from
@@ -109,7 +109,7 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             can't take shortcuts that would wedge the GUI.
         </p>
 
-        <h2>Evidence</h2>
+        <h2 id="evidence">Evidence</h2>
         <p>
             A private local snapshot at <code>local tag diagram-canvas</code>
             — there is no public source to inspect. What backs the claims is the artifact
@@ -127,7 +127,7 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             evidence.
         </p>
 
-        <h2>Next</h2>
+        <h2 id="next">Next</h2>
         <p>
             Nothing is committed to a milestone. The open question the diagram
             canvas half-answers sets the direction: how much of a concept can
@@ -136,7 +136,7 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             reachable.
         </p>
 
-        <h2>What it isn't</h2>
+        <h2 id="limits">What it isn't</h2>
         <ul>
             <li>Not an LLM video generator — codegen is deterministic and reproducible.</li>
             <li>Not a slideshow — the diagram canvas animates relationships, not bullet points.</li>

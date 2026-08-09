@@ -56,7 +56,7 @@
 
   // Templates own their own punctuation — ZH uses "：" and "。", EN uses ": "
   // and ". " — so the whole aria sentence is a template string per language,
-  // with {current}/{next} placeholders that JS substitutes.
+  // with {current}/{effective}/{next} placeholders that JS substitutes.
   const state = {
     auto:  btn.dataset.stateAuto  || 'Auto',
     light: btn.dataset.stateLight || 'Light',
@@ -89,7 +89,10 @@
     const next = CYCLE[pref];
     btn.setAttribute(
       'aria-label',
-      ariaTemplate.replace('{current}', state[pref]).replace('{next}', state[next])
+      ariaTemplate
+        .replace('{current}', state[pref])
+        .replace('{effective}', state[effective])
+        .replace('{next}', state[next])
     );
     setThemeColorOverride(effective, pref !== 'auto');
   };

@@ -4,7 +4,7 @@ date: 2026-05-31
 permalink: /notes/constant-time-ci-gate/
 lang: en
 alternate: /zh/notes/constant-time-ci-gate/
-description: "A constant-time CI gate built on a dudect-style timing harness — how it works, and why it detects regressions rather than proving their absence."
+description: "A credible constant-time CI gate must pass normal paths, make a negative control fire deliberately, and publish its measurements, thresholds, and evidence limits."
 excerpt: "Constant-time is easy to satisfy once and lose without noticing. Here's the CI tripwire that fails the build when a leak creeps back — a detector, not a proof."
 ---
 

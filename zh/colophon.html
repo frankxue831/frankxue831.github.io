@@ -24,7 +24,7 @@ alternate: /colophon/
             一个用 <em>Jekyll</em> 生成、托管在 GitHub Pages 上的静态站点——
             没有 JavaScript 框架，不做客户端渲染，除了 Jekyll 本身再没有别的构建步骤。组成很精简：<code>github-pages</code> gem，外加
             <code>jekyll-feed</code>、<code>jekyll-seo-tag</code> 和
-            <code>jekyll-sitemap</code>；一份手写、基于一套设计变量（design tokens）的样式表；以及分散在六个小文件里、约 500 行的原生 JavaScript。这些
+            <code>jekyll-sitemap</code>；一份手写、基于一套设计变量（design tokens）的样式表；以及分散在 7 个职责集中的文件里、合计约 570 行的原生 JavaScript。这些
             JavaScript 全是渐进增强——把它关掉，每个页面照样能用。
         </p>
 
@@ -50,7 +50,7 @@ alternate: /colophon/
 
         <h2>隐私</h2>
         <p>
-            没有站点分析（analytics），没有 cookie，没有第三方资源——没有追踪。也没有联系表单、不收集邮箱；找我的方式是在 GitHub 上开公开的 issue 或
+            没有站点分析（analytics），没有 cookie，没有第三方资源——没有追踪。主题选择以 <code>frankxue.theme</code> 保存在浏览器本地；本站不会传输它，清除站点数据即可移除。也没有联系表单、不收集邮箱；找我的方式是在 GitHub 上开公开的 issue 或
             discussion，让对话留在代码旁边。
         </p>
     </div>
@@ -59,7 +59,7 @@ alternate: /colophon/
         <li><span>生成器</span><span>仅 Jekyll</span></li>
         <li><span>托管</span><span>GitHub Pages</span></li>
         <li><span>字体</span><span>EB Garamond 与 IBM Plex Mono</span></li>
-        <li><span>JavaScript</span><span>约 500 行，渐进增强</span></li>
+        <li><span>JavaScript</span><span>7 个文件、约 570 行，渐进增强</span></li>
         <li><span>站点分析</span><span>无</span></li>
         <li><span>源码</span><span><a href="https://github.com/{{ site.github_username }}/{{ site.github_username }}.github.io" rel="noopener noreferrer" class="facts__link">在 GitHub 上查看</a></span></li>
     </ul>

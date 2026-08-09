@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cgi"
+require "date"
 require "json"
 require "pathname"
 require "set"
@@ -19,6 +20,7 @@ SITE = ROOT.join("_site")
 HOST = "www.frankxue.dev"
 BASE_URL = "https://#{HOST}"
 PROJECTS = YAML.load_file(ROOT.join("_data/projects.yml"))
+I18N = YAML.load_file(ROOT.join("_data/i18n.yml"))
 
 failures = []
 
@@ -84,6 +86,21 @@ def json_ld_documents(html, failures, source)
     record(failures, "Invalid JSON-LD in #{source}: #{error.message}")
     nil
   end.compact
+end
+
+def json_ld_graph(html, failures, source)
+  json_ld_documents(html, failures, source).flat_map { |document| Array(document["@graph"]) }
+end
+
+def graph_nodes_of_type(graph, type)
+  graph.select { |node| node["@type"] == type }
+end
+
+def png_dimensions(path)
+  header = path.binread(24)
+  return nil unless header && header.byteslice(0, 8) == "\x89PNG\r\n\x1a\n".b
+
+  [header.byteslice(16, 4).unpack1("N"), header.byteslice(20, 4).unpack1("N")]
 end
 
 unless SITE.directory?
@@ -228,6 +245,63 @@ end
   record(failures, "notes: ZH note '#{slug}/' has no EN counterpart (notes/#{slug}/)")
 end
 
+note_specs = {}
+Pathname.glob(ROOT.join("_notes/*.md").to_s).each do |path|
+  front_matter = path.read[/\A---\s*\n(.*?)\n---\s*\n/m, 1]
+  next unless front_matter
+
+  data = YAML.safe_load(front_matter, permitted_classes: [Date, Time], aliases: true)
+  permalink = data["permalink"].to_s
+  next if permalink.empty?
+
+  relative = "#{permalink.delete_prefix('/')}index.html"
+  note_specs[relative] = data
+end
+
+note_pages.each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  graph = json_ld_graph(html, failures, relative)
+  articles = graph_nodes_of_type(graph, "BlogPosting")
+  spec = note_specs[relative]
+  if spec.nil?
+    record(failures, "#{relative}: missing source note front matter")
+    next
+  end
+
+  unless articles.length == 1
+    record(failures, "#{relative}: expected exactly one BlogPosting node, found #{articles.length}")
+    next
+  end
+
+  article = articles.first
+  page_url = expected_url_for(relative)
+  lang = relative.start_with?("zh/") ? "zh-CN" : "en"
+  expected_date = spec["date"].is_a?(Date) ? spec["date"] : Date.parse(spec["date"].to_s)
+  published = article["datePublished"].to_s
+  record(failures, "#{relative}: BlogPosting @id must end #article") unless article["@id"].to_s == "#{page_url}#article"
+  record(failures, "#{relative}: BlogPosting url mismatch") unless article["url"] == page_url
+  record(failures, "#{relative}: BlogPosting headline mismatch") unless article["headline"] == spec["title"]
+  record(failures, "#{relative}: BlogPosting description missing") if article["description"].to_s.empty?
+  unless published.match?(/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})\z/) && Date.parse(published) == expected_date
+    record(failures, "#{relative}: BlogPosting datePublished #{published.inspect} must be XML Schema date for #{expected_date}")
+  end
+  record(failures, "#{relative}: BlogPosting inLanguage must be #{lang}") unless article["inLanguage"] == lang
+  record(failures, "#{relative}: BlogPosting author must reference #person") unless article.dig("author", "@id").to_s.end_with?("#person")
+  record(failures, "#{relative}: BlogPosting isPartOf must reference #website") unless article.dig("isPartOf", "@id").to_s.end_with?("#website")
+  record(failures, "#{relative}: BlogPosting mainEntityOfPage must reference #webpage") unless article.dig("mainEntityOfPage", "@id").to_s.end_with?("#webpage")
+end
+
+blogposting_negative_pages = %w[
+  notes/index.html zh/notes/index.html
+  projects/gm-crypto-rs/releases/index.html zh/projects/gm-crypto-rs/releases/index.html
+  404.html
+] + project_pages
+blogposting_negative_pages.each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  articles = graph_nodes_of_type(json_ld_graph(html, failures, relative), "BlogPosting")
+  record(failures, "#{relative}: non-note route must not emit BlogPosting") unless articles.empty?
+end
+
 public_release_labels = PROJECTS.select { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }
 private_release_labels = PROJECTS.reject { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }.compact
 home_pages = %w[index.html zh/index.html]
@@ -254,11 +328,19 @@ home_pages = %w[index.html zh/index.html]
   record(failures, "#{relative}: missing apple-touch-icon") unless html.match?(%r{<link rel="apple-touch-icon"[^>]*href="/assets/img/apple-touch-icon\.png"})
   record(failures, "#{relative}: missing web manifest link") unless html.include?(%(<link rel="manifest" href="/site.webmanifest">))
 
-  docs = json_ld_documents(html, failures, relative)
-  graph_types = docs.flat_map { |doc| Array(doc["@graph"]).map { |node| node["@type"] } }
-  record(failures, "#{relative}: missing WebPage JSON-LD") unless graph_types.include?("WebPage")
-  record(failures, "#{relative}: missing Person JSON-LD") unless graph_types.include?("Person")
-  record(failures, "#{relative}: missing WebSite JSON-LD") unless graph_types.include?("WebSite")
+  graph = json_ld_graph(html, failures, relative)
+  webpage_nodes = graph_nodes_of_type(graph, "WebPage")
+  website_nodes = graph_nodes_of_type(graph, "WebSite")
+  person_nodes = graph_nodes_of_type(graph, "Person")
+  record(failures, "#{relative}: expected exactly one WebPage JSON-LD node, found #{webpage_nodes.length}") unless webpage_nodes.length == 1
+  record(failures, "#{relative}: expected exactly one Person JSON-LD node, found #{person_nodes.length}") unless person_nodes.length == 1
+  record(failures, "#{relative}: expected exactly one WebSite JSON-LD node, found #{website_nodes.length}") unless website_nodes.length == 1
+
+  lang = relative.start_with?("zh/") ? "zh" : "en"
+  expected_site_description = I18N.dig(lang, "meta", "site_description").to_s
+  if website_nodes.length == 1 && website_nodes.first["description"] != expected_site_description
+    record(failures, "#{relative}: WebSite description must equal localized #{lang}.meta.site_description")
+  end
 end
 
 core_pages.each do |relative, config|
@@ -270,11 +352,51 @@ core_pages.each do |relative, config|
   end
 end
 
+(core_pages.keys + project_pages + note_pages).each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+
+  alternate_locales = html.scan(%r{<meta property="og:locale:alternate" content="([^"]+)">}).flatten
+  expected_alternate = relative.start_with?("zh/") ? "en_US" : "zh_CN"
+  unless alternate_locales == [expected_alternate]
+    record(failures, "#{relative}: expected one og:locale:alternate #{expected_alternate}, got #{alternate_locales.inspect}")
+  end
+
+  descriptions = html.scan(%r{<meta name="description" content="([^"]*)"}).flatten
+  twitter_descriptions = html.scan(%r{<meta name="twitter:description" content="([^"]*)"}).flatten
+  unless twitter_descriptions.length == 1 && descriptions.length == 1 &&
+         CGI.unescapeHTML(twitter_descriptions.first) == CGI.unescapeHTML(descriptions.first)
+    record(failures, "#{relative}: twitter:description must occur once and equal the page description")
+  end
+end
+
+not_found_html = read_file(SITE.join("404.html"), failures)
+unless not_found_html.empty?
+  robots = not_found_html.scan(%r{<meta name="robots" content="([^"]+)">}).flatten
+  record(failures, "404.html: expected exactly one noindex, follow robots meta") unless robots == ["noindex, follow"]
+  record(failures, "404.html: must not emit hreflang alternates") if not_found_html.include?(%(<link rel="alternate" hreflang=))
+  record(failures, "404.html: must not emit og:locale:alternate") if not_found_html.include?(%(property="og:locale:alternate"))
+end
+
 project_pages.each do |relative|
   html = read_file(SITE.join(relative), failures)
-  docs = json_ld_documents(html, failures, relative)
-  graph_types = docs.flat_map { |doc| Array(doc["@graph"]).map { |node| node["@type"] } }
-  record(failures, "#{relative}: missing SoftwareSourceCode JSON-LD") unless graph_types.include?("SoftwareSourceCode")
+  graph = json_ld_graph(html, failures, relative)
+  software_nodes = graph_nodes_of_type(graph, "SoftwareSourceCode")
+  slug = Pathname.new(relative).dirname.basename.to_s
+  project = PROJECTS.find { |entry| entry["slug"] == slug }
+  if project.nil?
+    record(failures, "#{relative}: no matching project data row for #{slug}")
+  elsif project["public_source"]
+    record(failures, "#{relative}: expected exactly one public SoftwareSourceCode node, found #{software_nodes.length}") unless software_nodes.length == 1
+    if software_nodes.length == 1 && software_nodes.first["codeRepository"].to_s.empty?
+      record(failures, "#{relative}: public SoftwareSourceCode missing codeRepository")
+    end
+  else
+    record(failures, "#{relative}: private project must not emit SoftwareSourceCode") unless software_nodes.empty?
+    if graph.any? { |node| node.key?("codeRepository") }
+      record(failures, "#{relative}: private project graph exposes codeRepository")
+    end
+  end
   record(failures, "#{relative}: missing project summary") unless html.include?(%(class="project-summary"))
 end
 
@@ -363,16 +485,35 @@ Pathname.glob(SITE.join("zh/**/*.html").to_s).each do |path|
   end
 end
 
-# --- Interactive motion (decrypt + scroll reveal) regression checks ---
-%w[assets/js/reveal.js assets/js/decrypt.js].each do |rel|
-  record(failures, "Missing motion script: #{rel}") unless SITE.join(rel).exist?
+# --- Route-aware progressive-enhancement scripts ---
+global_scripts = %w[main.js theme.js reveal.js].freeze
+home_only_scripts = %w[decrypt.js].freeze
+case_study_scripts = %w[contents.js].freeze
+gm_only_scripts = %w[copy.js].freeze
+known_scripts = global_scripts + home_only_scripts + case_study_scripts + gm_only_scripts
+
+known_scripts.each do |script|
+  record(failures, "Missing script asset: assets/js/#{script}") unless SITE.join("assets/js", script).exist?
 end
 
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
   source = path.relative_path_from(SITE).to_s
-  record(failures, "#{source}: missing reveal.js include") unless html.include?("/assets/js/reveal.js")
-  record(failures, "#{source}: missing decrypt.js include") unless html.include?("/assets/js/decrypt.js")
+  actual = html.scan(%r{<script\s+src="/assets/js/([^"]+)"[^>]*></script>}).flatten
+  expected = global_scripts.dup
+  expected.concat(home_only_scripts) if home_pages.include?(source)
+  expected.concat(case_study_scripts) if project_pages.include?(source)
+  expected.concat(gm_only_scripts) if %w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].include?(source)
+
+  known_scripts.each do |script|
+    count = actual.count(script)
+    wanted = expected.include?(script)
+    if wanted && count != 1
+      record(failures, "#{source}: expected exactly one #{script} include, found #{count}")
+    elsif !wanted && count != 0
+      record(failures, "#{source}: optional #{script} must not load on this route")
+    end
+  end
   record(failures, "#{source}: missing inline motion gate") unless html.include?("classList.add('motion')")
 end
 
@@ -390,8 +531,8 @@ end
 # github-pages bump changes seo-tag's output shape, or the splice regresses,
 # this fails loudly instead of shipping an English tagline in the Chinese tab.
 {
-  "index.html" => "Frank Xue | Software engineer.",
-  "zh/index.html" => "Frank Xue | 软件工程师。",
+  "index.html" => "Frank Xue | Software engineer, mostly in Rust",
+  "zh/index.html" => "Frank Xue | 软件工程师，主要使用 Rust",
   "about/index.html" => "About | Frank Xue",
   "zh/about/index.html" => "关于 | Frank Xue"
 }.each do |relative, expected_title|
@@ -446,6 +587,8 @@ end
   assets/img/apple-touch-icon.png
   assets/img/icon-192.png
   assets/img/icon-512.png
+  assets/img/icon-maskable-192.png
+  assets/img/icon-maskable-512.png
   assets/img/favicon-32.png
   assets/img/favicon-16.png
   site.webmanifest
@@ -457,17 +600,27 @@ end
   card = SITE.join("assets/img", card_name)
   next unless card.exist?
 
-  # PNG IHDR: width/height are big-endian uint32 at byte offsets 16 and 20.
-  header = card.binread(24)
-  if header && header.byteslice(0, 8) == "\x89PNG\r\n\x1a\n".b
-    width = header.byteslice(16, 4).unpack1("N")
-    height = header.byteslice(20, 4).unpack1("N")
+  dimensions = png_dimensions(card)
+  if dimensions
+    width, height = dimensions
     unless width == 1200 && height == 630
       record(failures, "#{card_name} must be 1200x630 (Open Graph), got #{width}x#{height}")
     end
   else
     record(failures, "#{card_name} is not a valid PNG")
   end
+  record(failures, "#{card_name} must be at most 175000 bytes, got #{card.size}") if card.size > 175_000
+end
+
+{
+  "icon-maskable-192.png" => [192, 192],
+  "icon-maskable-512.png" => [512, 512]
+}.each do |icon_name, expected_dimensions|
+  icon = SITE.join("assets/img", icon_name)
+  next unless icon.exist?
+
+  dimensions = png_dimensions(icon)
+  record(failures, "#{icon_name} must be #{expected_dimensions.join('x')}, got #{dimensions.inspect}") unless dimensions == expected_dimensions
 end
 
 manifest = SITE.join("site.webmanifest")
@@ -478,6 +631,13 @@ if manifest.exist?
     icons = Array(data["icons"])
     record(failures, "site.webmanifest: needs 192px and 512px icons") unless
       icons.any? { |i| i["sizes"] == "192x192" } && icons.any? { |i| i["sizes"] == "512x512" }
+    {
+      "/assets/img/icon-maskable-192.png" => "192x192",
+      "/assets/img/icon-maskable-512.png" => "512x512"
+    }.each do |src, sizes|
+      matches = icons.select { |icon| icon["src"] == src && icon["sizes"] == sizes && icon["purpose"] == "maskable" }
+      record(failures, "site.webmanifest: expected one dedicated maskable entry for #{src}") unless matches.length == 1
+    end
     icons.each do |icon|
       src = icon["src"].to_s.sub(%r{\A/}, "")
       record(failures, "site.webmanifest: icon missing on disk: #{icon["src"]}") unless src.empty? || SITE.join(src).exist?
@@ -538,17 +698,12 @@ Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
 end
 
 # --- Contents rail ("On this page") scroll-spy ---
-# contents.js must ship and load site-wide (it self-guards to detail pages).
+# contents.js must ship and load on case studies only (the route matrix above
+# guards inclusion). The script still self-guards as progressive enhancement.
 # The CSS must carry the rail styles, the sticky-header scroll-margin, and the
 # print rule that drops the rail. The bilingual label must exist in i18n and be
 # emitted as data-toc-label on the detail-page bodies the rail attaches to.
 record(failures, "Missing contents script: assets/js/contents.js") unless SITE.join("assets/js/contents.js").exist?
-
-Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
-  html = path.read
-  source = path.relative_path_from(SITE).to_s
-  record(failures, "#{source}: missing contents.js include") unless html.include?("/assets/js/contents.js")
-end
 
 if css_path.exist?
   css = css_path.read
@@ -560,7 +715,7 @@ if css_path.exist?
     css.match?(/@media print\s*\{\s*\.toc\s*\{\s*display:\s*none/)
 end
 
-i18n = YAML.load_file(ROOT.join("_data/i18n.yml"))
+i18n = I18N
 %w[en zh].each do |lang|
   label = i18n.dig(lang, "toc", "label").to_s
   record(failures, "i18n.yml: missing #{lang}.toc.label") if label.empty?
@@ -588,16 +743,10 @@ record(failures, "theme.js: missing theme-anim hook") unless
   SITE.join("assets/js/theme.js").read.include?("theme-anim")
 
 # --- Copy-to-clipboard install command (gm-crypto-rs only) ---
-# copy.js must ship and load site-wide. The gm-crypto-rs pages (EN + ZH) must
+# copy.js must ship and load on gm-crypto-rs only. The gm pages (EN + ZH) must
 # carry the install block; the private/local projects must NOT — only the
 # public crate gets an install command (source-of-truth boundary).
 record(failures, "Missing copy script: assets/js/copy.js") unless SITE.join("assets/js/copy.js").exist?
-
-Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
-  html = path.read
-  source = path.relative_path_from(SITE).to_s
-  record(failures, "#{source}: missing copy.js include") unless html.include?("/assets/js/copy.js")
-end
 
 %w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
   html = read_file(SITE.join(relative), failures)
@@ -617,11 +766,11 @@ end
 # (note the `&amp;` entity).
 case_study = {
   "projects/gm-crypto-rs/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
+               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
+               ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
-    caveat: "detection events", version_before: ["<h2>Next</h2>", "v1.11.0"],
+    caveat: "detection events", version_before: ["<h2 id=\"next\">", "v1.11.0"],
     # Non-affiliation note ties to the named interop targets (trademark-disclaimer
     # convention) instead of denying ties to unnamed parties. "either project" is
     # the tell; if it reverts to the generic enumerated form, this guard trips.
@@ -632,10 +781,11 @@ case_study = {
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "zh/projects/gm-crypto-rs/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
+               ["decisions", "约束与关键决策"], ["evidence", "证据"],
+               ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全", "绝对常量时间"],
-    caveat: "检测事件", version_before: ["<h2>下一步</h2>", "v1.11.0"],
+    caveat: "检测事件", version_before: ["<h2 id=\"next\">", "v1.11.0"],
     # ZH mirror of the interop-tied non-affiliation guard ("这两个项目" = the two
     # named projects gmssl/OpenSSL); trips if it reverts to the enumerated form.
     # ZH mirror of the releases-page inbound-link guard above (2026-08-05).
@@ -643,15 +793,16 @@ case_study = {
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "projects/repolens-rs/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
+               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
+               ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
     must_include: ["warnings-only", "not the typed graph", "scaffolding"]
   },
   "zh/projects/repolens-rs/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
+               ["decisions", "约束与关键决策"], ["evidence", "证据"],
+               ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
     must_include: ["只给 warning", "不是那张类型化记忆图", "脚手架"]
   },
@@ -659,15 +810,16 @@ case_study = {
   # Guard the current local tag + the "guarded" framing, and forbid the stale
   # v0.1.1 label from creeping back.
   "projects/ghrunners/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
+               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
+               ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
     must_include: ["v0.5.0", "guarded"], forbid: ["v0.1.1"]
   },
   "zh/projects/ghrunners/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
+               ["decisions", "约束与关键决策"], ["evidence", "证据"],
+               ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
     # 单次运行 is the one-shot term of record; 一次性 regressed on this page's
     # description + lede before the 2026-08-06 readthrough closed it.
@@ -676,15 +828,16 @@ case_study = {
   # explainer-engine: private/local — the verification story lives in the frame,
   # so guard the simplified-marking and gate's-verdict phrases that carry it.
   "projects/explainer-engine/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
+               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
+               ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
     must_include: ["simplified", "gate's verdict"]
   },
   "zh/projects/explainer-engine/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
+               ["decisions", "约束与关键决策"], ["evidence", "证据"],
+               ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
     must_include: ["简化视图", "校验门的结论"]
   }
@@ -693,13 +846,12 @@ case_study.each do |relative, spec|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
 
-  # All six headings present, in order.
-  positions = spec[:headings].map { |h| [h, html.index(h)] }
-  missing = positions.select { |_, i| i.nil? }.map(&:first)
-  record(failures, "#{relative}: missing case-study heading(s): #{missing.join(', ')}") unless missing.empty?
-  if missing.empty?
-    idxs = positions.map(&:last)
-    record(failures, "#{relative}: case-study headings out of order") unless idxs == idxs.sort
+  # All six headings are source-rendered with stable, locale-independent IDs.
+  actual_headings = html.scan(%r{<h2 id="([^"]+)">(.*?)</h2>}m).map do |id, text|
+    [id, text.gsub(/\s+/, " ").strip]
+  end
+  unless actual_headings == spec[:headings]
+    record(failures, "#{relative}: case-study heading/ID sequence mismatch expected #{spec[:headings].inspect} got #{actual_headings.inspect}")
   end
 
   # Every decision must name a tradeoff: at least four visible cost cues.
@@ -879,8 +1031,8 @@ else
 end
 
 dudect_chart_source = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
-record(failures, "dudect-chart.html: sentinel threshold must render from dudect.yml") unless dudect_chart_source.include?("{{ d.sentinel }}")
-record(failures, "dudect-chart.html: gate threshold must render from dudect.yml") unless dudect_chart_source.include?("{{ d.gate }}")
+record(failures, "dudect-chart.html: sentinel threshold must preserve display precision from dudect.yml") unless dudect_chart_source.include?("{{ d.sentinel_display }}")
+record(failures, "dudect-chart.html: gate threshold must preserve display precision from dudect.yml") unless dudect_chart_source.include?("{{ d.gate_display }}")
 if dudect_chart_source.match?(/&lt;\s+0\.(?:20|55)/)
   record(failures, "dudect-chart.html: policy threshold is hardcoded instead of rendered from dudect.yml")
 end
@@ -889,7 +1041,7 @@ end
 %w[en zh].each do |lang|
   %w[title fig_num intro axis_label gate_label control_label cluster_label caveat
      provenance source table_caption col_target col_measures col_tau col_gate
-     col_status status_pass status_sentinel status_fire
+     col_status status_pass status_sentinel status_fire status_caught
      policy_sentinel_label].each do |key|
     record(failures, "i18n.yml: missing #{lang}.dudect.#{key}") if i18n.dig(lang, "dudect", key).to_s.empty?
   end
@@ -991,7 +1143,7 @@ note_pages.each do |relative|
   record(failures, "#{relative}: missing zh-CN hreflang alternate") unless html.match?(%r{<link rel="alternate" hreflang="zh-CN" href="#{Regexp.escape(BASE_URL)}/zh/notes/[^"]+">})
 end
 
-i18n = YAML.load_file(ROOT.join("_data/i18n.yml"))
+i18n = I18N
 %w[en zh].each do |lang|
   record(failures, "i18n.yml: missing #{lang}.nav.writing") if i18n.dig(lang, "nav", "writing").to_s.empty?
   %w[all read_more none].each do |key|
@@ -1074,12 +1226,20 @@ end
 
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
-  html.scan(/<link\b[^>]*\bas="font"[^>]*>/i).each do |tag|
-    next unless tag.include?('rel="preload"')
+  source = path.relative_path_from(SITE).to_s
+  font_preloads = html.scan(/<link\b[^>]*\bas="font"[^>]*>/i).select { |tag| tag.include?('rel="preload"') }
+  expected_count = home_pages.include?(source) ? 2 : 0
+  unless font_preloads.length == expected_count
+    record(failures, "#{source}: expected #{expected_count} font preloads, found #{font_preloads.length}")
+  end
+
+  font_preloads.each do |tag|
+    record(failures, "#{source}: font preload missing type=font/woff2") unless tag.include?('type="font/woff2"')
+    record(failures, "#{source}: font preload missing crossorigin") unless tag.match?(/\bcrossorigin(?:\s|=|>)/)
     href = tag[/href="([^"]+)"/, 1]
     next unless href
     rel = href.sub(%r{\Ahttps?://[^/]+}, "").sub(%r{\A/}, "")
-    record(failures, "#{path.relative_path_from(SITE)}: preload font missing on disk: #{href}") unless SITE.join(rel).exist?
+    record(failures, "#{source}: preload font missing on disk: #{href}") unless SITE.join(rel).exist?
   end
 end
 
@@ -1107,6 +1267,8 @@ end
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
   source = path.relative_path_from(SITE).to_s
+  json_ld_count = html.scan(%r{<script type="application/ld\+json">}).length
+  record(failures, "#{source}: expected exactly one JSON-LD script, found #{json_ld_count}") unless json_ld_count == 1
   record(failures, "#{source}: missing Content-Security-Policy meta") unless html.include?(%(http-equiv="Content-Security-Policy"))
   record(failures, "#{source}: missing referrer policy meta") unless html.include?(%(name="referrer"))
   record(failures, "#{source}: inline style= attribute (breaks strict style-src CSP)") if html.match?(/\sstyle="/)
@@ -1131,6 +1293,231 @@ PROJECTS.each do |project|
     next if url.empty?
     record(failures, "projects.yml: #{project["slug"]} #{key} is not https: #{url}") unless url.start_with?("https://")
   end
+end
+
+# --- 2026-08-09 site-review content contracts ---
+# These values are intentionally local/static: immutable public release facts
+# are verified during review, then pinned here so routine builds never depend
+# on network availability.
+release_history_expected = {
+  "v0.15.0" => "2026-05-27",
+  "v0.10.0" => "2026-05-22",
+  "v0.9.0" => "2026-05-20",
+  "v0.8.0" => "2026-05-17",
+  "v0.7.0" => "2026-05-15"
+}.freeze
+
+%w[projects/gm-crypto-rs-releases.html zh/projects/gm-crypto-rs-releases.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  release_history_expected.each do |version, date|
+    row = %r{<dt>#{Regexp.escape(version)}</dt>\s*<dd>#{Regexp.escape(date)}\b}m
+    record(failures, "#{relative}: #{version} must use public release date #{date}") unless source.match?(row)
+  end
+end
+
+gm_case_studies = %w[projects/gm-crypto-rs.html zh/projects/gm-crypto-rs.html]
+gm_case_studies.each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: demo must pin gmcrypto-core =1.11.0") unless source.include?("=1.11.0")
+  record(failures, "#{relative}: dudect workflow evidence must link line 169") unless source.include?("dudect-pr.yml#L169")
+  record(failures, "#{relative}: stale dudect workflow line 166 remains") if source.include?("dudect-pr.yml#L166")
+  %w[constant-time-warrant constant-time-ci-gate byte-identity unsafe-opt-in].each do |slug|
+    record(failures, "#{relative}: missing #{slug} note link") unless source.include?(slug)
+  end
+end
+
+dudect_data = YAML.load_file(ROOT.join("_data/dudect.yml"))
+record(failures, "_data/dudect.yml: gate_display must preserve 0.20") unless dudect_data["gate_display"] == "0.20"
+record(failures, "_data/dudect.yml: sentinel_display must preserve 0.55") unless dudect_data["sentinel_display"] == "0.55"
+dudect_chart_contract = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
+record(failures, "dudect-chart.html: historical leak must use status_caught") unless dudect_chart_contract.include?("t.status_caught")
+unless dudect_chart_contract.scan("t.status_fire").length == 1
+  record(failures, "dudect-chart.html: status_fire must be exclusive to negative_control")
+end
+
+vtt = read_file(ROOT.join("assets/video/harness-field-explainer.en.vtt"), failures)
+record(failures, "harness-field-explainer.en.vtt: missing load-bearing-line wording") unless vtt.include?("The load-bearing line")
+
+claude_source = read_file(ROOT.join("CLAUDE.md"), failures)
+if claude_source.match?(/v0\.8[^\n]*AEAD[^\n]*next|v0\.8 AEAD work is "next"/i)
+  record(failures, "CLAUDE.md: stale v0.8 AEAD-next guidance remains")
+end
+
+rejected_content = {
+  "colophon.html" => ["six small files", "~500 lines"],
+  "zh/colophon.html" => ["六个小文件", "约 500 行"],
+  "projects/gm-crypto-rs.html" => ["<code>1.9.0</code>, behind", "<code>hash</code> / <code>sign</code> /"],
+  "zh/projects/gm-crypto-rs.html" => ["固定在 <code>1.9.0</code>", "<code>hash</code> / <code>sign</code> /"],
+  "projects/repolens-rs.html" => ["Planned until"],
+  "notes.html" => ["Rust, cryptography, CI, and tooling."]
+}.freeze
+
+rejected_content.each do |relative, phrases|
+  source = read_file(ROOT.join(relative), failures)
+  phrases.each do |phrase|
+    record(failures, "#{relative}: rejected reviewed phrase remains: #{phrase.inspect}") if source.include?(phrase)
+  end
+end
+
+i18n_content = YAML.load_file(ROOT.join("_data/i18n.yml"))
+expected_identity = {
+  "en" => {
+    "tagline" => "Software engineer, mostly in Rust. I publish selected work with its status, evidence, and limits visible.",
+    "short_tagline" => "Software engineer, mostly in Rust"
+  },
+  "zh" => {
+    "tagline" => "软件工程师，主要使用 Rust。我会公开一部分作品，并把状态、证据和限制写在明面上。",
+    "short_tagline" => "软件工程师，主要使用 Rust"
+  }
+}.freeze
+expected_identity.each do |lang, values|
+  values.each do |key, expected|
+    actual = i18n_content.dig(lang, key)
+    record(failures, "i18n.yml: #{lang}.#{key} must be #{expected.inspect}") unless actual == expected
+  end
+end
+
+source_contracts = {
+  "about.html" => [
+    'description: "How I work, what I optimize for, and how I present evidence and limitations across public and private projects."'
+  ],
+  "zh/about.html" => [
+    'description: "我的工作方式、取舍，以及公开与私有项目如何呈现证据和限制。"'
+  ],
+  "contact.html" => [
+    'description: "Ways to contact Frank Xue, with response expectations and links to public work."'
+  ],
+  "zh/contact.html" => [
+    'description: "联系 Frank Xue 的方式、回复预期，以及公开作品链接。"'
+  ],
+  "index.html" => ["View selected work", "Browse all notes", "Private project — no public source link.", "Local prototype — no public source link."],
+  "zh/index.html" => ["查看精选作品", "浏览全部笔记", "私有项目——暂无公开源码链接。", "本地原型——暂无公开源码链接。"],
+  "projects.html" => ["Private project — no public source link.", "Local prototype — no public source link."],
+  "zh/projects.html" => ["私有项目——暂无公开源码链接。", "本地原型——暂无公开源码链接。"],
+  "notes.html" => [
+    'description: "Working notes on software engineering: evidence, interfaces, reliability, cryptography, CI, and the choices behind shipped systems."',
+    "These are working notes on how software claims become inspectable"
+  ],
+  "zh/notes.html" => [
+    'description: "软件工程工作笔记：证据、接口、可靠性、密码学、CI，以及已交付系统背后的取舍。"',
+    "这些工作笔记关心的是：软件说法怎样变得可核对"
+  ],
+  "_notes/starting-a-notebook.md" => ["Put the most decision-relevant evidence first, then make its limits easy to find."],
+  "_notes/starting-a-notebook.zh.md" => ["先放最影响判断的证据，再让它的边界也容易找到。"],
+  "projects/repolens-rs.html" => ["Planned work remains uncommitted until it is tied to a public milestone."],
+  "zh/projects/repolens-rs.html" => ["后续工作在绑定公开里程碑之前，不写成已承诺计划。"]
+}.freeze
+
+source_contracts.each do |relative, phrases|
+  source = read_file(ROOT.join(relative), failures)
+  normalized = source.gsub(/\s+/, " ")
+  phrases.each do |phrase|
+    record(failures, "#{relative}: missing reviewed content contract #{phrase.inspect}") unless normalized.include?(phrase)
+  end
+end
+
+gm_en = read_file(ROOT.join("projects/gm-crypto-rs.html"), failures)
+gm_zh = read_file(ROOT.join("zh/projects/gm-crypto-rs.html"), failures)
+record(failures, "projects/gm-crypto-rs.html: missing immutable LICENSE link") unless gm_en.include?("v1.11.0/LICENSE")
+record(failures, "zh/projects/gm-crypto-rs.html: missing immutable LICENSE link") unless gm_zh.include?("v1.11.0/LICENSE")
+record(failures, "projects/gm-crypto-rs.html: missing FIPS expansion") unless gm_en.include?("U.S. Federal Information Processing Standards (FIPS)")
+record(failures, "zh/projects/gm-crypto-rs.html: missing FIPS expansion") unless gm_zh.include?("美国联邦信息处理标准（FIPS）")
+
+%w[colophon.html zh/colophon.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: missing localStorage privacy disclosure") unless source.include?("frankxue.theme")
+end
+
+%w[about.html zh/about.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  normalized = source.gsub(/\s+/, " ")
+  record(failures, "#{relative}: missing published-gate build-failure claim") unless
+    normalized.include?(relative.start_with?("zh/") ? "越过公开门槛，构建就会失败" : "fails the build when it crosses the published gate")
+end
+
+# --- 2026-08-10 site-review accessibility contracts ---
+accessibility_i18n_keys = %w[
+  nav.menu nav.skip theme.aria_template install.copy install.copied install.aria
+  install.copied_aria install.manual install.manual_aria dudect.table_scroll_label
+].freeze
+%w[en zh].each do |lang|
+  accessibility_i18n_keys.each do |path|
+    value = path.split(".").reduce(i18n_content[lang]) { |node, key| node.is_a?(Hash) ? node[key] : nil }
+    record(failures, "i18n.yml: missing #{lang}.#{path}") if value.to_s.empty?
+  end
+
+  theme_template = i18n_content.dig(lang, "theme", "aria_template").to_s
+  %w[{current} {effective} {next}].each do |placeholder|
+    record(failures, "i18n.yml: #{lang}.theme.aria_template missing #{placeholder}") unless theme_template.include?(placeholder)
+  end
+end
+
+main_js = read_file(ROOT.join("assets/js/main.js"), failures)
+{
+  "main background" => "document.getElementById('main')",
+  "footer backgrounds" => "document.querySelectorAll('footer')",
+  "background inert state" => ".inert",
+  "first navigation link" => "firstNavLink",
+  "focus placement on open" => "firstNavLink.focus()",
+  "Escape focus restoration" => "setOpen(false, { restoreFocus: true })",
+  "backdrop pointer dismissal" => "pointerdown",
+  "body backdrop hit target" => "event.target === document.body",
+  "desktop media-query cleanup" => "matchMedia('(min-width: 760px)')",
+  "bfcache cleanup" => "pageshow"
+}.each do |label, needle|
+  record(failures, "main.js: missing #{label} contract") unless main_js.include?(needle)
+end
+
+copy_js = read_file(ROOT.join("assets/js/copy.js"), failures)
+{
+  "shared state updater" => "setState",
+  "manual-copy failure state" => "showManual",
+  "accessible-name update" => "setAttribute('aria-label'",
+  "localized manual label" => "data-label-manual",
+  "localized idle accessible name" => "data-aria-copy",
+  "localized success accessible name" => "data-aria-done",
+  "localized manual accessible name" => "data-aria-manual"
+}.each do |label, needle|
+  record(failures, "copy.js: missing #{label} contract") unless copy_js.include?(needle)
+end
+
+%w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  %w[data-label-manual data-aria-copy data-aria-done data-aria-manual].each do |attribute|
+    record(failures, "#{relative}: install control missing #{attribute}") unless html.include?(attribute)
+  end
+end
+
+contents_js = read_file(ROOT.join("assets/js/contents.js"), failures)
+unless contents_js.include?("if (h.id) { used.add(h.id); return h.id; }")
+  record(failures, "contents.js: source-rendered heading ID branch must be retained")
+end
+
+if css_path.exist?
+  css = css_path.read
+  proof_title_rule = css[/^\.hero-proof__title\s*\{[^}]*\}/m].to_s
+  record(failures, "style.css: .hero-proof__title must use supported font-weight 600") unless proof_title_rule.match?(/font-weight:\s*600\s*;/)
+  record(failures, "style.css: unsupported hero proof font-weight 650 remains") if proof_title_rule.match?(/font-weight:\s*650\s*;/)
+
+  install_copy_rule = css[/\.install__copy\s*\{[^}]*\}/m].to_s
+  unless install_copy_rule.match?(/min-(?:block-size|height):\s*44px\s*;/)
+    record(failures, "style.css: .install__copy missing 44px minimum target size")
+  end
+
+  table_scroll_rule = css[/\.dudect__table-scroll\s*\{[^}]*\}/m].to_s
+  unless table_scroll_rule.match?(/overflow-x:\s*auto\s*;/)
+    record(failures, "style.css: .dudect__table-scroll missing horizontal overflow")
+  end
+
+  print_blocks = css.scan(/@media\s+print\s*\{.*?\n\}/m).join("\n")
+  %w[.nav-toggle .primary-nav__item--theme .primary-nav__item--switch].each do |selector|
+    record(failures, "style.css: print CSS must hide #{selector}") unless print_blocks.include?(selector)
+  end
+end
+
+dudect_source = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
+unless dudect_source.match?(/class="dudect__table-scroll"[^>]*tabindex="0"[^>]*role="region"[^>]*aria-label="\{\{\s*t\.table_scroll_label\s*\|\s*escape\s*\}\}"/m)
+  record(failures, "dudect-chart.html: table must be wrapped in a localized keyboard-scrollable region")
 end
 
 if failures.empty?

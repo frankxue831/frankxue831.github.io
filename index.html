@@ -29,7 +29,7 @@ alternate: /zh/
             </p>
 
             <a href="{{ '/projects/' | relative_url }}" class="hero__cta">
-                Review selected work
+                View selected work
                 <span class="hero__cta__arrow" aria-hidden="true">→</span>
             </a>
         </div>
@@ -133,19 +133,19 @@ alternate: /zh/
                 {% when 'repolens-rs' %}
                 Repository context and typed memory for AI coding agents, built
                 to help sessions restart with grounded project understanding.
-                <strong>{{ project.status_label.en }}</strong> — source not
-                public today.
+                <strong>{{ project.status_label.en }}</strong>. Private project — no public source link.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
                 One-shot macOS observability for GitHub Actions self-hosted
                 runners — launchd state, process trees, logs, and API status as
-                typed findings — plus guarded launchd control. {{ project.status_label.en }}
-                today.
+                typed findings — plus guarded launchd control. {{ project.status_label.en }}.
+                Local prototype — no public source link.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
                 A deterministic pipeline that renders narrated concept videos
                 where every on-screen claim is verified against the source at a
                 pinned commit before a frame is drawn. {{ project.status_label.en }}.
+                Local prototype — no public source link.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 Selected engineering work with status and project facts kept
@@ -193,7 +193,7 @@ alternate: /zh/
     </ul>
 
     <a href="{{ '/notes/' | relative_url }}" class="preview__link preview__link--section">
-        See all writing <span aria-hidden="true">→</span>
+        Browse all notes <span aria-hidden="true">→</span>
     </a>
 </section>
 {%- endif -%}

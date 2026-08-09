@@ -10,7 +10,7 @@ excerpt: "A public engineering notebook earns its keep when each note carries on
 
 This section is a public engineering notebook. It is not a blog of announcements, and it is not a polished essay series. It is the place where a working decision gets written down while the trade-off is still sharp — so a later reader, including me, can see *what was claimed* and *what would falsify it*.
 
-The notes index already points at the strongest pieces first. This page is older: it was the seed that said the section would exist. That is no longer enough. Below is the editorial contract the notebook actually runs on.
+Put the most decision-relevant evidence first, then make its limits easy to find. This page is older: it was the seed that said the section would exist. That is no longer enough. Below is the editorial contract the notebook actually runs on.
 
 ## Why keep it public
 

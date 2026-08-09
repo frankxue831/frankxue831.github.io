@@ -69,7 +69,9 @@
     </defs>
   </svg>
   <p class="dudect__caveat">{{ t.caveat | escape }}</p>
-  <table class="dudect__table">
+  <div class="dudect__table-scroll" tabindex="0" role="region"
+       aria-label="{{ t.table_scroll_label | escape }}">
+    <table class="dudect__table">
     <caption>{{ t.table_caption | escape }}</caption>
     <thead>
       <tr>
@@ -87,10 +89,10 @@
         <td>{{ m.desc[page.lang] | default: m.desc.en | escape }}</td>
         <td>{{ m.tau }}</td>
         {%- if m.policy == 'sentinel' -%}
-        <td>&lt; {{ d.sentinel }} ({{ t.policy_sentinel_label | escape }})</td>
+        <td>&lt; {{ d.sentinel_display }} ({{ t.policy_sentinel_label | escape }})</td>
         <td>{{ t.status_sentinel | escape }}</td>
         {%- else -%}
-        <td>&lt; {{ d.gate }}</td>
+        <td>&lt; {{ d.gate_display }}</td>
         <td>{{ t.status_pass | escape }}</td>
         {%- endif -%}
       </tr>
@@ -106,18 +108,19 @@
         <td><code>{{ d.leak.what[page.lang] | default: d.leak.what.en | escape }}</code></td>
         <td>{{ t.leak_before_row | escape }}</td>
         <td>≈{{ d.leak.before }}</td>
-        <td>&lt; {{ d.gate }}</td>
-        <td>{{ t.status_fire | escape }}</td>
+        <td>&lt; {{ d.gate_display }}</td>
+        <td>{{ t.status_caught | escape }}</td>
       </tr>
       <tr>
         <td><code>{{ d.leak.what[page.lang] | default: d.leak.what.en | escape }}</code></td>
         <td>{{ t.leak_after_row | escape }}</td>
         <td>≈{{ d.leak.after }}</td>
-        <td>&lt; {{ d.gate }}</td>
+        <td>&lt; {{ d.gate_display }}</td>
         <td>{{ t.status_pass | escape }}</td>
       </tr>
     </tbody>
-  </table>
+    </table>
+  </div>
   <p class="dudect__provenance">{{ t.provenance | escape }}
     <a href="{{ d.source_url }}" rel="noopener noreferrer">{{ t.source | escape }} ↗</a>
   </p>

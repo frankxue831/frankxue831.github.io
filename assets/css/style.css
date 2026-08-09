@@ -945,7 +945,7 @@ body.lang-zh .note li {
 .hero-proof__title {
     font-family: var(--sans);
     font-size: var(--text-lg);
-    font-weight: 650;
+    font-weight: 600;
     color: var(--fg);
     line-height: 1.25;
     transition: color var(--dur) var(--ease);
@@ -1336,6 +1336,10 @@ body.lang-zh .note li {
 }
 .install__copy {
     flex: none;
+    min-block-size: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-family: var(--mono);
     font-size: var(--text-xs);
     letter-spacing: 0.04em;
@@ -1369,6 +1373,14 @@ body.lang-zh .note li {
 /* No JS: keep the command selectable, drop the dead button. */
 .no-js .install__copy { display: none; }
 @media print { .install__copy { display: none; } }
+
+@media print {
+    .nav-toggle,
+    .primary-nav__item--theme,
+    .primary-nav__item--switch {
+        display: none !important;
+    }
+}
 
 .project-detail h2 {
     font-family: var(--mono);
@@ -2308,8 +2320,18 @@ details.drawer .version-grid {
     font-style: italic;
     margin: var(--space-3) 0 var(--space-4);
 }
+.dudect__table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+}
+.dudect__table-scroll:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
 .dudect__table {
     width: 100%;
+    min-width: 640px;
     border-collapse: collapse;
     font-family: var(--sans);
     font-size: var(--text-sm);

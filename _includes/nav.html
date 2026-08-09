@@ -24,7 +24,7 @@
   {%- assign show_switcher = true -%}
 {%- endif -%}
 
-<a class="skip-link" href="#main">{% if lang == 'zh' %}跳到正文{% else %}Skip to content{% endif %}</a>
+<a class="skip-link" href="#main">{{ t.nav.skip | escape }}</a>
 
 <header class="site-header">
     <div class="site-header__inner">
@@ -36,7 +36,7 @@
         <button class="nav-toggle" type="button"
                 aria-controls="primary-nav"
                 aria-expanded="false"
-                aria-label="{% if lang == 'zh' %}菜单{% else %}Menu{% endif %}">
+                aria-label="{{ t.nav.menu | escape }}">
             <span class="nav-toggle__bar"></span>
             <span class="nav-toggle__bar"></span>
             <span class="nav-toggle__bar"></span>

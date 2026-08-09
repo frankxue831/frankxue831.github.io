@@ -9,6 +9,8 @@ gate: 0.20            # PR-smoke blocking gate (|τ| < 0.20)
 sentinel: 0.55        # gross-regression sentinel (invert diagnostics + ct_sign_k_class,
                       # demoted from its 0.25 nightly gate on 2026-06-07, + ct_hmac_sm3,
                       # demoted 2026-06-17 — see SECURITY.md's recalibration notes)
+gate_display: "0.20"
+sentinel_display: "0.55"
 control_floor: 1.0    # negative_control must exceed this to prove the detector fires
 axis_max: 1.1
 source_url: "https://github.com/frankxue831/gm-crypto-rs/blob/v1.2.0/SECURITY.md"
