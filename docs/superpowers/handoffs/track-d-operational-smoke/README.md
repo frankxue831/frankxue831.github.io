@@ -1,6 +1,8 @@
 # Track D Operational Smoke Handoff
 
-Status: `PREPARED / DRAFT PR PENDING / NO LIVE AUTHORITY`
+Status: `HANDOFF READY ON DRAFT PR #87 / NO LIVE AUTHORITY`
+
+Remote handoff: https://github.com/frankxue831/frankxue831.github.io/pull/87
 
 This directory is the self-contained handoff for the daily Track D worker lane.
 It is deliberately separate from RepoLens-NG research observations and the

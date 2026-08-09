@@ -2,7 +2,9 @@
 
 Date: 2026-08-09
 
-Status: Accepted; draft-PR publication pending
+Status: Accepted and handed off via draft PR #87
+
+Remote handoff: https://github.com/frankxue831/frankxue831.github.io/pull/87
 
 ## Decision
 

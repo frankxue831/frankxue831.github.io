@@ -98,10 +98,10 @@ Reject credentials, private Notion identifiers, `/Users/...` paths, global Grok 
 
 Run `git diff --check`, `bundle exec jekyll build`, and `LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 ruby scripts/validate_site.rb`.
 
-- [ ] **Step 4: Stage only explicit handoff paths and commit**
+- [x] **Step 4: Stage only explicit handoff paths and commit**
 
 Use commit message `docs: hand off Track D operational smoke`.
 
-- [ ] **Step 5: Push and open a draft pull request**
+- [x] **Step 5: Push and open a draft pull request**
 
 Target `main`; do not merge or deploy.
