@@ -638,9 +638,27 @@ body.lang-zh .note li {
     }
     body.is-nav-open .primary-nav {
         max-height: 60vh;
+        overflow-x: hidden;
+        overflow-y: auto;
         visibility: visible;
         transition: max-height var(--dur) var(--ease),
                     visibility 0s linear 0s;
+    }
+
+    /* Open mobile menu: opaque containment under the sticky header so page
+       content is neither visible nor interactive behind the panel. Scroll
+       ownership moves to the panel; document scroll is locked. Scoped to
+       the JS-enhanced path only — no-js keeps its static stacked nav. */
+    html:not(.no-js) body.is-nav-open {
+        overflow: hidden;
+    }
+    html:not(.no-js) body.is-nav-open::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 40; /* above page content; below .site-header (50) and .grain (90) */
+        background: var(--bg);
+        pointer-events: auto;
     }
 
     .primary-nav__list {
