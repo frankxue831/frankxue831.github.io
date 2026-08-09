@@ -617,11 +617,11 @@ end
 # (note the `&amp;` entity).
 case_study = {
   "projects/gm-crypto-rs/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
+               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
+               ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
-    caveat: "detection events", version_before: ["<h2>Next</h2>", "v1.11.0"],
+    caveat: "detection events", version_before: ["<h2 id=\"next\">", "v1.11.0"],
     # Non-affiliation note ties to the named interop targets (trademark-disclaimer
     # convention) instead of denying ties to unnamed parties. "either project" is
     # the tell; if it reverts to the generic enumerated form, this guard trips.
@@ -632,10 +632,11 @@ case_study = {
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "zh/projects/gm-crypto-rs/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
+               ["decisions", "约束与关键决策"], ["evidence", "证据"],
+               ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全", "绝对常量时间"],
-    caveat: "检测事件", version_before: ["<h2>下一步</h2>", "v1.11.0"],
+    caveat: "检测事件", version_before: ["<h2 id=\"next\">", "v1.11.0"],
     # ZH mirror of the interop-tied non-affiliation guard ("这两个项目" = the two
     # named projects gmssl/OpenSSL); trips if it reverts to the enumerated form.
     # ZH mirror of the releases-page inbound-link guard above (2026-08-05).
@@ -643,15 +644,16 @@ case_study = {
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "projects/repolens-rs/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
+               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
+               ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
     must_include: ["warnings-only", "not the typed graph", "scaffolding"]
   },
   "zh/projects/repolens-rs/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
+               ["decisions", "约束与关键决策"], ["evidence", "证据"],
+               ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
     must_include: ["只给 warning", "不是那张类型化记忆图", "脚手架"]
   },
@@ -659,15 +661,16 @@ case_study = {
   # Guard the current local tag + the "guarded" framing, and forbid the stale
   # v0.1.1 label from creeping back.
   "projects/ghrunners/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
+               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
+               ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
     must_include: ["v0.5.0", "guarded"], forbid: ["v0.1.1"]
   },
   "zh/projects/ghrunners/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
+               ["decisions", "约束与关键决策"], ["evidence", "证据"],
+               ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
     # 单次运行 is the one-shot term of record; 一次性 regressed on this page's
     # description + lede before the 2026-08-06 readthrough closed it.
@@ -676,15 +679,16 @@ case_study = {
   # explainer-engine: private/local — the verification story lives in the frame,
   # so guard the simplified-marking and gate's-verdict phrases that carry it.
   "projects/explainer-engine/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
+               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
+               ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
     must_include: ["simplified", "gate's verdict"]
   },
   "zh/projects/explainer-engine/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
+               ["decisions", "约束与关键决策"], ["evidence", "证据"],
+               ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
     must_include: ["简化视图", "校验门的结论"]
   }
@@ -693,13 +697,12 @@ case_study.each do |relative, spec|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
 
-  # All six headings present, in order.
-  positions = spec[:headings].map { |h| [h, html.index(h)] }
-  missing = positions.select { |_, i| i.nil? }.map(&:first)
-  record(failures, "#{relative}: missing case-study heading(s): #{missing.join(', ')}") unless missing.empty?
-  if missing.empty?
-    idxs = positions.map(&:last)
-    record(failures, "#{relative}: case-study headings out of order") unless idxs == idxs.sort
+  # All six headings are source-rendered with stable, locale-independent IDs.
+  actual_headings = html.scan(%r{<h2 id="([^"]+)">(.*?)</h2>}m).map do |id, text|
+    [id, text.gsub(/\s+/, " ").strip]
+  end
+  unless actual_headings == spec[:headings]
+    record(failures, "#{relative}: case-study heading/ID sequence mismatch expected #{spec[:headings].inspect} got #{actual_headings.inspect}")
   end
 
   # Every decision must name a tradeoff: at least four visible cost cues.
@@ -1271,6 +1274,91 @@ end
   normalized = source.gsub(/\s+/, " ")
   record(failures, "#{relative}: missing published-gate build-failure claim") unless
     normalized.include?(relative.start_with?("zh/") ? "越过公开门槛，构建就会失败" : "fails the build when it crosses the published gate")
+end
+
+# --- 2026-08-10 site-review accessibility contracts ---
+accessibility_i18n_keys = %w[
+  nav.menu nav.skip theme.aria_template install.copy install.copied install.aria
+  install.copied_aria install.manual install.manual_aria dudect.table_scroll_label
+].freeze
+%w[en zh].each do |lang|
+  accessibility_i18n_keys.each do |path|
+    value = path.split(".").reduce(i18n_content[lang]) { |node, key| node.is_a?(Hash) ? node[key] : nil }
+    record(failures, "i18n.yml: missing #{lang}.#{path}") if value.to_s.empty?
+  end
+
+  theme_template = i18n_content.dig(lang, "theme", "aria_template").to_s
+  %w[{current} {effective} {next}].each do |placeholder|
+    record(failures, "i18n.yml: #{lang}.theme.aria_template missing #{placeholder}") unless theme_template.include?(placeholder)
+  end
+end
+
+main_js = read_file(ROOT.join("assets/js/main.js"), failures)
+{
+  "main background" => "document.getElementById('main')",
+  "footer backgrounds" => "document.querySelectorAll('footer')",
+  "background inert state" => ".inert",
+  "first navigation link" => "firstNavLink",
+  "focus placement on open" => "firstNavLink.focus()",
+  "Escape focus restoration" => "setOpen(false, { restoreFocus: true })",
+  "backdrop pointer dismissal" => "pointerdown",
+  "body backdrop hit target" => "event.target === document.body",
+  "desktop media-query cleanup" => "matchMedia('(min-width: 760px)')",
+  "bfcache cleanup" => "pageshow"
+}.each do |label, needle|
+  record(failures, "main.js: missing #{label} contract") unless main_js.include?(needle)
+end
+
+copy_js = read_file(ROOT.join("assets/js/copy.js"), failures)
+{
+  "shared state updater" => "setState",
+  "manual-copy failure state" => "showManual",
+  "accessible-name update" => "setAttribute('aria-label'",
+  "localized manual label" => "data-label-manual",
+  "localized idle accessible name" => "data-aria-copy",
+  "localized success accessible name" => "data-aria-done",
+  "localized manual accessible name" => "data-aria-manual"
+}.each do |label, needle|
+  record(failures, "copy.js: missing #{label} contract") unless copy_js.include?(needle)
+end
+
+%w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  %w[data-label-manual data-aria-copy data-aria-done data-aria-manual].each do |attribute|
+    record(failures, "#{relative}: install control missing #{attribute}") unless html.include?(attribute)
+  end
+end
+
+contents_js = read_file(ROOT.join("assets/js/contents.js"), failures)
+unless contents_js.include?("if (h.id) { used.add(h.id); return h.id; }")
+  record(failures, "contents.js: source-rendered heading ID branch must be retained")
+end
+
+if css_path.exist?
+  css = css_path.read
+  proof_title_rule = css[/\.hero-proof__title\s*\{[^}]*\}/m].to_s
+  record(failures, "style.css: .hero-proof__title must use supported font-weight 600") unless proof_title_rule.match?(/font-weight:\s*600\s*;/)
+  record(failures, "style.css: unsupported hero proof font-weight 650 remains") if proof_title_rule.match?(/font-weight:\s*650\s*;/)
+
+  install_copy_rule = css[/\.install__copy\s*\{[^}]*\}/m].to_s
+  unless install_copy_rule.match?(/min-(?:block-size|height):\s*44px\s*;/)
+    record(failures, "style.css: .install__copy missing 44px minimum target size")
+  end
+
+  table_scroll_rule = css[/\.dudect__table-scroll\s*\{[^}]*\}/m].to_s
+  unless table_scroll_rule.match?(/overflow-x:\s*auto\s*;/)
+    record(failures, "style.css: .dudect__table-scroll missing horizontal overflow")
+  end
+
+  print_blocks = css.scan(/@media\s+print\s*\{.*?\n\}/m).join("\n")
+  %w[.nav-toggle .primary-nav__item--theme .primary-nav__item--switch].each do |selector|
+    record(failures, "style.css: print CSS must hide #{selector}") unless print_blocks.include?(selector)
+  end
+end
+
+dudect_source = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
+unless dudect_source.match?(/class="dudect__table-scroll"[^>]*tabindex="0"[^>]*role="region"[^>]*aria-label="\{\{\s*t\.table_scroll_label\s*\|\s*escape\s*\}\}"/m)
+  record(failures, "dudect-chart.html: table must be wrapped in a localized keyboard-scrollable region")
 end
 
 if failures.empty?
