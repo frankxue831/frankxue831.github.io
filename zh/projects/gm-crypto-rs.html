@@ -32,6 +32,10 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
                         data-copy-target="install-cmd"
                         data-label-copy="{{ inst.copy | escape }}"
                         data-label-done="{{ inst.copied | escape }}"
+                        data-label-manual="{{ inst.manual | escape }}"
+                        data-aria-copy="{{ inst.aria | escape }}"
+                        data-aria-done="{{ inst.copied_aria | escape }}"
+                        data-aria-manual="{{ inst.manual_aria | escape }}"
                         aria-label="{{ inst.aria | escape }}">
                     <span class="install__copy-text" aria-hidden="true">{{ inst.copy | escape }}</span>
                 </button>

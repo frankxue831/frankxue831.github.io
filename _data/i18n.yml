@@ -115,6 +115,9 @@ en:
     copy: "Copy"
     copied: "Copied"
     aria: "Copy install command"
+    copied_aria: "Install command copied"
+    manual: "Copy manually"
+    manual_aria: "Command selected. Copy manually."
   notes:
     # Writing/Notes section.
     all: "All notes"
@@ -246,6 +249,9 @@ zh:
     copy: "复制"
     copied: "已复制"
     aria: "复制安装命令"
+    copied_aria: "安装命令已复制"
+    manual: "手动复制"
+    manual_aria: "命令已选中，请手动复制。"
   notes:
     all: "全部笔记"
     read_more: "继续读 →"
