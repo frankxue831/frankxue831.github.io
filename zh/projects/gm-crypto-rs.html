@@ -52,20 +52,19 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             <code>digest</code> / <code>mac</code> / <code>cipher</code> trait，方便接入现有生态；从 v1.11 起，还可选适配 <code>aead</code> 0.6（SM4-GCM / SM4-CCM）。
         </p>
         <p>
-            从 v1.3 起，它还能解析 X.509 v3 证书并验证其 SM2-with-SM3 签名（GM/T 0015 profile，严格 DER，不做任何信任判定）；对应的 C ABI 入口（在 <code>gmcrypto-c</code> crate 里）在 v1.4 跟上。v1.6 到 v1.9 把 TLCP（GB/T 38636）铺成了一套<em>工具集</em>：密钥派生（key schedule）与一条免密钥确认的 SM2 密钥交换路径（v1.6）、记录层的保护 / 解保护（v1.7）、证书对与证书链的签名验证（v1.8），
+            从 v1.3 起，它还能解析 X.509 v3 证书并验证其 SM2-with-SM3 签名（GM/T 0015 profile，严格 DER，不做任何信任判定）；对应的 C ABI 接口（在 <code>gmcrypto-c</code> crate 里）在 v1.4 跟上。v1.6 到 v1.9 把 TLCP（GB/T 38636）铺成了一套<em>工具集</em>：密钥派生（key schedule）与一条免密钥确认的 SM2 密钥交换路径（v1.6）、记录层的保护 / 解保护（v1.7）、证书对与证书链的签名验证（v1.8），
             v1.9 起整套都能从 C 调用。
         </p>
         <p>
-            想上手跑一下，
+            已发布的
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>
-            里有现成例子（拿 SM3、SM2 做 <code>hash</code> / <code>sign</code> /
-            <code>verify</code>）。先说清一点：demo 目前把 <code>gmcrypto-core</code>
-            固定在 <code>1.9.0</code>，落后于本页所讲的 v1.11.0——它演示的那几个调用在这个跨度里没有变化，但 v1.10 之后的内容（包括 <code>aead</code> 适配）在 demo 里是看不到的。
+            是面向使用者的示例与冒烟测试导览，覆盖散列、签名与验签、加解密、密钥交换和编码等代表性能力。它把依赖固定为
+            <code>gmcrypto-core = "=1.11.0"</code>，使示例与本页证据快照对应同一版本。
         </p>
 
         <figure class="fig">
             {% include figures/gm-crypto-crates.zh.svg %}
-            <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口点，至 v1.8 未变；v1.9.0 起为 104 个，v1.11.0 仍为 104）</figcaption>
+            <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口，至 v1.8 未变；v1.9.0 起为 104 个，v1.11.0 仍为 104）</figcaption>
         </figure>
 
         <h2>要解决的问题</h2>
@@ -145,12 +144,12 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             其中三条性质，固定在 <code>v1.11.0</code>，每条都直接链到对应的源码行：
         </p>
         <ul class="audit-notes">
-            <li>涉密比较是常量时间实现的（<code>subtle</code> 的 <code>ct_eq</code>）：
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/src/sm4/cipher.rs#L627" rel="noopener noreferrer">cipher.rs:627 <span aria-hidden="true">&#8599;</span></a></li>
+            <li>涉密数据的相等判断走库里的常量时间比较路径；链接源码能核对这一实现选择，下面的 dudect 结果仍是经验性证据，不是证明：
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/src/sm4/cipher.rs#L627" rel="noopener noreferrer">cipher.rs:627 <span aria-hidden="true">&#8599;</span></a>。</li>
             <li>核心 crate 禁止 unsafe 代码：
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/Cargo.toml#L177" rel="noopener noreferrer">Cargo.toml:177 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/Cargo.toml#L177" rel="noopener noreferrer">Cargo.toml:177 <span aria-hidden="true">&#8599;</span></a>。</li>
             <li>每个 PR 都跑 dudect 计时泄漏门禁：
-                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/.github/workflows/dudect-pr.yml#L166" rel="noopener noreferrer">dudect-pr.yml:166 <span aria-hidden="true">&#8599;</span></a></li>
+                <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/.github/workflows/dudect-pr.yml#L169" rel="noopener noreferrer">dudect-pr.yml:169 <span aria-hidden="true">&#8599;</span></a>。</li>
         </ul>
         <p>
             再补两条，专门针对「常量时间」这个说法——也是最容易嘴上说、最难证明的部分：
@@ -162,8 +161,8 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/README.md#L76" rel="noopener noreferrer">README.md:76 <span aria-hidden="true">&#8599;</span></a>）。</li>
         </ul>
         <p>
-            有两篇笔记展开讲这件事：<a href="{{ '/zh/notes/constant-time-ci-gate/' | relative_url }}">CI
-            门禁是怎么接线的</a>，以及<a href="{{ '/zh/notes/constant-time-warrant/' | relative_url }}">为什么值得展示的是负控制，而不是那排绿勾</a>。
+            有四篇笔记展开证据边界：<a href="{{ '/zh/notes/constant-time-ci-gate/' | relative_url }}">CI
+            门禁是怎么接线的</a>、<a href="{{ '/zh/notes/constant-time-warrant/' | relative_url }}">为什么值得展示的是负控制，而不是那排绿勾</a>、<a href="{{ '/zh/notes/byte-identity/' | relative_url }}">把字节一致性当作互操作测试</a>，以及<a href="{{ '/zh/notes/unsafe-opt-in/' | relative_url }}">把 unsafe 变成显式选择</a>。
         </p>
         {% include dudect-chart.html %}
         <p>
@@ -192,7 +191,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             <li>不是端点身份认证——<code>verify_chain</code> / <code>verify_pair</code> 只建立证书结构上的信任。把验证过的证书链绑定到具体的对端身份（相当于 TLCP 里的主机名验证）永远是调用方的事。</li>
             <li>不包括 SM9、ZUC、后量子算法。</li>
             <li>不是 HSM / SDF / SKF 集成。</li>
-            <li>不是通过认证的密码模块（FIPS 一类认证）。</li>
+            <li>不是通过美国联邦信息处理标准（FIPS）或其他项目认证的密码模块。</li>
             <li>在乘法耗时跟操作数有关的 CPU 上（部分较老的 x86、部分嵌入式），不是常量时间的。</li>
         </ul>
 
@@ -204,6 +203,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             <a href="https://github.com/frankxue831/gm-crypto-rs" rel="noopener noreferrer">源码 ↗</a>
             <a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer">crates.io ↗</a>
             <a href="https://docs.rs/gmcrypto-core" rel="noopener noreferrer">docs.rs ↗</a>
+            <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/LICENSE" rel="noopener noreferrer">LICENSE ↗</a>
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">示例 ↗</a>
             <a href="{{ '/zh/projects/' | relative_url }}">← 全部作品</a>
         </div>

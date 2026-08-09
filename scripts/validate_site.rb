@@ -1184,8 +1184,8 @@ end
 rejected_content = {
   "colophon.html" => ["six small files", "~500 lines"],
   "zh/colophon.html" => ["六个小文件", "约 500 行"],
-  "projects/gm-crypto-rs.html" => ["1.9.0", "<code>hash</code> / <code>sign</code> /"],
-  "zh/projects/gm-crypto-rs.html" => ["1.9.0", "<code>hash</code> / <code>sign</code> /"],
+  "projects/gm-crypto-rs.html" => ["<code>1.9.0</code>, behind", "<code>hash</code> / <code>sign</code> /"],
+  "zh/projects/gm-crypto-rs.html" => ["固定在 <code>1.9.0</code>", "<code>hash</code> / <code>sign</code> /"],
   "projects/repolens-rs.html" => ["Planned until"],
   "notes.html" => ["Rust, cryptography, CI, and tooling."]
 }.freeze
