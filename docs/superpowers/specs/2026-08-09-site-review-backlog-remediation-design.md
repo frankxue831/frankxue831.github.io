@@ -1,6 +1,6 @@
 # Site Review Backlog Remediation Program Design
 
-Created: 2026-08-09  
+Created: 2026-08-09
 Status: Approved in auto mode for implementation planning
 
 ## Purpose
