@@ -23,7 +23,7 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
     <article class="project-detail prose">
         {% include project-summary.html %}
 
-        <h2>是什么</h2>
+        <h2 id="what-it-is">是什么</h2>
         <p>
             Explainer Engine 把一份 YAML {% include glossary-term.html term="storyboard" %}
             编译成 {% include glossary-term.html term="manim" %} 的带旁白场景。每个 beat（镜头段落）可以是一张图示、一段带引用的代码标注，或者——最新的——一张会动的<em>概念图</em>：把带标签的节点摆在命名好的锚点上，连上表示力的边、一条路径，再让一个节点沿路径移动。整条链路一次跑完，中间没有模型：
@@ -45,12 +45,12 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
             <figcaption class="fig__cap" id="fig-video-cap">图 3.1 — 引擎自己的输出，整条链路（旁白为英文；提供英文与中文字幕轨）。琥珀色标签表示<em>简化视图</em>；徽标标注了「memory force」所核对的源码 commit。</figcaption>
         </figure>
 
-        <h2>要解决的问题</h2>
+        <h2 id="problem">要解决的问题</h2>
         <p>
             讲解会和它所描述的代码慢慢脱节，而一段渲染出来的讲解，脱节得<em>无声无息</em>：视频照样播放，图照样好看，没有任何东西告诉你，屏幕上那个说法早在两次重构之前就对不上源码了。转述本来就容易在细节上出错，制作越精良反而越糟——一个包装得漂亮的说法，看起来比一个没核对过的说法更权威，却没有那个资格。所以引擎真正要回答的，不是<em>「怎么渲染一段讲解」</em>，而是<em>「一段渲染出来的讲解，要靠什么才能拒绝脱节」</em>。
         </p>
 
-        <h2>约束与关键决策</h2>
+        <h2 id="decisions">约束与关键决策</h2>
         <p>
             <strong>引用不上的说法，拒绝画。</strong>渲染之前，<strong>引用校验门</strong>会按固定 commit 从源仓库里读出被引用的行，核对所声称的证据是否真的在那里；还有一道 commit 诚实性检查：如果徽标上的 commit 和仓库 <code>HEAD</code> 对不上、或者工作区是脏的又没显式放行，构建就会失败。<strong>代价：</strong>写 storyboard 变慢了——每个说法都得配一条能解析的引用，一份跑得比源码还快、对不上引用的
             storyboard 根本渲染不出来。
@@ -68,18 +68,18 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
             Qt 无关的渲染核心上——和桌面批量渲染 GUI 用的是同一套——所以这条渲染路径是经过统一测试的，而不是单次脚本。<strong>代价：</strong>核心的每次改动都有两个使用方要照顾，引擎不能走那种会把 GUI 卡死的捷径。
         </p>
 
-        <h2>证据</h2>
+        <h2 id="evidence">证据</h2>
         <p>
             私有快照 <code>local tag diagram-canvas</code>——没有可查看的公开源码。支撑这些说法的是产物本身：上面这段视频是引擎的真实输出，不是效果图。里面的五种力来自一份研究知识库（wiki）；屏幕上的徽标标注了「memory force」所核对的具体源码行与 commit，且渲染开始前引用校验门已通过。出处标记——<code>simplified</code> 标签、<code>verified @ commit</code>
             徽标——每一帧都看得见。视频本身只能核对产物和这些可见标记；引用的私有源码行与校验门结果，目前无法由外部独立核对。若源码以后公开，外部读者可以自行核对引用行；当时的校验门结果仍需要公开运行证据。
         </p>
 
-        <h2>下一步</h2>
+        <h2 id="next">下一步</h2>
         <p>
             目前没有承诺到里程碑的计划。方向由图示画布只答了一半的那个问题来定：一个概念有多少内容能做成动画讲出来，同时仍可按源码核对。仓库若变为公开可访问，再补源码链接。
         </p>
 
-        <h2>它不是什么</h2>
+        <h2 id="limits">它不是什么</h2>
         <ul>
             <li>不是 LLM 视频生成器——代码生成是确定、可复现的。</li>
             <li>不是幻灯片——图示画布动的是关系，不是要点列表。</li>

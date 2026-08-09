@@ -1336,7 +1336,7 @@ end
 
 if css_path.exist?
   css = css_path.read
-  proof_title_rule = css[/\.hero-proof__title\s*\{[^}]*\}/m].to_s
+  proof_title_rule = css[/^\.hero-proof__title\s*\{[^}]*\}/m].to_s
   record(failures, "style.css: .hero-proof__title must use supported font-weight 600") unless proof_title_rule.match?(/font-weight:\s*600\s*;/)
   record(failures, "style.css: unsupported hero proof font-weight 650 remains") if proof_title_rule.match?(/font-weight:\s*650\s*;/)
 

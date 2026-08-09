@@ -24,7 +24,7 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
     <article class="project-detail prose">
         {% include project-summary.html %}
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
         <p>
             <code>RepoLens</code> scans a repository into structured, immutable
             "packs," exposes that model through an {% include glossary-term.html term="mcp" %} server, and pairs it with
@@ -39,7 +39,7 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
             <figcaption class="fig__cap">fig. 3.1 — packs + decaying memory behind 26 MCP tools</figcaption>
         </figure>
 
-        <h2>The problem</h2>
+        <h2 id="problem">The problem</h2>
         <p>
             Coding agents generate code well but lose project context the moment
             a session ends. Every new session restarts cold: re-grepping the
@@ -51,7 +51,7 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
             <em>durable, structured perception</em>.
         </p>
 
-        <h2>Constraints &amp; key decisions</h2>
+        <h2 id="decisions">Constraints &amp; key decisions</h2>
         <p>
             <strong>Structured typed perception over a bigger prompt.</strong>
             Because cold-start re-discovery is the problem and dumping more files
@@ -95,7 +95,7 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
             humans grade it; it isn't automated proof.
         </p>
 
-        <h2>Evidence</h2>
+        <h2 id="evidence">Evidence</h2>
         <p>
             A private working snapshot of <code>origin/main</code> — there is no
             public source, crate, or docs page to inspect. What backs the claims
@@ -112,7 +112,7 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
             that holds the line on context quality.
         </p>
 
-        <h2>Next</h2>
+        <h2 id="next">Next</h2>
         <p>
             The v0.1 milestone is what makes RepoLens legible as a product:
             richer memory types — <code>Hypothesis</code>, <code>Constraint</code>,
@@ -123,7 +123,7 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
             it is tied to a public milestone.
         </p>
 
-        <h2>What it isn't</h2>
+        <h2 id="limits">What it isn't</h2>
         <ul>
             <li>Doesn't write code — agents do that.</li>
             <li>Not a replacement for tests or human review.</li>

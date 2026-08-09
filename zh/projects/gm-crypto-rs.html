@@ -43,7 +43,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             <span class="install__status" role="status" aria-live="polite"></span>
         </div>
 
-        <h2>是什么</h2>
+        <h2 id="what-it-is">是什么</h2>
         <p>
             <code>gm-crypto-rs</code> 是一套纯 Rust 写的国密算法库，覆盖
             {% include glossary-term.html term="sm3" %} 哈希（GB/T 32905）、
@@ -71,7 +71,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口，至 v1.8 未变；v1.9.0 起为 104 个，v1.11.0 仍为 104）</figcaption>
         </figure>
 
-        <h2>要解决的问题</h2>
+        <h2 id="problem">要解决的问题</h2>
         <p>
             国密这几个算法，Rust 社区其实早有实现，写得好的那些，本来也都按<em>常量时间</em>设计——处理密钥的那段代码，跑多久跟密钥无关，免得别人靠测耗时反推出密钥。
         </p>
@@ -83,7 +83,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             所以它真正要回答的，不是<em>「今天是不是常量时间」</em>，而是<em>「靠什么让每次提交之后它还是常量时间」</em>。
         </p>
 
-        <h2>约束与关键决策</h2>
+        <h2 id="decisions">约束与关键决策</h2>
         <p>
             <strong>持续验证，而不是一次性拍板。</strong>常量时间不该是评审会上签个字就算数的结论，而该是 CI 每次都重新核一遍的性质。所以每次 CI 都会用 <code>dudect-bencher</code>（时序侧信道检测工具）把 20 条涉密路径跑一遍；其中核心那一组带<em>门禁</em>，阈值是统计量 <code>|τ|&nbsp;&lt;&nbsp;0.20</code>——
             一旦越界就直接让构建挂掉，不用等人去发现。要说清楚的是，它报的是<em>「检测事件」</em>：<code>|τ|</code> 低，只说明在当前的测量预算下没测到泄漏，<em>并不能</em>证明泄漏不存在（措辞沿用
@@ -130,7 +130,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             一起并进了刻意的 <code>1.0.0</code> 正式发布。<strong>代价：</strong>版本号因此留了个需要解释的缺口；而且多出一层 C ABI，每个模式都得在三个已发布的 crate 里测一遍、维护一遍，测试和维护面也随之翻倍。
         </p>
 
-        <h2>证据</h2>
+        <h2 id="evidence">证据</h2>
         <p>
             每一处输出都逐字节比对过：标准 KAT 测试向量、GmSSL 3.2.0
             （互操作性——v1.10 起在 CI 里挂了任务，对照从源码构建的 oracle 跑）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>（可调模式，<code>xts_standard=GB</code>）。
@@ -183,13 +183,13 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             <dd><a href="{{ '/zh/projects/gm-crypto-rs/releases/' | relative_url }}">从 v0.6.0 起的每一轮 →</a></dd>
         </dl>
 
-        <h2>下一步</h2>
+        <h2 id="next">下一步</h2>
         <dl class="version-grid">
             <dt>下一步</dt>
             <dd>v1.6 起步的 TLCP（GB/T 38636）路线<strong>已在 v1.9 收官</strong>；v1.11 又落地了长期搁置的 RustCrypto <code>aead</code> 0.6 trait 适配。目前没有下一条路线定到具体版本。继续搁置：AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。另有一条是<em>永久</em>不做、而非暂缓：端点身份绑定——相当于 TLCP 里的主机名验证（hostname）——始终留给调用方。</dd>
         </dl>
 
-        <h2>它不是什么</h2>
+        <h2 id="limits">它不是什么</h2>
         <ul>
             <li>不是 TLS / TLCP 协议栈——<code>tlcp</code> 这部分是一套原语工具集（密钥派生、记录层保护 / 解保护、链与证书对验证）。没有握手状态机、没有协商、也没有会话管理：协议要由调用方自己驱动，v1.9 的 C 示例就是这么做的。</li>
             <li>不是端点身份认证——<code>verify_chain</code> / <code>verify_pair</code> 只建立证书结构上的信任。把验证过的证书链绑定到具体的对端身份（相当于 TLCP 里的主机名验证）永远是调用方的事。</li>

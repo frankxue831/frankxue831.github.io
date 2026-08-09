@@ -44,7 +44,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <span class="install__status" role="status" aria-live="polite"></span>
         </div>
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
         <p>
             <code>gm-crypto-rs</code> implements GB/T 32905 ({% include glossary-term.html term="sm3" %} hash),
             GB/T 32918 ({% include glossary-term.html term="sm2" %} public-key sign / verify / encrypt / decrypt
@@ -76,7 +76,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <figcaption class="fig__cap">fig. 3.1 — crate &amp; C ABI surface (85 entry points at v1.4.0, unchanged through v1.8; 104 as of v1.9.0, still 104 at v1.11.0)</figcaption>
         </figure>
 
-        <h2>The problem</h2>
+        <h2 id="problem">The problem</h2>
         <p>
             Rust already has SM2 / SM3 / SM4 implementations, and the good
             ones are <em>designed</em> for {% include glossary-term.html term="constant-time" %} secret-dependent
@@ -92,7 +92,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <em>what keeps it constant-time on every commit.</em>
         </p>
 
-        <h2>Constraints &amp; key decisions</h2>
+        <h2 id="decisions">Constraints &amp; key decisions</h2>
         <p>
             <strong>Verify continuously, don't assert once.</strong>
             Constant-time behavior is treated as a property CI re-checks, not
@@ -167,7 +167,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             tested and owned across three published crates.
         </p>
 
-        <h2>Evidence</h2>
+        <h2 id="evidence">Evidence</h2>
         <p>
             Every output is checked for byte-identity: against the standard
             KAT vectors, against GmSSL 3.2.0 for interop — an in-CI job
@@ -235,13 +235,13 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <dd><a href="{{ '/projects/gm-crypto-rs/releases/' | relative_url }}">Every cycle from v0.6.0 →</a></dd>
         </dl>
 
-        <h2>Next</h2>
+        <h2 id="next">Next</h2>
         <dl class="version-grid">
             <dt>Next</dt>
             <dd>The TLCP (GB/T 38636) arc begun in v1.6 <strong>closed with v1.9</strong>; v1.11 then closed the long-parked RustCrypto <code>aead</code> 0.6 trait fit. No successor arc is committed to a version yet. Still parked: AVX-512 <code>sbox_x64</code>, and streaming / incremental CCM. Permanently out of scope, not deferred: endpoint identity binding — the TLCP equivalent of hostname verification — stays the caller's.</dd>
         </dl>
 
-        <h2>What it isn't</h2>
+        <h2 id="limits">What it isn't</h2>
         <ul>
             <li>Not a TLS/TLCP stack — the <code>tlcp</code> work is a toolkit of primitives (key schedule, record protect / deprotect, chain and pair verification). There is no handshake state machine, no negotiation, and no session management: a caller drives the protocol, as the v1.9 C examples do.</li>
             <li>Not endpoint authentication — <code>verify_chain</code> / <code>verify_pair</code> establish structural trust only. Binding a verified chain to a peer identity, the TLCP equivalent of hostname verification, stays the caller's permanently.</li>
