@@ -46,6 +46,10 @@
 #   load-bearing            → 最吃紧 / 最关键（不用「承重」calque）
 #   private/local (body)    → 私有、本地（顿号；与 status 一致）
 #   guarded (control)       → 受控（不用「受约束」作同一概念）
+#   render core             → 渲染核心
+#   consumer (of a core)    → 使用方（不用「消费者」）
+#   extraction trigger      → 触发条件（不用「触发器」）
+#   code smell              → 坏味道
 # Voice rule: ZH keeps its native register and may add explanatory glosses;
 # disclosures, hedges, numbers, and limitations must match EN exactly.
 # ---------------------------------------------------------------------------
