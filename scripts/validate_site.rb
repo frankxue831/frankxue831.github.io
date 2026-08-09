@@ -1133,6 +1133,70 @@ PROJECTS.each do |project|
   end
 end
 
+# --- 2026-08-09 site-review content contracts ---
+# These values are intentionally local/static: immutable public release facts
+# are verified during review, then pinned here so routine builds never depend
+# on network availability.
+release_history_expected = {
+  "v0.15.0" => "2026-05-27",
+  "v0.10.0" => "2026-05-22",
+  "v0.9.0" => "2026-05-20",
+  "v0.8.0" => "2026-05-17",
+  "v0.7.0" => "2026-05-15"
+}.freeze
+
+%w[projects/gm-crypto-rs-releases.html zh/projects/gm-crypto-rs-releases.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  release_history_expected.each do |version, date|
+    row = %r{<dt>#{Regexp.escape(version)}</dt>\s*<dd>#{Regexp.escape(date)}\b}m
+    record(failures, "#{relative}: #{version} must use public release date #{date}") unless source.match?(row)
+  end
+end
+
+gm_case_studies = %w[projects/gm-crypto-rs.html zh/projects/gm-crypto-rs.html]
+gm_case_studies.each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: demo must pin gmcrypto-core =1.11.0") unless source.include?("=1.11.0")
+  record(failures, "#{relative}: dudect workflow evidence must link line 169") unless source.include?("dudect-pr.yml#L169")
+  record(failures, "#{relative}: stale dudect workflow line 166 remains") if source.include?("dudect-pr.yml#L166")
+  %w[constant-time-warrant constant-time-ci-gate byte-identity unsafe-opt-in].each do |slug|
+    record(failures, "#{relative}: missing #{slug} note link") unless source.include?(slug)
+  end
+end
+
+dudect_data = YAML.load_file(ROOT.join("_data/dudect.yml"))
+record(failures, "_data/dudect.yml: gate_display must preserve 0.20") unless dudect_data["gate_display"] == "0.20"
+record(failures, "_data/dudect.yml: sentinel_display must preserve 0.55") unless dudect_data["sentinel_display"] == "0.55"
+dudect_chart_contract = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
+record(failures, "dudect-chart.html: historical leak must use status_caught") unless dudect_chart_contract.include?("t.status_caught")
+unless dudect_chart_contract.scan("t.status_fire").length == 1
+  record(failures, "dudect-chart.html: status_fire must be exclusive to negative_control")
+end
+
+vtt = read_file(ROOT.join("assets/video/harness-field-explainer.en.vtt"), failures)
+record(failures, "harness-field-explainer.en.vtt: missing load-bearing-line wording") unless vtt.include?("The load-bearing line")
+
+claude_source = read_file(ROOT.join("CLAUDE.md"), failures)
+if claude_source.match?(/v0\.8[^\n]*AEAD[^\n]*next|v0\.8 AEAD work is "next"/i)
+  record(failures, "CLAUDE.md: stale v0.8 AEAD-next guidance remains")
+end
+
+rejected_content = {
+  "colophon.html" => ["six small files", "~500 lines"],
+  "zh/colophon.html" => ["六个小文件", "约 500 行"],
+  "projects/gm-crypto-rs.html" => ["1.9.0", "<code>hash</code> / <code>sign</code> /"],
+  "zh/projects/gm-crypto-rs.html" => ["1.9.0", "<code>hash</code> / <code>sign</code> /"],
+  "projects/repolens-rs.html" => ["Planned until"],
+  "notes.html" => ["Rust, cryptography, CI, and tooling."]
+}.freeze
+
+rejected_content.each do |relative, phrases|
+  source = read_file(ROOT.join(relative), failures)
+  phrases.each do |phrase|
+    record(failures, "#{relative}: rejected reviewed phrase remains: #{phrase.inspect}") if source.include?(phrase)
+  end
+end
+
 if failures.empty?
   puts "Site validation passed"
 else
