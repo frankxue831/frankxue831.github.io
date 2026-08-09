@@ -141,8 +141,10 @@
         above-the-fold Latin faces: EB Garamond roman (site mark + hero title +
         headings) and IBM Plex Mono 400 (eyebrow labels + metadata). Body is
         system-sans, so it needs no web font. CJK is system-served. {%- endcomment -%}
+    {% if page.url == '/' or page.url == '/zh/' %}
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ '/assets/fonts/eb-garamond-latin.woff2' | relative_url }}">
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ '/assets/fonts/ibm-plex-mono-400-latin.woff2' | relative_url }}">
+    {% endif %}
 
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
 </head>
