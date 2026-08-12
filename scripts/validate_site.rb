@@ -1418,8 +1418,14 @@ end
 
 gm_en = read_file(ROOT.join("projects/gm-crypto-rs.html"), failures)
 gm_zh = read_file(ROOT.join("zh/projects/gm-crypto-rs.html"), failures)
-record(failures, "projects/gm-crypto-rs.html: missing immutable LICENSE link") unless gm_en.include?("v1.11.0/LICENSE")
-record(failures, "zh/projects/gm-crypto-rs.html: missing immutable LICENSE link") unless gm_zh.include?("v1.11.0/LICENSE")
+# gm-crypto-rs is "MIT OR Apache-2.0"; the tag ships LICENSE-APACHE and
+# LICENSE-MIT, with no plain LICENSE file. Assert both, or a dropped half
+# would silently misstate the terms.
+{ "projects/gm-crypto-rs.html" => gm_en, "zh/projects/gm-crypto-rs.html" => gm_zh }.each do |relative, source|
+  %w[LICENSE-APACHE LICENSE-MIT].each do |file|
+    record(failures, "#{relative}: missing immutable #{file} link") unless source.include?("v1.11.0/#{file}")
+  end
+end
 record(failures, "projects/gm-crypto-rs.html: missing FIPS expansion") unless gm_en.include?("U.S. Federal Information Processing Standards (FIPS)")
 record(failures, "zh/projects/gm-crypto-rs.html: missing FIPS expansion") unless gm_zh.include?("美国联邦信息处理标准（FIPS）")
 
