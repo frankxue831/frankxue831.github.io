@@ -1377,6 +1377,28 @@ expected_identity.each do |lang, values|
   end
 end
 
+# Visitors expect "Home"; "Index" reads as a monograph voice choice.
+record(failures, 'i18n.yml: en.nav.home must be "Home"') unless i18n_content.dig("en", "nav", "home") == "Home"
+record(failures, 'i18n.yml: zh.nav.home must be "首页"') unless i18n_content.dig("zh", "nav", "home") == "首页"
+
+# About's "Lately" row interpolates public_project; hide it when none exists,
+# matching the home-page guard.
+%w[about.html zh/about.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: Lately/最近 row missing {% if public_project %} guard") unless
+    source.match?(/\{%\s*if public_project\s*%\}[\s\S]*?(Released|已发布)[\s\S]*?\{%\s*endif\s*%\}/)
+end
+
+# Explainer case study back-links the published extraction-trigger note under
+# the shared-core decision (same pattern as gm-crypto → constant-time notes).
+{
+  "projects/explainer-engine.html" => "/notes/extraction-trigger/",
+  "zh/projects/explainer-engine.html" => "/zh/notes/extraction-trigger/"
+}.each do |relative, href|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: missing extraction-trigger note back-link (#{href})") unless source.include?(href)
+end
+
 source_contracts = {
   "about.html" => [
     'description: "How I work, what I optimize for, and how I present evidence and limitations across public and private projects."'
@@ -1402,8 +1424,16 @@ source_contracts = {
     'description: "软件工程工作笔记：证据、接口、可靠性、密码学、CI，以及已交付系统背后的取舍。"',
     "这些工作笔记关心的是：软件说法怎样变得可核对"
   ],
-  "_notes/starting-a-notebook.md" => ["Put the most decision-relevant evidence first, then make its limits easy to find."],
-  "_notes/starting-a-notebook.zh.md" => ["先放最影响判断的证据，再让它的边界也容易找到。"],
+  "_notes/starting-a-notebook.md" => [
+    "Put the most decision-relevant evidence first, then make its limits easy to find.",
+    "/notes/constant-time-warrant/",
+    "/notes/extraction-trigger/"
+  ],
+  "_notes/starting-a-notebook.zh.md" => [
+    "先放最影响判断的证据，再让它的边界也容易找到。",
+    "/zh/notes/constant-time-warrant/",
+    "/zh/notes/extraction-trigger/"
+  ],
   "projects/repolens-rs.html" => ["Planned work remains uncommitted until it is tied to a public milestone."],
   "zh/projects/repolens-rs.html" => ["后续工作在绑定公开里程碑之前，不写成已承诺计划。"]
 }.freeze
@@ -1498,6 +1528,17 @@ contents_js = read_file(ROOT.join("assets/js/contents.js"), failures)
 unless contents_js.include?("if (h.id) { used.add(h.id); return h.id; }")
   record(failures, "contents.js: source-rendered heading ID branch must be retained")
 end
+# Last-resort TOC label must follow the page locale when data-toc-label is absent.
+record(failures, "contents.js: missing ZH last-resort TOC label") unless contents_js.include?("本页内容")
+record(failures, "contents.js: TOC fallback must inspect document language") unless
+  contents_js.match?(/documentElement\.lang|lang-zh/)
+
+theme_js_source = read_file(ROOT.join("assets/js/theme.js"), failures)
+%w[跟随系统 浅色 深色].each do |needle|
+  record(failures, "theme.js: missing ZH last-resort label #{needle.inspect}") unless theme_js_source.include?(needle)
+end
+record(failures, "theme.js: state fallbacks must inspect document language") unless
+  theme_js_source.match?(/documentElement\.lang|lang-zh/)
 
 if css_path.exist?
   css = css_path.read

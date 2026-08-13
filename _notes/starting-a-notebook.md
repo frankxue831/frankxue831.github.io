@@ -28,8 +28,10 @@ A note belongs here when it has at least three pieces:
 
 Examples already on the site:
 
+- How a constant-time claim transfers warrant — [A constant-time claim is a trust problem, not a comprehension problem]({{ '/notes/constant-time-warrant/' | relative_url }}).
 - Why a release that changes no output bytes does not deserve a version number — [Skipping the releases that change nothing]({{ '/notes/releases-that-change-nothing/' | relative_url }}), tied to the [gm-crypto-rs release history]({{ '/projects/gm-crypto-rs/releases/' | relative_url }}).
 - How a constant-time CI gate is wired, and what it costs on every PR — [The constant-time CI gate]({{ '/notes/constant-time-ci-gate/' | relative_url }}).
+- When sharing code is not yet a reason to share a package — [Sharing code is not the same decision as sharing a package]({{ '/notes/extraction-trigger/' | relative_url }}).
 - When `unsafe` is an opt-in surface rather than a default — [Unsafe as opt-in]({{ '/notes/unsafe-opt-in/' | relative_url }}).
 
 If those three pieces are not there yet, the thought stays private until they are.
