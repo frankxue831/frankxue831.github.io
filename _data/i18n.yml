@@ -21,6 +21,7 @@
 #   fleet management        → 机群管理
 #   review (human)          → 复核（人工复核；不留英文 review）
 #   diagram canvas          → 图示画布（首次可加括注 diagram canvas）
+#   explainer plan          → explainer plan（命令名不译；叙述里可称「规划器」）
 #   validation (PKIX path)  → 路径构建 / 信任判定（不与「验证」互换）
 #   verification (signature)→ 签名验证
 #   one-shot (CLI)          → 单次运行（不用「一次性」）

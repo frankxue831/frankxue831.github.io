@@ -29,14 +29,18 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
         <p>
             The Explainer Engine compiles a YAML {% include glossary-term.html term="storyboard" %}
             into a {% include glossary-term.html term="manim" %} narrated scene.
-            Each beat is a plot, a cited code callout, or — newest — an animated
+            Each beat is a plot, a cited code callout, or an animated
             concept <em>diagram</em>: labeled nodes placed at named anchors,
-            force edges, one path, and a node moving along it. One pass, no
-            model in the loop:
+            force edges, one path, and a node moving along it. The render
+            path is one pass, with no model in it:
             <code>storyboard</code> → <code>citation gate</code> →
             <code>deterministic codegen</code> → <code>Manim render</code> with
-            synthesized narration. It is a private, local tool; the snapshot it
-            describes is named under <em>Evidence</em> below.
+            synthesized narration. An optional <code>explainer plan</code>
+            step can draft that storyboard from a focused slice of real
+            source — evidence-stamped from the files it read — but the draft
+            still has to pass the same citation gate before a frame is
+            drawn. It is a private, local tool; the snapshot it describes is
+            named under <em>Evidence</em> below.
         </p>
 
         <figure class="fig fig--video">
@@ -91,14 +95,16 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             furniture — pixels spent on provenance instead of polish.
         </p>
         <p>
-            <strong>Deterministic codegen, no model in the loop.</strong> The
-            same storyboard always emits the same scene, so a render is
+            <strong>Deterministic codegen, no model in the render loop.</strong>
+            The same storyboard always emits the same scene, so a render is
             reproducible and a diff in the output traces to a diff in the
             input. The diagram canvas turns relationships into motion without
             hand-built scene code, which is what lets a <em>concept</em> — not
             just a code listing — be explained and still be checkable.
             <strong>Cost:</strong> nothing the storyboard doesn't specify
-            exists, and a new beat type is engine work, not prompt work.
+            exists, and a new beat type is engine work, not prompt work. A
+            planner can draft YAML; it cannot bypass the gate or invent a
+            beat type the engine does not have.
         </p>
         <p>
             <strong>One render core, two consumers.</strong> The engine sits on
@@ -113,10 +119,13 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
 
         <h2 id="evidence">Evidence</h2>
         <p>
-            A private local snapshot at <code>local tag diagram-canvas</code>
-            — there is no public source to inspect. What backs the claims is the artifact
-            itself: the clip above is the engine's output, not a mock-up. Its
-            five forces are drawn from a research wiki; the on-screen badge
+            A private local snapshot at <code>local tag explainer-plan</code>
+            — there is no public source to inspect. What backs the render
+            claims is the artifact itself: the clip above is the engine's
+            output, not a mock-up. It was rendered under the earlier
+            <code>diagram-canvas</code> snapshot, through the same
+            citation-gated pipeline this pin still describes. Its five
+            forces are drawn from a research wiki; the on-screen badge
             cites the exact source line and commit the "memory force" claim
             was verified against, and the citation gate passed before the
             render ran. The disclosure markers — the <code>simplified</code>
@@ -126,7 +135,9 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             gate result are not independently checkable today. If the source
             is later published, the cited line could be checked externally;
             the historical gate result would still require public run
-            evidence.
+            evidence. This later snapshot adds the optional
+            <code>explainer plan</code> authoring step; it does not change
+            how a verified storyboard becomes a frame.
         </p>
 
         <h2 id="next">Next</h2>
@@ -140,7 +151,7 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
 
         <h2 id="limits">What it isn't</h2>
         <ul>
-            <li>Not an LLM video generator — codegen is deterministic and reproducible.</li>
+            <li>Not an LLM video generator — a planner can draft the storyboard; codegen stays deterministic and reproducible.</li>
             <li>Not a slideshow — the diagram canvas animates relationships, not bullet points.</li>
             <li>Not a verbatim source viewer — on-screen code is a marked simplification, with the real lines cited.</li>
             <li>Not a warrant-transfer medium — the badge shows the gate's verdict, not the evidence; readers who need to check a claim need <a href="{{ '/notes/constant-time-warrant/' | relative_url }}">links, not narration</a>.</li>

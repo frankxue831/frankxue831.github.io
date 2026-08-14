@@ -827,19 +827,21 @@ case_study = {
   },
   # explainer-engine: private/local — the verification story lives in the frame,
   # so guard the simplified-marking and gate's-verdict phrases that carry it.
+  # Pin is local tag explainer-plan; diagram-canvas may appear only as the
+  # earlier video provenance, not as the current snapshot.
   "projects/explainer-engine/index.html" => {
     headings: [["what-it-is", "What it is"], ["problem", "The problem"],
                ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
                ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
-    must_include: ["simplified", "gate's verdict"]
+    must_include: ["simplified", "gate's verdict", "explainer-plan", "explainer plan"]
   },
   "zh/projects/explainer-engine/index.html" => {
     headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
                ["decisions", "约束与关键决策"], ["evidence", "证据"],
                ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
-    must_include: ["简化视图", "校验门的结论"]
+    must_include: ["简化视图", "校验门的结论", "explainer-plan", "explainer plan"]
   }
 }
 case_study.each do |relative, spec|
