@@ -94,9 +94,11 @@ alternate: /zh/about/
             <span>On crates.io</span>
             <span><a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer" class="facts__link">gmcrypto-core</a></span>
         </li>
+        {% if public_project %}
         <li>
             <span>Lately</span>
             <span>Released {{ public_project.title }} {{ public_project.release }}</span>
         </li>
+        {% endif %}
     </ul>
 </section>

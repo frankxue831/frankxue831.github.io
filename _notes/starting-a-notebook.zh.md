@@ -36,8 +36,10 @@ excerpt: "公开的工程笔记本要站得住，每篇至少得有一个有用�
 
 站上已经有的例子：
 
+- 一条常量时间说法怎么把可信度交出去——[常量时间的说法，是信任问题，不是理解问题]({{ '/zh/notes/constant-time-warrant/' | relative_url }})。
 - 为什么没改任何输出字节的一轮工作不配单独版本号——[什么都没变的版本，就不发]({{ '/zh/notes/releases-that-change-nothing/' | relative_url }})，并挂到 [gm-crypto-rs 版本线]({{ '/zh/projects/gm-crypto-rs/releases/' | relative_url }})。
 - 常量时间 CI 门禁怎么接线、每个 PR 要付什么代价——[在 CI 里拦住常量时间回归]({{ '/zh/notes/constant-time-ci-gate/' | relative_url }})。
+- 共用代码还不构成单独拆包的理由——[「共用代码」和「共用一个包」，是两个决定]({{ '/zh/notes/extraction-trigger/' | relative_url }})。
 - 何时把 `unsafe` 挡在默认构建之外——[把 unsafe 挡在默认构建之外]({{ '/zh/notes/unsafe-opt-in/' | relative_url }})。
 
 三样还没齐，就先别公开，等齐了再写。
