@@ -79,13 +79,15 @@
   status_label:
     en: "Private/local"
     zh: "私有、本地"
-  # Private ManimSimpleRender tag `diagram-canvas` @ 74fb1f4 (merge of PR #34
-  # feat/diagram-canvas). Tag is on the private repo only; no public source link.
-  release: "local tag diagram-canvas"
+  # Private ManimSimpleRender tag `explainer-plan` @ cd60c0d (merge of PR #40
+  # explainer-story-quality; includes #39 planner + #38 Release A + #34
+  # diagram-canvas). Tag is on the private repo only; no public source link.
+  # Does not include later master work (PR #41 GUI async doctor).
+  release: "local tag explainer-plan"
   release_source: local_tag
   snapshot_label:
-    en: "local tag diagram-canvas"
-    zh: "本地 tag diagram-canvas"
+    en: "local tag explainer-plan"
+    zh: "本地 tag explainer-plan"
   repo_url: ~
   crate_url: ~
   docs_url: ~
