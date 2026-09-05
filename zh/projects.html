@@ -58,7 +58,7 @@ alternate: /projects/
                 视频里的 <code>verified @ commit</code> 是校验门的结论，不是装饰。当前状态：{{ project.status_label.zh }}。本地原型——没有公开源码链接。
                 {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'repolens-ng' %}
-                RepoLens-NG 是一个私有研究原型，研究编程 Agent 能否获得验证反馈会怎样影响其表现，支持隔离评估和轨迹回放。这项研究没有确立普遍的性能优势。
+                RepoLens-NG 是一个私有研究原型，研究 AI 编程 Agent 能否获得验证反馈会怎样影响其表现，支持隔离评估，并提供可回放的轨迹。这项研究没有确立普遍的性能优势。
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
                 {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}

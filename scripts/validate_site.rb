@@ -1304,7 +1304,7 @@ end
 # on network availability.
 release_history_expected = {
   "v1.13.0" => "2026-09-04",
-  "v1.12.0" => "2026-09-04",
+  "v1.12.0" => "2026-09-03",
   "v1.11.2" => "2026-08-23",
   "v1.11.1" => "2026-08-22",
   "v0.15.0" => "2026-05-27",
@@ -1600,7 +1600,7 @@ else
 end
 approved_research = {
   "en" => "RepoLens-NG is a private research prototype studying how access to verification affects coding agents, with isolated evaluation and replayable traces. It has not established a general performance advantage.",
-  "zh" => "RepoLens-NG 是一个私有研究原型，研究编程 Agent 能否获得验证反馈会怎样影响其表现，支持隔离评估和轨迹回放。这项研究没有确立普遍的性能优势。"
+  "zh" => "RepoLens-NG 是一个私有研究原型，研究 AI 编程 Agent 能否获得验证反馈会怎样影响其表现，支持隔离评估，并提供可回放的轨迹。这项研究没有确立普遍的性能优势。"
 }
 %w[index.html projects/index.html zh/index.html zh/projects/index.html].each do |relative|
   html = read_file(SITE.join(relative), failures)
@@ -1640,6 +1640,57 @@ case_study.each do |relative, spec|
   actual = jump.scan(/href="#([^"]+)"/).flatten
   record(failures, "#{relative}: native section links must match six case-study headings") unless actual == spec[:headings].map(&:first)
 end
+# Every full case study, including newly registered projects, must supply a
+# named evidence region, nonempty page-owned copy and a real local destination.
+PROJECTS.reject { |project| project["presentation"] == "summary" }.each do |project|
+  %w[detail_url zh_detail_url].each do |key|
+    relative = generated_target_for(project[key].to_s)
+    next unless relative.is_a?(String)
+    html = read_file(SITE.join(relative), failures)
+    evidence = html.match(%r{<section class="project-evidence" aria-labelledby="([^"]+)">(.*?)</section>}m)
+    unless evidence
+      record(failures, "#{relative}: evidence preview must be a labelled section")
+      next
+    end
+    label_id, body = evidence.captures
+    label = body[%r{<p[^>]*id="#{Regexp.escape(label_id)}"[^>]*>(.*?)</p>}m, 1].to_s
+    lede = body[%r{<p class="project-evidence__lede">(.*?)</p>}m, 1].to_s
+    link = body.match(%r{<a class="project-evidence__link" href="([^"]*)">(.*?)</a>}m)
+    { "label" => label, "lede" => lede, "CTA" => link && link[2] }.each do |field, value|
+      if CGI.unescapeHTML(value.to_s.gsub(/<[^>]+>/, " ")).strip.empty?
+        record(failures, "#{relative}: evidence #{field} must not be empty")
+      end
+    end
+    href = link && CGI.unescapeHTML(link[1])
+    unless href && href.match?(/\A#[a-z][a-z0-9-]*\z/) && html.include?(%(id="#{href.delete_prefix('#')}"))
+      record(failures, "#{relative}: evidence CTA must target an existing local section")
+    end
+  end
+end
+
+# Review fixes: policy is inclusive; historical observed values are unchanged.
+%w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  if html.scan("<td>≤ 0.20</td>").length != 3 || html.include?("<td>&lt; 0.20</td>")
+    record(failures, "#{relative}: all three gate-policy cells must use inclusive 0.20")
+  end
+end
+%w[_notes/constant-time-warrant.md _notes/constant-time-warrant.zh.md].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: timing gate policy must be inclusive") unless source.include?("|τ| ≤ 0.20") && !source.include?("|τ| < 0.20")
+end
+%w[_notes/releases-that-change-nothing.md _notes/releases-that-change-nothing.zh.md].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: preserve the documented v1.11.2 publication exception") unless source.include?("v1.11.2") && source.include?("docs.rs")
+end
+current_release = PROJECTS.find { |project| project["slug"] == "gm-crypto-rs" }.fetch("release")
+record(failures, "CLAUDE.md: current evidence snapshot differs from project facts") unless ROOT.join("CLAUDE.md").read.include?("`#{current_release}` is the current published evidence snapshot")
+%w[zh/index.html zh/projects.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: use AI 编程 Agent consistently") if source.match?(/(?<!AI )编程 Agent/)
+  record(failures, "#{relative}: use 时序回归 consistently") if source.include?("计时回归")
+end
+
 # Check fragments as well as paths: evidence shortcuts must land on real content.
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
@@ -1662,7 +1713,7 @@ record(failures, "projects.yml: gm-crypto-rs must reflect verified v1.13.0") unl
   %w[112 35 v1.13.0 v1.11.1 9V74 release-repair].each do |fact|
     record(failures, "#{relative}: missing release evidence #{fact}") unless html.include?(fact)
   end
-  record(failures, "#{relative}: missing tagged timing policy") unless html.include?("v1.13.0/.github/workflows/dudect-pr.yml#L378")
+  record(failures, "#{relative}: missing tagged timing policy") unless html.include?("v1.13.0/.github/workflows/dudect-pr.yml#L379-L395")
   record(failures, "#{relative}: chart must be keyboard-scrollable") unless html.match?(/class="dudect__chart-scroll"[^>]*tabindex="0"[^>]*role="region"/m)
   record(failures, "#{relative}: chart must identify historical version") unless html.include?("v1.2.0") && html.include?("dudect-scroll-hint")
 end

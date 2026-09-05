@@ -16,6 +16,12 @@ worked; it cares whether the bytes it links against changed. So
 a version is a promise about *output*, and a cycle that changes no output doesn't
 earn one.
 
+There is a publication-specific exception: crates.io metadata and docs.rs pages
+are tied to published versions. [v1.11.2](https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.2/CHANGELOG.md#1112---2026-08-23)
+updated those reader-facing artifacts without changing crypto code, API, ABI,
+or wire output. That justified a release; unchanged-output assurance work alone
+did not. Here, the artifact someone consumes includes the published documentation.
+
 That rule shows up as gaps in the public version line. crates.io has no
 `0.14.0`. The work was real — a `cargo-fuzz` sweep, sixteen targets over the
 untrusted-input decode and decrypt surface, run to completion with zero crashes.

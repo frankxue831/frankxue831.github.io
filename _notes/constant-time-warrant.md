@@ -26,7 +26,7 @@ Two artifacts do more work here than explanation.
 
 The crate gates on an in-CI [dudect-bencher](https://docs.rs/dudect-bencher/) harness:
 twenty targets that split inputs into two classes, measure the two timing distributions, and
-reduce "how different are they" to a t-statistic. Most gate at `|τ| < 0.20`. How that gate
+reduce "how different are they" to a t-statistic. Most gate at `|τ| ≤ 0.20`. How that gate
 is wired, and what it costs on every pull request, is
 [its own note]({{ '/notes/constant-time-ci-gate/' | relative_url }}).
 

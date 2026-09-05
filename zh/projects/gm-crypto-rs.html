@@ -7,6 +7,9 @@ lang: zh
 alternate: /projects/gm-crypto-rs/
 project_slug: gm-crypto-rs
 summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
+evidence_lede: "一次 TLCP 时序回归让 v1.11.1 延后发布，修复后才发版。v1.13.0 提供 112 个 C 入口和 35 个模糊测试目标。没有经过独立安全审计；泄漏检测也不等于常量时间证明。"
+evidence_href: "#release-repair"
+evidence_cta: "看这次回归与修复 →"
 ---
 
 <section class="page-header wrap">
@@ -129,7 +132,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             35 个 <code>cargo-fuzz</code> 目标每晚覆盖不可信输入的解码 / 解密路径。
             <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/crates/gmcrypto-c/include/gmcrypto.h#L921" rel="noopener noreferrer">v1.13.0 C 头文件</a>
             可核对 CCM 调用契约与 112 个函数入口；
-            <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/.github/workflows/dudect-pr.yml#L378" rel="noopener noreferrer">标签中的工作流</a>
+            <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/.github/workflows/dudect-pr.yml#L379-L395" rel="noopener noreferrer">标签中的工作流</a>
             可核对特定 runner 的阈值与诊断分层。
         </p>
         <h3 id="release-repair">一次时序失败拦下了发版</h3>

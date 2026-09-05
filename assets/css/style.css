@@ -2395,6 +2395,7 @@ details.drawer .version-grid {
 .dudect__chart-scroll {
     max-width: 100%;
     min-width: 0;
+    overflow-x: auto;
 }
 .dudect__chart-scroll:focus-visible {
     outline: 2px solid var(--accent);
@@ -2479,7 +2480,6 @@ details.drawer .version-grid {
 @media (max-width: 759px) {
     .dudect { padding: var(--space-4); }
     .dudect__chart-scroll {
-        overflow-x: auto;
         overscroll-behavior-inline: contain;
     }
     .dudect__chart { min-width: 640px; }

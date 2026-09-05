@@ -7,6 +7,9 @@ lang: en
 alternate: /zh/projects/gm-crypto-rs/
 project_slug: gm-crypto-rs
 summary_outcome: "In-CI leak-regression gates for secret-touching paths."
+evidence_lede: "A TLCP timing regression held up v1.11.1 until it was repaired. v1.13.0 provides 112 C entry points and 35 fuzz targets. Not independently audited; leak detection is not proof of constant-time execution."
+evidence_href: "#release-repair"
+evidence_cta: "Inspect the regression and repair →"
 ---
 
 <section class="page-header wrap">
@@ -150,7 +153,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             35 <code>cargo-fuzz</code> targets exercise untrusted-input decode / decrypt paths nightly.
             The <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/crates/gmcrypto-c/include/gmcrypto.h#L921" rel="noopener noreferrer">v1.13.0 C header</a>
             records the CCM contract and the 112-function surface;
-            the <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/.github/workflows/dudect-pr.yml#L378" rel="noopener noreferrer">tagged workflow</a>
+            the <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/.github/workflows/dudect-pr.yml#L379-L395" rel="noopener noreferrer">tagged workflow</a>
             records the runner-specific threshold and diagnostic tiers.
         </p>
         <h3 id="release-repair">A timing failure held the release</h3>

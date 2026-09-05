@@ -14,7 +14,7 @@ alternate: /zh/projects/gm-crypto-rs/releases/
     </h1>
     <p class="page-header__lede">
         Every cycle from v0.6.0 to v1.13.0, newest first — including assurance cycles
-        that merged without a published version. The case study is
+        that merged without a published version. Dates are UTC package publication dates on crates.io. The case study is
         <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}">here</a>.
     </p>
 </section>
@@ -26,7 +26,7 @@ alternate: /zh/projects/gm-crypto-rs/releases/
             <dd>2026-09-04 — eight C ABI functions bring length-committed CCM encryption and incremental-input, buffered CCM decryption to C (<strong>104 → 112 entry points</strong>). Encryption rejects over-feeding and cannot authenticate an under-fed stream; decryption releases output only after verification. The SM4 streaming family gains best-effort zeroization on drop, including buffered payloads. Fuzz census stays 35. Existing output bytes, MSRV and dependencies are unchanged apart from enabling the existing <code>zeroize</code> dependency's <code>alloc</code> feature. <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/CHANGELOG.md#1130---2026-09-04" rel="noopener noreferrer">Tagged release record ↗</a></dd>
 
             <dt>v1.12.0</dt>
-            <dd>2026-09-04 — SM4-CCM encryption accepts chunks after the caller commits plaintext length at construction; each update emits ciphertext with <code>O(chunk)</code> memory. Over-feeding poisons the encryptor; finalization rejects poisoned or under-fed streams. Decryption accepts incremental input but buffers output until tag verification, with a nonce-dependent payload ceiling. Both sit behind the existing <code>sm4-aead</code> feature. Two differential fuzz targets bring the census <strong>33 → 35</strong>. Default build byte-identical; no new dependency or C ABI change. <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.12.0/CHANGELOG.md#1120---2026-09-04" rel="noopener noreferrer">Tagged release record ↗</a></dd>
+            <dd>2026-09-03 — SM4-CCM encryption accepts chunks after the caller commits plaintext length at construction; each update emits ciphertext with <code>O(chunk)</code> memory. Over-feeding poisons the encryptor; finalization rejects poisoned or under-fed streams. Decryption accepts incremental input but buffers output until tag verification, with a nonce-dependent payload ceiling. Both sit behind the existing <code>sm4-aead</code> feature. Two differential fuzz targets bring the census <strong>33 → 35</strong>. Default build byte-identical; no new dependency or C ABI change. <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.12.0/CHANGELOG.md#1120---2026-09-04" rel="noopener noreferrer">Tagged release record ↗</a></dd>
 
             <dt>v1.11.2</dt>
             <dd>2026-08-23 — presentation-only release: clearer crate landing pages, runnable examples and feature labels on docs.rs. No crypto code path, public API, C ABI, wire format, MSRV or dependency change. A publication was needed because crates.io metadata and docs.rs renders belong to published versions. <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.2/CHANGELOG.md#1112---2026-08-23" rel="noopener noreferrer">Tagged release record ↗</a></dd>

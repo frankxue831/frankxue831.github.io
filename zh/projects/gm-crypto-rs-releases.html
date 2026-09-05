@@ -13,7 +13,7 @@ alternate: /projects/gm-crypto-rs/releases/
         gm-crypto-rs <em>版本线</em>
     </h1>
     <p class="page-header__lede">
-        从 v0.6.0 到 v1.13.0 的每一轮，新的在上面——也包括那些作为保障性工作合进主干、没有单独发版的周期。案例页在<a href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}">这里</a>。
+        从 v0.6.0 到 v1.13.0 的每一轮，新的在上面——也包括那些作为保障性工作合进主干、没有单独发版的周期。日期按 crates.io 上软件包发布的 UTC 日期记录。案例页在<a href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}">这里</a>。
     </p>
 </section>
 
@@ -24,7 +24,7 @@ alternate: /projects/gm-crypto-rs/releases/
             <dd>2026-09-04 — 新增 8 个 C ABI 函数，把预先承诺长度的 CCM 加密与增量输入、缓冲输出的 CCM 解密带到 C（<strong>入口从 104 个扩到 112 个</strong>）。加密拒绝超量输入，输入不足的流也无法完成认证；解密只有在验证通过后才交付输出。SM4 流式类型家族在释放时尽力抹零，包括缓冲的载荷。模糊测试 census 仍为 35。既有输出字节、MSRV 与依赖不变，只为已有的 <code>zeroize</code> 依赖启用了 <code>alloc</code> 特性。<a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/CHANGELOG.md#1130---2026-09-04" rel="noopener noreferrer">标签中的发布记录 ↗</a></dd>
 
             <dt>v1.12.0</dt>
-            <dd>2026-09-04 — SM4-CCM 加密要求调用方在构造时承诺明文长度，随后分块输入；每次更新以 <code>O(chunk)</code> 内存开销输出密文。输入超量会使加密器失效；最终步骤拒绝失效或输入不足的流。解密支持增量输入，但输出缓冲到标签验证通过才交付，载荷上限由 nonce 决定。两者均在已有的 <code>sm4-aead</code> 特性下。新增两个差分模糊测试目标，census <strong>33 → 35</strong>。默认构建逐字节不变，无新依赖或 C ABI 变化。<a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.12.0/CHANGELOG.md#1120---2026-09-04" rel="noopener noreferrer">标签中的发布记录 ↗</a></dd>
+            <dd>2026-09-03 — SM4-CCM 加密要求调用方在构造时承诺明文长度，随后分块输入；每次更新以 <code>O(chunk)</code> 内存开销输出密文。输入超量会使加密器失效；最终步骤拒绝失效或输入不足的流。解密支持增量输入，但输出缓冲到标签验证通过才交付，载荷上限由 nonce 决定。两者均在已有的 <code>sm4-aead</code> 特性下。新增两个差分模糊测试目标，census <strong>33 → 35</strong>。默认构建逐字节不变，无新依赖或 C ABI 变化。<a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.12.0/CHANGELOG.md#1120---2026-09-04" rel="noopener noreferrer">标签中的发布记录 ↗</a></dd>
 
             <dt>v1.11.2</dt>
             <dd>2026-08-23 — 只改善呈现：重写 crate 入口页，补充可运行示例与 docs.rs 特性标签。密码代码路径、公开 API、C ABI、线上字节格式、MSRV 和依赖均未变化。之所以发版，是因为 crates.io 元数据和 docs.rs 渲染结果随已发布版本固定。<a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.2/CHANGELOG.md#1112---2026-08-23" rel="noopener noreferrer">标签中的发布记录 ↗</a></dd>

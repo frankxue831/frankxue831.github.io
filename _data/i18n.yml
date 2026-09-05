@@ -53,6 +53,7 @@
 #   code smell              → 坏味道
 #   private research        → 私有研究
 #   replayable traces       → 可回放的轨迹
+#   timing regression       → 时序回归
 # Voice rule: ZH keeps its native register and may add explanatory glosses;
 # disclosures, hedges, numbers, and limitations must match EN exactly.
 # ---------------------------------------------------------------------------
@@ -161,7 +162,7 @@ en:
     source: "Source: gm-crypto-rs SECURITY.md @ v1.2.0"
     table_caption: "Historical dudect measurements (documented at v1.2.0; not remeasured for v1.13.0)"
     chart_scroll_label: "Historical timing chart; scroll horizontally when needed"
-    chart_scroll_hint: "Scroll the chart sideways to read all labels. The same values are in the table below."
+    chart_scroll_hint: "If the chart extends beyond this region, scroll sideways to read all labels. The same values are in the table below."
     table_scroll_label: "Constant-time measurement table; scroll horizontally when needed"
     col_target: "Target"
     col_measures: "What it measures"
@@ -311,7 +312,7 @@ zh:
     source: "来源：gm-crypto-rs SECURITY.md @ v1.2.0"
     table_caption: "历史 dudect 测量值（记录于 v1.2.0；没有为 v1.13.0 重新测量）"
     chart_scroll_label: "历史时序图表；需要时可横向滚动"
-    chart_scroll_hint: "横向滚动图表可读完全部标签；下表也列出了相同数值。"
+    chart_scroll_hint: "如果图表超出此区域，可横向滚动查看全部标签；下表也列出了相同数值。"
     table_scroll_label: "常量时间测量表；空间不足时可横向滚动"
     col_target: "目标"
     col_measures: "测的是什么"

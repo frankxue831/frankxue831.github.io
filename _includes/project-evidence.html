@@ -1,39 +1,10 @@
 {%- assign evidence_lang = page.lang | default: 'en' -%}
 {%- assign evidence_ui = site.data.i18n[evidence_lang].evidence -%}
-<div class="project-evidence" aria-label="{{ evidence_ui.label | escape }}">
-  <p class="project-evidence__label">{{ evidence_ui.label }}</p>
-  {% if evidence_lang == 'zh' %}
-    {% case page.project_slug %}
-    {% when 'gm-crypto-rs' %}
-    <p>一次 TLCP 时序回归让 v1.11.1 延后发布，修复后才发版。v1.13.0 提供 112 个 C 入口和 35 个模糊测试目标。没有经过独立安全审计；泄漏检测也不等于常量时间证明。</p>
-    <a href="#release-repair">看这次回归与修复 →</a>
-    {% when 'repolens-rs' %}
-    <p>仓库扫描生成结构化上下文，再通过 MCP 提供给 Agent。下文说明私有实现的接口与限制；图示解释工作流程，不代表可公开复现的运行记录。</p>
-    <a href="#evidence">看实现说明与边界 →</a>
-    {% when 'ghrunners' %}
-    <p>把分散的 runner 状态收成类型化 findings，并在执行控制操作前检查前提。下文是私有、本地实现的说明；图示并非公开运行记录。</p>
-    <a href="#evidence">看实现说明与边界 →</a>
-    {% when 'explainer-engine' %}
-    <p>示例视频是这条私有流水线的实际输出，含英文旁白及中英文字幕。可以直接观看结果；源码不公开。</p>
-    <a href="#example-video">观看示例 →</a>
-    {% endcase %}
-  {% else %}
-    {% case page.project_slug %}
-    {% when 'gm-crypto-rs' %}
-    <p>A TLCP timing regression held up v1.11.1 until it was repaired. v1.13.0 provides 112 C entry points and 35 fuzz targets. Not independently audited; leak detection is not proof of constant-time execution.</p>
-    <a href="#release-repair">Inspect the regression and repair →</a>
-    {% when 'repolens-rs' %}
-    <p>A repository scan produces structured context for agents through MCP. Below is a description of the private implementation's interfaces and limits; the diagram explains the workflow, not a publicly reproducible run.</p>
-    <a href="#evidence">Read the implementation boundaries →</a>
-    {% when 'ghrunners' %}
-    <p>Scattered runner state becomes typed findings, with preconditions checked before control actions. Below is a description of the private, local implementation; the diagram is not a public execution record.</p>
-    <a href="#evidence">Read the implementation boundaries →</a>
-    {% when 'explainer-engine' %}
-    <p>The example video is actual output from this private pipeline, with English narration and English and Chinese captions. You can inspect the result directly; the source is private.</p>
-    <a href="#example-video">Watch the example →</a>
-    {% endcase %}
-  {% endif %}
-</div>
+<section class="project-evidence" aria-labelledby="project-evidence-label">
+  <p class="project-evidence__label" id="project-evidence-label">{{ evidence_ui.label }}</p>
+  <p class="project-evidence__lede">{{ page.evidence_lede | escape }}</p>
+  <a class="project-evidence__link" href="{{ page.evidence_href | escape }}">{{ page.evidence_cta | escape }}</a>
+</section>
 <nav class="project-jump" aria-label="{{ evidence_ui.sections_label | escape }}">
   <ul>
     {% for section in evidence_ui.sections %}

@@ -112,14 +112,14 @@
         <td><code>{{ d.leak.what[page.lang] | default: d.leak.what.en | escape }}</code></td>
         <td>{{ t.leak_before_row | escape }}</td>
         <td>≈{{ d.leak.before }}</td>
-        <td>&lt; {{ d.gate_display }}</td>
+        <td>≤ {{ d.gate_display }}</td>
         <td>{{ t.status_caught | escape }}</td>
       </tr>
       <tr>
         <td><code>{{ d.leak.what[page.lang] | default: d.leak.what.en | escape }}</code></td>
         <td>{{ t.leak_after_row | escape }}</td>
         <td>≈{{ d.leak.after }}</td>
-        <td>&lt; {{ d.gate_display }}</td>
+        <td>≤ {{ d.gate_display }}</td>
         <td>{{ t.status_pass | escape }}</td>
       </tr>
     </tbody>
