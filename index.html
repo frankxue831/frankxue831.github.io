@@ -22,10 +22,9 @@ alternate: /zh/
 
             <p class="hero__lede">
                 Cryptographic software, repository context for coding agents,
-                and local developer infrastructure — tools built so their
-                correctness, state, and limits stay inspectable. Release state
-                and evidence are on every project page, including for the work
-                that isn't public.
+                and local developer infrastructure, with inspectable state and
+                limits. Public releases have linked evidence; private work is
+                described with its boundaries.
             </p>
 
             <a href="{{ '/projects/' | relative_url }}" class="hero__cta">
@@ -45,10 +44,19 @@ alternate: /zh/
                 {% endif %}
             </div>
 
+            <p class="hero-proof__highlight">
+                A timing regression held the v1.11.1 release.
+                <a href="{{ '/projects/gm-crypto-rs/#release-repair' | relative_url }}">Repaired before publication <span aria-hidden="true">→</span></a>
+            </p>
+
             <ul class="hero-proof__list">
                 {% for project in projects %}
-                <li class="hero-proof__item">
+                <li class="hero-proof__item" data-project="{{ project.slug }}">
+                    {% if project.presentation == 'summary' %}
+                    <div class="hero-proof__row">
+                    {% else %}
                     <a href="{{ project.detail_url | relative_url }}" class="hero-proof__row">
+                    {% endif %}
                         <span class="hero-proof__main">
                             <span class="hero-proof__title">{{ project.title }}</span>
                             <span class="hero-proof__tags">{{ project.tags.en | join: ' · ' }}</span>
@@ -58,17 +66,16 @@ alternate: /zh/
                             {% if project.release_source == 'public_tag' %}
                             <span class="hero-proof__release">{{ project.release }}</span>
                             {% endif %}
-                            <span class="hero-proof__year">{{ project.years.en }}</span>
+                            {% if project.years.en %}<span class="hero-proof__year">{{ project.years.en }}</span>{% endif %}
                         </span>
-                    </a>
+                    {% if project.presentation == 'summary' %}</div>{% else %}</a>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
 
             <p class="hero-proof__note">
-                Only public-tagged work is independently verifiable here.
-                Private work is summarized without source links or
-                release claims.
+                Public release evidence is linked; private work carries
+                explicit source and release limits.
             </p>
         </aside>
     </div>
@@ -109,9 +116,13 @@ alternate: /zh/
 
     <ul class="work-list">
         {% for project in projects %}
-        <li class="work-list__item reveal">
+        <li class="work-list__item reveal" data-project="{{ project.slug }}">
+            {% if project.presentation == 'summary' %}
+            <div class="work-list__row">
+            {% else %}
             <a class="work-list__row"
                href="{{ project.detail_url | relative_url }}">
+            {% endif %}
                 <span class="work-list__head">
                     <span class="work-list__title">{{ project.title }}</span>
                     <span class="work-list__tags">{{ project.tags.en | join: ' · ' }}</span>
@@ -119,9 +130,9 @@ alternate: /zh/
                 <span class="work-list__meta">
                     <span class="status-pill" data-status="{{ project.status }}">{{ project.status_label.en }}</span>
                     {% if project.release_source == 'public_tag' %}<span class="work-list__rel">{{ project.release }}</span>{% endif %}
-                    <span class="work-list__year">{{ project.years.en }}</span>
+                    {% if project.years.en %}<span class="work-list__year">{{ project.years.en }}</span>{% endif %}
                 </span>
-            </a>
+            {% if project.presentation == 'summary' %}</div>{% else %}</a>{% endif %}
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
@@ -129,28 +140,30 @@ alternate: /zh/
                 constant-time-designed secret paths and in-CI leak-regression
                 gates. Public <strong>{{ project.release }}</strong> is on
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                {% unless project.presentation == 'summary' %}<a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'repolens-rs' %}
                 Repository context and typed memory for AI coding agents, built
                 to help sessions restart with grounded project understanding.
                 <strong>{{ project.status_label.en }}</strong>. Private project — no public source link.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                {% unless project.presentation == 'summary' %}<a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'ghrunners' %}
                 One-shot macOS observability for GitHub Actions self-hosted
                 runners — launchd state, process trees, logs, and API status as
                 typed findings — plus guarded launchd control. {{ project.status_label.en }}.
                 Local prototype — no public source link.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                {% unless project.presentation == 'summary' %}<a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'explainer-engine' %}
                 A deterministic pipeline that renders narrated concept videos
                 where every on-screen claim is verified against the source at a
                 pinned commit before a frame is drawn. {{ project.status_label.en }}.
                 Local prototype — no public source link.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                {% unless project.presentation == 'summary' %}<a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
+                {% when 'repolens-ng' %}
+                RepoLens-NG is a private research prototype studying how access to verification affects coding agents, with isolated evaluation and replayable traces. It has not established a general performance advantage.
                 {% else %}
                 Selected engineering work with status and project facts kept
                 explicit.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                {% unless project.presentation == 'summary' %}<a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% endcase %}
             </p>
         </li>
@@ -211,9 +224,9 @@ alternate: /zh/
         <p class="preview__label">Direct</p>
         <div class="preview__body">
             <p>
-                <em>GitHub</em> is the most direct way right now —
-                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>.
-                An issue or discussion on any of my repos reaches me too.
+                For a general conversation,
+                <a href="https://github.com/frankxue831/frankxue831.github.io/issues/new" rel="noopener noreferrer">{{ t.contact.public_conversation }}</a>.
+                For technical questions, use the relevant project's issues.
             </p>
             <a href="{{ '/contact/' | relative_url }}" class="preview__link">
                 How to get in touch <span aria-hidden="true">→</span>

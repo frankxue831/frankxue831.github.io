@@ -23,6 +23,7 @@ summary_outcome: "Typed findings and guarded control act on the same authoritati
 <section class="section wrap reveal">
     <article class="project-detail prose">
         {% include project-summary.html %}
+        {% include project-evidence.html %}
 
         <h2 id="what-it-is">What it is</h2>
         <p>
@@ -108,10 +109,11 @@ summary_outcome: "Typed findings and guarded control act on the same authoritati
         <h2 id="evidence">Evidence</h2>
         <p>
             Private snapshot at <code>local tag v0.5.0</code> — there is no public
-            source to inspect. What backs the claims is the running surface:
-            <code>status</code>, <code>describe</code>, <code>doctor</code>,
-            <code>logs</code>, and the guarded <code>control</code> verbs work
-            today, over a catalogue of 13 typed findings (from
+            source to inspect. The diagram and descriptions explain this private
+            implementation; they are not public execution evidence. The snapshot
+            includes <code>status</code>, <code>describe</code>, <code>doctor</code>,
+            <code>logs</code>, and the guarded <code>control</code> verbs,
+            over a catalogue of 13 typed findings (from
             <code>LoadedNotRunning</code> and <code>OrphanListener</code> to
             <code>DoubleLoaded</code> and <code>Unreadable</code>) with
             cron-friendly exit codes, JSON output, and a <code>--dry-run</code>

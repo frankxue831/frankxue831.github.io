@@ -10,7 +10,7 @@
   status_label:
     en: "Released"
     zh: "已发布"
-  release: "v1.11.0"
+  release: "v1.13.0"
   release_source: public_tag
   repo_url: "https://github.com/frankxue831/gm-crypto-rs"
   crate_url: "https://crates.io/crates/gmcrypto-core"
@@ -93,4 +93,26 @@
   docs_url: ~
   detail_url: "/projects/explainer-engine/"
   zh_detail_url: "/zh/projects/explainer-engine/"
+  public_source: false
+
+- slug: repolens-ng
+  title: RepoLens-NG
+  presentation: summary
+  tags:
+    en: ["Research", "Agent verification"]
+    zh: ["研究", "Agent 验证"]
+  status: private-research
+  status_label:
+    en: "Private research"
+    zh: "私有研究"
+  release: ~
+  release_source: private_main
+  snapshot_label:
+    en: "Private research prototype"
+    zh: "私有研究原型"
+  repo_url: ~
+  crate_url: ~
+  docs_url: ~
+  detail_url: ~
+  zh_detail_url: ~
   public_source: false

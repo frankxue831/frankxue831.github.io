@@ -22,6 +22,7 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
 <section class="section wrap reveal">
     <article class="project-detail prose">
         {% include project-summary.html %}
+        {% include project-evidence.html %}
 
         <h2 id="what-it-is">是什么</h2>
         <p>
@@ -33,7 +34,7 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
             storyboard——证据是从它读过的文件里盖章出来的——但草稿仍要过同一道引用校验门，才能画出一帧。这是私有、本地工具；对应的快照写在下面的<em>「证据」</em>里。
         </p>
 
-        <figure class="fig fig--video">
+        <figure class="fig fig--video" id="example-video">
             <video controls preload="metadata" aria-describedby="fig-video-cap"
                    width="1920" height="1080"
                    poster="{{ '/assets/video/harness-field-explainer.poster.png' | relative_url }}">

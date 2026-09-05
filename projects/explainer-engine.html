@@ -24,6 +24,7 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
 <section class="section wrap reveal">
     <article class="project-detail prose">
         {% include project-summary.html %}
+        {% include project-evidence.html %}
 
         <h2 id="what-it-is">What it is</h2>
         <p>
@@ -43,7 +44,7 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             named under <em>Evidence</em> below.
         </p>
 
-        <figure class="fig fig--video">
+        <figure class="fig fig--video" id="example-video">
             <video controls preload="metadata" aria-describedby="fig-video-cap"
                    width="1920" height="1080"
                    poster="{{ '/assets/video/harness-field-explainer.poster.png' | relative_url }}">

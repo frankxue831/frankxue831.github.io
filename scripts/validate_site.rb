@@ -109,6 +109,7 @@ end
 
 [
   SITE.join("CLAUDE.md"),
+  SITE.join("AGENTS.md"),
   SITE.join("docs/superpowers"),
   SITE.join("scripts")
 ].each do |path|
@@ -463,7 +464,7 @@ end
 # is no longer forbidden — only the still-private repos are. The trailing
 # (?![\w-]) word-boundary keeps these from prefix-matching a future public
 # `<name>-demo`/`-foo` sibling.
-private_source_pattern = %r{github\.com/frankxue831/(repolens-rs|ghrunners)(?![\w-])}
+private_source_pattern = %r{github\.com/frankxue831/(repolens-rs|repolens-ng|ghrunners|ManimSimpleRender)(?![\w-])}i
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
   if html.match?(/mailto:/i) || html.match?(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)
@@ -770,7 +771,7 @@ case_study = {
                ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
                ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
-    caveat: "detection events", version_before: ["<h2 id=\"next\">", "v1.11.0"],
+    caveat: "detection events", version_before: ["<h2 id=\"next\">", "v1.13.0"],
     # Non-affiliation note ties to the named interop targets (trademark-disclaimer
     # convention) instead of denying ties to unnamed parties. "either project" is
     # the tell; if it reverts to the generic enumerated form, this guard trips.
@@ -785,7 +786,7 @@ case_study = {
                ["decisions", "约束与关键决策"], ["evidence", "证据"],
                ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全", "绝对常量时间"],
-    caveat: "检测事件", version_before: ["<h2 id=\"next\">", "v1.11.0"],
+    caveat: "检测事件", version_before: ["<h2 id=\"next\">", "v1.13.0"],
     # ZH mirror of the interop-tied non-affiliation guard ("这两个项目" = the two
     # named projects gmssl/OpenSSL); trips if it reverts to the enumerated form.
     # ZH mirror of the releases-page inbound-link guard above (2026-08-05).
@@ -1302,6 +1303,10 @@ end
 # are verified during review, then pinned here so routine builds never depend
 # on network availability.
 release_history_expected = {
+  "v1.13.0" => "2026-09-04",
+  "v1.12.0" => "2026-09-04",
+  "v1.11.2" => "2026-08-23",
+  "v1.11.1" => "2026-08-22",
   "v0.15.0" => "2026-05-27",
   "v0.10.0" => "2026-05-22",
   "v0.9.0" => "2026-05-20",
@@ -1320,7 +1325,9 @@ end
 gm_case_studies = %w[projects/gm-crypto-rs.html zh/projects/gm-crypto-rs.html]
 gm_case_studies.each do |relative|
   source = read_file(ROOT.join(relative), failures)
-  record(failures, "#{relative}: demo must pin gmcrypto-core =1.11.0") unless source.include?("=1.11.0")
+  record(failures, "#{relative}: demo must state its separate gmcrypto-core =1.11.2 pin") unless source.include?("=1.11.2")
+  demo_pin = "github.com/frankxue831/gm-crypto-rs-demo/tree/749c6f1c7cca4ea93095099b66ed474f0b907aec"
+  record(failures, "#{relative}: demo dependency evidence must be commit-pinned") unless source.include?(demo_pin)
   record(failures, "#{relative}: dudect workflow evidence must link line 169") unless source.include?("dudect-pr.yml#L169")
   record(failures, "#{relative}: stale dudect workflow line 166 remains") if source.include?("dudect-pr.yml#L166")
   %w[constant-time-warrant constant-time-ci-gate byte-identity unsafe-opt-in].each do |slug|
@@ -1415,9 +1422,9 @@ source_contracts = {
     'description: "联系 Frank Xue 的方式、回复预期，以及公开作品链接。"'
   ],
   "index.html" => ["View selected work", "Browse all notes", "Private project — no public source link.", "Local prototype — no public source link."],
-  "zh/index.html" => ["查看精选作品", "浏览全部笔记", "私有项目——暂无公开源码链接。", "本地原型——暂无公开源码链接。"],
+  "zh/index.html" => ["查看精选作品", "浏览全部笔记", "私有项目——没有公开源码链接。", "本地原型——没有公开源码链接。"],
   "projects.html" => ["Private project — no public source link.", "Local prototype — no public source link."],
-  "zh/projects.html" => ["私有项目——暂无公开源码链接。", "本地原型——暂无公开源码链接。"],
+  "zh/projects.html" => ["私有项目——没有公开源码链接。", "本地原型——没有公开源码链接。"],
   "notes.html" => [
     'description: "Working notes on software engineering: evidence, interfaces, reliability, cryptography, CI, and the choices behind shipped systems."',
     "These are working notes on how software claims become inspectable"
@@ -1567,6 +1574,105 @@ end
 dudect_source = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
 unless dudect_source.match?(/class="dudect__table-scroll"[^>]*tabindex="0"[^>]*role="region"[^>]*aria-label="\{\{\s*t\.table_scroll_label\s*\|\s*escape\s*\}\}"/m)
   record(failures, "dudect-chart.html: table must be wrapped in a localized keyboard-scrollable region")
+end
+
+# Portfolio refresh: summary-only research and early, native evidence navigation.
+PROJECTS.each do |project|
+  presentation = project.fetch("presentation", "case_study")
+  record(failures, "projects.yml: invalid presentation for #{project['slug']}") unless %w[case_study summary].include?(presentation)
+  if presentation == "summary"
+    %w[detail_url zh_detail_url].each do |key|
+      record(failures, "projects.yml: summary #{project['slug']} must not have #{key}") unless project[key].nil?
+    end
+  else
+    %w[detail_url zh_detail_url].each do |key|
+      record(failures, "projects.yml: case study #{project['slug']} needs #{key}") if project[key].to_s.empty?
+    end
+  end
+end
+ng = PROJECTS.find { |project| project["slug"] == "repolens-ng" }
+if ng.nil? || ng["presentation"] != "summary" || ng["public_source"] != false
+  record(failures, "RepoLens-NG must be a private summary entry")
+else
+  %w[repo_url crate_url docs_url detail_url zh_detail_url release years].each do |key|
+    record(failures, "RepoLens-NG must not publish #{key}") unless ng[key].nil?
+  end
+end
+approved_research = {
+  "en" => "RepoLens-NG is a private research prototype studying how access to verification affects coding agents, with isolated evaluation and replayable traces. It has not established a general performance advantage.",
+  "zh" => "RepoLens-NG 是一个私有研究原型，研究编程 Agent 能否获得验证反馈会怎样影响其表现，支持隔离评估和轨迹回放。这项研究没有确立普遍的性能优势。"
+}
+%w[index.html projects/index.html zh/index.html zh/projects/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  lang = relative.start_with?("zh/") ? "zh" : "en"
+  rows = html.scan(%r{<li[^>]*data-project="repolens-ng"[^>]*>(.*?)</li>}m).flatten
+  record(failures, "#{relative}: missing research summary row") if rows.empty?
+  rows.each do |row|
+    record(failures, "#{relative}: research summary must not have links") if row.match?(/<a\b/)
+    note = row[%r{<p class="work-list__note">(.*?)</p>}m, 1]
+    if ng
+      expected_row = [ng["title"], ng.dig("tags", lang).join(" · "), ng.dig("status_label", lang)]
+      expected_row << approved_research[lang] if note
+      row_text = CGI.unescapeHTML(row.gsub(/<[^>]+>/, " ")).gsub(/\s+/, " ").strip
+      record(failures, "#{relative}: research row has unapproved additional claims") unless row_text == expected_row.join(" ")
+    end
+    next unless note # The home ledger has only title, tags and private status.
+    text = CGI.unescapeHTML(note.gsub(/<[^>]+>/, " ")).gsub(/\s+/, " ").strip
+    record(failures, "#{relative}: unapproved research summary copy") unless text == approved_research[lang]
+  end
+  record(failures, "#{relative}: missing approved research prose") unless html.include?(approved_research[lang])
+  graph = json_ld_graph(html, failures, relative)
+  graph_nodes_of_type(graph, "SoftwareSourceCode").each do |node|
+    record(failures, "#{relative}: research must not emit software-source metadata") if node.to_json.match?(/repolens-ng/i)
+  end
+end
+%w[projects/repolens-ng zh/projects/repolens-ng].each do |relative|
+  record(failures, "RepoLens-NG must not gain a detail route: #{relative}") if SITE.join(relative).exist?
+end
+case_study.each do |relative, spec|
+  html = read_file(SITE.join(relative), failures)
+  preview_at = html.index('class="project-evidence"')
+  jump = html[%r{<nav class="project-jump"[^>]*>(.*?)</nav>}m, 1].to_s
+  first_section = html.index('<h2 id="what-it-is">')
+  unless preview_at && first_section && preview_at < first_section
+    record(failures, "#{relative}: evidence preview must precede long-form prose")
+  end
+  actual = jump.scan(/href="#([^"]+)"/).flatten
+  record(failures, "#{relative}: native section links must match six case-study headings") unless actual == spec[:headings].map(&:first)
+end
+# Check fragments as well as paths: evidence shortcuts must land on real content.
+Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
+  html = path.read
+  html.scan(%r{<a\b[^>]*href="([^"]*)"}).flatten.each do |href|
+    record(failures, "#{path.relative_path_from(SITE)}: empty link destination") if href.empty?
+    next unless href.include?("#") && internal_href?(href)
+    uri = URI.parse(CGI.unescapeHTML(href)) rescue nil
+    next unless uri && uri.fragment && !uri.fragment.empty?
+    target = href.start_with?("#") ? path : SITE.join(generated_target_for(href).to_s)
+    next unless target.file?
+    fragment = URI::DEFAULT_PARSER.unescape(uri.fragment)
+    unless target.read.include?(%(id="#{fragment}"))
+      record(failures, "#{path.relative_path_from(SITE)}: broken fragment #{href}")
+    end
+  end
+end
+record(failures, "projects.yml: gm-crypto-rs must reflect verified v1.13.0") unless PROJECTS.find { |p| p["slug"] == "gm-crypto-rs" }["release"] == "v1.13.0"
+%w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  %w[112 35 v1.13.0 v1.11.1 9V74 release-repair].each do |fact|
+    record(failures, "#{relative}: missing release evidence #{fact}") unless html.include?(fact)
+  end
+  record(failures, "#{relative}: missing tagged timing policy") unless html.include?("v1.13.0/.github/workflows/dudect-pr.yml#L378")
+  record(failures, "#{relative}: chart must be keyboard-scrollable") unless html.match?(/class="dudect__chart-scroll"[^>]*tabindex="0"[^>]*role="region"/m)
+  record(failures, "#{relative}: chart must identify historical version") unless html.include?("v1.2.0") && html.include?("dudect-scroll-hint")
+end
+%w[en zh].each do |lang|
+  %w[chart_scroll_label chart_scroll_hint].each do |key|
+    record(failures, "i18n.yml: missing #{lang}.dudect.#{key}") if I18N.dig(lang, "dudect", key).to_s.empty?
+  end
+  relative = lang == "en" ? "contact/index.html" : "zh/contact/index.html"
+  html = read_file(SITE.join(relative), failures)
+  record(failures, "#{relative}: missing direct public conversation link") unless html.include?("https://github.com/frankxue831/frankxue831.github.io/issues/new") && html.include?(I18N.dig(lang, "contact", "public_conversation"))
 end
 
 if failures.empty?

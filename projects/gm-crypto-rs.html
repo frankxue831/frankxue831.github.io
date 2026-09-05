@@ -24,6 +24,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 <section class="section wrap reveal">
     <article class="project-detail prose">
         {% include project-summary.html %}
+        {% include project-evidence.html %}
         {% assign inst = site.data.i18n[page.lang].install %}
         <div class="install">
             <span class="install__label">{{ inst.label | escape }}</span>
@@ -46,34 +47,33 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
         <h2 id="what-it-is">What it is</h2>
         <p>
-            <code>gm-crypto-rs</code> implements GB/T 32905 ({% include glossary-term.html term="sm3" %} hash),
-            GB/T 32918 ({% include glossary-term.html term="sm2" %} public-key sign / verify / encrypt / decrypt
-            and, since v1.1, key exchange with key confirmation),
-            and GB/T 32907 ({% include glossary-term.html term="sm4" %} block cipher) in pure Rust. The crate
-            graph is {% include glossary-term.html term="no_std" %} + <code>alloc</code>, builds on
-            <code>wasm32-unknown-unknown</code>, and ships RustCrypto-trait
-            fits for <code>digest</code>, <code>mac</code>, and <code>cipher</code>
-            — plus, since v1.11, opt-in <code>aead</code> 0.6 for SM4-GCM /
-            SM4-CCM. Since v1.3 it also parses X.509 v3 certificates and verifies their
-            SM2-with-SM3 signatures (the GM/T 0015 profile — strict-DER, no
-            trust decisions), with the matching C-ABI entry points (in the
-            <code>gmcrypto-c</code> crate) following in v1.4. v1.6 through v1.9
-            build out a TLCP (GB/T 38636) <em>toolkit</em>: the key schedule and a
-            no-confirmation SM2 key-exchange path (v1.6), record protect /
-            deprotect (v1.7), certificate-pair and chain signature verification
-            (v1.8), and — since v1.9 — the whole toolkit reachable from C.
-            The published
-            <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>
-            is a consumer and smoke-test tour of representative crate
-            capabilities, including hashing, signing and verification,
-            encryption and decryption, key exchange, and encoding flows. Its
-            dependency is pinned to <code>gmcrypto-core = "=1.11.0"</code> so
-            the demo and this evidence snapshot refer to the same release.
+            <code>gm-crypto-rs</code> is a pure-Rust implementation of
+            {% include glossary-term.html term="sm2" %} signing, encryption and key exchange (GB/T 32918),
+            {% include glossary-term.html term="sm3" %} hashing (GB/T 32905), and
+            {% include glossary-term.html term="sm4" %} block encryption (GB/T 32907).
+            Its {% include glossary-term.html term="no_std" %} + <code>alloc</code> core builds for wasm,
+            fits RustCrypto's <code>digest</code>, <code>mac</code>, <code>cipher</code> and opt-in
+            <code>aead</code> 0.6 traits. The crate family exposes 112 C ABI entry points at v1.13.0.
         </p>
-
+        <p>
+            SM4 modes include GCM, CCM and XTS. CCM encryption accepts chunks after the caller
+            commits the plaintext length at construction; decryption accepts incremental input
+            but buffers output until authentication succeeds. Strict-DER X.509 v3 parsing and SM2 signature
+            verification (GM/T 0015 profile; the parser makes no trust decisions) support a TLCP toolkit
+            for key derivation, record protection, and
+            certificate-pair / chain verification. The caller supplies protocol state and peer-identity checks.
+        </p>
+        <p><strong>Not independently audited.</strong> The public tests and timing measurements below
+            are evidence with limits, not a security certification or proof of constant-time behavior.</p>
+        <p>
+            The <a href="https://github.com/frankxue831/gm-crypto-rs-demo/tree/749c6f1c7cca4ea93095099b66ed474f0b907aec" rel="noopener noreferrer">public demo at its pinned commit</a>
+            is a consumer and smoke-test tour of hashing, signing and verification, encryption and
+            decryption, key exchange, and encoding. It depends on
+            <code>gmcrypto-core = "=1.11.2"</code>; it demonstrates that older release, not v1.13.0.
+        </p>
         <figure class="fig">
             {% include figures/gm-crypto-crates.svg %}
-            <figcaption class="fig__cap">fig. 3.1 — crate &amp; C ABI surface (85 entry points at v1.4.0, unchanged through v1.8; 104 as of v1.9.0, still 104 at v1.11.0)</figcaption>
+            <figcaption class="fig__cap">fig. 3.1 — crate structure; the current C ABI has 112 entry points (v1.13.0).</figcaption>
         </figure>
 
         <h2 id="problem">The problem</h2>
@@ -87,44 +87,30 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             easy: byte-level GB/T conformance, a <code>no_std</code> / wasm
             core, secret-touching paths that must stay constant-time-designed
             across releases, and a C ABI that hands those same paths to
-            non-Rust callers (C, C++, Go, Zig, Python). The question it is
-            built around isn't <em>is it constant-time today</em> — it's
-            <em>what keeps it constant-time on every commit.</em>
+            non-Rust callers (C, C++, Go, Zig, Python). The question is
+            <em>how to detect timing regressions on each commit and act on them before release.</em>
         </p>
 
         <h2 id="decisions">Constraints &amp; key decisions</h2>
         <p>
-            <strong>Verify continuously, don't assert once.</strong>
-            Constant-time behavior is treated as a property CI re-checks, not
-            a claim review signs off. A <code>dudect-bencher</code> harness
-            exercises twenty secret-touching paths on every run; a core set
-            is <em>gated</em> at <code>|τ|&nbsp;&lt;&nbsp;0.20</code>, so a
-            timing regression fails the build instead of waiting for someone
-            to notice. The harness reports <em>detection events</em> — a low
-            <code>|τ|</code> means no leak was detected under the budget
-            given, <em>not</em> that none exists (the wording is
-            <code>dudect-bencher</code>'s own).
-            <strong>Cost:</strong> every PR pays the measurement budget, and
-            statistics can never turn "not detected" into "absent."
+            <strong>Measure continuously.</strong> A <code>dudect-bencher</code> harness exercises
+            twenty real secret-touching paths. Sixteen block the build, generally at
+            <code>|τ|&nbsp;≤&nbsp;0.20</code>. CBC-decrypt fanout alone uses a <code>0.55</code>
+            bound on EPYC 9V74 runners; all other CPUs keep <code>0.20</code>. The harness
+            reports <em>detection events</em>; a low statistic means no leak was detected within
+            the measurement budget, not that no leak exists.
+            <strong>Cost:</strong> every PR pays for measurements, and a passing gate cannot prove constant time.
         </p>
         <p>
-            <strong>Gate the core, observe the rest.</strong> Not every path
-            fits a PR's time budget, so the harness splits them. Gated
-            (build-failing), sixteen paths: both scalar multiplications
-            (fixed- and variable-base), SM2 sign, decrypt, and key exchange,
-            SM4 key schedule, SM4 encrypt (default linear-scan and bitsliced
-            SIMD S-box), SM4-CTR, CBC-decrypt fanout, single-shot SM4-GCM /
-            SM4-CCM decrypt plus buffered SM4-GCM decrypt, SM4-XTS decrypt,
-            encrypted-PKCS#8 decrypt, and — since v1.7 — the TLCP CBC record
-            deprotect, the Lucky13 residual guard. Telemetry-only, four: the
-            field-inversion diagnostics, the k-class sign, and — since
-            2026-06-17 — HMAC-SM3, watched on the nightly run against a
-            <code>0.55</code> gross-regression sentinel rather than the
-            <code>0.20</code> gate — shared-runner class-split noise made
-            their tighter gates fire falsely, so each was demoted with the
-            reasoning published. <strong>Cost:</strong> the telemetry paths are
-            watched, not enforced, and the two-tier split is a permanent
-            surface to maintain.
+            <strong>Keep the gate's scope visible.</strong> The sixteen blocking paths cover SM2
+            scalar multiplication, sign, decrypt and key exchange; SM4 key schedule, encryption,
+            CTR, CBC fanout, GCM / CCM decrypt, buffered GCM decrypt and XTS decrypt;
+            encrypted-PKCS#8 decrypt; and TLCP CBC record deprotect.
+            Four other diagnostics — two field inversions, k-class signing and HMAC-SM3 —
+            are telemetry on PRs, with a <code>0.55</code> gross-regression sentinel nightly.
+            <code>noise_twin_class_split</code> is a separate non-blocking noise diagnostic,
+            required to appear in every run; it is not a twenty-first real secret-handling path.
+            <strong>Cost:</strong> these measurement tiers and runner-specific noise need ongoing calibration.
         </p>
         <p>
             <strong>A safe core; SIMD is opt-in.</strong>
@@ -140,52 +126,49 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <strong>Constant-time-designed arithmetic, caveat stated.</strong>
             Secret-dependent arithmetic is built on <code>subtle</code> and
             <code>crypto-bigint</code>, and secret material is zeroized on
-            drop via <code>zeroize</code>. The design targets constant time
+            drop via <code>zeroize</code>, on a best-effort basis. v1.13 extends this
+            to the whole SM4 streaming family, including buffered payloads. The design targets constant time
             but can't guarantee it everywhere. <strong>Cost:</strong> on CPUs
             whose multiply latency is data-dependent (some older x86, some
             embedded), the timing properties don't hold — stated plainly under
             <em>What it isn't</em> rather than buried.
         </p>
         <p>
-            <strong>Ship the core first, the FFI next — and skip releases that
-            change nothing.</strong> Cipher modes land on a
-            <code>core-in-vN / FFI-in-vN+1</code> cadence: the SM4-XTS core
-            shipped in v0.12 and its C ABI in v0.13; the in-place multi-sector
-            disk helper in v0.15 and its FFI in v0.16; SM2 key exchange in
-            v1.1 and its C ABI in v1.2; X.509-with-SM2 in v1.3 and its C ABI
-            in v1.4. When a cycle changes no
-            output bytes — v0.14 was a <code>cargo-fuzz</code> parser-fuzzing
-            sweep that found zero crashes — it merges as assurance and is never
-            published, so crates.io skips <code>0.14.0</code>. The same rule then
-            scaled up across the <code>0.17</code>–<code>0.23</code> gap — chiefly the
-            <code>v0.21</code>–<code>v0.23</code> readiness work (public-API freeze,
-            <code>crypto-bigint</code> decoupling, a multi-model adversarial pre-1.0
-            re-audit) — which stayed unpublished and shipped together in the
-            deliberate <code>1.0.0</code> release.
-            <strong>Cost:</strong> the version line carries a deliberate gap to
-            explain, and the C ABI doubles the surface every mode has to be
-            tested and owned across three published crates.
+            <strong>Make the core and C contracts explicit.</strong> CCM encryption commits length
+            before accepting chunks; over-feeding poisons the encryptor, and under-feeding cannot
+            produce a valid final tag. Decryption releases no plaintext before tag verification.
+            The same contract crosses the C ABI, with eight new functions in v1.13.
+            <strong>Cost:</strong> callers must know the plaintext length up front, decryption needs
+            output buffering, and Rust and C behavior must be tested together.
         </p>
 
         <h2 id="evidence">Evidence</h2>
         <p>
-            Every output is checked for byte-identity: against the standard
-            KAT vectors, against GmSSL 3.2.0 for interop — an in-CI job
-            pinned to a from-source oracle build since v1.10 — and against
-            OpenSSL 3.x <code>SM4-XTS</code> (<code>xts_standard=GB</code>)
-            for the tweakable mode. The leak-regression gates above run in CI
-            on every commit, and the core forbids unsafe code via its
-            <code>[lints]</code> table. The v0.14 cycle added a
-            <code>cargo-fuzz</code> (libFuzzer) harness over the
-            untrusted-input decode / decrypt surface — sixteen targets then,
-            thirty as of v1.8, thirty-three as of v1.11 — run as a nightly sweep. All of it is inspectable: the source, the CI workflow, and
-            the {% include glossary-term.html term="dudect" %} harness are public, alongside the published
-            <code>gmcrypto-core</code> crate, its <code>docs.rs</code>
-            reference, and the runnable demo.
+            Standard KAT vectors, GmSSL 3.2.0 interoperability checks and OpenSSL 3.x
+            SM4-XTS comparisons (<code>xts_standard=GB</code>) check byte identity. The public
+            {% include glossary-term.html term="dudect" %} harness checks for timing regressions;
+            35 <code>cargo-fuzz</code> targets exercise untrusted-input decode / decrypt paths nightly.
+            The <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/crates/gmcrypto-c/include/gmcrypto.h#L921" rel="noopener noreferrer">v1.13.0 C header</a>
+            records the CCM contract and the 112-function surface;
+            the <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/.github/workflows/dudect-pr.yml#L378" rel="noopener noreferrer">tagged workflow</a>
+            records the runner-specific threshold and diagnostic tiers.
+        </p>
+        <h3 id="release-repair">A timing failure held the release</h3>
+        <p>
+            The first v1.11.1 cut was held when a serial-SM4 repair exposed a TLCP CBC timing
+            residual above the gate. Equal SM3 compression counts had concealed secret-length-dependent
+            buffer copying and padding. The patch rewrote inner-HMAC to a fixed schedule before release.
+            This repair applies to every <code>tlcp</code>-enabled build, including <code>gmcrypto-c</code>;
+            default <code>gmcrypto-core</code> enables neither affected feature and is behavior- and
+            timing-identical to v1.11.0. The separate serial-SM4 repair executes only with
+            <code>sm4-bitsliced-simd</code>; its throughput improvement was measured on AArch64,
+            while x86_64 has correctness / KAT / fuzz coverage but no throughput measurement.
+            API, ABI and wire bytes stayed unchanged.
+            <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/CHANGELOG.md#1111---2026-08-22" rel="noopener noreferrer">The tagged repair record</a>
+            shows a gate changing a release decision; it does not prove constant time.
         </p>
         <p>
-            Three of those properties, pinned to <code>v1.11.0</code>, each a link
-            to the exact line:
+            Historical implementation evidence at <code>v1.11.0</code>, retained at its exact source lines:
         </p>
         <ul class="audit-notes">
             <li>Secret-derived equality uses the crate's constant-time
@@ -218,15 +201,16 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <a href="{{ '/notes/byte-identity/' | relative_url }}">byte identity as an interop test</a>;
             and <a href="{{ '/notes/unsafe-opt-in/' | relative_url }}">unsafe as an explicit opt-in</a>.
         </p>
+        <p>The chart below pairs historical <code>v1.2.0</code> measurements with current policy thresholds. It is not a new v1.13.0 measurement or a complete coverage inventory.</p>
         {% include dudect-chart.html %}
         <p>
-            The release line carries deliberate gaps: a cycle that changes no
-            output bytes merges without a published version.
+            The release line carries deliberate gaps: several assurance cycles that changed no
+            output bytes merged without a published version.
             <a href="{{ '/notes/releases-that-change-nothing/' | relative_url }}">Why, in one note</a>.
         </p>
         <dl class="version-grid">
             <dt>Current</dt>
-            <dd><strong>v1.11.0</strong>, 2026-08-01 — opt-in RustCrypto <code>aead</code> 0.6 trait fit for SM4-GCM / SM4-CCM. The C ABI surface stays 104 entry points.</dd>
+            <dd><strong>v1.13.0</strong>, 2026-09-04 — chunked CCM encryption and buffered decryption in Rust and C; 112 C ABI entry points and 35 fuzz targets. SM4 streaming types zeroize on drop on a best-effort basis.</dd>
 
             <dt>Unpublished</dt>
             <dd>Four gaps in the published version line — v0.14, 0.17–0.23, v1.5, v1.10 — none of them changed an output byte.</dd>
@@ -236,10 +220,8 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         </dl>
 
         <h2 id="next">Next</h2>
-        <dl class="version-grid">
-            <dt>Next</dt>
-            <dd>The TLCP (GB/T 38636) arc begun in v1.6 <strong>closed with v1.9</strong>; v1.11 then closed the long-parked RustCrypto <code>aead</code> 0.6 trait fit. No successor arc is committed to a version yet. Still parked: AVX-512 <code>sbox_x64</code>, and streaming / incremental CCM. Permanently out of scope, not deferred: endpoint identity binding — the TLCP equivalent of hostname verification — stays the caller's.</dd>
-        </dl>
+        <p>No successor arc is committed to a version. AVX-512 <code>sbox_x64</code> remains parked.
+            Endpoint identity binding stays the caller's permanently; it is outside the toolkit's scope.</p>
 
         <h2 id="limits">What it isn't</h2>
         <ul>
@@ -263,7 +245,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <a href="https://docs.rs/gmcrypto-core" rel="noopener noreferrer">docs.rs ↗</a>
             <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/LICENSE-APACHE" rel="noopener noreferrer">Apache-2.0 ↗</a>
             <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/LICENSE-MIT" rel="noopener noreferrer">MIT ↗</a>
-            <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">Demo ↗</a>
+            <a href="https://github.com/frankxue831/gm-crypto-rs-demo/tree/749c6f1c7cca4ea93095099b66ed474f0b907aec" rel="noopener noreferrer">Demo ↗</a>
             <a href="{{ '/projects/' | relative_url }}">← All work</a>
         </div>
     </article>

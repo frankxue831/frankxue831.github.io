@@ -15,16 +15,20 @@ alternate: /projects/
         精选<em>作品。</em>
     </h1>
     <p class="page-header__lede">
-        一份短而诚实的清单。多是 Rust，多在开发者工具和底层系统的接缝上。讲不清做什么、做到哪、限制在哪的，不会放上来。每个项目页都写着自己的发布状态和证据——外面能核对到哪一步，看各自的页面，不在这里用一句话概括。
+        一份短而诚实的清单。多是 Rust，多在开发者工具和底层系统的接缝上。讲不清做什么、做到哪、限制在哪的，不会放上来。四个项目有案例页，附上发布或快照证据；一个私有研究原型只列概览。每项都交代外面能核对到哪一步。
     </p>
 </section>
 
 <section class="section wrap">
     <ul class="work-list">
         {% for project in site.data.projects %}
-        <li class="work-list__item reveal">
+        <li class="work-list__item reveal" data-project="{{ project.slug }}">
+            {% if project.presentation == 'summary' %}
+            <div class="work-list__row">
+            {% else %}
             <a class="work-list__row"
                href="{{ project.zh_detail_url | relative_url }}">
+            {% endif %}
                 <span class="work-list__head">
                     <span class="work-list__title">{{ project.title }}</span>
                     <span class="work-list__tags">{{ project.tags.zh | join: ' · ' }}</span>
@@ -32,9 +36,9 @@ alternate: /projects/
                 <span class="work-list__meta">
                     <span class="status-pill" data-status="{{ project.status }}">{{ project.status_label.zh }}</span>
                     {% if project.release_source == 'public_tag' %}<span class="work-list__rel">{{ project.release }}</span>{% endif %}
-                    <span class="work-list__year">{{ project.years.zh }}</span>
+                    {% if project.years.zh %}<span class="work-list__year">{{ project.years.zh }}</span>{% endif %}
                 </span>
-            </a>
+            {% if project.presentation == 'summary' %}</div>{% else %}</a>{% endif %}
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
@@ -42,20 +46,22 @@ alternate: /projects/
                 CI 里用 dudect 门禁拦泄漏回归。公开版
                 <strong>{{ project.release }}</strong> 在
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。按版本展开的证据，写在发布历史那一页。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的仓库记忆与上下文：经 MCP 暴露 26 个工具，记忆有类型、会衰减。{{ project.status_label.zh }}。私有项目——暂无公开源码链接。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                给 AI 编程 Agent 用的仓库记忆与上下文：经 MCP 暴露 26 个工具，记忆有类型、会衰减。{{ project.status_label.zh }}。私有项目——没有公开源码链接。
+                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'ghrunners' %}
-                macOS 上查 GitHub Actions self-hosted runner 的单次运行 CLI：只读观测（launchd 域、PID、进程树、日志、可选 GitHub API），外加受控的 launchd 控制；缺项降级为部分输出，而不是硬失败。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                macOS 上查 GitHub Actions self-hosted runner 的单次运行 CLI：只读观测（launchd 域、PID、进程树、日志、可选 GitHub API），外加受控的 launchd 控制；缺项降级为部分输出，而不是硬失败。当前状态：{{ project.status_label.zh }}。本地原型——没有公开源码链接。
+                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'explainer-engine' %}
                 确定性流水线：把 YAML storyboard 渲染成带旁白的讲解视频——每个 beat 可以是图示、带引用的代码标注，或会动的概念图。画面标 <em>simplified</em>（简化视图）；画帧前，引用校验门按固定 commit 核对源码——
-                视频里的 <code>verified @ commit</code> 是校验门的结论，不是装饰。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                视频里的 <code>verified @ commit</code> 是校验门的结论，不是装饰。当前状态：{{ project.status_label.zh }}。本地原型——没有公开源码链接。
+                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
+                {% when 'repolens-ng' %}
+                RepoLens-NG 是一个私有研究原型，研究编程 Agent 能否获得验证反馈会怎样影响其表现，支持隔离评估和轨迹回放。这项研究没有确立普遍的性能优势。
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% endcase %}
             </p>
         </li>

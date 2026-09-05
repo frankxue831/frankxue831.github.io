@@ -891,6 +891,23 @@ body.lang-zh .note li {
     color: var(--fg);
 }
 
+.hero-proof__highlight {
+    margin: 0;
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--sans);
+    font-size: var(--text-base);
+    line-height: 1.55;
+    color: var(--fg);
+}
+.hero-proof__highlight a {
+    display: inline-block;
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+.hero-proof__highlight a:hover { color: var(--accent-cool); }
+
 .hero-proof__list {
     list-style: none;
     padding: 0;
@@ -911,16 +928,16 @@ body.lang-zh .note li {
                 background var(--dur-fast) var(--ease),
                 box-shadow var(--dur-fast) var(--ease);
 }
-/* Parity with the work-list reward (.work-list__item:hover .work-list__row):
+/* Parity with the work-list reward (.work-list__item:hover a.work-list__row):
    surface tint + 2px inset accent rail, padding nudge instead of layout shift. */
-.hero-proof__row:hover,
-.hero-proof__row:focus-visible {
+a.hero-proof__row:hover,
+a.hero-proof__row:focus-visible {
     padding-left: var(--space-3);
     background: var(--bg-elevated);
     box-shadow: inset 2px 0 0 var(--accent);
 }
-.hero-proof__row:hover .hero-proof__title,
-.hero-proof__row:focus-visible .hero-proof__title {
+a.hero-proof__row:hover .hero-proof__title,
+a.hero-proof__row:focus-visible .hero-proof__title {
     color: var(--accent);
 }
 
@@ -1097,11 +1114,11 @@ body.lang-zh .note li {
                 box-shadow var(--dur-fast) var(--ease);
 }
 
-/* Whole row is a single <a>; the title-accent + nudge already signal a link.
+/* Case-study rows are links; summary rows retain a plain reading surface.
    A calm surface tint + a 2px inset accent rail make the *whole-row* hit area
    discoverable without a layout shift (box-shadow, not border). */
-.work-list__item:hover .work-list__row,
-.work-list__row:focus-visible {
+.work-list__item:hover a.work-list__row,
+a.work-list__row:focus-visible {
     padding-left: var(--space-3);
     background: var(--bg-elevated);
     box-shadow: inset 2px 0 0 var(--accent);
@@ -1122,8 +1139,8 @@ body.lang-zh .note li {
     line-height: 1.3;
     transition: color var(--dur) var(--ease);
 }
-.work-list__item:hover .work-list__title,
-.work-list__row:focus-visible .work-list__title {
+.work-list__item:hover a.work-list__row .work-list__title,
+a.work-list__row:focus-visible .work-list__title {
     color: var(--accent);
 }
 
@@ -1184,6 +1201,7 @@ body.lang-zh .note li {
     background: var(--status-pre);
     border-color: var(--status-pre);
 }
+.status-pill[data-status="private-research"]::before,
 .status-pill[data-status="private-local"]::before,
 .status-pill[data-status="private"]::before {
     background: transparent;
@@ -1479,6 +1497,86 @@ body.lang-zh .note li {
 }
 .project-detail__links a:hover { color: var(--accent); }
 
+/* Early evidence and native section navigation remain readable without JS. */
+.project-evidence {
+    margin-block: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    border-left: 2px solid var(--accent);
+    background: var(--bg-sunk);
+}
+.project-evidence p,
+.project-detail .project-evidence p {
+    font-family: var(--sans);
+    font-size: var(--text-base);
+    line-height: 1.65;
+    margin: 0 0 var(--space-3);
+}
+.project-evidence p:last-child { margin-bottom: 0; }
+.project-evidence .project-evidence__label,
+.project-detail .project-evidence .project-evidence__label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--fg-muted);
+    margin-bottom: var(--space-2);
+}
+.project-evidence > a {
+    font-family: var(--sans);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+}
+.project-evidence small,
+.project-evidence__links {
+    font-family: var(--sans);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+}
+.project-evidence a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    overflow-wrap: anywhere;
+}
+.project-jump {
+    margin-block: var(--space-6) var(--space-8);
+    padding-block: var(--space-4);
+    border-block: 1px solid var(--rule);
+    font-family: var(--sans);
+}
+.project-jump p,
+.project-detail .project-jump p {
+    font-family: var(--sans);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    margin: 0 0 var(--space-2);
+    color: var(--fg-muted);
+}
+.project-jump ul,
+.project-detail .project-jump ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.project-jump li,
+.project-detail .project-jump li {
+    padding: 0;
+    margin: 0;
+    font-family: var(--sans);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+}
+.project-jump li::before { content: none; }
+.project-jump a {
+    display: inline-block;
+    padding-block: var(--space-2);
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    border-bottom: 0;
+}
+
 /* =========================================================
    Contents rail ("On this page")
    Built by contents.js from the page's <h2>s on project detail
@@ -1488,7 +1586,10 @@ body.lang-zh .note li {
    ========================================================= */
 
 /* Anchored / spied headings clear the sticky site header. */
-.project-detail h2 { scroll-margin-top: var(--space-20); }
+.project-detail h2 { scroll-margin-top: var(--space-24); }
+.project-detail h3[id],
+.project-detail figure[id],
+.project-detail figcaption[id] { scroll-margin-top: var(--space-24); }
 
 /* Hidden by default; the wide-viewport block reveals it and turns
    the reading section into a two-column grid. JS adds .has-toc. */
@@ -1573,9 +1674,10 @@ body.lang-zh .note li {
         max-width: 12ch;
     }
     body.lang-zh .hero__title {
-        max-width: 13ch;
-        font-size: clamp(2.35rem, 11.8vw, 3rem);
-        word-break: keep-all;
+        /* Eight CJK glyphs in the final display line fit at 320–390px. */
+        max-width: 100%;
+        font-size: clamp(2rem, 10vw, 2.65rem);
+        word-break: normal;
     }
     .hero__lede {
         font-size: var(--text-lg);
@@ -1616,10 +1718,10 @@ body.lang-zh .note li {
         gap: var(--space-2) var(--space-4);
         white-space: normal;
     }
-    .work-list__item:hover .work-list__row,
-    .work-list__row:focus-visible { padding-left: 0; }
-    .hero-proof__row:hover,
-    .hero-proof__row:focus-visible { padding-left: 0; }
+    .work-list__item:hover a.work-list__row,
+    a.work-list__row:focus-visible { padding-left: 0; }
+    a.hero-proof__row:hover,
+    a.hero-proof__row:focus-visible { padding-left: 0; }
 }
 
 /* Empty state */
@@ -2290,7 +2392,17 @@ details.drawer .version-grid {
     margin: 0 0 var(--space-4);
     max-width: var(--maxw-reading, 42rem);
 }
+.dudect__chart-scroll {
+    max-width: 100%;
+    min-width: 0;
+}
+.dudect__chart-scroll:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+.dudect__scroll-hint { display: none; }
 .dudect__chart {
+    display: block;
     width: 100%;
     height: auto;
     overflow: visible;
@@ -2298,21 +2410,21 @@ details.drawer .version-grid {
 /* SVG strokes/fills via tokens. font-size in SVG text is in user units. */
 .dudect__axis { stroke: var(--rule); stroke-width: 1.5; }
 .dudect__axis-label,
-.dudect__ticks text { font-family: var(--mono); font-size: 11px; fill: var(--fg-subtle); }
+.dudect__ticks text { font-family: var(--mono); font-size: 14px; fill: var(--fg-subtle); }
 .dudect__gate { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 3; }
-.dudect__gate-label { font-family: var(--mono); font-size: 11px; fill: var(--accent); }
+.dudect__gate-label { font-family: var(--mono); font-size: 14px; fill: var(--accent); }
 .dudect__sentinel { stroke: var(--fg-subtle); stroke-width: 1; stroke-dasharray: 2 3; }
 .dudect__control { fill: var(--danger); opacity: 0.10; }
 .dudect__control-label,
-.dudect__cluster-label { font-family: var(--mono); font-size: 11px; fill: var(--fg-muted); }
+.dudect__cluster-label { font-family: var(--mono); font-size: 14px; fill: var(--fg-muted); }
 .dudect__pt { fill: var(--status-released); }
-.dudect__leak-heading { font-family: var(--mono); font-size: 11px; fill: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.04em; }
+.dudect__leak-heading { font-family: var(--mono); font-size: 14px; fill: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.04em; }
 .dudect__leak-arrow { stroke: var(--fg-muted); stroke-width: 1.5; }
 .dudect__arrowhead { fill: var(--fg-muted); }
 .dudect__leak-before { fill: var(--danger); }
 .dudect__leak-after { fill: var(--status-released); }
 .dudect__leak-before-label,
-.dudect__leak-after-label { font-family: var(--mono); font-size: 12px; fill: var(--fg); }
+.dudect__leak-after-label { font-family: var(--mono); font-size: 14px; fill: var(--fg); }
 .dudect__caveat {
     font-family: var(--sans);
     font-size: var(--text-sm);
@@ -2366,6 +2478,20 @@ details.drawer .version-grid {
    No bespoke motion here, so nothing extra to disable. */
 @media (max-width: 759px) {
     .dudect { padding: var(--space-4); }
+    .dudect__chart-scroll {
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+    }
+    .dudect__chart { min-width: 640px; }
+    .dudect__scroll-hint,
+    .project-detail .dudect__scroll-hint {
+        display: block;
+        margin-block: var(--space-2) var(--space-3);
+        font-family: var(--sans);
+        font-size: var(--text-sm);
+        line-height: 1.5;
+        color: var(--fg-muted);
+    }
     .dudect__table { font-size: var(--text-xs); }
     .dudect__table th, .dudect__table td { padding: var(--space-1) var(--space-2); }
 }

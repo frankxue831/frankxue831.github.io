@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "gm-crypto-rs — release history"
-description: The full release line for gm-crypto-rs, v0.6.0 through v1.11.0, including the cycles that merged without a published version.
+description: The full release line for gm-crypto-rs, v0.6.0 through v1.13.0, including the cycles that merged without a published version.
 permalink: /projects/gm-crypto-rs/releases/
 lang: en
 alternate: /zh/projects/gm-crypto-rs/releases/
@@ -13,9 +13,8 @@ alternate: /zh/projects/gm-crypto-rs/releases/
         gm-crypto-rs <em>release history</em>
     </h1>
     <p class="page-header__lede">
-        Every cycle from v0.6.0 to v1.11.0, newest first — including the ones
-        that merged without a published version because they changed no output
-        bytes. The case study is
+        Every cycle from v0.6.0 to v1.13.0, newest first — including assurance cycles
+        that merged without a published version. The case study is
         <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}">here</a>.
     </p>
 </section>
@@ -23,6 +22,18 @@ alternate: /zh/projects/gm-crypto-rs/releases/
 <section class="section wrap reveal">
     <article class="project-detail prose">
         <dl class="version-grid">
+            <dt>v1.13.0</dt>
+            <dd>2026-09-04 — eight C ABI functions bring length-committed CCM encryption and incremental-input, buffered CCM decryption to C (<strong>104 → 112 entry points</strong>). Encryption rejects over-feeding and cannot authenticate an under-fed stream; decryption releases output only after verification. The SM4 streaming family gains best-effort zeroization on drop, including buffered payloads. Fuzz census stays 35. Existing output bytes, MSRV and dependencies are unchanged apart from enabling the existing <code>zeroize</code> dependency's <code>alloc</code> feature. <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.13.0/CHANGELOG.md#1130---2026-09-04" rel="noopener noreferrer">Tagged release record ↗</a></dd>
+
+            <dt>v1.12.0</dt>
+            <dd>2026-09-04 — SM4-CCM encryption accepts chunks after the caller commits plaintext length at construction; each update emits ciphertext with <code>O(chunk)</code> memory. Over-feeding poisons the encryptor; finalization rejects poisoned or under-fed streams. Decryption accepts incremental input but buffers output until tag verification, with a nonce-dependent payload ceiling. Both sit behind the existing <code>sm4-aead</code> feature. Two differential fuzz targets bring the census <strong>33 → 35</strong>. Default build byte-identical; no new dependency or C ABI change. <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.12.0/CHANGELOG.md#1120---2026-09-04" rel="noopener noreferrer">Tagged release record ↗</a></dd>
+
+            <dt>v1.11.2</dt>
+            <dd>2026-08-23 — presentation-only release: clearer crate landing pages, runnable examples and feature labels on docs.rs. No crypto code path, public API, C ABI, wire format, MSRV or dependency change. A publication was needed because crates.io metadata and docs.rs renders belong to published versions. <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.2/CHANGELOG.md#1112---2026-08-23" rel="noopener noreferrer">Tagged release record ↗</a></dd>
+
+            <dt>v1.11.1</dt>
+            <dd>2026-08-22 — two fixes: the opt-in <code>sm4-bitsliced-simd</code> serial-SM4 path, and a TLCP CBC timing residual that the first repair exposed above the dudect gate. The first release cut was held; inner-HMAC was rewritten to a fixed schedule before publication. The TLCP repair executes in every <code>tlcp</code>-enabled build, including <code>gmcrypto-c</code>. Default <code>gmcrypto-core</code> enables neither affected feature and is behavior- and timing-identical to v1.11.0. The serial repair executes only with <code>sm4-bitsliced-simd</code>; throughput improvement is measured on AArch64, while x86_64 has correctness / KAT / fuzz coverage but no throughput measurement. API, ABI and wire bytes unchanged. Also adds the separate, non-blocking <code>noise_twin_class_split</code> diagnostic. <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.1/CHANGELOG.md#1111---2026-08-22" rel="noopener noreferrer">Tagged repair record ↗</a></dd>
+
             <dt>v1.11.0</dt>
             <dd>2026-08-01 — RustCrypto <code>aead</code> 0.6 trait fit for SM4-GCM / SM4-CCM (additive, opt-in). New <code>sm4::Sm4Gcm</code> and <code>sm4::Sm4Ccm&lt;M, N&gt;</code> as thin wrappers over the inherent AEAD paths, behind <code>aead-traits = ["sm4-aead", "dep:aead"]</code> — the backlog item parked since v0.11 while upstream sat on <code>0.6.0-rc</code>; <code>aead</code> 0.6.1 is now stable at MSRV 1.85. Implements <code>KeySizeUser</code> / <code>KeyInit</code> / <code>AeadCore</code> / <code>AeadInOut</code> (the <code>Vec</code>-returning <code>Aead</code> arrives free via blanket impl). No new dudect target (wrappers add no cryptography; secret-touching bodies are the same code); new differential fuzz target <code>fuzz_sm4_aead_traits</code> (census <strong>32 → 33</strong>). Default build byte-identical; C ABI surface stays 104.</dd>
 

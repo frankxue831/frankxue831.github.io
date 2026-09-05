@@ -23,6 +23,7 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
 <section class="section wrap reveal">
     <article class="project-detail prose">
         {% include project-summary.html %}
+        {% include project-evidence.html %}
 
         <h2 id="what-it-is">What it is</h2>
         <p>
@@ -30,8 +31,7 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
             "packs," exposes that model through an {% include glossary-term.html term="mcp" %} server, and pairs it with
             a typed, decaying memory graph. The goal isn't to write code for the
             agent — it's to stop every new session from starting cold. It is a
-            private pre-release; the snapshot it describes is named under
-            <em>Evidence</em> below.
+            private pre-release; the snapshot is identified in the summary above.
         </p>
 
         <figure class="fig">
@@ -73,17 +73,14 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
             wrong by design.
         </p>
         <p>
-            <strong>Publish the calibrated status before the surface is
-            complete.</strong> Agent tooling is full of inflated claims, and a
-            tool that overstates erodes the very trust it exists to build. So the
-            shipped boundaries are labeled out loud: <code>validate-plan</code> is
-            warnings-only (a clean run doesn't prove a plan valid),
-            <code>remember</code> is workspace-markdown handoff — not the typed
-            graph, <code>eval</code> is scaffolding (it launches no agents and
-            grades nothing; a human fills the scorecard), and <code>state</code>
-            is read-only inspection. <strong>Cost:</strong> the page reads less
-            impressive than a vaguer one would, because the gaps are stated
-            instead of glossed.
+            <strong>Keep inspection and evaluation boundaries explicit.</strong>
+            <code>validate-plan</code> is warnings-only (a clean run doesn't prove
+            a plan valid), <code>remember</code> is workspace-markdown handoff —
+            not the typed graph, <code>eval</code> is scaffolding (it launches no
+            agents and grades nothing; a human fills the scorecard), and
+            <code>state</code> is read-only inspection. <strong>Cost:</strong>
+            callers still have to validate plans, maintain the handoff, and
+            grade evaluations themselves.
         </p>
         <p>
             <strong>A regression-locked benchmark over "more context must be
@@ -97,19 +94,19 @@ summary_outcome: "Repository packs and typed memory help agents restart with gro
 
         <h2 id="evidence">Evidence</h2>
         <p>
-            A private working snapshot of <code>origin/main</code> — there is no
-            public source, crate, or docs page to inspect. What backs the claims
-            instead is the running surface: <code>scan</code>, <code>init</code>,
+            This case study describes a private working snapshot of
+            <code>origin/main</code>. There is no public source, crate, or docs
+            page to inspect; the diagram and capability descriptions explain the
+            implementation, rather than provide public execution evidence.
+        </p>
+        <p>
+            The private snapshot includes <code>scan</code>, <code>init</code>,
             <code>brief --task</code>, <code>remember --file</code>,
             <code>eval list / start</code>, <code>validate-plan --file</code>,
             <code>state</code>, <code>compare-summaries</code>, and
-            <code>findings</code> are usable today through the CLI and MCP,
-            alongside the 26 MCP tools and the typed memory graph. The strongest
-            signal is the project's own <em>honest-status discipline</em> — a
-            published, per-surface map of what is shipped versus scaffolding, kept
-            deliberately calibrated so a future overclaim would stand out — and a
-            <code>dogfood</code> eval contract (five cases, one regression-locked)
-            that holds the line on context quality.
+            <code>findings</code> through the CLI and MCP, alongside the 26 MCP
+            tools and typed memory graph. Its <code>dogfood</code> eval contract
+            has five cases, one regression-locked; scoring remains manual.
         </p>
 
         <h2 id="next">Next</h2>

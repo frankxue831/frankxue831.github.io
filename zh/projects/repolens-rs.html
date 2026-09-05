@@ -22,10 +22,11 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
 <section class="section wrap reveal">
     <article class="project-detail prose">
         {% include project-summary.html %}
+        {% include project-evidence.html %}
 
         <h2 id="what-it-is">是什么</h2>
         <p>
-            <code>RepoLens</code> 会把整个仓库扫描成一份结构化、不可变的「pack」（一份给 Agent 看的仓库快照），通过 {% include glossary-term.html term="mcp" %} 服务端暴露出来，同时维护一张会随时间衰减的类型化记忆图。它不替 Agent 写代码，只是让每个新会话不必冷启动。目前是私有预发布；对应的快照写在下面的<em>「证据」</em>里。
+            <code>RepoLens</code> 会把整个仓库扫描成一份结构化、不可变的「pack」（一份给 Agent 看的仓库快照），通过 {% include glossary-term.html term="mcp" %} 服务端暴露出来，同时维护一张会随时间衰减的类型化记忆图。它不替 Agent 写代码，只是让每个新会话不必冷启动。目前是私有预发布；对应快照已在上方摘要中标明。
         </p>
 
         <figure class="fig">
@@ -52,11 +53,10 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             存储。<strong>代价：</strong>要维护的环节多了；而且召回出来的记忆虽然经过衰减、也对照过代码，<em>却终究不是</em>事实来源——它本来就可能旧、可能错。
         </p>
         <p>
-            <strong>能力还没补齐的部分，先按现状如实讲清。</strong>
-            Agent 工具普遍爱夸大，可工具一旦说过了头，反而会侵蚀它想建立的信任。所以已经交付到哪、边界在哪，都摊开写明：
+            <strong>明确检查和评估各自能做什么。</strong>
             <code>validate-plan</code> 只给 warning（跑干净并不等于计划成立），<code>remember</code> 是工作区里的 markdown
             交接笔记——不是那张类型化记忆图，<code>eval</code>（评估脚手架）不启动 Agent、也不打分，评分卡由人来填，<code>state</code>
-            是只读检查。<strong>代价：</strong>这一页读起来不如说满的版本有唬人感——因为缺口是讲出来的，而不是糊过去的。
+            是只读检查。<strong>代价：</strong>调用方仍要自行验证计划、维护交接笔记，并为评估打分。
         </p>
         <p>
             <strong>拿一条防回归锁定的基准说话，而不是默认「上下文越多越好」。</strong>Agent 的上下文到底有没有变好，不度量就没有答案，所以 RepoLens 会输出校准过的证据（findings，
@@ -66,15 +66,14 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
 
         <h2 id="evidence">证据</h2>
         <p>
-            <code>origin/main</code> 的私有工作快照——没有可查看的公开源码、crate 或文档页。支撑这些说法的，是真正能跑的界面：
-            <code>scan</code>、<code>init</code>、<code>brief --task</code>、
-            <code>remember --file</code>、<code>eval list / start</code>、
-            <code>validate-plan --file</code>、<code>state</code>、
-            <code>compare-summaries</code>、<code>findings</code>
-            现在都能从 CLI 和 MCP 调到，连同 26 个 MCP 工具和那张类型化记忆图。
+            本案例描述的是 <code>origin/main</code> 的私有工作快照。没有可查看的公开源码、crate 或文档页；图示和能力描述用于说明实现，不是公开运行证据。
         </p>
         <p>
-            最强的信号，是项目自带的<em>「诚实状态」准则</em>：一张按能力面逐条标明「已交付还是脚手架」的清单，刻意保持校准，好让日后的夸大一眼露馅。再加上一份项目自用的评估契约（五个用例，其中一个防回归锁定），一起守住上下文质量这条线。
+            这份私有快照提供了 CLI 和 MCP 接口，包括 <code>scan</code>、<code>init</code>、<code>brief --task</code>、
+            <code>remember --file</code>、<code>eval list / start</code>、
+            <code>validate-plan --file</code>、<code>state</code>、
+            <code>compare-summaries</code>、<code>findings</code>，连同 26 个 MCP 工具和类型化记忆图。
+            项目自用的 <code>dogfood</code> 评估契约有五个用例，其中一个防回归锁定；评分仍由人完成。
         </p>
 
         <h2 id="next">下一步</h2>

@@ -21,8 +21,7 @@ alternate: /
             </h1>
 
             <p class="hero__lede">
-                密码学软件、给 AI 编程 Agent 用的仓库上下文、本地开发基础设施——
-                做出来的工具，正确性、当前状态和限制都保持可查。每个项目页都写清发布到哪一步、凭什么这么说；没公开的项目也一样。
+                密码学软件、给编程 Agent 用的仓库上下文、本地开发基础设施：状态和限制保持可查。公开发布附上证据链接，私有工作也交代清楚边界。
             </p>
 
             <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
@@ -42,10 +41,19 @@ alternate: /
                 {% endif %}
             </div>
 
+            <p class="hero-proof__highlight">
+                一次计时回归拦住了 v1.11.1 的发布。
+                <a href="{{ '/zh/projects/gm-crypto-rs/#release-repair' | relative_url }}">修复后才发布 <span aria-hidden="true">→</span></a>
+            </p>
+
             <ul class="hero-proof__list">
                 {% for project in projects %}
-                <li class="hero-proof__item">
+                <li class="hero-proof__item" data-project="{{ project.slug }}">
+                    {% if project.presentation == 'summary' %}
+                    <div class="hero-proof__row">
+                    {% else %}
                     <a href="{{ project.zh_detail_url | relative_url }}" class="hero-proof__row">
+                    {% endif %}
                         <span class="hero-proof__main">
                             <span class="hero-proof__title">{{ project.title }}</span>
                             <span class="hero-proof__tags">{{ project.tags.zh | join: ' · ' }}</span>
@@ -55,15 +63,15 @@ alternate: /
                             {% if project.release_source == 'public_tag' %}
                             <span class="hero-proof__release">{{ project.release }}</span>
                             {% endif %}
-                            <span class="hero-proof__year">{{ project.years.zh }}</span>
+                            {% if project.years.zh %}<span class="hero-proof__year">{{ project.years.zh }}</span>{% endif %}
                         </span>
-                    </a>
+                    {% if project.presentation == 'summary' %}</div>{% else %}</a>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
 
             <p class="hero-proof__note">
-                别人能自己核对的，只有已打公开标签（tag）的作品。私有项目只写概览——不挂源码链接，也不把本地状态写成正式发布。
+                公开发布附有证据链接；私有工作明确交代源码和发布状态的边界。
             </p>
         </aside>
     </div>
@@ -102,9 +110,13 @@ alternate: /
 
     <ul class="work-list">
         {% for project in projects %}
-        <li class="work-list__item reveal">
+        <li class="work-list__item reveal" data-project="{{ project.slug }}">
+            {% if project.presentation == 'summary' %}
+            <div class="work-list__row">
+            {% else %}
             <a class="work-list__row"
                href="{{ project.zh_detail_url | relative_url }}">
+            {% endif %}
                 <span class="work-list__head">
                     <span class="work-list__title">{{ project.title }}</span>
                     <span class="work-list__tags">{{ project.tags.zh | join: ' · ' }}</span>
@@ -112,27 +124,29 @@ alternate: /
                 <span class="work-list__meta">
                     <span class="status-pill" data-status="{{ project.status }}">{{ project.status_label.zh }}</span>
                     {% if project.release_source == 'public_tag' %}<span class="work-list__rel">{{ project.release }}</span>{% endif %}
-                    <span class="work-list__year">{{ project.years.zh }}</span>
+                    {% if project.years.zh %}<span class="work-list__year">{{ project.years.zh }}</span>{% endif %}
                 </span>
-            </a>
+            {% if project.presentation == 'summary' %}</div>{% else %}</a>{% endif %}
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
                 国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK。涉密路径按常量时间设计，CI 里用 dudect 门禁拦泄漏回归。公开版 <strong>{{ project.release }}</strong> 在
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对上当前代码，新会话不必冷启动重新摸清项目。<strong>{{ project.status_label.zh }}</strong>。私有项目——暂无公开源码链接。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对上当前代码，新会话不必冷启动重新摸清项目。<strong>{{ project.status_label.zh }}</strong>。私有项目——没有公开源码链接。
+                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'ghrunners' %}
-                macOS 上查 self-hosted runner 的单次运行工具：launchd 状态、进程树、日志和 GitHub API 汇总成类型化 findings，外加受控的 launchd 控制。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                macOS 上查 self-hosted runner 的单次运行工具：launchd 状态、进程树、日志和 GitHub API 汇总成类型化 findings，外加受控的 launchd 控制。当前状态：{{ project.status_label.zh }}。本地原型——没有公开源码链接。
+                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'explainer-engine' %}
-                把 storyboard 渲染成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                把 storyboard 渲染成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。当前状态：{{ project.status_label.zh }}。本地原型——没有公开源码链接。
+                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
+                {% when 'repolens-ng' %}
+                RepoLens-NG 是一个私有研究原型，研究编程 Agent 能否获得验证反馈会怎样影响其表现，支持隔离评估和轨迹回放。这项研究没有确立普遍的性能优势。
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
+                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% endcase %}
             </p>
         </li>
@@ -193,8 +207,9 @@ alternate: /
         <p class="preview__label">直接</p>
         <div class="preview__body">
             <p>
-                眼下最直接的是 <em>GitHub</em>：
-                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>。在任意仓库开 issue 或 discussion，我都会看到。
+                一般交流可以在本站仓库
+                <a href="https://github.com/frankxue831/frankxue831.github.io/issues/new" rel="noopener noreferrer">{{ t.contact.public_conversation }}</a>。
+                具体项目的技术问题，请到对应仓库的 issue 区提出。
             </p>
             <a href="{{ '/zh/contact/' | relative_url }}" class="preview__link">
                 怎么联系 <span aria-hidden="true">→</span>

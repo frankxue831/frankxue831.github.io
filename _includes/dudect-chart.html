@@ -23,6 +23,9 @@
 <figure class="dudect reveal" aria-labelledby="dudect-cap">
   <figcaption id="dudect-cap" class="dudect__title"><span class="dudect__fignum">{{ t.fig_num | escape }} —</span> {{ t.title | escape }}</figcaption>
   <p class="dudect__intro">{{ t.intro | escape }}</p>
+  <p class="dudect__scroll-hint" id="dudect-scroll-hint">{{ t.chart_scroll_hint | escape }}</p>
+  <div class="dudect__chart-scroll" tabindex="0" role="region"
+       aria-label="{{ t.chart_scroll_label | escape }}" aria-describedby="dudect-scroll-hint">
   <svg class="dudect__chart" viewBox="0 0 {{ W }} {{ H }}" role="img"
        aria-label="{{ t.title | escape }}. {{ t.context | escape }}"
        xmlns="http://www.w3.org/2000/svg">
@@ -68,6 +71,7 @@
       </marker>
     </defs>
   </svg>
+  </div>
   <p class="dudect__caveat">{{ t.caveat | escape }}</p>
   <div class="dudect__table-scroll" tabindex="0" role="region"
        aria-label="{{ t.table_scroll_label | escape }}">
@@ -92,7 +96,7 @@
         <td>&lt; {{ d.sentinel_display }} ({{ t.policy_sentinel_label | escape }})</td>
         <td>{{ t.status_sentinel | escape }}</td>
         {%- else -%}
-        <td>&lt; {{ d.gate_display }}</td>
+        <td>≤ {{ d.gate_display }}</td>
         <td>{{ t.status_pass | escape }}</td>
         {%- endif -%}
       </tr>
