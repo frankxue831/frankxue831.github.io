@@ -21,6 +21,7 @@ HOST = "www.frankxue.dev"
 BASE_URL = "https://#{HOST}"
 PROJECTS = YAML.load_file(ROOT.join("_data/projects.yml"))
 I18N = YAML.load_file(ROOT.join("_data/i18n.yml"))
+PUBLIC_CONVERSATION_URL = YAML.load_file(ROOT.join("_config.yml")).fetch("public_conversation_url", "")
 
 failures = []
 
@@ -437,11 +438,12 @@ home_pages.each do |relative|
 end
 
 internal_targets = Set.new
-Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
-  html = path.read
+site_html = Pathname.glob(SITE.join("**/*.html").to_s).to_h { |path| [path, path.read] }
+site_html.each do |path, html|
+  source = path.relative_path_from(SITE).to_s
   html.scan(%r{<(?:a|link)\b[^>]+\bhref=(['"])(.*?)\1}i).each do |match|
     href = CGI.unescapeHTML(match[1])
-    source = path.relative_path_from(SITE).to_s
+    record(failures, "#{source}: empty link destination") if href.empty?
     target = generated_target_for(href)
     if target == :outside_site
       record(failures, "#{source}: internal link escapes _site: #{href}")
@@ -450,6 +452,16 @@ Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
     elsif target
       internal_targets << [source, target]
     end
+
+    # Evidence shortcuts must land on real content, including same-page links.
+    next unless href.include?("#") && internal_href?(href)
+    uri = URI.parse(href) rescue nil
+    next unless uri && uri.fragment && !uri.fragment.empty?
+    target_path = href.start_with?("#") ? path : (SITE.join(target) if target.is_a?(String))
+    target_html = site_html[target_path]
+    next unless target_html
+    fragment = URI::DEFAULT_PARSER.unescape(uri.fragment)
+    record(failures, "#{source}: broken fragment #{href}") unless target_html.include?(%(id="#{fragment}"))
   end
 end
 
@@ -1691,22 +1703,6 @@ record(failures, "CLAUDE.md: current evidence snapshot differs from project fact
   record(failures, "#{relative}: use 时序回归 consistently") if source.include?("计时回归")
 end
 
-# Check fragments as well as paths: evidence shortcuts must land on real content.
-Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
-  html = path.read
-  html.scan(%r{<a\b[^>]*href="([^"]*)"}).flatten.each do |href|
-    record(failures, "#{path.relative_path_from(SITE)}: empty link destination") if href.empty?
-    next unless href.include?("#") && internal_href?(href)
-    uri = URI.parse(CGI.unescapeHTML(href)) rescue nil
-    next unless uri && uri.fragment && !uri.fragment.empty?
-    target = href.start_with?("#") ? path : SITE.join(generated_target_for(href).to_s)
-    next unless target.file?
-    fragment = URI::DEFAULT_PARSER.unescape(uri.fragment)
-    unless target.read.include?(%(id="#{fragment}"))
-      record(failures, "#{path.relative_path_from(SITE)}: broken fragment #{href}")
-    end
-  end
-end
 record(failures, "projects.yml: gm-crypto-rs must reflect verified v1.13.0") unless PROJECTS.find { |p| p["slug"] == "gm-crypto-rs" }["release"] == "v1.13.0"
 %w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
   html = read_file(SITE.join(relative), failures)
@@ -1717,13 +1713,18 @@ record(failures, "projects.yml: gm-crypto-rs must reflect verified v1.13.0") unl
   record(failures, "#{relative}: chart must be keyboard-scrollable") unless html.match?(/class="dudect__chart-scroll"[^>]*tabindex="0"[^>]*role="region"/m)
   record(failures, "#{relative}: chart must identify historical version") unless html.include?("v1.2.0") && html.include?("dudect-scroll-hint")
 end
+unless PUBLIC_CONVERSATION_URL.match?(%r{\Ahttps://github\.com/[^/]+/[^/]+/issues/new\z})
+  record(failures, "_config.yml: public_conversation_url must link to a GitHub new-issue page")
+end
 %w[en zh].each do |lang|
   %w[chart_scroll_label chart_scroll_hint].each do |key|
     record(failures, "i18n.yml: missing #{lang}.dudect.#{key}") if I18N.dig(lang, "dudect", key).to_s.empty?
   end
-  relative = lang == "en" ? "contact/index.html" : "zh/contact/index.html"
-  html = read_file(SITE.join(relative), failures)
-  record(failures, "#{relative}: missing direct public conversation link") unless html.include?("https://github.com/frankxue831/frankxue831.github.io/issues/new") && html.include?(I18N.dig(lang, "contact", "public_conversation"))
+  pages = lang == "en" ? %w[index.html contact/index.html] : %w[zh/index.html zh/contact/index.html]
+  pages.each do |relative|
+    html = read_file(SITE.join(relative), failures)
+    record(failures, "#{relative}: missing direct public conversation link") unless html.include?(%(href="#{CGI.escapeHTML(PUBLIC_CONVERSATION_URL)}")) && html.include?(I18N.dig(lang, "contact", "public_conversation"))
+  end
 end
 
 if failures.empty?

@@ -55,21 +55,18 @@ alternate: /zh/projects/
                 Public <strong>{{ project.release }}</strong> on
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>
                 — version-by-version evidence on its release-history page.
-                {% unless project.presentation == 'summary' %}<a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'repolens-rs' %}
                 A repository memory and context layer for AI coding agents.
                 It exposes 26 MCP tools and pairs structured repository context
                 with typed, decaying memory so agents can keep a durable model
                 of a project across sessions. {{ project.status_label.en }}.
                 Private project — no public source link.
-                {% unless project.presentation == 'summary' %}<a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'ghrunners' %}
                 A one-shot macOS CLI for GitHub Actions self-hosted runners —
                 read-only observability (launchd domain, PID, process tree, log
                 tails, optional GitHub API) plus guarded launchd control.
                 Missing pieces degrade to partial output rather than a hard
                 failure. {{ project.status_label.en }}. Local prototype — no public source link.
-                {% unless project.presentation == 'summary' %}<a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'explainer-engine' %}
                 A deterministic pipeline that turns a YAML storyboard into a
                 narrated concept video — a plot, a cited code callout, or an
@@ -79,14 +76,13 @@ alternate: /zh/projects/
                 frame is drawn — the <code>verified @ commit</code> badge is
                 the gate's verdict, not decoration. {{ project.status_label.en }}.
                 Local prototype — no public source link.
-                {% unless project.presentation == 'summary' %}<a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'repolens-ng' %}
                 RepoLens-NG is a private research prototype studying how access to verification affects coding agents, with isolated evaluation and replayable traces. It has not established a general performance advantage.
                 {% else %}
                 Selected engineering work with status and project facts kept
                 explicit.
-                {% unless project.presentation == 'summary' %}<a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% endcase %}
+                {% unless project.presentation == 'summary' %}<a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
             </p>
         </li>
         {% endfor %}

@@ -39,6 +39,7 @@ feed:
       path: feed.xml
 
 github_username: frankxue831
+public_conversation_url: "https://github.com/frankxue831/frankxue831.github.io/issues/new"
 # linkedin_username:
 # twitter_username:
 

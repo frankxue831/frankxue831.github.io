@@ -132,22 +132,18 @@ alternate: /
                 {% when 'gm-crypto-rs' %}
                 国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK。涉密路径按常量时间设计，CI 里用 dudect 门禁拦泄漏回归。公开版 <strong>{{ project.release }}</strong> 在
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
-                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'repolens-rs' %}
                 给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对上当前代码，新会话不必冷启动重新摸清项目。<strong>{{ project.status_label.zh }}</strong>。私有项目——没有公开源码链接。
-                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'ghrunners' %}
                 macOS 上查 self-hosted runner 的单次运行工具：launchd 状态、进程树、日志和 GitHub API 汇总成类型化 findings，外加受控的 launchd 控制。当前状态：{{ project.status_label.zh }}。本地原型——没有公开源码链接。
-                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'explainer-engine' %}
                 把 storyboard 渲染成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。当前状态：{{ project.status_label.zh }}。本地原型——没有公开源码链接。
-                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% when 'repolens-ng' %}
                 RepoLens-NG 是一个私有研究原型，研究 AI 编程 Agent 能否获得验证反馈会怎样影响其表现，支持隔离评估，并提供可回放的轨迹。这项研究没有确立普遍的性能优势。
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
-                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
                 {% endcase %}
+                {% unless project.presentation == 'summary' %}<a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>{% endunless %}
             </p>
         </li>
         {% endfor %}
@@ -208,7 +204,7 @@ alternate: /
         <div class="preview__body">
             <p>
                 一般交流可以在本站仓库
-                <a href="https://github.com/frankxue831/frankxue831.github.io/issues/new" rel="noopener noreferrer">{{ t.contact.public_conversation }}</a>。
+                <a href="{{ site.public_conversation_url | escape }}" rel="noopener noreferrer">{{ t.contact.public_conversation }}</a>。
                 具体项目的技术问题，请到对应仓库的 issue 区提出。
             </p>
             <a href="{{ '/zh/contact/' | relative_url }}" class="preview__link">
