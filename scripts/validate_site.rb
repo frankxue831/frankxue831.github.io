@@ -19,6 +19,7 @@ ROOT = Pathname.new(__dir__).parent
 SITE = ROOT.join("_site")
 HOST = "www.frankxue.dev"
 BASE_URL = "https://#{HOST}"
+EXTERNAL_SUBSITE_PREFIX = "/gm-crypto-web/"
 PROJECTS = YAML.load_file(ROOT.join("_data/projects.yml"))
 I18N = YAML.load_file(ROOT.join("_data/i18n.yml"))
 
@@ -63,6 +64,9 @@ def generated_target_for(href)
 
   path = uri.path
   path = "/" if path.empty?
+  # /gm-crypto-web/ is served by the separate frankxue831/gm-crypto-web Pages repo,
+  # so it is not in this site's _site. Exact prefix only; QA checks it live by hand.
+  return nil if path.start_with?(EXTERNAL_SUBSITE_PREFIX)
 
   relative = if path.end_with?("/")
     path == "/" ? "index.html" : "#{path.delete_prefix("/")}index.html"
