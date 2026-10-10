@@ -57,7 +57,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
         </p>
         <p>
             整套依赖都不碰标准库（{% include glossary-term.html term="no_std" %} + <code>alloc</code>），能编译到 <code>wasm32-unknown-unknown</code>，也实现了 RustCrypto 的
-            <code>digest</code> / <code>mac</code> / <code>cipher</code> trait，方便接入现有生态；从 v1.11 起，还可选适配 <code>aead</code> 0.6（SM4-GCM / SM4-CCM）。
+            <code>digest</code> / <code>mac</code> / <code>cipher</code> trait，方便接入现有生态；从 v1.11 起，还可选适配 <code>aead</code> 0.6（SM4-GCM / SM4-CCM）。v1.12 和 v1.13 先后在 Rust 和 C 里加上长度预先承诺的流式 SM4-CCM，所有 SM4 流式类型在 drop 时都会清零；从 v1.16 起，可选的 SIMD SM4 路径在支持的 x86_64 CPU 上改用 GFNI 计算 S 盒。
         </p>
         <p>
             从 v1.3 起，它还能解析 X.509 v3 证书并验证其 SM2-with-SM3 签名（GM/T 0015 profile，严格 DER，不做任何信任判定）；对应的 C ABI 接口（在 <code>gmcrypto-c</code> crate 里）在 v1.4 跟上。v1.6 到 v1.9 把 TLCP（GB/T 38636）铺成了一套<em>工具集</em>：密钥派生（key schedule）与一条免密钥确认的 SM2 密钥交换路径（v1.6）、记录层的保护 / 解保护（v1.7）、证书对与证书链的签名验证（v1.8），
@@ -72,7 +72,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
 
         <figure class="fig">
             {% include figures/gm-crypto-crates.zh.svg %}
-            <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口，至 v1.8 未变；v1.9.0 起为 104 个，v1.11.0 仍为 104）</figcaption>
+            <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口，至 v1.8 未变；v1.9.0 起为 104 个，v1.13.0 起为 112 个，v1.16.0 仍为 112）</figcaption>
         </figure>
 
         <h2 id="problem">要解决的问题</h2>
@@ -143,7 +143,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
             上面那套泄漏回归门禁，每次提交的 CI 都会跑一遍；核心在 <code>[lints]</code>
             表里禁掉了 unsafe（<code>unsafe_code = "forbid"</code>）。v0.14 那一轮还加了一套
             <code>cargo-fuzz</code>（libFuzzer）模糊测试，覆盖不可信输入上的解码 / 解密路径——
-            当时 16 个目标，到 v1.8 扩到 30 个，到 v1.11 是 33 个——挂在 nightly 上扫。
+            当时 16 个目标，到 v1.8 扩到 30 个，到 v1.12 是 35 个——挂在 nightly 上扫。
         </p>
         <p>
             这些都能自己去核对：源码、CI 工作流、{% include glossary-term.html term="dudect" %} harness 全是公开的；已发布的 <code>gmcrypto-core</code> crate、它的 <code>docs.rs</code> 文档、以及能跑的示例也都在。
@@ -178,10 +178,10 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
         </p>
         <dl class="version-grid">
             <dt>当前版本</dt>
-            <dd><strong>v1.11.0</strong>，2026-08-01——SM4-GCM / SM4-CCM 的 RustCrypto <code>aead</code> 0.6 trait 适配（可选特性）。C ABI 仍是 104 个入口。</dd>
+            <dd><strong>v1.16.0</strong>，2026-10-10——开启 <code>sm4-bitsliced-simd</code> 时，x86_64 上用 GFNI 算 SM4 S 盒；纯性能改动，公开 API 不变。C ABI 仍是 112 个入口。</dd>
 
             <dt>版本缺口</dt>
-            <dd>已发布的版本线上有四处缺口——v0.14、0.17–0.23、v1.5、v1.10——它们都没改动任何输出字节。</dd>
+            <dd>已发布的版本线上有五处缺口——v0.14、0.17–0.23、v1.5、v1.10、v1.14–v1.15——它们都没改动任何输出字节。</dd>
 
             <dt>完整版本线</dt>
             <dd><a href="{{ '/zh/projects/gm-crypto-rs/releases/' | relative_url }}">从 v0.6.0 起的每一轮 →</a></dd>
@@ -190,7 +190,7 @@ summary_outcome: "用 CI 泄漏回归门禁把关涉密路径。"
         <h2 id="next">下一步</h2>
         <dl class="version-grid">
             <dt>下一步</dt>
-            <dd>v1.6 起步的 TLCP（GB/T 38636）路线<strong>已在 v1.9 收官</strong>；v1.11 又落地了长期搁置的 RustCrypto <code>aead</code> 0.6 trait 适配。目前没有下一条路线定到具体版本。继续搁置：AVX-512 的 <code>sbox_x64</code>，以及流式 / 增量 CCM。另有一条是<em>永久</em>不做、而非暂缓：端点身份绑定——相当于 TLCP 里的主机名验证（hostname）——始终留给调用方。</dd>
+            <dd>v1.6 起步的 TLCP（GB/T 38636）路线<strong>已在 v1.9 收官</strong>；v1.11 又落地了长期搁置的 RustCrypto <code>aead</code> 0.6 trait 适配；v1.12–v1.13 交付了流式 SM4-CCM（先 Rust，后 C）；v1.16 用 GFNI S 盒取代了搁置已久的 AVX-512 <code>sbox_x64</code>。目前没有下一条路线定到具体版本。另有一条是<em>永久</em>不做、而非暂缓：端点身份绑定——相当于 TLCP 里的主机名验证（hostname）——始终留给调用方。</dd>
         </dl>
 
         <h2 id="limits">它不是什么</h2>

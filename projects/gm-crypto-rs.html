@@ -69,6 +69,10 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             no-confirmation SM2 key-exchange path (v1.6), record protect /
             deprotect (v1.7), certificate-pair and chain signature verification
             (v1.8), and — since v1.9 — the whole toolkit reachable from C.
+            v1.12 and v1.13 add length-committed streaming SM4-CCM, in Rust
+            and then from C, and every SM4 streaming type now zeroizes on
+            drop. Since v1.16, the opt-in SIMD SM4 path computes its S-box
+            with GFNI on capable x86_64 CPUs.
             The published
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>
             is a consumer and smoke-test tour of representative crate
@@ -80,7 +84,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
         <figure class="fig">
             {% include figures/gm-crypto-crates.svg %}
-            <figcaption class="fig__cap">fig. 3.1 — crate &amp; C ABI surface (85 entry points at v1.4.0, unchanged through v1.8; 104 as of v1.9.0, still 104 at v1.11.0)</figcaption>
+            <figcaption class="fig__cap">fig. 3.1 — crate &amp; C ABI surface (85 entry points at v1.4.0, unchanged through v1.8; 104 as of v1.9.0, 112 as of v1.13.0, still 112 at v1.16.0)</figcaption>
         </figure>
 
         <h2 id="problem">The problem</h2>
@@ -185,7 +189,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <code>[lints]</code> table. The v0.14 cycle added a
             <code>cargo-fuzz</code> (libFuzzer) harness over the
             untrusted-input decode / decrypt surface — sixteen targets then,
-            thirty as of v1.8, thirty-three as of v1.11 — run as a nightly sweep. All of it is inspectable: the source, the CI workflow, and
+            thirty as of v1.8, thirty-five as of v1.12 — run as a nightly sweep. All of it is inspectable: the source, the CI workflow, and
             the {% include glossary-term.html term="dudect" %} harness are public, alongside the published
             <code>gmcrypto-core</code> crate, its <code>docs.rs</code>
             reference, and the runnable demo.
@@ -233,10 +237,10 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         </p>
         <dl class="version-grid">
             <dt>Current</dt>
-            <dd><strong>v1.11.0</strong>, 2026-08-01 — opt-in RustCrypto <code>aead</code> 0.6 trait fit for SM4-GCM / SM4-CCM. The C ABI surface stays 104 entry points.</dd>
+            <dd><strong>v1.16.0</strong>, 2026-10-10 — GFNI SM4 S-box on x86_64 under <code>sm4-bitsliced-simd</code>; performance only, no public API change. The C ABI surface stays 112 entry points.</dd>
 
             <dt>Unpublished</dt>
-            <dd>Four gaps in the published version line — v0.14, 0.17–0.23, v1.5, v1.10 — none of them changed an output byte.</dd>
+            <dd>Five gaps in the published version line — v0.14, 0.17–0.23, v1.5, v1.10, v1.14–v1.15 — none of them changed an output byte.</dd>
 
             <dt>Full history</dt>
             <dd><a href="{{ '/projects/gm-crypto-rs/releases/' | relative_url }}">Every cycle from v0.6.0 →</a></dd>
@@ -245,7 +249,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         <h2 id="next">Next</h2>
         <dl class="version-grid">
             <dt>Next</dt>
-            <dd>The TLCP (GB/T 38636) arc begun in v1.6 <strong>closed with v1.9</strong>; v1.11 then closed the long-parked RustCrypto <code>aead</code> 0.6 trait fit. No successor arc is committed to a version yet. Still parked: AVX-512 <code>sbox_x64</code>, and streaming / incremental CCM. Permanently out of scope, not deferred: endpoint identity binding — the TLCP equivalent of hostname verification — stays the caller's.</dd>
+            <dd>The TLCP (GB/T 38636) arc begun in v1.6 <strong>closed with v1.9</strong>; v1.11 then closed the long-parked RustCrypto <code>aead</code> 0.6 trait fit, v1.12–v1.13 shipped streaming SM4-CCM (Rust, then C), and v1.16 replaced the parked AVX-512 <code>sbox_x64</code> item with a GFNI S-box. No successor arc is committed to a version yet. Permanently out of scope, not deferred: endpoint identity binding — the TLCP equivalent of hostname verification — stays the caller's.</dd>
         </dl>
 
         <h2 id="limits">What it isn't</h2>

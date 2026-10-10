@@ -32,7 +32,8 @@ most consequential work in the project — and crates.io skips all of them. The
 changes shipped together, once, in `1.0.0`. The rule has kept applying since:
 `v1.5` (the TLCP decomposition design cycle) and `v1.10` (the assurance cycle
 that wired the GmSSL interop suite into CI at a pinned oracle) are unpublished
-for the same reason.
+for the same reason, and so are `v1.14` and `v1.15`, two timing-study assurance
+cycles.
 
 The discipline underneath is easy to state and easy to violate: publish when the
 artifact someone consumes changes, not when you've been busy. Assurance work —

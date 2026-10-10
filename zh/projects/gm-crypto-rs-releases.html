@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "gm-crypto-rs——版本线"
-description: gm-crypto-rs 从 v0.6.0 到 v1.11.0 的完整版本线，包含那几轮没有发版、直接合进主干的周期。
+description: gm-crypto-rs 从 v0.6.0 到 v1.16.0 的完整版本线，包含那几轮没有发版、直接合进主干的周期。
 permalink: /zh/projects/gm-crypto-rs/releases/
 lang: zh
 alternate: /projects/gm-crypto-rs/releases/
@@ -13,13 +13,34 @@ alternate: /projects/gm-crypto-rs/releases/
         gm-crypto-rs <em>版本线</em>
     </h1>
     <p class="page-header__lede">
-        从 v0.6.0 到 v1.11.0 的每一轮，新的在上面——也包括那几轮因为没改动任何输出字节、所以没发版就合进主干的周期。案例页在<a href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}">这里</a>。
+        从 v0.6.0 到 v1.16.0 的每一轮，新的在上面——也包括那几轮因为没改动任何输出字节、所以没发版就合进主干的周期。案例页在<a href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}">这里</a>。
     </p>
 </section>
 
 <section class="section wrap reveal">
     <article class="project-detail prose">
         <dl class="version-grid">
+            <dt>v1.16.0</dt>
+            <dd>2026-10-10 — x86_64 上用 GFNI 算 SM4 S 盒（纯性能改动，公开 API 不变）。开启 <code>sm4-bitsliced-simd</code> 后，在支持 GFNI、AVX2 且操作系统启用了 AVX-512 状态的 CPU 上，批量路径（<code>encrypt_blocks</code> / <code>decrypt_blocks</code>，也就是 CTR、GCM、CCM 和 CBC 解密）与单块路径都改用 <code>GF2P8AFFINEQB</code> + <code>GF2P8AFFINEINVQB</code> 计算 S 盒。按 changelog 的数字，批量吞吐在 AMD EPYC 9V45 托管 runner 上约为 AVX2 bitsliced 的 10 倍（22 → 229 MB/s），单块在 Intel Xeon 6973P-C 上约 60 倍。GFNI 路径只在 rustc 1.89 及以上编译；MSRV 仍是 1.85，旧编译器照旧构建原来的代码。CI 新增一个 Intel SDE 任务，确认 GFNI 路径确实在跑；内部依赖 <code>cpufeatures</code> 0.3.1 修好了 Rust 1.99 的构建。自 v0.5 起搁置的 AVX-512 <code>sbox_x64</code> 待办，前提就此被替换。C ABI 仍是 112 个入口。</dd>
+
+            <dt>v1.15.0</dt>
+            <dd><em>未单独发版。</em>保障性轮次：在钉住的 GFNI 之前的源码上做了一次冻结的计时校准研究。没有改动任何 crate，所以 crates.io 跳过了这一版。</dd>
+
+            <dt>v1.14.0</dt>
+            <dd><em>未单独发版。</em>保障性轮次：在一台钉住的主机上，对 <code>Sm4CbcDecryptor::finalize()</code> 做 F21 窄窗口计时研究。F21 仍保持打开，但重新界定为研究工具，而不是 CI 门禁。没有改动任何 crate，所以 crates.io 跳过了这一版。</dd>
+
+            <dt>v1.13.0</dt>
+            <dd>2026-09-04 — 流式 SM4-CCM 进了 C ABI，SM4 流式类型全部加上 zeroize（非破坏式新增）。新增八个符号：<code>gmcrypto_sm4_ccm_encryptor_{new,update,finalize,free}</code> 和 <code>gmcrypto_sm4_ccm_decryptor_{new,update,finalize_verify,free}</code>，C ABI 从 <strong>104 → 112</strong> 个入口。所有 SM4 流式类型（GCM、CTR、CBC 以及 CCM 解密器，加上原本就有的 <code>Sm4Cipher</code> 和 <code>Sm4CcmEncryptor</code>）在 drop 时都会清零。签名不变，输出逐字节不变，MSRV 仍是 1.85。</dd>
+
+            <dt>v1.12.0</dt>
+            <dd>2026-09-04 — 长度预先承诺的流式 SM4-CCM，放在既有的 <code>sm4-aead</code> 特性后面（非破坏式新增）。<code>sm4::Sm4CcmEncryptor</code> 在构造时承诺明文长度，之后每次 <code>update</code> 都以 <code>O(chunk)</code> 内存直接吐出这一段的密文；喂多了就会中毒，<code>finalize</code> 不会给不完整的流打标签。<code>sm4::Sm4CcmDecryptor</code> 是增量输入、验证通过才提交。新增两个差分模糊测试目标（census <strong>33 → 35</strong>）。默认构建逐字节不变；C ABI 不变。</dd>
+
+            <dt>v1.11.2</dt>
+            <dd>2026-08-23 — 只改文档的补丁版本。</dd>
+
+            <dt>v1.11.1</dt>
+            <dd>2026-08-22 — 补丁版本，修了两处缺陷：开启 <code>sm4-bitsliced-simd</code> 后，串行 SM4（CCM 的 CBC-MAC 路径）在实测的 AArch64 主机上反而比标量版本慢；TLCP SM4-CBC 解保护里 Lucky13 防护的内层 HMAC 改写成固定调度的常量时间实现。</dd>
+
             <dt>v1.11.0</dt>
             <dd>2026-08-01 — SM4-GCM / SM4-CCM 的 RustCrypto <code>aead</code> 0.6 trait 适配（非破坏式新增、需显式启用）。新增 <code>sm4::Sm4Gcm</code> 与 <code>sm4::Sm4Ccm&lt;M, N&gt;</code>，是在既有 AEAD 路径之上的轻量包装层，放在 <code>aead-traits = ["sm4-aead", "dep:aead"]</code> 后面——这是自 v0.11 起就搁置的待办（backlog），因为上游当时还停在 <code>0.6.0-rc</code>；现在 <code>aead</code> 0.6.1 已稳定，MSRV 正好是 1.85。实现了 <code>KeySizeUser</code> / <code>KeyInit</code> / <code>AeadCore</code> / <code>AeadInOut</code>（返回 <code>Vec</code> 的 <code>Aead</code> 由 blanket impl 自动给出）。不新增 dudect 目标（包装层不引入新的密码学实现；涉密路径仍是原来那套代码）；新增差分模糊测试 <code>fuzz_sm4_aead_traits</code>（模糊测试 census <strong>32 → 33</strong>）。默认构建逐字节不变；C ABI 仍是 104 个入口。</dd>
 

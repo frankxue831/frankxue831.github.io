@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "gm-crypto-rs — release history"
-description: The full release line for gm-crypto-rs, v0.6.0 through v1.11.0, including the cycles that merged without a published version.
+description: The full release line for gm-crypto-rs, v0.6.0 through v1.16.0, including the cycles that merged without a published version.
 permalink: /projects/gm-crypto-rs/releases/
 lang: en
 alternate: /zh/projects/gm-crypto-rs/releases/
@@ -13,7 +13,7 @@ alternate: /zh/projects/gm-crypto-rs/releases/
         gm-crypto-rs <em>release history</em>
     </h1>
     <p class="page-header__lede">
-        Every cycle from v0.6.0 to v1.11.0, newest first — including the ones
+        Every cycle from v0.6.0 to v1.16.0, newest first — including the ones
         that merged without a published version because they changed no output
         bytes. The case study is
         <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}">here</a>.
@@ -23,6 +23,27 @@ alternate: /zh/projects/gm-crypto-rs/releases/
 <section class="section wrap reveal">
     <article class="project-detail prose">
         <dl class="version-grid">
+            <dt>v1.16.0</dt>
+            <dd>2026-10-10 — GFNI SM4 S-box on x86_64 (performance only, no public API change). Under <code>sm4-bitsliced-simd</code>, on CPUs with GFNI, AVX2 and OS-enabled AVX-512 state, both the batch path (<code>encrypt_blocks</code> / <code>decrypt_blocks</code>, so CTR, GCM, CCM and CBC decryption) and the single-block path compute the S-box with <code>GF2P8AFFINEQB</code> + <code>GF2P8AFFINEINVQB</code>. The changelog reports about 10x the AVX2 bitsliced batch throughput on an AMD EPYC 9V45 hosted runner (22 → 229 MB/s) and about 60x single-block on an Intel Xeon 6973P-C. The GFNI path compiles only on rustc 1.89 or newer; MSRV stays 1.85 and older compilers build the previous code. CI gains an Intel SDE job asserting the GFNI path runs; the internal <code>cpufeatures</code> 0.3.1 fixes the Rust 1.99 build. This replaces the premise of the AVX-512 <code>sbox_x64</code> item parked since v0.5. C ABI surface stays 112.</dd>
+
+            <dt>v1.15.0</dt>
+            <dd><em>Not published.</em> Assurance cycle: a frozen timing-calibration study on pinned pre-GFNI source. No crate changed, so crates.io skipped it.</dd>
+
+            <dt>v1.14.0</dt>
+            <dd><em>Not published.</em> Assurance cycle: the F21 <code>Sm4CbcDecryptor::finalize()</code> narrow-window timing study on one pinned host. F21 stays open, re-scoped as a research instrument rather than a CI gate. No crate changed, so crates.io skipped it.</dd>
+
+            <dt>v1.13.0</dt>
+            <dd>2026-09-04 — streaming SM4-CCM in the C ABI plus zeroize across the SM4 streaming family (additive). Eight new symbols, <code>gmcrypto_sm4_ccm_encryptor_{new,update,finalize,free}</code> and <code>gmcrypto_sm4_ccm_decryptor_{new,update,finalize_verify,free}</code>, take the C ABI from <strong>104 → 112</strong> entry points. Every SM4 streaming type (GCM, CTR, CBC and the CCM decryptor, joining <code>Sm4Cipher</code> and <code>Sm4CcmEncryptor</code>) now zeroizes on drop. No signature changes; outputs byte-identical; MSRV 1.85.</dd>
+
+            <dt>v1.12.0</dt>
+            <dd>2026-09-04 — length-committed streaming SM4-CCM behind the existing <code>sm4-aead</code> feature (additive). <code>sm4::Sm4CcmEncryptor</code> commits to the plaintext length up front and emits each chunk's ciphertext with <code>O(chunk)</code> memory; an over-feed poisons it and <code>finalize</code> refuses to tag a partial stream. <code>sm4::Sm4CcmDecryptor</code> is incremental-input, commit-on-verify. Two new differential fuzz targets (census <strong>33 → 35</strong>). Default build byte-identical; no C ABI change.</dd>
+
+            <dt>v1.11.2</dt>
+            <dd>2026-08-23 — documentation-only patch release.</dd>
+
+            <dt>v1.11.1</dt>
+            <dd>2026-08-22 — patch for two defects: serial SM4 (the CCM CBC-MAC path) ran slower than scalar under <code>sm4-bitsliced-simd</code> on the measured AArch64 host, and the TLCP SM4-CBC deprotect's Lucky13 inner-HMAC is rewritten as a fixed-schedule, constant-time construction.</dd>
+
             <dt>v1.11.0</dt>
             <dd>2026-08-01 — RustCrypto <code>aead</code> 0.6 trait fit for SM4-GCM / SM4-CCM (additive, opt-in). New <code>sm4::Sm4Gcm</code> and <code>sm4::Sm4Ccm&lt;M, N&gt;</code> as thin wrappers over the inherent AEAD paths, behind <code>aead-traits = ["sm4-aead", "dep:aead"]</code> — the backlog item parked since v0.11 while upstream sat on <code>0.6.0-rc</code>; <code>aead</code> 0.6.1 is now stable at MSRV 1.85. Implements <code>KeySizeUser</code> / <code>KeyInit</code> / <code>AeadCore</code> / <code>AeadInOut</code> (the <code>Vec</code>-returning <code>Aead</code> arrives free via blanket impl). No new dudect target (wrappers add no cryptography; secret-touching bodies are the same code); new differential fuzz target <code>fuzz_sm4_aead_traits</code> (census <strong>32 → 33</strong>). Default build byte-identical; C ABI surface stays 104.</dd>
 
