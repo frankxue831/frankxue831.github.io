@@ -82,6 +82,7 @@ alternate: /zh/projects/
                 {% endcase %}
             </p>
         </li>
+                {% if project.slug == 'gm-crypto-rs' %}{% include tool-row.html variant='work' parent='gm-crypto-rs' lang='en' %}{% endif %}
         {% endfor %}
     </ul>
 

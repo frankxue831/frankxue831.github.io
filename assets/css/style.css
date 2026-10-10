@@ -2401,3 +2401,26 @@ details.drawer .version-grid {
 
 /* Audit notes: code-reference links read as mono. */
 .audit-notes a { font-family: var(--mono); font-size: 0.9em; white-space: nowrap; }
+
+/* Live tool rows (gm-crypto-web): very faint tint so the one live tool reads
+   as distinct without leaving the editorial list style. */
+.hero-proof__item--tool .hero-proof__row,
+.work-list__item--tool .work-list__row {
+    background: var(--bg-sunk);
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+}
+.hero-proof__item--tool .hero-proof__row:hover,
+.hero-proof__item--tool .hero-proof__row:focus-visible,
+.work-list__item--tool:hover .work-list__row,
+.work-list__item--tool .work-list__row:focus-visible {
+    background: var(--bg-elevated);
+}
+.tool-cta {
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    white-space: nowrap;
+}

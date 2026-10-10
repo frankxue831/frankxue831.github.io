@@ -1,0 +1,40 @@
+{%- comment -%}
+  Live-tool row for the home "Proof" list (include.variant == 'proof') or the
+  projects work-list (include.variant == 'work'). Params: parent (project slug),
+  lang ('en' | 'zh'). The status dot comes from .status-pill::before (CSS
+  pseudo-element, no text) so it stays decorative.
+{%- endcomment -%}
+{%- assign tool_lang = include.lang | default: 'en' -%}
+{%- for tool in site.data.tools -%}
+{%- if tool.parent == include.parent -%}
+{%- capture tool_href %}{{ tool.url | relative_url }}?lang={{ tool_lang }}{% endcapture -%}
+{%- if include.variant == 'proof' %}
+                <li class="hero-proof__item hero-proof__item--tool">
+                    <a href="{{ tool_href }}" class="hero-proof__row">
+                        <span class="hero-proof__main">
+                            <span class="hero-proof__title">{{ tool.title[tool_lang] }} <span class="tool-cta">{{ tool.cta[tool_lang] }}&nbsp;<span aria-hidden="true">→</span></span></span>
+                            <span class="hero-proof__tags">{{ tool.tags[tool_lang] | join: ' · ' }}</span>
+                        </span>
+                        <span class="hero-proof__meta">
+                            <span class="status-pill" data-status="released">{{ tool.status_label[tool_lang] }}</span>
+                            <span class="hero-proof__release" title="{{ tool.vectors_label[tool_lang] | escape }}" aria-label="{{ tool.vectors_label[tool_lang] | escape }}">{{ tool.vectors[tool_lang] }}</span>
+                        </span>
+                    </a>
+                </li>
+{%- else %}
+        <li class="work-list__item work-list__item--tool reveal">
+            <a class="work-list__row" href="{{ tool_href }}">
+                <span class="work-list__head">
+                    <span class="work-list__title">{{ tool.title[tool_lang] }} <span class="tool-cta">{{ tool.cta[tool_lang] }}&nbsp;<span aria-hidden="true">→</span></span></span>
+                    <span class="work-list__tags">{{ tool.tags[tool_lang] | join: ' · ' }}</span>
+                </span>
+                <span class="work-list__meta">
+                    <span class="status-pill" data-status="released">{{ tool.status_label[tool_lang] }}</span>
+                    <span class="work-list__rel" title="{{ tool.vectors_label[tool_lang] | escape }}" aria-label="{{ tool.vectors_label[tool_lang] | escape }}">{{ tool.vectors[tool_lang] }}</span>
+                </span>
+            </a>
+            <p class="work-list__note">{{ tool.note[tool_lang] }}</p>
+        </li>
+{%- endif -%}
+{%- endif -%}
+{%- endfor -%}
