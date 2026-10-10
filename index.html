@@ -62,6 +62,7 @@ alternate: /zh/
                         </span>
                     </a>
                 </li>
+                {% if project.slug == 'gm-crypto-rs' %}{% include tool-row.html variant='proof' parent='gm-crypto-rs' lang='en' %}{% endif %}
                 {% endfor %}
             </ul>
 

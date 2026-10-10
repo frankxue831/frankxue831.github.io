@@ -1,0 +1,27 @@
+# Live browser tools hosted as separate Pages sub-sites. These are not
+# case-study projects (no detail page), so they live outside projects.yml
+# and are rendered by _includes/tool-row.html right after their parent crate.
+- slug: gm-crypto-web
+  parent: gm-crypto-rs
+  url: "/gm-crypto-web/"
+  title:
+    en: "gm-crypto-web"
+    zh: "国密在线工具"
+  cta:
+    en: "Try it"
+    zh: "在线试用"
+  tags:
+    en: ["WASM", "Browser", "SM2/SM3/SM4"]
+    zh: ["WASM", "浏览器", "SM2/SM3/SM4"]
+  status_label:
+    en: "Live"
+    zh: "已上线"
+  vectors:
+    en: "11/11 vectors"
+    zh: "国标向量 11/11"
+  vectors_label:
+    en: "Passes 11/11 GB/T test vectors in the built-in self-test"
+    zh: "内置自检通过 11/11 条国标（GB/T）测试向量"
+  note:
+    en: "Browser-only SM2 / SM3 / SM4 debugging tool built on gm-crypto-rs compiled to WebAssembly. Nothing leaves your browser."
+    zh: "基于 gm-crypto-rs 编译为 WebAssembly 的纯浏览器 SM2 / SM3 / SM4 调试工具，数据不离开浏览器。"
