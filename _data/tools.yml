@@ -23,5 +23,5 @@
     en: "Passes 11/11 GB/T test vectors in the built-in self-test"
     zh: "内置自检通过 11/11 条国标（GB/T）测试向量"
   note:
-    en: "Browser-only SM2 / SM3 / SM4 debugging tool built on gm-crypto-rs compiled to WebAssembly. Nothing leaves your browser."
-    zh: "基于 gm-crypto-rs 编译为 WebAssembly 的纯浏览器 SM2 / SM3 / SM4 调试工具，数据不离开浏览器。"
+    en: "Check SM2 / SM3 / SM4 inputs and outputs in the browser, without installing anything. Built on gm-crypto-rs compiled to WebAssembly; nothing leaves your browser."
+    zh: "不用装任何东西，在浏览器里就能调试 SM2 / SM3 / SM4 的输入输出。底层是编译成 WebAssembly 的 gm-crypto-rs，数据不离开浏览器。"
