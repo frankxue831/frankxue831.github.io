@@ -51,7 +51,7 @@ alternate: /projects/
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
                 确定性流水线：把 YAML storyboard 渲染成带旁白的讲解视频——每个 beat 可以是图示、带引用的代码标注，或会动的概念图。画面标 <em>simplified</em>（简化视图）；画帧前，引用校验门按固定 commit 核对源码——
-                视频里的 <code>verified @ commit</code> 是校验门的结论，不是装饰。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
+                视频里的 <code>verified @ commit</code> 是校验门的结论，不是装饰。当前状态：{{ project.status_label.zh }}。源码：<a href="https://github.com/frankxue831/ManimSimpleRender" rel="noopener noreferrer">GitHub 上的 ManimSimpleRender</a>——尚未打正式发布标签。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。

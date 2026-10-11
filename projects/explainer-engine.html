@@ -39,8 +39,9 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             step can draft that storyboard from a focused slice of real
             source — evidence-stamped from the files it read — but the draft
             still has to pass the same citation gate before a frame is
-            drawn. It is a private, local tool; the snapshot it describes is
-            named under <em>Evidence</em> below.
+            drawn. Its source is public in
+            <a href="https://github.com/frankxue831/ManimSimpleRender" rel="noopener noreferrer">ManimSimpleRender</a>; the
+            snapshot it describes is named under <em>Evidence</em> below.
         </p>
 
         <figure class="fig fig--video">
@@ -119,8 +120,9 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
 
         <h2 id="evidence">Evidence</h2>
         <p>
-            A private local snapshot at <code>local tag explainer-plan</code>
-            — there is no public source to inspect. What backs the render
+            A local snapshot at <code>local tag explainer-plan</code>. The
+            repository is now public, but that tag is not published on it,
+            so the exact snapshot can't be checked from outside. What backs the render
             claims is the artifact itself: the clip above is the engine's
             output, not a mock-up. It was rendered under the earlier
             <code>diagram-canvas</code> snapshot, through the same
@@ -131,11 +133,10 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             render ran. The disclosure markers — the <code>simplified</code>
             tag and the <code>verified @ commit</code> badge — are visible in
             every frame. The video itself can verify the rendered artifact
-            and those visible markers. The cited private source line and the
-            gate result are not independently checkable today. If the source
-            is later published, the cited line could be checked externally;
-            the historical gate result would still require public run
-            evidence. This later snapshot adds the optional
+            and those visible markers. The gate result is not independently
+            checkable today: with the source now public, a cited line can be
+            looked up in the repository, but the historical gate result would
+            still require public run evidence. This later snapshot adds the optional
             <code>explainer plan</code> authoring step; it does not change
             how a verified storyboard becomes a frame.
         </p>
@@ -144,9 +145,7 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
         <p>
             Nothing is committed to a milestone. The open question the diagram
             canvas half-answers sets the direction: how much of a concept can
-            be explained in motion while staying checkable against source. A
-            public source link follows if and when the repository becomes
-            reachable.
+            be explained in motion while staying checkable against source.
         </p>
 
         <h2 id="limits">What it isn't</h2>
@@ -155,7 +154,7 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             <li>Not a slideshow — the diagram canvas animates relationships, not bullet points.</li>
             <li>Not a verbatim source viewer — on-screen code is a marked simplification, with the real lines cited.</li>
             <li>Not a warrant-transfer medium — the badge shows the gate's verdict, not the evidence; readers who need to check a claim need <a href="{{ '/notes/constant-time-warrant/' | relative_url }}">links, not narration</a>.</li>
-            <li>{{ status_label }} — not a public-source project today.</li>
+            <li>{{ status_label }} — public source, but no tagged release.</li>
         </ul>
 
         <div class="project-detail__links">

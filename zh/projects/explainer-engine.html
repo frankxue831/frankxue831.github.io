@@ -30,7 +30,7 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
             <code>storyboard</code> → <code>引用校验门</code> →
             <code>确定性代码生成</code> → <code>Manim 渲染</code>并合成旁白。可选的
             <code>explainer plan</code> 能从真实源码的一段焦点里起草这份
-            storyboard——证据是从它读过的文件里盖章出来的——但草稿仍要过同一道引用校验门，才能画出一帧。这是私有、本地工具；对应的快照写在下面的<em>「证据」</em>里。
+            storyboard——证据是从它读过的文件里盖章出来的——但草稿仍要过同一道引用校验门，才能画出一帧。源码公开在 <a href="https://github.com/frankxue831/ManimSimpleRender" rel="noopener noreferrer">ManimSimpleRender</a>；对应的快照写在下面的<em>「证据」</em>里。
         </p>
 
         <figure class="fig fig--video">
@@ -72,15 +72,15 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
 
         <h2 id="evidence">证据</h2>
         <p>
-            私有快照 <code>local tag explainer-plan</code>——没有可查看的公开源码。支撑渲染说法的是产物本身：上面这段视频是引擎的真实输出，不是效果图。它是在更早的
+            本地快照 <code>local tag explainer-plan</code>。仓库现已公开，但这个 tag 没有发布到公开仓库上，所以这份快照本身无法由外部核对。支撑渲染说法的是产物本身：上面这段视频是引擎的真实输出，不是效果图。它是在更早的
             <code>diagram-canvas</code> 快照下渲染的，走的仍是这条带引用校验门的流水线。里面的五种力来自一份研究知识库（wiki）；屏幕上的徽标标注了「memory force」所核对的具体源码行与 commit，且渲染开始前引用校验门已通过。出处标记——<code>simplified</code> 标签、<code>verified @ commit</code>
-            徽标——每一帧都看得见。视频本身只能核对产物和这些可见标记；引用的私有源码行与校验门结果，目前无法由外部独立核对。若源码以后公开，外部读者可以自行核对引用行；当时的校验门结果仍需要公开运行证据。这个更晚的快照加上了可选的
+            徽标——每一帧都看得见。视频本身只能核对产物和这些可见标记；校验门结果目前无法由外部独立核对：源码已公开，引用行可以在仓库里查到，但当时的校验门结果仍需要公开运行证据。这个更晚的快照加上了可选的
             <code>explainer plan</code> 起草步骤；一份核对过的 storyboard 怎样变成一帧，没有变。
         </p>
 
         <h2 id="next">下一步</h2>
         <p>
-            目前没有承诺到里程碑的计划。方向由图示画布只答了一半的那个问题来定：一个概念有多少内容能做成动画讲出来，同时仍可按源码核对。仓库若变为公开可访问，再补源码链接。
+            目前没有承诺到里程碑的计划。方向由图示画布只答了一半的那个问题来定：一个概念有多少内容能做成动画讲出来，同时仍可按源码核对。
         </p>
 
         <h2 id="limits">它不是什么</h2>
@@ -89,7 +89,7 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
             <li>不是幻灯片——图示画布动的是关系，不是要点列表。</li>
             <li>不是逐字源码查看器——屏幕上的代码是带标记的简化视图，真实的行都给了引用。</li>
             <li>不是传递可信度的媒介——徽标给出的是校验门的结论，不是证据本身；真要核对说法的读者，需要的是<a href="{{ '/zh/notes/constant-time-warrant/' | relative_url }}">链接，不是叙述</a>。</li>
-            <li>{{ status_label }}——目前不是公开源码项目。</li>
+            <li>{{ status_label }}——源码公开，但还没有打发布标签。</li>
         </ul>
 
         <div class="project-detail__links">
