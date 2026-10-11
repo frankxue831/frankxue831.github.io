@@ -40,8 +40,9 @@ alternate: /zh/about/
             <em>gm-crypto-web</em> is the part of it you can use right now: a
             browser tool for SM2, SM3 and SM4, built on gm-crypto-rs compiled to
             WebAssembly. Everything runs locally in the page, and it checks itself
-            against the GB/T test vectors on load (11/11). It's for debugging, not
-            production keys, and it hasn't been audited.
+            on load (11/11): SM3 and SM4 against the GB/T test vectors, SM2 by
+            round trip. It's for debugging, not production keys, and it hasn't
+            been audited.
             <a href="{{ '/gm-crypto-web/?lang=en' | relative_url }}">Try it</a>.
         </p>
         <p>
