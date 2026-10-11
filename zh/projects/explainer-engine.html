@@ -77,6 +77,24 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
             徽标——每一帧都看得见。视频本身只能核对产物和这些可见标记；校验门结果目前无法由外部独立核对：源码已公开，引用行可以在仓库里查到，但当时的校验门结果仍需要公开运行证据。这个更晚的快照加上了可选的
             <code>explainer plan</code> 起草步骤；一份核对过的 storyboard 怎样变成一帧，没有变。
         </p>
+        <p>
+            第二段视频的出处可以由外部核对。它讲的是规划器的证据预算：每条规划出的引用最多能带多少个证据 token——每行留两个位置，至少留五个，最多二十四个——以及少于两个、或者一个强 token 都没有的引用为什么会被丢掉。画面上的每个常量都引用了规划器自己的源码：常量在<a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L55-L58" rel="noopener noreferrer">第 55–58 行</a>，预算在<a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L205-L211" rel="noopener noreferrer">第 205–211 行</a>，拒收弱引用的规则在<a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L312-L313" rel="noopener noreferrer">第 312–313 行</a>。<a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/examples/evidence-budget.story.yaml" rel="noopener noreferrer">storyboard</a>和这些源码都在公开 commit <code>3d0a1b5</code> 上，比上面的 <code>explainer-plan</code> 快照更新；检出这个 commit 后运行
+            <code>explainer verify examples/evidence-budget.story.yaml</code>，就能对这段视频所用的 storyboard 重跑同一道引用校验门。这段视频是从这个 commit 渲染的，这一点只写在这里，画面上看不出来：它的 storyboard 没有固定 commit，因为它就放在自己引用的仓库里，所以画面上的徽标只写 <code>verified</code>，不带 commit。
+        </p>
+
+        <figure class="fig fig--video">
+            <video controls preload="metadata" aria-describedby="fig-budget-cap"
+                   width="1920" height="1080"
+                   poster="{{ '/assets/video/evidence-budget.poster.png' | relative_url }}">
+                <source src="{{ '/assets/video/evidence-budget.mp4' | relative_url }}" type="video/mp4">
+                <track kind="captions" srclang="zh-CN" label="中文"
+                       src="{{ '/assets/video/evidence-budget.zh.vtt' | relative_url }}" default>
+                <track kind="captions" srclang="en" label="English"
+                       src="{{ '/assets/video/evidence-budget.en.vtt' | relative_url }}">
+                <a href="{{ '/assets/video/evidence-budget.mp4' | relative_url }}">下载证据预算讲解视频（mp4）</a>
+            </video>
+            <figcaption class="fig__cap" id="fig-budget-cap">图 3.2 — 规划器的证据预算，一分钟，引用的是引擎自己在公开 commit 3d0a1b5 上的源码（旁白为英文；提供英文与中文字幕轨）。</figcaption>
+        </figure>
 
         <h2 id="next">下一步</h2>
         <p>
