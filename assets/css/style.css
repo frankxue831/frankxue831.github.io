@@ -1177,7 +1177,8 @@ body.lang-zh .note li {
     background: var(--status-released);
     border-color: var(--status-released);
 }
-.status-pill[data-status="private-pre-release"]::before {
+.status-pill[data-status="private-pre-release"]::before,
+.status-pill[data-status="public-pre-release"]::before {
     background: var(--status-pre);
     border-color: var(--status-pre);
 }
