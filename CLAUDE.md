@@ -63,7 +63,7 @@ When adding interactivity, reach for the lightest tool that fits, in this order:
 
 1. **CSS only** — hover/affordance states, transitions, reveals (all gated by `prefers-reduced-motion`).
 2. **Native HTML** — `<details>` (audit drawer), the Popover API (glossary), `@view-transition` (cross-document fade). Declarative, zero JS, no new CSP hash.
-3. **A small vanilla-JS IIFE** in `assets/js/` — only when 1–2 can't do it. The seven files are `contents.js` (contents rail), `copy.js` (install copy), `decrypt.js` (home hero), `locale-404.js` (shared-404 locale handling), `main.js` (mobile nav), `reveal.js` (scroll reveal), and `theme.js` (theme toggle). External `.js` is governed by `script-src 'self'` and needs no hash.
+3. **A small vanilla-JS IIFE** in `assets/js/` — only when 1–2 can't do it. The six files are `contents.js` (contents rail), `copy.js` (install copy), `locale-404.js` (shared-404 locale handling), `main.js` (mobile nav), `reveal.js` (scroll reveal), and `theme.js` (theme toggle). External `.js` is governed by `script-src 'self'` and needs no hash.
 4. **A new inline script** — last resort; add its sha256 to the CSP in `head.html` (the validator pins it).
 
 External CDNs, web fonts, and analytics are out — fonts are self-hosted and `connect-src` is `'self'`.

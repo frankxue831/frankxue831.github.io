@@ -491,7 +491,7 @@ end
 
 # --- Route-aware progressive-enhancement scripts ---
 global_scripts = %w[main.js theme.js reveal.js].freeze
-home_only_scripts = %w[decrypt.js].freeze
+home_only_scripts = %w[].freeze
 case_study_scripts = %w[contents.js].freeze
 gm_only_scripts = %w[copy.js].freeze
 known_scripts = global_scripts + home_only_scripts + case_study_scripts + gm_only_scripts
@@ -521,7 +521,13 @@ Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   record(failures, "#{source}: missing inline motion gate") unless html.include?("classList.add('motion')")
 end
 
-# Home heroes must keep their real, server-rendered title (decrypt is JS-only).
+# Home heroes must keep their real, server-rendered title. The decrypt effect
+# was removed for #100 (spec A): no script may rewrite the headline.
+%w[index.html zh/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  record(failures, "#{relative}: hero headline must not load a scramble script") if html.include?("decrypt.js")
+end
+record(failures, "assets/js/decrypt.js must stay removed (#100 spec A)") if ROOT.join("assets/js/decrypt.js").exist?
 { "index.html" => "auditable tools", "zh/index.html" => "可审计" }.each do |relative, needle|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?

@@ -1,5 +1,8 @@
 ---
 title: "「共用代码」和「共用一个包」，是两个决定"
+# Display-only line-break hints for the ZH h1 (#100 spec B); title stays plain for <title>/OG.
+# nowrap keeps WebKit from breaking between 」 and ，.
+title_breaks: "「共用代码」和<wbr><span class=\"nowrap\">「共用一个包」，</span><wbr>是两个决定"
 date: 2026-08-09
 permalink: /zh/notes/extraction-trigger/
 lang: zh
