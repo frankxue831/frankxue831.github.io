@@ -17,11 +17,11 @@
     en: "Live"
     zh: "已上线"
   vectors:
-    en: "11/11 vectors"
-    zh: "国标向量 11/11"
+    en: "11/11 self-test"
+    zh: "自检 11/11"
   vectors_label:
-    en: "Passes 11/11 GB/T test vectors in the built-in self-test"
-    zh: "内置自检通过 11/11 条国标（GB/T）测试向量"
+    en: "Built-in self-test 11/11: SM3/SM4 against the GB/T vectors, SM2 by round trip"
+    zh: "内置自检 11/11（SM3、SM4 对国标向量，SM2 做往返校验）"
   note:
     en: "Check SM2 / SM3 / SM4 inputs and outputs in the browser, without installing anything. Built on gm-crypto-rs compiled to WebAssembly; nothing leaves your browser."
     zh: "不用装任何东西，在浏览器里就能调试 SM2 / SM3 / SM4 的输入输出。底层是编译成 WebAssembly 的 gm-crypto-rs，数据不离开浏览器。"
