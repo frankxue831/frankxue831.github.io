@@ -41,6 +41,8 @@
 #   k-class (signatures)    → k-class（与 EN 一致；不写「k 类」）
 #   invert diagnostics      → 域求逆诊断（不用 bare invert 诊断）
 #   render (video verb)     → 渲染（默认完整；不省作「渲」）
+#   evidence token          → 证据 token（token 不译）
+#   evidence budget         → 证据预算
 #   cold start              → 冷启动
 #   wire output             → 协议输出（wire）（不用单独的「线上输出」）
 #   overclaim               → 夸大 / 说满（极性勿与「含糊」互换）

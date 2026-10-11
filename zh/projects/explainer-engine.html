@@ -78,12 +78,8 @@ summary_outcome: "屏幕上每个说法，渲染前都按固定 commit 在源码
             <code>explainer plan</code> 起草步骤；一份核对过的 storyboard 怎样变成一帧，没有变。
         </p>
         <p>
-            第二段视频可以由外部核对。它讲的是规划器的证据预算：每条规划出的引用要带多少个证据 token——每个被引用的行两个，最少五个，最多二十四个——以及拿不出证据的引用为什么会被丢掉。画面上的每个数字都引用了规划器自己的源码：常量在
-            <a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L55-L58" rel="noopener noreferrer">第 55–58 行</a>，预算在
-            <a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L205-L211" rel="noopener noreferrer">第 205–211 行</a>，丢弃规则在
-            <a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L312-L313" rel="noopener noreferrer">第 312–313 行</a>。<a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/examples/evidence-budget.story.yaml" rel="noopener noreferrer">storyboard</a>
-            和这些源码都在公开 commit <code>3d0a1b5</code> 上，比上面固定的快照更新；检出这个 commit 后运行
-            <code>explainer verify examples/evidence-budget.story.yaml</code>，就能重跑这次渲染通过的引用校验门。它的 storyboard 没有固定 commit，因为它就放在自己引用的仓库里，所以画面上的徽标只写 <code>verified</code>，不带 commit；commit 写在这里。
+            第二段视频的出处可以由外部核对。它讲的是规划器的证据预算：每条规划出的引用最多能带多少个证据 token——每行留两个位置，至少留五个，最多二十四个——以及少于两个、或者一个强 token 都没有的引用为什么会被丢掉。画面上的每个常量都引用了规划器自己的源码：常量在<a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L55-L58" rel="noopener noreferrer">第 55–58 行</a>，预算在<a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L205-L211" rel="noopener noreferrer">第 205–211 行</a>，拒收弱引用的规则在<a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L312-L313" rel="noopener noreferrer">第 312–313 行</a>。<a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/examples/evidence-budget.story.yaml" rel="noopener noreferrer">storyboard</a>和这些源码都在公开 commit <code>3d0a1b5</code> 上，比上面的 <code>explainer-plan</code> 快照更新；检出这个 commit 后运行
+            <code>explainer verify examples/evidence-budget.story.yaml</code>，就能对这段视频所用的 storyboard 重跑同一道引用校验门。这段视频是从这个 commit 渲染的，这一点只写在这里，画面上看不出来：它的 storyboard 没有固定 commit，因为它就放在自己引用的仓库里，所以画面上的徽标只写 <code>verified</code>，不带 commit。
         </p>
 
         <figure class="fig fig--video">
