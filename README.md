@@ -15,9 +15,8 @@ No framework, no CSS preprocessor, no build step beyond Jekyll. The aesthetic is
 - **Light / dark theme.** Three-state toggle (light · dark · auto) that persists a
   preference and follows the OS when set to auto, with a pre-paint script to avoid
   a flash of the wrong theme.
-- **Progressive enhancement.** Seven focused vanilla JavaScript files in
-  `assets/js/` (approximately 570 lines total) add scroll reveals, a
-  decrypt-on-reveal effect, shared-404 locale handling, a contents rail with
+- **Progressive enhancement.** Six focused vanilla JavaScript files in
+  `assets/js/` add scroll reveals, shared-404 locale handling, a contents rail with
   scroll-spy, a copy-to-clipboard install button, theme controls, and mobile nav.
   Every page works with JavaScript disabled, and all motion respects
   `prefers-reduced-motion`.

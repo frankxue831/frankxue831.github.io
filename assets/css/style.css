@@ -552,16 +552,14 @@ body.lang-zh em {
     color: var(--accent-cool);
 }
 
-/* CJK display headlines breathe better at neutral tracking.
-   text-wrap: balance stays Latin-only — Chromium's balancer mishandles
-   mixed CJK/Latin display lines (it can open a line with a fullwidth
-   comma, which native wrapping correctly forbids). */
+/* CJK display headlines breathe better at neutral tracking. Wrapping
+   (keep-all + strict + balance) lives in the #100 spec B block below;
+   line-break: strict keeps the balancer from opening a line with 、，。. */
 body.lang-zh .hero__title,
 body.lang-zh .page-header__title,
 body.lang-zh .section__title {
     letter-spacing: 0;
     line-height: 1.08;
-    text-wrap: wrap;
 }
 
 /* CJK body text reads comfortably with slightly more leading — clreq
@@ -974,9 +972,9 @@ body.lang-zh .note li {
     letter-spacing: 0.02em;
 }
 
-/* Stagger reveal on load */
+/* Stagger reveal on load. The headline is deliberately excluded (#100
+   spec A): it must be fully readable, unmoved, from the first frame. */
 .hero__eyebrow,
-.hero__title,
 .hero__lede,
 .hero-proof,
 .hero__cta {
@@ -985,7 +983,6 @@ body.lang-zh .note li {
     animation: rise var(--dur-slow) var(--ease) forwards;
 }
 .hero__eyebrow { animation-delay: 60ms; }
-.hero__title { animation-delay: 140ms; }
 .hero__lede { animation-delay: 280ms; }
 .hero__cta { animation-delay: 420ms; }
 .hero-proof { animation-delay: 260ms; }
@@ -1573,7 +1570,7 @@ body.lang-zh .note li {
         max-width: 12ch;
     }
     body.lang-zh .hero__title {
-        max-width: 13ch;
+        max-width: none; /* the nowrap accent phrase must fit inside the box */
         font-size: clamp(2.35rem, 11.8vw, 3rem);
         word-break: keep-all;
     }
@@ -2092,20 +2089,22 @@ body.lang-zh .note li {
 }
 
 /* ============================================================
-   Hero decrypt cells (built in place by decrypt.js).
-   Widths are locked inline by JS to each glyph's final advance;
-   overflow:hidden keeps a wider random glyph from overlapping
-   its neighbour (no reflow, ever). Accent cells inherit the
-   <em> indigo. Only present while JS runs.
+   #100 spec B: Chinese heading wrapping. ZH only; EN untouched.
+   keep-all + strict keep CJK runs and punctuation together, balance
+   evens line lengths; .nowrap pins phrases that must never split.
    ============================================================ */
-.hero-word { white-space: nowrap; }
-.hero-cell {
-    display: inline-block;
-    overflow: hidden;
-    text-align: center;
-    white-space: pre;          /* keep space cells from collapsing */
-    vertical-align: baseline;
+body.lang-zh h1,
+body.lang-zh h2,
+body.lang-zh .section__title,
+body.lang-zh .page-header__title,
+:lang(zh) h1,
+:lang(zh) h2 {
+    word-break: keep-all;
+    line-break: strict;
+    text-wrap: balance;
+    overflow-wrap: anywhere; /* last-resort guard against overflow at 360 */
 }
+.nowrap { white-space: nowrap; }
 
 
 /* =========================================================
