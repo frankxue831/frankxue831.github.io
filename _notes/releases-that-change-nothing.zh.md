@@ -1,5 +1,7 @@
 ---
 title: "什么都没变的版本，就不发"
+# Display-only line-break hints for the ZH h1 (#100 spec B); title stays plain for <title>/OG.
+title_breaks: "什么都没变的<wbr>版本，<wbr>就不发"
 date: 2026-06-03
 permalink: /zh/notes/releases-that-change-nothing/
 lang: zh

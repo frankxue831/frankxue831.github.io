@@ -1,5 +1,7 @@
 ---
 title: "在 CI 里拦住常量时间回归"
+# Display-only line-break hints for the ZH h1 (#100 spec B); title stays plain for <title>/OG.
+title_breaks: "在 CI 里拦住<wbr>常量时间回归"
 date: 2026-05-31
 permalink: /zh/notes/constant-time-ci-gate/
 lang: zh

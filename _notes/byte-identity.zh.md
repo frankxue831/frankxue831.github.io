@@ -1,5 +1,7 @@
 ---
 title: "符合标准，就是逐字节一致——否则不算"
+# Display-only line-break hints for the ZH h1 (#100 spec B); title stays plain for <title>/OG.
+title_breaks: "符合标准，<wbr>就是<wbr>逐字节一致——<wbr>否则不算"
 date: 2026-06-01
 permalink: /zh/notes/byte-identity/
 lang: zh

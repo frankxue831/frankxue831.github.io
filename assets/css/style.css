@@ -1435,7 +1435,7 @@ body.lang-zh .note li {
 
 .version-grid {
     display: grid;
-    grid-template-columns: 120px 1fr;
+    grid-template-columns: 120px minmax(0, 1fr);
     gap: var(--space-3) var(--space-6);
     margin: 0 0 var(--space-6);
     font-family: var(--mono);
@@ -1448,12 +1448,14 @@ body.lang-zh .note li {
     letter-spacing: 0.04em;
 }
 .version-grid dd {
+    min-width: 0;
+    overflow-wrap: anywhere; /* long symbols/feature lists (#100): wrap, don't overflow at 360 */
     margin: 0;
     color: var(--fg);
 }
 @media (max-width: 759px) {
     .version-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: var(--space-1) 0;
     }
     .version-grid dt { margin-top: var(--space-3); }
