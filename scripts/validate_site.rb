@@ -953,9 +953,11 @@ end
 # High-churn ZH work-list blurbs sit outside case_study and have re-hosted the
 # same terminology regressions (会过期, 一次性, 对过源码). Pin the current
 # terms of record so the next blurb edit keeps them.
+# ghrunners blurbs lead with purpose ("跑一次就能看出…为什么卡住"); the
+# term-of-record 单次运行 stays on the detail page + glossary, not the blurb.
 {
-  "zh/index.html" => %w[会衰减 单次运行 核对源码],
-  "zh/projects/index.html" => %w[会衰减 单次运行 核对源码]
+  "zh/index.html" => %w[会衰减 跑一次就能看出 核对源码],
+  "zh/projects/index.html" => %w[会衰减 跑一次就能看出 核对源码]
 }.each do |relative, phrases|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
