@@ -140,6 +140,43 @@ summary_outcome: "Every on-screen claim is verified against the source repo at a
             <code>explainer plan</code> authoring step; it does not change
             how a verified storyboard becomes a frame.
         </p>
+        <p>
+            A second clip can be checked from outside. It explains the
+            planner's evidence budget: how many evidence tokens each planned
+            cite must carry — two per cited line, never fewer than five, never
+            more than twenty-four — and why a cite that cannot prove anything
+            is dropped. Every number on screen cites the planner's own source:
+            <a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L55-L58" rel="noopener noreferrer">lines 55–58</a>
+            for the constants,
+            <a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L205-L211" rel="noopener noreferrer">205–211</a>
+            for the budget, and
+            <a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/explainer/plan/evidence.py#L312-L313" rel="noopener noreferrer">312–313</a>
+            for the drop rule. The
+            <a href="https://github.com/frankxue831/ManimSimpleRender/blob/3d0a1b5f67c2715079e9256f1935c4332d358056/examples/evidence-budget.story.yaml" rel="noopener noreferrer">storyboard</a>
+            and that source are both at public commit <code>3d0a1b5</code>,
+            newer than the pinned snapshot; from a checkout of that commit,
+            <code>explainer verify examples/evidence-budget.story.yaml</code>
+            reruns the citation gate this render passed. Its storyboard pins no
+            commit, because it lives in the repository it cites, so the
+            on-screen badge reads <code>verified</code> without one; the commit
+            is named here instead.
+        </p>
+
+        <figure class="fig fig--video">
+            <video controls preload="metadata" aria-describedby="fig-budget-cap"
+                   width="1920" height="1080"
+                   poster="{{ '/assets/video/evidence-budget.poster.png' | relative_url }}">
+                <source src="{{ '/assets/video/evidence-budget.mp4' | relative_url }}" type="video/mp4">
+                <track kind="captions" srclang="en" label="English"
+                       src="{{ '/assets/video/evidence-budget.en.vtt' | relative_url }}" default>
+                <track kind="captions" srclang="zh-CN" label="中文"
+                       src="{{ '/assets/video/evidence-budget.zh.vtt' | relative_url }}">
+                <a href="{{ '/assets/video/evidence-budget.mp4' | relative_url }}">Download the evidence-budget explainer (mp4)</a>
+            </video>
+            <figcaption class="fig__cap" id="fig-budget-cap">fig. 3.2 — the planner's evidence
+            budget, one minute, citing the engine's own source at public commit
+            3d0a1b5 (English narration; English and Chinese caption tracks).</figcaption>
+        </figure>
 
         <h2 id="next">Next</h2>
         <p>

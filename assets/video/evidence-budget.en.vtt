@@ -1,0 +1,37 @@
+WEBVTT
+
+00:03.700 --> 00:08.103
+Every cite the planner writes carries evidence tokens the gate
+
+00:08.203 --> 00:11.807
+must find in the cited lines. Its budget grows with
+
+00:11.907 --> 00:14.640
+the cite: room for two tokens per line.
+
+00:17.250 --> 00:22.232
+Proportional must not mean unbounded. Two bounds shape the budget: a
+
+00:22.332 --> 00:25.670
+floor for short cites and a cap for long ones.
+
+00:25.783 --> 00:29.679
+A one-line cite still gets room for five tokens: a
+
+00:29.779 --> 00:34.155
+FLOOR on the budget, so short cites keep their coverage.
+
+00:34.266 --> 00:39.614
+And a long cite stops at a CAP of twenty-four, so it stays readable.
+
+00:43.916 --> 00:47.652
+The budget is a ceiling, not a promise. A planned
+
+00:47.752 --> 00:52.192
+cite that cannot yield real proof never reaches the video.
+
+00:52.300 --> 00:55.664
+Fewer than two tokens, or none of them strong, and
+
+00:55.764 --> 00:59.544
+the planner drops the whole beat instead of shipping it.
