@@ -126,9 +126,9 @@ alternate: /zh/
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
-                Pure-Rust SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 SDK with
-                constant-time-designed secret paths and in-CI leak-regression
-                gates. Public <strong>{{ project.release }}</strong> is on
+                A pure-Rust library for the Chinese national crypto standards
+                (SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4), for Rust projects that need
+                them. Public <strong>{{ project.release }}</strong> is on
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'repolens-rs' %}
@@ -137,9 +137,10 @@ alternate: /zh/
                 <strong>{{ project.status_label.en }}</strong>. Private project — no public source link.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
-                One-shot macOS observability for GitHub Actions self-hosted
-                runners — launchd state, process trees, logs, and API status as
-                typed findings — plus guarded launchd control. {{ project.status_label.en }}.
+                A macOS CLI that tells you, in one run, why a self-hosted
+                GitHub Actions runner is stuck. It reports launchd state,
+                process tree, logs, and API status as typed findings, plus
+                guarded launchd control. {{ project.status_label.en }}.
                 Local prototype — no public source link.
                 <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}

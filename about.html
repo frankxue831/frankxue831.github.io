@@ -27,7 +27,7 @@ alternate: /zh/about/
             they sit on top of.
         </p>
         <p>
-            Lately that's meant four things.
+            As of Oct 2026, that's five things.
         </p>
         <p>
             <em>gm-crypto-rs</em> is a pure-Rust SDK for the Chinese national
@@ -35,6 +35,15 @@ alternate: /zh/about/
             constant time, and an in-CI leak harness re-checks that on every
             commit rather than trusting the design review. The core group fails
             the build when it crosses the published gate.
+        </p>
+        <p>
+            <em>gm-crypto-web</em> is the part of it you can use right now: a
+            browser tool for SM2, SM3 and SM4, built on gm-crypto-rs compiled to
+            WebAssembly. Everything runs locally in the page, and it checks itself
+            on load (11/11): SM3 and SM4 against the GB/T test vectors, SM2 by
+            round trip. It's for debugging, not production keys, and it hasn't
+            been audited.
+            <a href="{{ '/gm-crypto-web/?lang=en' | relative_url }}">Try it</a>.
         </p>
         <p>
             <em>RepoLens</em> is a repository memory layer for AI coding

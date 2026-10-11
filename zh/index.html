@@ -119,14 +119,14 @@ alternate: /
             <p class="work-list__note">
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
-                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK。涉密路径按常量时间设计，CI 里用 dudect 门禁拦泄漏回归。公开版 <strong>{{ project.release }}</strong> 在
+                给需要国密算法的 Rust 项目用的纯 Rust SDK，覆盖 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4。公开版 <strong>{{ project.release }}</strong> 在
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'repolens-rs' %}
                 给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对上当前代码，新会话不必冷启动重新摸清项目。<strong>{{ project.status_label.zh }}</strong>。私有项目——暂无公开源码链接。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
-                macOS 上查 self-hosted runner 的单次运行工具：launchd 状态、进程树、日志和 GitHub API 汇总成类型化 findings，外加受控的 launchd 控制。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
+                macOS 上的命令行工具，跑一次就能看出 self-hosted GitHub Actions runner 为什么卡住。汇总 launchd 状态、进程树、日志和 GitHub API 为类型化 findings，外加受控的 launchd 控制。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
                 把 storyboard 渲染成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
