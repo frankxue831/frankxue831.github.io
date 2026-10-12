@@ -4,16 +4,16 @@ date: 2026-06-03
 permalink: /notes/releases-that-change-nothing/
 lang: en
 alternate: /zh/notes/releases-that-change-nothing/
-description: "Why gm-crypto-rs leaves gaps in its version line: cycles that changed no output bytes merged without a published release, each for a reason its records give."
-excerpt: "A published version is a promise about bytes, not a diary of work. Here's why some of gm-crypto-rs's hardest cycles were never published at all."
+description: "Why gm-crypto-rs leaves gaps in its version line: several cycles that changed no output bytes merged without a published release, each for a reason its records give."
+excerpt: "A published version is a promise about bytes, not a diary of work. Here's why some of gm-crypto-rs's hardest cycles never got a version of their own."
 ---
 
 A published version number is a promise to whoever depends on you. The easy
 mistake is to treat it as a log of effort — every sprint earns a bump, every
 merge a new number on crates.io. But a dependency doesn't care how hard you
-worked; it cares whether the bytes it links against changed. So
-in [`gm-crypto-rs`]({{ '/projects/gm-crypto-rs/' | relative_url }}), cycles that
-changed no *output* merged without a version of their own. The project records
+worked; it cares whether the bytes it links against changed. In
+[`gm-crypto-rs`]({{ '/projects/gm-crypto-rs/' | relative_url }}), several cycles
+that changed no *output* merged without a version of their own. The project records
 give the reason cycle by cycle; the first, for `0.14`, puts it plainly:
 publishing byte-identical crypto is release noise.
 
@@ -55,8 +55,8 @@ There's a cost, and it mirrors the
 [constant-time gate]({{ '/notes/constant-time-ci-gate/' | relative_url }})'s: a version line with
 deliberate holes needs explaining. A reader scanning crates.io sees `0.13` and
 then `0.15`, sees `0.16` and then `1.0`, and has to be told the missing numbers
-aren't abandonment —
-they're cycles that refused to bill assurance churn as a byte-changing release.
+aren't abandonment — each is a cycle whose record says why it didn't get a
+version of its own.
 I'd rather owe that explanation than overstate a release. The full history, with
 the skipped cycles named and explained, is on the
 [release history]({{ '/projects/gm-crypto-rs/releases/' | relative_url }}) and in the public

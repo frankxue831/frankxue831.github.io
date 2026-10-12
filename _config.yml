@@ -65,7 +65,7 @@ defaults:
         path: /assets/img/social-card.png
         width: 1200
         height: 630
-        alt: "Frank Xue — software engineer. Building auditable tools for code, systems, and agents."
+        alt: "Frank Xue — software engineer. Building useful software with AI."
   # ZH page tree: override og:locale to zh_CN, and swap in the Chinese share
   # card so a shared /zh/ URL doesn't preview as an English site. More-specific
   # path scope wins over the global "" scope above. NOTE: this matches *source*
@@ -80,7 +80,7 @@ defaults:
         path: /assets/img/social-card.zh.png
         width: 1200
         height: 630
-        alt: "Frank Xue——软件工程师。为代码、系统和 Agent，写可审计、状态清晰的工具。"
+        alt: "Frank Xue——软件工程师。借助 AI，做有用的软件。"
   # Notes are long-form documents; the more-specific scope sets their layout
   # while inheriting the share image above.
   - scope:

@@ -12,7 +12,7 @@ image:
   path: /assets/img/social-card.zh.png
   width: 1200
   height: 630
-  alt: "Frank Xue——软件工程师。为代码、系统和 Agent，写可审计、状态清晰的工具。"
+  alt: "Frank Xue——软件工程师。借助 AI，做有用的软件。"
 alternate: /notes/byte-identity/
 description: "gm-crypto-rs 怎么核对 SM2/SM3/SM4 的输出：对照 KAT 向量、GmSSL 和 OpenSSL 逐字节比——包括那些让「看着对」变成谎话的模式语义陷阱。"
 excerpt: "密码学的测试不问「输出看着对不对」。它问的是：在相同的模式语义下，输出字节是否与参考实现完全一致——而难就难在后半句。"

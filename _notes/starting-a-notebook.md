@@ -40,12 +40,12 @@ If those three pieces are not there yet, the thought stays private until they ar
 
 - **Status-only updates** — "shipped X," "still working on Y," with no decision or evidence.
 - **Generic lessons** — advice that would fit any project without naming a constraint.
-- **Release notes that already have a home** — version tables and crate history live on the project pages; a note only appears when the *policy* behind a skip or a gate needs its own argument.
+- **Release notes that already have a home** — version tables and crate history live on the project pages; a note only appears when the *reasoning* behind a skip or a gate needs its own argument.
 - **Meta about the notebook itself** — after this page, the section should not keep explaining that it exists. The lede on the [notes index]({{ '/notes/' | relative_url }}) carries that role for first-time visitors.
 
 ## A worked example
 
-The gm-crypto-rs line that skips crates.io versions is easy to misread as "lazy shipping." The records are narrower than that, and they go cycle by cycle: each skipped cycle changed no runtime output byte, and its own entry says why it merged without a published version. The gaps are listed under Evidence on the [case study]({{ '/projects/gm-crypto-rs/' | relative_url }}) and argued for in the releases note — including the gaps a reader can check on crates.io. The notebook is for that middle layer: not the version table alone, and not a vague essay on "shipping discipline," but the claim + the recorded reasons + the places to verify it.
+The gm-crypto-rs line that skips crates.io versions is easy to misread as "lazy shipping." The records say something more specific, cycle by cycle: each skipped cycle changed no runtime output byte, and its own entry says why it merged without a published version. The gaps are listed under Evidence on the [case study]({{ '/projects/gm-crypto-rs/' | relative_url }}) and argued for in the releases note — including the gaps a reader can check on crates.io. The notebook is for that middle layer: not the version table alone, and not a vague essay on "shipping discipline," but the claim + the recorded reasons + the places to verify it.
 
 ## The promise to the reader
 

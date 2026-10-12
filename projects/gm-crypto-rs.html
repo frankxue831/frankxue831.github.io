@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "gm-crypto-rs"
-description: A pure-Rust SDK for China's SM2/SM3/SM4 cryptography standards, with in-CI dudect timing-leak checks on its constant-time-designed secret-handling paths. Not independently audited.
+description: A pure-Rust library for China's SM2/SM3/SM4 cryptography standards, with in-CI dudect timing-leak checks on its constant-time-designed secret-handling paths. Not independently audited.
 permalink: /projects/gm-crypto-rs/
 lang: en
 alternate: /zh/projects/gm-crypto-rs/
@@ -24,9 +24,7 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
     <article class="project-detail prose">
         <p>
             <strong>Problem.</strong> I started the project after encountering
-            gaps in the Rust tooling available for my needs: a library here is
-            only useful if it is practical to use and agrees with established
-            implementations such as GmSSL.
+            gaps in the Rust tooling available for my needs.
         </p>
         <p>
             <strong>My part.</strong> I defined the initial requirements and
@@ -123,7 +121,7 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             operations. But design intent is asserted once, at review time,
             and then erodes quietly — a refactor, a new fast path, a
             dependency bump, and a timing leak slips back in with nothing to
-            catch it. This SDK targets a combination that makes that erosion
+            catch it. This library targets a combination that makes that erosion
             easy: byte-level GB/T conformance, a <code>no_std</code> / wasm
             core, secret-touching paths that must stay constant-time-designed
             across releases, and a C ABI that hands those same paths to
@@ -280,7 +278,7 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             API-finalization cycles that shipped together in <code>1.0.0</code>,
             and one design-only cycle. The project records explain each one;
             the site does not state a general rule.
-            <a href="{{ '/notes/releases-that-change-nothing/' | relative_url }}">Why, in one note</a>.
+            <a href="{{ '/notes/releases-that-change-nothing/' | relative_url }}">The reasoning, in one note</a>.
         </p>
         <dl class="version-grid">
             <dt>Current</dt>

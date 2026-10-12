@@ -328,6 +328,13 @@ home_pages = %w[index.html zh/index.html]
   expected_card = relative.start_with?("zh/") ? "social-card.zh.png" : "social-card.png"
   record(failures, "#{relative}: missing PNG Open Graph image (expected #{expected_card})") unless html.match?(%r{<meta property="og:image" content="#{Regexp.escape(BASE_URL)}/assets/img/#{Regexp.escape(expected_card)}"})
   record(failures, "#{relative}: missing og:image:alt") unless html.match?(%r{<meta property="og:image:alt" content="[^"]+"})
+  # 2026-10-12 (PR 2): the share cards carry the home headline, so their alt
+  # text must too. A headline change has to regenerate the cards
+  # (scripts/build_social_card_{en,zh}.py) and update the alt in _config.yml and
+  # the ZH notes' front matter, or this fails.
+  expected_alt = relative.start_with?("zh/") ? "借助 AI，做有用的软件。" : "Building useful software with AI."
+  card_alt = html[%r{<meta property="og:image:alt" content="([^"]+)"}, 1].to_s
+  record(failures, "#{relative}: og:image:alt does not carry the current headline (#{expected_alt})") unless card_alt.include?(expected_alt)
   record(failures, "#{relative}: og:image must not be an SVG (link previews won't render it)") if html.match?(%r{<meta property="og:image" content="[^"]+\.svg"})
   record(failures, "#{relative}: missing apple-touch-icon") unless html.match?(%r{<link rel="apple-touch-icon"[^>]*href="/assets/img/apple-touch-icon\.png"})
   record(failures, "#{relative}: missing web manifest link") unless html.include?(%(<link rel="manifest" href="/site.webmanifest">))
@@ -823,6 +830,9 @@ case_study = {
                    # contribution wording and the GmSSL caveat as the workflow runs it;
                    # the release line is described per cycle, not as a general rule.
                    "<strong>My part.</strong> I defined the initial requirements and used AI coding assistants to implement features.",
+                   "As someone learning Rust, I focused primarily on practical usability and compatibility with existing implementations such as GmSSL.",
+                   "I initially reviewed changes myself, then shifted more of the code-review work to AI agents following defined rules.",
+                   "<strong>Problem.</strong> I started the project after encountering gaps in the Rust tooling available for my needs.",
                    "provisioning and version check succeed; if either fails, the comparison is skipped with a warning while the job still passes",
                    "the site does not state a general rule"],
     forbid: ["on every PR", "on every commit", "build-failing", "re-audit", "multi-model",
@@ -844,7 +854,10 @@ case_study = {
     must_include: ["这两个项目", "/zh/projects/gm-crypto-rs/releases/",
                    "未经独立审计", "不是合并的必需检查", "改动密码代码的 PR", "x86-64 Linux",
                    "带着警告跳过，这项检查照样通过",
-                   "<strong>我做的部分。</strong>最初的需求由我来定，功能用 AI 编程助手实现。",
+                   "<strong>我做的部分。</strong>最初的需求是我定的，功能用 AI 编程助手实现。",
+                   "我还在学 Rust，主要关注两点：实际用起来是否顺手，以及能否与 GmSSL 这类现有实现兼容。",
+                   "起初改动由我自己复核，后来把更多代码评审工作交给了按既定规则工作的 AI Agent。",
+                   "<strong>问题。</strong>我开始做这个项目，是在 Rust 里碰到了满足不了自己需要的工具缺口之后。",
                    "准备和版本校验都成功时才运行；任一步失败，比对就会带着警告跳过，而这项任务照样通过",
                    "本站不把它们归纳成一条通用规则"],
     forbid: ["每个 PR 都", "每次提交", "复审", "多模型", "让构建失败", "构建就会失败", "每次都", "门禁不是摆设",
@@ -1448,10 +1461,12 @@ rejected_content = {
   "notes.html" => ["Rust, cryptography, CI, and tooling."],
   # 2026-10-12 (PR 2): the release line is explained per cycle from the project
   # records; the notes must not state a general rule as the project's policy.
-  "_notes/releases-that-change-nothing.md" => ["follows a rule:", "The rule has kept applying", "That rule shows up"],
-  "_notes/releases-that-change-nothing.zh.md" => ["有条规矩", "这条规矩后来也一直在用", "这条规矩，体现成", "什么都没变的版本，就不发"],
-  "_notes/starting-a-notebook.md" => ["The real rule is narrower", "That rule is stated under Evidence"],
-  "_notes/starting-a-notebook.zh.md" => ["真正的规矩更窄", "这条规矩写在", "[什么都没变的版本，就不发]"],
+  "_notes/releases-that-change-nothing.md" => ["follows a rule:", "The rule has kept applying", "That rule shows up",
+                                                "a cycle that changes no output", "refused to bill assurance churn"],
+  "_notes/releases-that-change-nothing.zh.md" => ["有条规矩", "这条规矩后来也一直在用", "这条规矩，体现成", "什么都没变的版本，就不发",
+                                                   "输出没变就不发版", "的周期都合进了主干", "拒绝把「只做保障」的变动"],
+  "_notes/starting-a-notebook.md" => ["The real rule is narrower", "That rule is stated under Evidence", "the *policy* behind a skip"],
+  "_notes/starting-a-notebook.zh.md" => ["真正的规矩更窄", "这条规矩写在", "[什么都没变的版本，就不发]", "背后的**规则**"],
   # Positioning (PR 2): "mostly Rust" describes the projects, not the person.
   "index.html" => ["software engineer, mostly Rust", "Outcomes, <em>mostly in Rust.</em>"],
   "zh/index.html" => ["软件工程师，主要写 Rust", "大多用 Rust。</em>"]
@@ -1462,7 +1477,7 @@ rejected_content = {
 # shifted to AI agents following defined rules. No authorship, audit or
 # every-finding claims; rule authorship and merge/release authority stay unstated.
 {
-  "en" => ["I wrote", "I personally", "every finding", "single-handedly", "sole author",
+  "en" => ["I wrote the code", "I wrote most", "I wrote all", "I wrote it myself", "I personally", "every finding", "single-handedly", "sole author",
            "I audited", "I designed all", "I reviewed every", "I approve", "my approval"],
   "zh" => ["我亲手写", "每一条发现", "我审计", "独自完成", "由我一个人", "我批准", "须经我"]
 }.then do |overclaims|
@@ -1543,12 +1558,14 @@ source_contracts = {
   "index.html" => ["View selected work", "Browse all notes",
                    "Only public-tagged work is independently verifiable here.",
                    "I build software with AI coding assistants and share selected work, with each project's status, evidence and limits made clear.",
-                   "private or pre-release tools",
+                   "private tools for AI coding agents and CI runners",
+                   "a public-source, pre-release pipeline for explainer videos",
                    "including that it has not been independently audited"],
   "zh/index.html" => ["查看精选作品", "浏览全部笔记",
                       "别人能自己核对的，只有已打公开标签（tag）的作品。",
                       "挑一部分作品拿出来分享，每个项目的状态、证据和限制都交代清楚。",
-                      "私有或预发布的工具",
+                      "面向 AI 编程 Agent 和 CI runner 的私有工具",
+                      "源码公开、预发布的讲解视频流水线",
                       "包括它未经独立审计"],
   "projects.html" => ["Private project — no public source link.", "Local prototype — no public source link."],
   "zh/projects.html" => ["私有项目——暂无公开源码链接。", "本地原型——暂无公开源码链接。"],
@@ -1615,10 +1632,13 @@ end
   # not proof; not independently audited), states the full name exactly once,
   # and no longer describes the person as working "mostly in Rust".
   zh = relative.start_with?("zh/")
-  required = zh ? ["没有经过独立审计", "不是证明", "AI 编程助手"] :
-                  ["not been independently audited", "not a proof", "AI coding assistants"]
-  stale = zh ? ["每次提交", "构建就会失败", "在发布前拦住", "主要写 Rust", "主要使用 Rust"] :
-               ["every commit", "fails the build", "before a release", "mostly Rust", "mostly in Rust"]
+  required = zh ? ["没有经过独立审计", "不是证明", "AI 编程助手",
+                   "改动起初由我自己复核，后来把更多代码评审交给了按既定规则工作的 AI Agent"] :
+                  ["not been independently audited", "not a proof", "AI coding assistants",
+                   "reviewed changes myself at first, and then shifted more of the code review to AI agents following defined rules"]
+  # Person-describing forms only: "the projects are mostly in Rust" stays allowed.
+  stale = zh ? ["每次提交", "构建就会失败", "在发布前拦住", "软件工程，主要写 Rust", "主要写 Rust，做的多是", "软件工程师，主要"] :
+               ["every commit", "fails the build", "before a release", "who works mostly in Rust", "Software engineering, mostly Rust", "software engineer, mostly"]
   required.each { |phrase| record(failures, "#{relative}: About summary missing #{phrase.inspect}") unless normalized.include?(phrase) }
   stale.each { |phrase| record(failures, "#{relative}: stale About claim #{phrase.inspect}") if normalized.include?(phrase) }
   full_name_count = normalized.scan("Fengxiang (Frank) Xue").length

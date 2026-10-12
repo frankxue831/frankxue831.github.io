@@ -71,7 +71,7 @@ en:
   short_tagline: "Software engineer"
   meta:
     site_description: "Personal site of Frank Xue — software engineer. Notes and selected work."
-  # Shared more-link for work-list project rows (home + projects index). Note
+  # Shared more-link for work-list project rows (projects index). Note
   # rows keep their own, shorter `notes.read_more` in English.
   list:
     read_more: "Read more →"

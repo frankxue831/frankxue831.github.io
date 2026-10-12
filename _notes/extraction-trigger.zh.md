@@ -13,7 +13,7 @@ image:
   path: /assets/img/social-card.zh.png
   width: 1200
   height: 630
-  alt: "Frank Xue——软件工程师。为代码、系统和 Agent，写可审计、状态清晰的工具。"
+  alt: "Frank Xue——软件工程师。借助 AI，做有用的软件。"
 alternate: /notes/extraction-trigger/
 description: "两个系统共用同一条渲染管线，并不构成今天就把它抽成独立包的理由。构成理由的，是一条事先定好、白纸黑字写下的触发条件——而这两件事被混为一谈的频率，比它应该有的高。"
 excerpt: "两样东西开始共用代码时，下意识的动作是把它抽成一个独立的包。这是错的判据。对的那个是一条触发条件——在谁都还不需要它的时候，就先定好、先写下。"
