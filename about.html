@@ -2,7 +2,7 @@
 layout: default
 title: About
 permalink: /about/
-description: "How I work, what I optimize for, and how I present evidence and limitations across public and private projects."
+description: "Why I enjoy building software with AI, and how these projects began."
 lang: en
 alternate: /zh/about/
 ---
@@ -11,59 +11,23 @@ alternate: /zh/about/
     <span class="ghost-num" aria-hidden="true">02</span>
     <p class="page-header__eyebrow">(02)  About</p>
     <h1 class="page-header__title">
-        About,
-        <em>more or less.</em>
+        About <em>me.</em>
     </h1>
-    <p class="page-header__lede">
-        A working draft. I'd rather say a little honestly than a lot vaguely.
-    </p>
 </section>
 
 <section class="section wrap reveal">
     <div class="prose">
         <p>
-            I'm Fengxiang (Frank) Xue, a software engineer with a background
-            in mathematics and computer science. I like using AI to build
-            software that's useful, and I'm exploring how people can
-            understand, guide and evaluate what it helps create.
+            I'm Fengxiang (Frank) Xue, a software engineer with a background in mathematics and computer science. I like building software with AI and enjoy turning ideas into things I can use. I want to keep exploring what else I can create with AI that is useful.
         </p>
         <p>
-            In practice I start from a gap I have run into, write down what
-            the software needs to do, and use AI coding assistants to
-            implement it. I pay most attention to whether the result is
-            practical to use, and to keeping the problem, the decisions and
-            the evidence written down with their limits.
-            <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}">gm-crypto-rs</a>
-            is the fullest example: there I also cared about compatibility
-            with existing implementations such as GmSSL, reviewed changes
-            myself at first, and then shifted more of the code review to AI
-            agents following defined rules. It has not been independently
-            audited, and its timing tests are statistical evidence on the
-            tested paths and hardware, not a proof. Verification and
-            cryptography appear often on this site because of that project,
-            not because they are the whole of what I do.
+            I was happy when <code>gmcrypto-core</code> v1.16.0 was published on crates.io. Seeing someone star a project on GitHub or submit a PR motivates me too. This kind of feedback is one reason I want to keep going.
         </p>
         <p>
-            The projects themselves are on the
-            <a href="{{ '/projects/' | relative_url }}">Work page</a>: the
-            cryptography library, a repository-context tool for AI coding
-            agents, a small diagnostic CLI for self-hosted CI runners, and a
-            pipeline that renders concept videos whose on-screen claims are
-            checked against their source. They are mostly written in Rust,
-            with Python where it fits.
+            While working with Chinese cryptographic tools, I found relatively few related tools in the Rust ecosystem, which led me to start <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}">gm-crypto-rs</a>. I set out the requirements, used AI coding assistants to implement them, and focused on practical usability and compatibility with existing implementations such as GmSSL.
         </p>
         <p>
-            Across these projects, I prefer the unglamorous parts of the
-            work: <em>clear naming</em>, the timing check that flags a leak on
-            the pull request that introduces it, the comment that finally
-            explains <em>why</em>. The opinionated stuff.
-        </p>
-        <p>
-            The <a href="{{ '/projects/' | relative_url }}">project pages here</a>
-            are the honest snapshot — each states its release state, evidence,
-            and limits, including for the work that isn't public.
-            <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">GitHub</a>
-            carries the source for what is public.
+            I'm still learning Rust and exploring how to use AI more effectively. This site records some of my attempts: what I have made, where each project stands, and what still needs work.
         </p>
     </div>
 

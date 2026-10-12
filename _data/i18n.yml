@@ -214,7 +214,7 @@ en:
     earlier_releases: "Earlier releases (v0.6.0 – v0.13.0)"
 zh:
   html_lang: "zh-CN"
-  tagline: "软件工程师，借助 AI 做有用的软件。我会分享一部分作品，并把状态、证据和限制写在明面上。"
+  tagline: "软件工程师，借助 AI 开发有用的软件。我在这里分享部分项目，说明各自的进展、验证依据和使用限制。"
   short_tagline: "软件工程师"
   meta:
     site_description: "Frank Xue 的个人主页。软件工程师——笔记与精选作品，发布状态与限制写在明面上。"
@@ -279,7 +279,7 @@ zh:
     intro: "这张图把已发布测量值与当前策略放在一起：观测值来自一轮明确的运行，PR 检查阈值与每日哨兵值都只是阈值，不是证明。"
     axis_label: "|τ|（时序泄漏统计量）"
     gate_label: "PR 检查 |τ| ≤ 0.20"
-    control_label: "negative_control——必须在这里故意失败（证明检测器不是瞎的）"
+    control_label: "negative_control：必须检测到此处刻意引入的泄漏（确认检测器能识别这处泄漏）"
     landscape_heading: "阈值与测量"
     cluster_label: "公开的 ct_*——都在 0.20 以下"
     leak_heading: "直接测量发现的泄漏"
@@ -297,7 +297,7 @@ zh:
     col_status: "状态"
     status_pass: "在阈值内"
     status_sentinel: "在哨兵值内"
-    status_fire: "必须故意失败"
+    status_fire: "必须检出泄漏"
     status_caught: "超过阈值——已修复"
     policy_sentinel_label: "nightly 哨兵"
     leak_before_row: "修复前（crypto-bigint 0.6）"

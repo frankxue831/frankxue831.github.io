@@ -857,9 +857,10 @@ case_study = {
                    # contribution wording and the GmSSL caveat as the workflow runs it;
                    # the release line is described per cycle, not as a general rule.
                    "<strong>My part.</strong> I defined the initial requirements and used AI coding assistants to implement features.",
-                   "As someone learning Rust, I focused primarily on practical usability and compatibility with existing implementations such as GmSSL.",
-                   "I initially reviewed changes myself, then shifted more of the code-review work to AI agents following defined rules.",
-                   "<strong>Problem.</strong> I started the project after encountering gaps in the Rust tooling available for my needs.",
+                   "I am new to Rust and focus primarily on practical usability and compatibility with existing implementations such as GmSSL.",
+                   "I do not regularly review the code line by line.",
+                   "Initially, I reviewed changes myself; later, to improve efficiency, I shifted more of the code review to AI agents following defined rules.",
+                   "<strong>Problem.</strong> While working with Chinese cryptographic tools, I found relatively few related tools in the Rust ecosystem, which led me to start this project.",
                    "provisioning and version check succeed; if either fails, the comparison is skipped with a warning while the job still passes",
                    "the site does not state a general rule"],
     forbid: ["on every PR", "on every commit", "build-failing", "re-audit", "multi-model",
@@ -881,11 +882,11 @@ case_study = {
     must_include: ["这两个项目", "/zh/projects/gm-crypto-rs/releases/",
                    "未经独立审计", "不是合并的必需检查", "改动密码代码的 PR", "x86-64 Linux",
                    "带着警告跳过，这项检查照样通过",
-                   "<strong>我做的部分。</strong>最初的需求是我定的，功能用 AI 编程助手实现。",
-                   "我还在学 Rust，主要关注两点：实际用起来是否顺手，以及能否与 GmSSL 这类现有实现兼容。",
-                   "起初改动由我自己复核，后来把更多代码评审工作交给了按既定规则工作的 AI Agent。",
-                   "<strong>问题。</strong>我开始做这个项目，是在 Rust 里碰到了满足不了自己需要的工具缺口之后。",
-                   "准备和版本校验都成功时才运行；任一步失败，比对就会带着警告跳过，而这项任务照样通过",
+                   "<strong>我负责的部分。</strong>我提出了最初的需求，并借助 AI 编程助手实现功能。",
+                   "我是 Rust 新手，主要关注实际使用体验，以及与 GmSSL 等现有实现的兼容性，并不经常逐行细审代码。",
+                   "起初，我自己复核改动；后来，为了提高效率，我把更多代码评审交给了遵循既定规则的 AI Agent。",
+                   "<strong>为什么做这个项目。</strong>在使用国密工具的过程中，我发现 Rust 生态中的相关工具还比较少，于是开始了这个项目。",
+                   "准备就绪且版本校验通过后，才会执行这项比对。如果准备或版本校验失败，CI 会发出警告并跳过比对，任务仍会通过",
                    "本站不把它们归纳成一条通用规则"],
     forbid: ["每个 PR 都", "每次提交", "复审", "多模型", "让构建失败", "构建就会失败", "每次都", "门禁不是摆设",
              "自 2026-10-11", "起是合并的必需检查",
@@ -1538,7 +1539,7 @@ expected_identity = {
     "short_tagline" => "Software engineer"
   },
   "zh" => {
-    "tagline" => "软件工程师，借助 AI 做有用的软件。我会分享一部分作品，并把状态、证据和限制写在明面上。",
+    "tagline" => "软件工程师，借助 AI 开发有用的软件。我在这里分享部分项目，说明各自的进展、验证依据和使用限制。",
     "short_tagline" => "软件工程师"
   }
 }.freeze
@@ -1573,11 +1574,11 @@ end
 
 source_contracts = {
   "about.html" => [
-    'description: "How I work, what I optimize for, and how I present evidence and limitations across public and private projects."',
+    'description: "Why I enjoy building software with AI, and how these projects began."',
     "<span>Building with AI, developer tools, cryptography, verified explanation</span>"
   ],
   "zh/about.html" => [
-    'description: "我的工作方式、取舍，以及公开与私有项目如何呈现证据和限制。"',
+    'description: "我为什么喜欢借助 AI 做软件，以及这些项目是怎样开始的。"',
     # Each item is one .nowrap run, so the row breaks only after 、 (never inside 密码学).
     '<span><span class="nowrap">借助 AI 做软件</span>、<span class="nowrap">开发者工具</span>、<span class="nowrap">密码学</span>、<span class="nowrap">能按源码核对的讲解</span></span>'
   ],
@@ -1594,16 +1595,16 @@ source_contracts = {
   # and the featured case study's audit disclosure.
   "index.html" => ["View selected work", "Browse all notes",
                    "Only public-tagged work is independently verifiable here.",
-                   "I build software with AI coding assistants and share selected work, with each project's status, evidence and limits made clear.",
-                   "private tools for AI coding agents and CI runners",
-                   "a public-source, pre-release pipeline for explainer videos",
+                   "I enjoy building software with AI coding assistants.",
+                   "the tools for AI coding agents and CI runners are private projects",
+                   "the explainer-video pipeline is written in Python, with public source and pre-release status.",
                    "including that it has not been independently audited"],
-  "zh/index.html" => ["查看精选作品", "浏览全部笔记",
+  "zh/index.html" => ["查看精选项目", "浏览全部笔记",
                       "别人能自己核对的，只有已打公开标签（tag）的作品。",
-                      "挑一部分作品拿出来分享，每个项目的状态、证据和限制都交代清楚。",
-                      "面向 AI 编程 Agent 和 CI runner 的私有工具",
-                      "源码公开、预发布的讲解视频流水线",
-                      "包括它未经独立审计"],
+                      "我喜欢借助 AI 编程助手做软件，也很享受这个过程。",
+                      "面向 AI 编程 Agent 和 CI runner 的工具目前是私有项目",
+                      "讲解视频生成流程则用 Python 编写，源码已公开，处于预发布阶段。",
+                      "这个库没有经过独立审计"],
   "projects.html" => ["Private project — no public source link.", "Local prototype — no public source link."],
   "zh/projects.html" => ["私有项目——暂无公开源码链接。", "本地原型——暂无公开源码链接。"],
   "notes.html" => [
@@ -1668,23 +1669,71 @@ end
 %w[about.html zh/about.html].each do |relative|
   source = read_file(ROOT.join(relative), failures)
   normalized = source.gsub(/\s+/, " ")
-  # 2026-10-12: About must not drift back to "every commit" / "fails the build".
-  # PR 2 moved the timing-check scope to the case study; About keeps the two
-  # limits next to its remaining timing-check mention (statistical evidence,
-  # not proof; not independently audited), states the full name exactly once,
-  # and no longer describes the person as working "mostly in Rust".
+  # 2026-10-13: the approved About is a short personal introduction.
+  # Contribution and technical disclosures remain mandatory in the case study
+  # opening below. If timing claims return here, require their caveats locally.
   zh = relative.start_with?("zh/")
-  required = zh ? ["没有经过独立审计", "不是证明", "AI 编程助手",
-                   "改动起初由我自己复核，后来把更多代码评审交给了按既定规则工作的 AI Agent"] :
-                  ["not been independently audited", "not a proof", "AI coding assistants",
-                   "reviewed changes myself at first, and then shifted more of the code review to AI agents following defined rules"]
-  # Person-describing forms only: "the projects are mostly in Rust" stays allowed.
-  stale = zh ? ["每次提交", "构建就会失败", "在发布前拦住", "软件工程，主要写 Rust", "主要写 Rust，做的多是", "软件工程师，主要"] :
-               ["every commit", "fails the build", "before a release", "who works mostly in Rust", "Software engineering, mostly Rust", "software engineer, mostly"]
+  required = zh ? ["数学和计算机科学背景", "借助 AI 编程助手实现", "实际使用体验",
+                   "与 GmSSL 等现有实现的兼容性", "我还在学习 Rust",
+                   "/zh/projects/gm-crypto-rs/"] :
+                  ["background in mathematics and computer science", "used AI coding assistants to implement",
+                   "practical usability", "compatibility with existing implementations such as GmSSL",
+                   "I'm still learning Rust", "/projects/gm-crypto-rs/"]
+  stale = zh ? ["每次提交", "构建就会失败", "在发布前拦住", "软件工程，主要写 Rust", "主要写 Rust，做的多是", "软件工程师，主要",
+                "一份还在改的说明", "这份介绍还在修改", "关于，<em>大概如此"] :
+               ["every commit", "fails the build", "before a release", "who works mostly in Rust", "Software engineering, mostly Rust", "software engineer, mostly",
+                "A working draft", "more or less"]
   required.each { |phrase| record(failures, "#{relative}: About summary missing #{phrase.inspect}") unless normalized.include?(phrase) }
   stale.each { |phrase| record(failures, "#{relative}: stale About claim #{phrase.inspect}") if normalized.include?(phrase) }
-  full_name_count = normalized.scan("Fengxiang (Frank) Xue").length
-  record(failures, "#{relative}: \"Fengxiang (Frank) Xue\" must appear exactly once (found #{full_name_count})") unless full_name_count == 1
+  if normalized.match?(zh ? /时序|常量时间/ : /timing|constant-time/i)
+    caveats = zh ? ["没有经过独立审计", "统计证据", "不能证明"] : ["not been independently audited", "statistical evidence", "not a proof"]
+    caveats.each { |phrase| record(failures, "#{relative}: timing mention missing caveat #{phrase.inspect}") unless normalized.include?(phrase) }
+  end
+  full_name = zh ? "Fengxiang（Frank）Xue" : "Fengxiang (Frank) Xue"
+  full_name_count = normalized.scan(full_name).length
+  record(failures, "#{relative}: #{full_name.inspect} must appear exactly once (found #{full_name_count})") unless full_name_count == 1
+end
+
+
+# Keep the case-study opening's safeguards even when About is shortened.
+{
+  "projects/gm-crypto-rs.html" => ["My part.", "AI coding assistants", "AI agents following defined rules",
+    "I do not regularly review the code line by line", "GmSSL oracle's provisioning and version check succeed",
+    "if either fails, the comparison is skipped with a warning while the job still passes",
+    "selected paths", "x86-64 Linux runners", "Not independently audited",
+    "adversarial review by two AI models", "evidence under the tested conditions, not proof of constant-time behavior"],
+  "zh/projects/gm-crypto-rs.html" => ["我负责的部分", "AI 编程助手", "遵循既定规则的 AI Agent",
+    "并不经常逐行细审代码", "准备就绪且版本校验通过后，才会执行这项比对",
+    "如果准备或版本校验失败，CI 会发出警告并跳过比对，任务仍会通过",
+    "选定路径", "x86-64 Linux runner", "没有经过独立审计", "两个 AI 模型以对抗方式进行",
+    "只能作为测试条件下的证据，不能证明常量时间行为"]
+}.each do |relative, phrases|
+  opening = read_file(ROOT.join(relative), failures).split("{% include project-summary.html %}", 2).first.gsub(/\s+/, " ")
+  phrases.each { |phrase| record(failures, "#{relative}: opening missing safeguard #{phrase.inspect}") unless opening.include?(phrase) }
+end
+
+# A deliberately leaky control must be detected; detection is not CI failure.
+{
+  "control_label" => "negative_control：必须检测到此处刻意引入的泄漏（确认检测器能识别这处泄漏）",
+  "status_fire" => "必须检出泄漏"
+}.each do |key, expected|
+  record(failures, "i18n.yml: zh.dudect.#{key} must distinguish detection from check failure") unless i18n_content.dig("zh", "dudect", key) == expected
+end
+{
+  "_notes/constant-time-warrant.md" => "a detector that must flag a deliberately introduced leak",
+  "_notes/constant-time-warrant.zh.md" => "一个必须检出刻意引入的泄漏的检测器"
+}.each do |relative, phrase|
+  excerpt = YAML.safe_load(read_file(ROOT.join(relative), failures).split("---", 3)[1], permitted_classes: [Date]).fetch("excerpt")
+  record(failures, "#{relative}: negative control excerpt must describe detection") unless excerpt.include?(phrase)
+end
+
+# Check the body as well: a corrected excerpt must not hide the opposite claim.
+{
+  "_notes/constant-time-warrant.md" => "The detector must flag its deliberately introduced leak; if it does not, the check fails.",
+  "_notes/constant-time-warrant.zh.md" => "检测器必须检出其中刻意引入的泄漏；未检出才会导致这项检查失败。"
+}.each do |relative, phrase|
+  body = read_file(ROOT.join(relative), failures).split("---", 3).last.gsub(/\s+/, " ")
+  record(failures, "#{relative}: negative control body must distinguish detection from check failure") unless body.include?(phrase)
 end
 
 # --- 2026-08-10 site-review accessibility contracts ---
