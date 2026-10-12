@@ -193,10 +193,11 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             audit has been performed; everything below is the project's own
             evidence. Every output is checked for byte-identity: against the standard
             KAT vectors, against GmSSL 3.2.0 for interop — an in-CI job
-            pinned to a from-source oracle build since v1.10; since
-            2026-10-11 (UTC) it is a required check for merging, where a byte
-            mismatch fails it but an oracle that cannot be built skips the
-            suite with a warning instead of failing — and against
+            pinned to a from-source oracle build since v1.10 and, as of
+            Oct 2026, one of the required checks for merging: a byte
+            mismatch fails it, but if the pinned oracle cannot be built or
+            fails its version check, the suite is skipped with a warning and
+            the check still passes — and against
             OpenSSL 3.x <code>SM4-XTS</code> (<code>xts_standard=GB</code>)
             for the tweakable mode. The timing checks above run on pull
             requests that change the crypto code and daily on <code>main</code>,

@@ -137,7 +137,7 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
         <h2 id="evidence">证据</h2>
         <p>
             <strong>未经独立审计。</strong>没有做过任何第三方安全审计；下面列的都是项目自己的证据。每一处输出都逐字节比对过：标准 KAT 测试向量、GmSSL 3.2.0
-            （互操作性——v1.10 起在 CI 里挂了任务，对照从源码构建的 oracle 跑；自 2026-10-11（UTC）起是合并的必需检查——字节对不上就失败，但 oracle 构建不出来时只会带着警告跳过这组测试，而不是失败）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>（可调模式，<code>xts_standard=GB</code>）。
+            （互操作性——v1.10 起在 CI 里挂了任务，对照从源码构建的 oracle 跑，截至 2026 年 10 月是合并的必需检查之一——字节对不上就失败，但钉住的 oracle 构建不出来或版本校验不过时，这组测试只会带着警告跳过，这项检查照样通过）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>（可调模式，<code>xts_standard=GB</code>）。
         </p>
         <p>
             上面那套时序检查，会在改动密码代码的 PR 上跑，也会在 <code>main</code> 上每天跑一次，都跑在 GitHub 托管的 x86-64 Linux runner 上；核心在 <code>[lints]</code>
