@@ -26,8 +26,8 @@ assurance and stayed unpublished.
 
 The bigger gap is `0.17` through `0.23`. That stretch was the pre-1.0 readiness
 work: freezing the public API behind a `cargo-public-api` drift-check,
-decoupling `crypto-bigint` from the always-on surface, a multi-model adversarial
-re-audit before committing to stability. Seven version numbers' worth of the
+decoupling `crypto-bigint` from the always-on surface, an adversarial review by two AI
+models (not an independent audit) before committing to stability. Seven version numbers' worth of the
 most consequential work in the project — and crates.io skips all of them. The
 changes shipped together, once, in `1.0.0`. The rule has kept applying since:
 `v1.5` (the TLCP decomposition design cycle) and `v1.10` (the assurance cycle

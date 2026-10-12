@@ -787,7 +787,19 @@ case_study = {
     # "/projects/gm-crypto-rs/releases/" guards the split's only inbound link (the
     # "Full history" row, 2026-08-05) — delete that row and the release page
     # becomes orphaned with nothing else to catch it.
-    must_include: ["either project", "/projects/gm-crypto-rs/releases/"],
+    must_include: ["either project", "/projects/gm-crypto-rs/releases/",
+                   # 2026-10-12: the audit disclosure and the timing check's real
+                   # enforcement (path-filtered, not a required merge check) must survive.
+                   "Not independently audited", "not a required merge check",
+                   "pull requests that change the crypto code", "x86-64 Linux",
+                   # GmSSL interop: the skip condition must stay visible here (the
+                   # byte-identity notes and the v1.10 release rows are pinned in
+                   # source_contracts), and no effective date is assigned to the
+                   # required check (only the ruleset's own history is inspectable).
+                   "skipped with a warning and the check still passes"],
+    forbid: ["on every PR", "on every commit", "build-failing", "re-audit", "multi-model",
+             "constant-time on every commit", "fails the build", "The gate has teeth",
+             "since 2026-10-11", "for merging since"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "zh/projects/gm-crypto-rs/index.html" => {
@@ -799,7 +811,11 @@ case_study = {
     # ZH mirror of the interop-tied non-affiliation guard ("这两个项目" = the two
     # named projects gmssl/OpenSSL); trips if it reverts to the enumerated form.
     # ZH mirror of the releases-page inbound-link guard above (2026-08-05).
-    must_include: ["这两个项目", "/zh/projects/gm-crypto-rs/releases/"],
+    must_include: ["这两个项目", "/zh/projects/gm-crypto-rs/releases/",
+                   "未经独立审计", "不是合并的必需检查", "改动密码代码的 PR", "x86-64 Linux",
+                   "带着警告跳过，这项检查照样通过"],
+    forbid: ["每个 PR 都", "每次提交", "复审", "多模型", "让构建失败", "构建就会失败", "每次都", "门禁不是摆设",
+             "自 2026-10-11", "起是合并的必需检查"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "projects/repolens-rs/index.html" => {
@@ -1045,14 +1061,19 @@ else
 end
 
 dudect_chart_source = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
-# Table thresholds are "&lt;" + a space or no-break space + the display string;
+# Table thresholds are "&le;" + a space or no-break space + the display string
+# (the dudect parsers fail only when the median |tau| is strictly above the limit,
+# so a value AT the limit passes: "<" would misstate the check);
 # match the cell form so a bare "{{ d.sentinel_display }}" elsewhere (the axis
 # tick) can't satisfy the precision guard, and &nbsp; can't dodge the hardcode guard.
 threshold_sep = /(?:\s|&nbsp;|&#160;| )+/
-record(failures, "dudect-chart.html: sentinel threshold must preserve display precision from dudect.yml") unless dudect_chart_source.match?(/&lt;#{threshold_sep}\{\{\s*d\.sentinel_display\s*\}\}/)
-record(failures, "dudect-chart.html: gate threshold must preserve display precision from dudect.yml") unless dudect_chart_source.match?(/&lt;#{threshold_sep}\{\{\s*d\.gate_display\s*\}\}/)
-if dudect_chart_source.match?(/&lt;#{threshold_sep}0\.(?:20|55)/)
+record(failures, "dudect-chart.html: sentinel threshold must preserve display precision from dudect.yml") unless dudect_chart_source.match?(/&le;#{threshold_sep}\{\{\s*d\.sentinel_display\s*\}\}/)
+record(failures, "dudect-chart.html: gate threshold must preserve display precision from dudect.yml") unless dudect_chart_source.match?(/&le;#{threshold_sep}\{\{\s*d\.gate_display\s*\}\}/)
+if dudect_chart_source.match?(/(?:&lt;|&le;|≤)#{threshold_sep}0\.(?:20|55)/)
   record(failures, "dudect-chart.html: policy threshold is hardcoded instead of rendered from dudect.yml")
+end
+if dudect_chart_source.match?(/&lt;#{threshold_sep}\{\{\s*d\.(?:gate|sentinel)_display\s*\}\}/)
+  record(failures, "dudect-chart.html: threshold rendered with \"<\"; the check passes AT the limit, so use \"&le;\"")
 end
 
 # dudect i18n parity: every required key present + non-empty in both languages.
@@ -1475,7 +1496,13 @@ source_contracts = {
     "/zh/notes/extraction-trigger/"
   ],
   "projects/repolens-rs.html" => ["Planned work remains uncommitted until it is tied to a public milestone."],
-  "zh/projects/repolens-rs.html" => ["后续工作在绑定公开里程碑之前，不写成已承诺计划。"]
+  "zh/projects/repolens-rs.html" => ["后续工作在绑定公开里程碑之前，不写成已承诺计划。"],
+  # 2026-10-12: the GmSSL interop skip condition must stay visible wherever the
+  # comparison is summarised outside the case study (which pins it in case_study).
+  "_notes/byte-identity.md" => ["skipped with a warning"],
+  "_notes/byte-identity.zh.md" => ["带着警告跳过"],
+  "projects/gm-crypto-rs-releases.html" => ["skips it with a warning"],
+  "zh/projects/gm-crypto-rs-releases.html" => ["带着警告跳过"]
 }.freeze
 
 source_contracts.each do |relative, phrases|
@@ -1507,8 +1534,15 @@ end
 %w[about.html zh/about.html].each do |relative|
   source = read_file(ROOT.join(relative), failures)
   normalized = source.gsub(/\s+/, " ")
-  record(failures, "#{relative}: missing published-gate build-failure claim") unless
-    normalized.include?(relative.start_with?("zh/") ? "越过公开门槛，构建就会失败" : "fails the build when it crosses the published gate")
+  # 2026-10-12: the About summary must keep the consequence of crossing the
+  # limit (the check fails), its real scope, and the audit disclosure — and
+  # must not drift back to "every commit" / "fails the build".
+  zh = relative.start_with?("zh/")
+  required = zh ? ["这项检查就失败", "改动密码代码的 PR", "没有经过独立审计", "不是证明"] :
+                  ["fails that check", "pull requests that change the crypto code", "not been independently audited", "not a proof"]
+  stale = zh ? ["每次提交", "构建就会失败", "在发布前拦住"] : ["every commit", "fails the build", "before a release"]
+  required.each { |phrase| record(failures, "#{relative}: About timing summary missing #{phrase.inspect}") unless normalized.include?(phrase) }
+  stale.each { |phrase| record(failures, "#{relative}: stale timing claim #{phrase.inspect}") if normalized.include?(phrase) }
 end
 
 # --- 2026-08-10 site-review accessibility contracts ---
@@ -1605,6 +1639,96 @@ end
 dudect_source = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
 unless dudect_source.match?(/class="dudect__table-scroll"[^>]*tabindex="0"[^>]*role="region"[^>]*aria-label="\{\{\s*t\.table_scroll_label\s*\|\s*escape\s*\}\}"/m)
   record(failures, "dudect-chart.html: table must be wrapped in a localized keyboard-scrollable region")
+end
+
+# --- crates.io publication dates (2026-10-12) ---------------------------------
+# Every dated row on the gm-crypto-rs release pages, and the case study's
+# current-release row, must show the crates.io publication date in UTC from
+# _data/crate_publications.yml. "Not published" rows must not name a version
+# that crates.io has. Catches local-time (UTC+8) dates and hand-typed drift,
+# not just a missing phrase.
+pubs = (YAML.load_file(ROOT.join("_data/crate_publications.yml"))["published_utc"] || {}).transform_keys(&:to_s)
+record(failures, "crate_publications.yml: no published versions") if pubs.empty?
+version_key = ->(v) { v.split(".").map(&:to_i) }
+{ "projects/gm-crypto-rs/releases/index.html" => ["Not published", "crates.io publication dates in UTC"],
+  "zh/projects/gm-crypto-rs/releases/index.html" => ["未单独发版", "crates.io 的发布日期（UTC）"] }.each do |relative, (unpublished_marker, utc_label)|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: missing UTC date-convention label") unless html.gsub(/\s+/, " ").include?(utc_label)
+  shown = []
+  html.scan(%r{<dt>\s*v?([0-9][0-9.]*(?:\s*[–-]\s*[0-9][0-9.]*)?)\s*</dt>\s*<dd>(.*?)</dd>}m).each do |label, body|
+    label = label.strip
+    text = body.gsub(/<[^>]+>/, "").strip
+    if text.start_with?(unpublished_marker)
+      if (lo, hi = label.split(/\s*[–-]\s*/)) && hi
+        lo_k = version_key.(lo)[0, 2]; hi_k = version_key.(hi)[0, 2]
+        inside = pubs.keys.select { |v| k = version_key.(v)[0, 2]; (k <=> lo_k) >= 0 && (k <=> hi_k) <= 0 }
+        record(failures, "#{relative}: range #{label} marked unpublished but crates.io has #{inside.join(', ')}") unless inside.empty?
+      elsif pubs.key?(label)
+        record(failures, "#{relative}: v#{label} marked unpublished but crates.io has it")
+      end
+      next
+    end
+    date = text[/\A(\d{4}-\d{2}-\d{2})/, 1]
+    next unless date
+    shown << label
+    if !pubs.key?(label)
+      record(failures, "#{relative}: v#{label} dated #{date} but not in crate_publications.yml")
+    elsif pubs[label][0, 10] != date
+      record(failures, "#{relative}: v#{label} shows #{date}, crates.io UTC date is #{pubs[label][0, 10]}")
+    end
+  end
+  missing = pubs.keys.select { |v| (version_key.(v) <=> [0, 6, 0]) >= 0 } - shown
+  record(failures, "#{relative}: published versions missing a dated row: #{missing.sort_by(&version_key).join(', ')}") unless missing.empty?
+end
+%w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  m = html.match(%r{<dt>\s*(?:Current|当前版本)\s*</dt>\s*<dd>\s*<strong>v([0-9.]+)</strong>[^<]*?(\d{4}-\d{2}-\d{2})\s*(?:\(UTC\)|（UTC）)})
+  newest = pubs.keys.max_by(&version_key)
+  if m.nil?
+    record(failures, "#{relative}: Current row must show a version with a UTC-labelled publication date")
+  elsif pubs[m[1]].nil? || pubs[m[1]][0, 10] != m[2]
+    record(failures, "#{relative}: current release v#{m[1]} shows #{m[2]}, crates.io UTC date is #{pubs[m[1]].to_s[0, 10]}")
+  elsif m[1] != newest
+    record(failures, "#{relative}: Current row shows v#{m[1]} but the newest published version is v#{newest}")
+  end
+end
+
+# --- LinkedIn contact route (2026-10-12) -------------------------------------
+config = YAML.load_file(ROOT.join("_config.yml"))
+linkedin = config["linkedin_username"].to_s
+if linkedin.empty?
+  record(failures, "_config.yml: linkedin_username missing (Owner-approved contact route)")
+else
+  linkedin_url = "https://www.linkedin.com/in/#{linkedin}/"
+  (core_pages.keys + project_pages).each do |relative|
+    html = read_file(SITE.join(relative), failures)
+    next if html.empty?
+    footer = html[%r{<footer class="site-footer".*?</footer>}m].to_s
+    record(failures, "#{relative}: footer missing LinkedIn link #{linkedin_url}") unless footer.include?(%(href="#{linkedin_url}"))
+    people = graph_nodes_of_type(json_ld_graph(html, failures, relative), "Person")
+    record(failures, "#{relative}: Person sameAs missing LinkedIn") unless people.any? { |n| Array(n["sameAs"]).include?(linkedin_url) }
+  end
+  %w[contact/index.html zh/contact/index.html].each do |relative|
+    html = read_file(SITE.join(relative), failures)
+    record(failures, "#{relative}: contact list missing LinkedIn") unless html[%r{<dl class="contact-direct">.*?</dl>}m].to_s.include?(linkedin_url)
+  end
+end
+
+# --- Corrected notes keep their dated correction (2026-10-12) ----------------
+# Each banner must also END its own blockquote: without a blank line after the
+# "> " line, kramdown folds the note's first paragraph into the banner.
+{ "notes/constant-time-ci-gate/index.html" => ["Correction (2026-10-12, UTC)", "case study</a>."],
+  "zh/notes/constant-time-ci-gate/index.html" => ["更正（2026-10-12，UTC）", "案例页</a>。"],
+  "notes/constant-time-warrant/index.html" => ["Corrected 2026-10-12 (UTC)", "scope and enforcement."],
+  "zh/notes/constant-time-warrant/index.html" => ["2026-10-12（UTC）更正", "约束力一致。"] }.each do |relative, (phrase, ending)|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: dated correction notice missing") unless html.include?(phrase)
+  quote = html.scan(%r{<blockquote>(.*?)</blockquote>}m).map(&:first).find { |q| q.include?(phrase) }
+  record(failures, "#{relative}: correction notice must stand alone (its blockquote swallowed body text)") if quote && !quote.strip.sub(%r{</p>\z}, "").rstrip.end_with?(ending)
+  record(failures, "#{relative}: timing threshold shown as \"<\"; the check passes at the limit") if html.match?(/\|τ\|(?:<\/code>)?\s*(?:&lt;|<)\s*0\.20/)
 end
 
 if failures.empty?

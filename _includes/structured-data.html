@@ -25,7 +25,8 @@
       "name": {{ site.author.name | default: site.title | jsonify }},
       "url": {{ site_url | jsonify }},
       "sameAs": [
-        {{ 'https://github.com/' | append: site.github_username | jsonify }}
+        {{ 'https://github.com/' | append: site.github_username | jsonify }}{% if site.linkedin_username %},
+        {{ 'https://www.linkedin.com/in/' | append: site.linkedin_username | append: '/' | jsonify }}{% endif %}
       ]
     },
     {

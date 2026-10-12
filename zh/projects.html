@@ -39,7 +39,7 @@ alternate: /projects/
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
                 国密 SM2 / SM3 / SM4 的纯 Rust SDK。涉密路径按常量时间设计，
-                CI 里用 dudect 门禁拦泄漏回归。公开版
+                CI 里用 dudect 做时序泄漏检查。公开版
                 <strong>{{ project.release }}</strong> 在
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。按版本展开的证据，写在发布历史那一页。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>

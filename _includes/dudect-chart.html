@@ -119,10 +119,10 @@
         <td role="cell">{{ m.desc[page.lang] | default: m.desc.en | escape }}</td>
         <td role="cell" data-label="{{ lbl_tau }}">{{ m.tau }}</td>
         {%- if m.policy == 'sentinel' -%}
-        <td role="cell" data-label="{{ lbl_gate }}">&lt;&nbsp;{{ d.sentinel_display }} ({{ t.policy_sentinel_label | escape }})</td>
+        <td role="cell" data-label="{{ lbl_gate }}">&le;&nbsp;{{ d.sentinel_display }} ({{ t.policy_sentinel_label | escape }})</td>
         <td role="cell" data-label="{{ lbl_status }}">{{ t.status_sentinel | escape }}</td>
         {%- else -%}
-        <td role="cell" data-label="{{ lbl_gate }}">&lt;&nbsp;{{ d.gate_display }}</td>
+        <td role="cell" data-label="{{ lbl_gate }}">&le;&nbsp;{{ d.gate_display }}</td>
         <td role="cell" data-label="{{ lbl_status }}">{{ t.status_pass | escape }}</td>
         {%- endif -%}
       </tr>
@@ -138,14 +138,14 @@
         <td role="cell"><code>{{ d.leak.what[page.lang] | default: d.leak.what.en | escape }}</code></td>
         <td role="cell">{{ t.leak_before_row | escape }}</td>
         <td role="cell" data-label="{{ lbl_tau }}">≈{{ d.leak.before }}</td>
-        <td role="cell" data-label="{{ lbl_gate }}">&lt;&nbsp;{{ d.gate_display }}</td>
+        <td role="cell" data-label="{{ lbl_gate }}">&le;&nbsp;{{ d.gate_display }}</td>
         <td role="cell" data-label="{{ lbl_status }}">{{ t.status_caught | escape }}</td>
       </tr>
       <tr role="row">
         <td role="cell"><code>{{ d.leak.what[page.lang] | default: d.leak.what.en | escape }}</code></td>
         <td role="cell">{{ t.leak_after_row | escape }}</td>
         <td role="cell" data-label="{{ lbl_tau }}">≈{{ d.leak.after }}</td>
-        <td role="cell" data-label="{{ lbl_gate }}">&lt;&nbsp;{{ d.gate_display }}</td>
+        <td role="cell" data-label="{{ lbl_gate }}">&le;&nbsp;{{ d.gate_display }}</td>
         <td role="cell" data-label="{{ lbl_status }}">{{ t.status_pass | escape }}</td>
       </tr>
     </tbody>

@@ -39,7 +39,8 @@ feed:
       path: feed.xml
 
 github_username: frankxue831
-# linkedin_username:
+# LinkedIn: added 2026-10-12 at the Owner's request as the non-code contact route.
+linkedin_username: fengxiang-xue-561879141
 # twitter_username:
 
 defaults:
