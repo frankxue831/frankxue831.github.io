@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "gm-crypto-rs"
-description: A pure-Rust SDK for China's SM2/SM3/SM4 cryptography standards, with in-CI dudect timing-leak checks on its constant-time-designed secret-handling paths. Not independently audited.
+description: A pure-Rust library for China's SM2/SM3/SM4 cryptography standards, with in-CI dudect timing-leak checks on its constant-time-designed secret-handling paths. Not independently audited.
 permalink: /projects/gm-crypto-rs/
 lang: en
 alternate: /zh/projects/gm-crypto-rs/
@@ -15,14 +15,40 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
         <em>gm-crypto-rs</em>
     </h1>
     <p class="page-header__lede">
-        A pure-Rust SDK for the Chinese national cryptography standards
-        — SM2, SM3, SM4 — with constant-time-designed secret-handling
-        paths checked by an in-CI timing-leak harness.
+        A pure-Rust library for China's SM2, SM3 and SM4 cryptography
+        standards, published on crates.io.
     </p>
 </section>
 
 <section class="section wrap reveal">
     <article class="project-detail prose">
+        <p>
+            <strong>Problem.</strong> I started the project after encountering
+            gaps in the Rust tooling available for my needs.
+        </p>
+        <p>
+            <strong>My part.</strong> I defined the initial requirements and
+            used AI coding assistants to implement features. As someone
+            learning Rust, I focused primarily on practical usability and
+            compatibility with existing implementations such as GmSSL. I
+            initially reviewed changes myself, then shifted more of the
+            code-review work to AI agents following defined rules.
+        </p>
+        <p>
+            <strong>Outcome.</strong> <code>gmcrypto-core</code> v1.16.0 is on
+            crates.io (published 2026-10-09, UTC). CI checks the standard test
+            vectors and compares outputs against GmSSL. That comparison runs
+            only when the GmSSL oracle's provisioning and version check
+            succeed; if either fails, the comparison is skipped with a warning
+            while the job still passes. Statistical timing tests watch selected
+            paths for regressions on x86-64 Linux runners.
+        </p>
+        <p>
+            <strong>Limits.</strong> Not independently audited; the pre-1.0
+            review was an adversarial review by two AI models. Passing timing
+            tests is evidence under the tested conditions, not proof of
+            constant-time behavior.
+        </p>
         {% include project-summary.html %}
         {% assign inst = site.data.i18n[page.lang].install %}
         <div class="install">
@@ -95,7 +121,7 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             operations. But design intent is asserted once, at review time,
             and then erodes quietly — a refactor, a new fast path, a
             dependency bump, and a timing leak slips back in with nothing to
-            catch it. This SDK targets a combination that makes that erosion
+            catch it. This library targets a combination that makes that erosion
             easy: byte-level GB/T conformance, a <code>no_std</code> / wasm
             core, secret-touching paths that must stay constant-time-designed
             across releases, and a C ABI that hands those same paths to
@@ -167,20 +193,20 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             <em>What it isn't</em> rather than buried.
         </p>
         <p>
-            <strong>Ship the core first, the FFI next — and skip releases that
-            change nothing.</strong> Cipher modes land on a
+            <strong>Ship the core first, the FFI next — and leave some cycles
+            unpublished.</strong> Cipher modes land on a
             <code>core-in-vN / FFI-in-vN+1</code> cadence: the SM4-XTS core
             shipped in v0.12 and its C ABI in v0.13; the in-place multi-sector
             disk helper in v0.15 and its FFI in v0.16; SM2 key exchange in
             v1.1 and its C ABI in v1.2; X.509-with-SM2 in v1.3 and its C ABI
-            in v1.4. When a cycle changes no
-            output bytes — v0.14 was a <code>cargo-fuzz</code> parser-fuzzing
-            sweep that found zero crashes — it merges as assurance and is never
-            published, so crates.io skips <code>0.14.0</code>. The same rule then
-            scaled up across the <code>0.17</code>–<code>0.23</code> gap — chiefly the
+            in v1.4. Some cycles merged without a published version, each for
+            a reason the project records: v0.14, a <code>cargo-fuzz</code>
+            parser-fuzzing sweep that found zero crashes, left the published
+            crates byte-unchanged, so crates.io skips <code>0.14.0</code>; and the
+            <code>0.17</code>–<code>0.23</code> gap — chiefly the
             <code>v0.21</code>–<code>v0.23</code> readiness work (public-API freeze,
             <code>crypto-bigint</code> decoupling, an adversarial pre-1.0 review
-            by two AI models) — which stayed unpublished and shipped together in the
+            by two AI models) — stayed unpublished and shipped together in the
             deliberate <code>1.0.0</code> release.
             <strong>Cost:</strong> the version line carries a deliberate gap to
             explain, and the C ABI doubles the surface every mode has to be
@@ -247,9 +273,12 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
         </p>
         {% include dudect-chart.html %}
         <p>
-            The release line carries deliberate gaps: a cycle that changes no
-            output bytes merges without a published version.
-            <a href="{{ '/notes/releases-that-change-nothing/' | relative_url }}">Why, in one note</a>.
+            Some cycles merged without a new crates.io version: assurance work
+            such as fuzzing sweeps and timing studies, the pre-1.0
+            API-finalization cycles that shipped together in <code>1.0.0</code>,
+            and one design-only cycle. The project records explain each one;
+            the site does not state a general rule.
+            <a href="{{ '/notes/releases-that-change-nothing/' | relative_url }}">The reasoning, in one note</a>.
         </p>
         <dl class="version-grid">
             <dt>Current</dt>

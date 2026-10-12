@@ -22,57 +22,41 @@ alternate: /zh/about/
 <section class="section wrap reveal">
     <div class="prose">
         <p>
-            I'm Frank — a software engineer who works mostly in Rust,
-            mostly at the seam between developer tools and the systems
-            they sit on top of.
+            I'm Fengxiang (Frank) Xue, a software engineer with a background
+            in mathematics and computer science. I like using AI to build
+            software that's useful, and I'm exploring how people can
+            understand, guide and evaluate what it helps create.
         </p>
         <p>
-            As of Oct 2026, that's five things.
+            In practice I start from a gap I have run into, write down what
+            the software needs to do, and use AI coding assistants to
+            implement it. I pay most attention to whether the result is
+            practical to use, and to keeping the problem, the decisions and
+            the evidence written down with their limits.
+            <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}">gm-crypto-rs</a>
+            is the fullest example: there I also cared about compatibility
+            with existing implementations such as GmSSL, reviewed changes
+            myself at first, and then shifted more of the code review to AI
+            agents following defined rules. It has not been independently
+            audited, and its timing tests are statistical evidence on the
+            tested paths and hardware, not a proof. Verification and
+            cryptography appear often on this site because of that project,
+            not because they are the whole of what I do.
         </p>
         <p>
-            <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}">gm-crypto-rs</a> is a pure-Rust SDK for the Chinese national
-            crypto standards. Its secret-handling paths are designed to run in
-            constant time, and an in-CI timing-leak harness re-tests the core
-            paths on pull requests that change the crypto code, rather than
-            trusting the design review; a core path over its limit fails that
-            check. It's statistical evidence on the tested paths and hardware,
-            not a proof, and the library has not been independently audited.
+            The projects themselves are on the
+            <a href="{{ '/projects/' | relative_url }}">Work page</a>: the
+            cryptography library, a repository-context tool for AI coding
+            agents, a small diagnostic CLI for self-hosted CI runners, and a
+            pipeline that renders concept videos whose on-screen claims are
+            checked against their source. They are mostly written in Rust,
+            with Python where it fits.
         </p>
         <p>
-            <a href="{{ '/gm-crypto-web/?lang=en' | relative_url }}">gm-crypto-web</a> is the part of it you can use right now: a
-            browser tool for SM2, SM3 and SM4, built on gm-crypto-rs compiled to
-            WebAssembly. Everything runs locally in the page, and it checks itself
-            on load (11/11): SM3 and SM4 against the GB/T test vectors, SM2 by
-            round trip. It's for debugging, not production keys, and it hasn't
-            been audited.
-            <a href="{{ '/gm-crypto-web/?lang=en' | relative_url }}">Try it</a>.
-        </p>
-        <p>
-            <a href="{{ '/projects/repolens-rs/' | relative_url }}">RepoLens</a> is a repository memory layer for AI coding
-            agents — a typed, decaying memory graph exposed over MCP, so a new
-            session doesn't start cold.
-        </p>
-        <p>
-            <a href="{{ '/projects/ghrunners/' | relative_url }}">ghrunners</a> is a small observability CLI that exists
-            because debugging self-hosted GitHub Actions runners on macOS
-            shouldn't take an hour.
-        </p>
-        <p>
-            <a href="{{ '/projects/explainer-engine/' | relative_url }}">Explainer Engine</a> is a rendering pipeline for concept
-            videos that refuses to draw an explanatory claim it can't verify
-            against the source.
-        </p>
-        <p>
-            I build tools where correctness, state, and failure modes need
-            to remain <em>inspectable</em>. The projects differ in subject;
-            the recurring concern is the same — software that can explain
-            what it knows, what it changed, and where its boundaries are.
-        </p>
-        <p>
-            In practice that is a preference for the unglamorous parts of
-            the work: <em>clear naming</em>, the timing check that flags
-            a leak on the pull request that introduces it, the comment that finally explains
-            <em>why</em>. The opinionated stuff.
+            Across these projects, I prefer the unglamorous parts of the
+            work: <em>clear naming</em>, the timing check that flags a leak on
+            the pull request that introduces it, the comment that finally
+            explains <em>why</em>. The opinionated stuff.
         </p>
         <p>
             The <a href="{{ '/projects/' | relative_url }}">project pages here</a>
@@ -87,11 +71,11 @@ alternate: /zh/about/
     <ul class="facts" aria-label="At a glance">
         <li>
             <span>Discipline</span>
-            <span>Software engineering, mostly Rust</span>
+            <span>Software engineering</span>
         </li>
         <li>
             <span>Interests</span>
-            <span>Cryptography, agent tooling, CLIs, verified explanation</span>
+            <span>Building with AI, developer tools, cryptography, verified explanation</span>
         </li>
         <li>
             <span>{{ site.data.i18n[page.lang].nav.writing }}</span>

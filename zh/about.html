@@ -21,31 +21,16 @@ alternate: /about/
 <section class="section wrap reveal">
     <div class="prose">
         <p>
-            我叫 Frank，是软件工程师。主要写 Rust，做的多是开发者工具，以及这些工具和它们所依赖的底层系统之间的接缝。
+            我叫 Fengxiang (Frank) Xue，是软件工程师，有数学和计算机科学背景。我喜欢用 AI 做有用的软件，也在琢磨：人怎样才能理解、引导和评估 AI 帮着做出来的东西。
         </p>
         <p>
-            截至 2026 年 10 月，主要在做五件事。
+            具体做法上，我从自己碰到的缺口出发：先写清软件要做什么，再用 AI 编程助手把它实现出来。我最在意两件事：做出来的东西用起来是否实际顺手；问题、决定和证据有没有连同各自的限制一起写下来。<a href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}">gm-crypto-rs</a> 是最完整的例子：在那里我还在意它和 GmSSL 这类现有实现是否兼容；改动起初由我自己复核，后来把更多代码评审交给了按既定规则工作的 AI Agent。这个库没有经过独立审计；它的时序测试只是已测路径和硬件上的统计证据，不是证明。验证和密码学在这个站上出现得多，是因为那个项目，不是因为它们就是我做的全部。
         </p>
         <p>
-            第一件是 <a href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}">gm-crypto-rs</a>，一套纯 Rust 的国密 SM2 / SM3 / SM4 SDK。我特别在意时序侧信道这类容易被忽略的安全风险：代码处理密钥时，执行时间不能跟密钥内容有关，否则别人可能靠测耗时反推出密钥。所以涉密路径按常量时间设计，CI 里挂着一套 dudect 时序泄漏 harness，改动密码代码的 PR 都会重测核心路径——核心路径一旦超过阈值，这项检查就失败，而不是只相信设计评审。这是针对已测路径和硬件的统计证据，不是证明；这个库也没有经过独立审计。
+            项目本身都在<a href="{{ '/zh/projects/' | relative_url }}">作品页</a>：那个密码学库、一个给 AI 编程 Agent 用的仓库上下文工具、一个排查 self-hosted CI runner 的小命令行工具，以及一条渲染概念讲解视频、画面上每个说法都按源码核对的流水线。它们大多用 Rust 写，合适的地方用 Python。
         </p>
         <p>
-            第二件是 <a href="{{ '/gm-crypto-web/?lang=zh' | relative_url }}">gm-crypto-web</a>，也就是上面那套 SDK 能直接上手的样子：一个浏览器里的 SM2 / SM3 / SM4 工具，底下是编译成 WebAssembly 的 gm-crypto-rs。所有计算都在本地页面里完成，打开时自检 11/11（SM3、SM4 对国标向量，SM2 做往返校验）。它是拿来调试的，别放生产密钥，也还没经过审计。<a href="{{ '/gm-crypto-web/?lang=zh' | relative_url }}">在线试用</a>。
-        </p>
-        <p>
-            第三件是 <a href="{{ '/zh/projects/repolens-rs/' | relative_url }}">RepoLens</a>，给 AI 编程 Agent 用的仓库记忆层——一张类型化、会衰减的记忆图，经 MCP 暴露出来，让新开的会话不必每次都冷启动重新摸清项目。
-        </p>
-        <p>
-            第四件是 <a href="{{ '/zh/projects/ghrunners/' | relative_url }}">ghrunners</a>，macOS 上的一个观测小工具：把一台机器上 GitHub Actions self-hosted runner 的 launchd 状态、进程、日志和 GitHub API 信息收成可核对的状态。它存在的理由很简单：查这件事不该耗掉一个小时。
-        </p>
-        <p>
-            第五件是 <a href="{{ '/zh/projects/explainer-engine/' | relative_url }}">Explainer Engine</a>，一条把 storyboard 渲染成概念讲解视频的确定性流水线——讲解里的每个说法，画出来之前都得先按源码核对，核对不过就不渲染。
-        </p>
-        <p>
-            我做的工具，正确性、当前状态和失败模式都得保持<em>可查</em>。几个项目方向不一样，但惦记的是同一件事：软件应该讲得清楚自己知道什么、改动了什么、以及哪些事它做不到。
-        </p>
-        <p>
-            落到手上，就是那些不那么光鲜的部分：一个说得清楚的名字；一项能在引入泄漏的 PR 上把它标出来的时序检查；以及一行终于解释了<em>「为什么」</em>、而不只是重复<em>「做了什么」</em>的注释。都是有主张的那部分。
+            这些项目里，我偏爱那些不那么光鲜的部分：一个说得清楚的名字；一项能在引入泄漏的 PR 上把它标出来的时序检查；以及一行终于解释了<em>「为什么」</em>、而不只是重复<em>「做了什么」</em>的注释。都是有主张的那部分。
         </p>
         <p>
             想看每个项目做到哪一步，<a href="{{ '/zh/projects/' | relative_url }}">这里的项目页</a>是诚实的快照——发到哪了、凭什么这么说、哪些做不到，都写在页面上；没公开的项目也一样。已经公开的部分，源码在
@@ -57,11 +42,11 @@ alternate: /about/
     <ul class="facts" aria-label="一览">
         <li>
             <span>主攻</span>
-            <span>软件工程，主要写 Rust</span>
+            <span>软件工程</span>
         </li>
         <li>
             <span>兴趣</span>
-            <span>密码学、Agent 工具、CLI、能按源码核对的讲解</span>
+            <span><span class="nowrap">借助 AI 做软件</span>、<span class="nowrap">开发者工具</span>、<span class="nowrap">密码学</span>、<span class="nowrap">能按源码核对的讲解</span></span>
         </li>
         <li>
             <span>{{ site.data.i18n[page.lang].nav.writing }}</span>

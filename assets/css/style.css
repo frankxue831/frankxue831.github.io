@@ -828,7 +828,7 @@ body.lang-zh .note li {
 .hero__title {
     font-family: var(--serif);
     font-weight: 600;
-    font-size: clamp(3.1rem, 5.8vw, 4.85rem);
+    font-size: clamp(3.1rem, 5.8vw, 4.85rem); /* ZH reuses it in a column cap (#100 spec B block) */
     line-height: 1.04;
     letter-spacing: 0;
     color: var(--fg);
@@ -1770,13 +1770,15 @@ body.lang-zh .note li {
     padding-left: var(--space-6);
     border-left: var(--rule-w) solid var(--rule);
 }
-.facts dt, .facts span:first-child {
+/* Label and value are the row's direct children; a value may hold inline
+   spans of its own (the ZH Interests row keeps each item in a .nowrap). */
+.facts dt, .facts li > span:first-child {
     color: var(--fg-subtle);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-size: var(--text-xs);
 }
-.facts dd, .facts span:last-child { color: var(--fg); }
+.facts dd, .facts li > span:last-child { color: var(--fg); }
 /* Inline link inside a fact value (Notes / GitHub / crates.io). Class, not an
    inline style, so a strict style-src CSP needs no 'unsafe-inline'. */
 .facts__link {
@@ -2116,6 +2118,22 @@ body.lang-zh .page-header__title,
     overflow-wrap: anywhere; /* last-resort guard against overflow at 360 */
 }
 .nowrap { white-space: nowrap; }
+
+/* The ZH hero accent line (做有用的软件。) is seven full-width glyphs pinned
+   to one line, so it is 7em wide. In the two-column layout the copy column is
+   narrower than that at 760-800px and again from ~1246px, where the column
+   stops growing but the clamp does not, and the line ran up to 41px into the
+   gutter. Cap the size at what the column holds, with a little air; where the
+   clamp already fits, it wins and nothing changes. Engines without container
+   units drop the declaration and keep the clamp. The validator ties the 7 to
+   the phrase's length and the clamp to the base .hero__title one. The query is
+   the exact complement of the stacked layout's (max-width: 759px), so no
+   fractional width falls between the two; the stacked layout fits at its own
+   clamp. */
+@media not all and (max-width: 759px) {
+    body.lang-zh .hero__copy { container-type: inline-size; }
+    body.lang-zh .hero__title { font-size: min(clamp(3.1rem, 5.8vw, 4.85rem), 100cqi / 7.1); }
+}
 
 
 /* =========================================================

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "gm-crypto-rs"
-description: gm-crypto-rs——国密 SM2 / SM3 / SM4 纯 Rust SDK；涉密路径按常量时间设计，CI 里用 dudect 做时序泄漏检查。未经独立审计。
+description: gm-crypto-rs——国密 SM2 / SM3 / SM4 纯 Rust 密码学库；涉密路径按常量时间设计，CI 里用 dudect 做时序泄漏检查。未经独立审计。
 permalink: /zh/projects/gm-crypto-rs/
 lang: zh
 alternate: /projects/gm-crypto-rs/
@@ -15,13 +15,24 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
         <em>gm-crypto-rs</em>
     </h1>
     <p class="page-header__lede">
-        国密 SM2 / SM3 / SM4 的纯 Rust SDK——涉密路径按<em>常量时间</em>设计，
-        CI 里用 dudect 时序泄漏 harness 做检查。
+        国密 SM2 / SM3 / SM4 的纯 Rust 密码学库，已在 crates.io 发布。
     </p>
 </section>
 
 <section class="section wrap reveal">
     <article class="project-detail prose">
+        <p>
+            <strong>问题。</strong>我开始做这个项目，是在 Rust 里碰到了满足不了自己需要的工具缺口之后。
+        </p>
+        <p>
+            <strong>我做的部分。</strong>最初的需求是我定的，功能用 AI 编程助手实现。我还在学 Rust，主要关注两点：实际用起来是否顺手，以及能否与 GmSSL 这类现有实现兼容。起初改动由我自己复核，后来把更多代码评审工作交给了按既定规则工作的 AI Agent。
+        </p>
+        <p>
+            <strong>结果。</strong><code>gmcrypto-core</code> v1.16.0 已在 crates.io 发布（2026-10-09，UTC）。CI 会核对标准测试向量，并把输出和 GmSSL 比对。这项比对只在 GmSSL 对照实现（oracle）的准备和版本校验都成功时才运行；任一步失败，比对就会带着警告跳过，而这项任务照样通过。统计性的时序测试在 x86-64 Linux runner 上盯着选定的路径，看有没有回归。
+        </p>
+        <p>
+            <strong>限制。</strong>未经独立审计；1.0 之前的那轮评审，是两个 AI 模型做的对抗式评审。时序测试通过，只是测试条件下的证据，不能证明它的行为就是常量时间。
+        </p>
         {% include project-summary.html %}
         {% assign inst = site.data.i18n[page.lang].install %}
         <div class="install">
@@ -121,14 +132,14 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
             之上，密钥材料一到 <code>Drop</code> 就由 <code>zeroize</code> 抹零。整体是奔着常量时间设计的，但有些地方确实做不到。<strong>代价：</strong>在那些「乘法耗时跟操作数有关」的 CPU 上（部分较老的 x86、部分嵌入式芯片），这些时序性质并不成立——这一条我明写在<em>「它不是什么」</em>里，没藏着掖着。
         </p>
         <p>
-            <strong>先发核心、再发 FFI——这一轮输出没变就不发版。</strong>每个密码模式都按「核心在 vN、FFI 在 vN+1」的节奏走：SM4-XTS 的核心在 v0.12、对应的 C ABI 在 v0.13；面向磁盘的多扇区原地（in-place）辅助函数在
+            <strong>先发核心、再发 FFI——有些轮次不单独发版。</strong>每个密码模式都按「核心在 vN、FFI 在 vN+1」的节奏走：SM4-XTS 的核心在 v0.12、对应的 C ABI 在 v0.13；面向磁盘的多扇区原地（in-place）辅助函数在
             v0.15、它的 FFI 在 v0.16；SM2 密钥交换在 v1.1、它的 C ABI 在
             v1.2；X.509 与 SM2 的结合在 v1.3、它的 C ABI 在 v1.4。
         </p>
         <p>
-            要是某一轮算出来的结果一个字节都没变（比如 v0.14，那一轮只做了
-            <code>cargo-fuzz</code> 解析器模糊测试，零崩溃），就只作为保障性工作并入主干、不单独发版，所以 crates.io 上直接跳过了 <code>0.14.0</code>。同一条规矩后来放大到更大尺度：
-            <code>0.17</code>–<code>0.23</code> 这一段都没单独发版——主要是
+            有些轮次只并入了主干、没有单独发版，原因都按轮次记在项目记录里：v0.14 那一轮只做了
+            <code>cargo-fuzz</code> 解析器模糊测试，零崩溃，已发布 crate 的字节一个没变，所以 crates.io 上直接跳过了 <code>0.14.0</code>；
+            <code>0.17</code>–<code>0.23</code> 这一段也都没单独发版——主要是
             <code>v0.21</code>–<code>v0.23</code> 的发版准备工作（冻结公开 API、把
             <code>crypto-bigint</code> 从常开接口解耦、再请两个 AI 模型做一轮 1.0 前的对抗式评审）——
             一起并进了刻意的 <code>1.0.0</code> 正式发布。<strong>代价：</strong>版本号因此留了个需要解释的缺口；而且多出一层 C ABI，每个模式都得在三个已发布的 crate 里测一遍、维护一遍，测试和维护面也随之翻倍。
@@ -136,7 +147,7 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
 
         <h2 id="evidence">证据</h2>
         <p>
-            <strong>未经独立审计。</strong>没有做过任何第三方安全审计；下面列的都是项目自己的证据。每一处输出都逐字节比对过：标准 KAT 测试向量、GmSSL 3.2.0（互操作性）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>（可调模式，<code>xts_standard=GB</code>）。GmSSL 这项比对是 v1.10 起挂在 CI 里的任务，用从源码构建的对照实现（oracle）跑，截至 2026 年 10 月是合并的必需检查之一：字节对不上就失败，但钉住的 oracle 构建不出来或版本校验不过时，这组测试只会带着警告跳过，这项检查照样通过。
+            <strong>未经独立审计。</strong>没有做过任何第三方安全审计；下面列的都是项目自己的证据。每一处输出都逐字节比对过：标准 KAT 测试向量、GmSSL 3.2.0（互操作性）、以及 OpenSSL 3.x 的 <code>SM4-XTS</code>（可调模式，<code>xts_standard=GB</code>）。GmSSL 这项比对是 v1.10 起挂在 CI 里的任务，用从源码构建的 oracle 跑，截至 2026 年 10 月是合并的必需检查之一：字节对不上就失败，但钉住的 oracle 构建不出来或版本校验不过时，这组测试只会带着警告跳过，这项检查照样通过。
         </p>
         <p>
             上面那套时序检查，会在改动密码代码的 PR 上跑，也会在 <code>main</code> 上每天跑一次，都跑在 GitHub 托管的 x86-64 Linux runner 上；核心在 <code>[lints]</code>
@@ -173,7 +184,7 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
         </p>
         {% include dudect-chart.html %}
         <p>
-            版本线上有刻意留下的缺口：一轮没改任何输出字节的工作，不发版，直接合进主干。<a href="{{ '/zh/notes/releases-that-change-nothing/' | relative_url }}">为什么，一篇笔记讲清</a>。
+            有些轮次合进了主干，却没有在 crates.io 上单独发版：模糊测试、时序研究这类保障性工作，1.0 之前一起并进 <code>1.0.0</code> 的 API 定稿轮次，以及一轮只做设计的轮次。每一轮的原因都写在项目记录里；本站不把它们归纳成一条通用规则。<a href="{{ '/zh/notes/releases-that-change-nothing/' | relative_url }}">来龙去脉，一篇笔记讲清</a>。
         </p>
         <dl class="version-grid">
             <dt>当前版本</dt>

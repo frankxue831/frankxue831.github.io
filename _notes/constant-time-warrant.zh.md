@@ -10,7 +10,7 @@ image:
   path: /assets/img/social-card.zh.png
   width: 1200
   height: 630
-  alt: "Frank Xue——软件工程师。为代码、系统和 Agent，写可审计、状态清晰的工具。"
+  alt: "Frank Xue——软件工程师。借助 AI，做有用的软件。"
 alternate: /notes/constant-time-warrant/
 description: "密码库里，「涉密路径按常量时间设计」是个常见说法。要把某一份具体实现的可信度交给读者，两样可核对的东西比解释更有用：一个能故意触发的检测器，和一份主动写明的边界。"
 excerpt: "解释「常量时间」是最容易的部分，也不是有疑心的读者真正需要的。能把可信度交出去的，是一个必须故意失败的泄漏检测器，和一句在别人追问之前就先写下的但书。"

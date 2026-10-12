@@ -29,7 +29,7 @@ A note belongs here when it has at least three pieces:
 Examples already on the site:
 
 - How a constant-time claim transfers warrant — [A constant-time claim is a trust problem, not a comprehension problem]({{ '/notes/constant-time-warrant/' | relative_url }}).
-- Why a release that changes no output bytes does not deserve a version number — [Skipping the releases that change nothing]({{ '/notes/releases-that-change-nothing/' | relative_url }}), tied to the [gm-crypto-rs release history]({{ '/projects/gm-crypto-rs/releases/' | relative_url }}).
+- Why some cycles that changed no output bytes have no version number — [Skipping the releases that change nothing]({{ '/notes/releases-that-change-nothing/' | relative_url }}), tied to the [gm-crypto-rs release history]({{ '/projects/gm-crypto-rs/releases/' | relative_url }}).
 - How a constant-time CI check is wired, and what it costs on the pull requests it runs on — [The constant-time CI gate]({{ '/notes/constant-time-ci-gate/' | relative_url }}).
 - When sharing code is not yet a reason to share a package — [Sharing code is not the same decision as sharing a package]({{ '/notes/extraction-trigger/' | relative_url }}).
 - When `unsafe` is an opt-in surface rather than a default — [Unsafe as opt-in]({{ '/notes/unsafe-opt-in/' | relative_url }}).
@@ -40,12 +40,12 @@ If those three pieces are not there yet, the thought stays private until they ar
 
 - **Status-only updates** — "shipped X," "still working on Y," with no decision or evidence.
 - **Generic lessons** — advice that would fit any project without naming a constraint.
-- **Release notes that already have a home** — version tables and crate history live on the project pages; a note only appears when the *policy* behind a skip or a gate needs its own argument.
+- **Release notes that already have a home** — version tables and crate history live on the project pages; a note only appears when the *reasoning* behind a skip or a gate needs its own argument.
 - **Meta about the notebook itself** — after this page, the section should not keep explaining that it exists. The lede on the [notes index]({{ '/notes/' | relative_url }}) carries that role for first-time visitors.
 
 ## A worked example
 
-The gm-crypto-rs line that skips crates.io versions is easy to misread as "lazy shipping." The real rule is narrower: if a cycle changes no runtime output byte and only hardens tests, tooling, or process, it merges without a published version. That rule is stated under Evidence on the [case study]({{ '/projects/gm-crypto-rs/' | relative_url }}) and spelled out as an argument in the releases note — including the gaps a reader can check on crates.io. The notebook is for that middle layer: not the version table alone, and not a vague essay on "shipping discipline," but the claim + the rule + the places to verify it.
+The gm-crypto-rs line that skips crates.io versions is easy to misread as "lazy shipping." The records say something more specific, cycle by cycle: each skipped cycle changed no runtime output byte, and its own entry says why it merged without a published version. The gaps are listed under Evidence on the [case study]({{ '/projects/gm-crypto-rs/' | relative_url }}) and argued for in the releases note — including the gaps a reader can check on crates.io. The notebook is for that middle layer: not the version table alone, and not a vague essay on "shipping discipline," but the claim + the recorded reasons + the places to verify it.
 
 ## The promise to the reader
 

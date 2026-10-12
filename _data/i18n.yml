@@ -56,20 +56,22 @@
 #   extraction trigger      → 触发条件（不用「触发器」）
 #   code smell              → 坏味道
 #   oracle (interop reference build) → 对照实现（oracle）（每页首次括注；后续可用裸 oracle）
+#   AI coding assistant     → AI 编程助手（与「AI 编程 Agent」区分，不混用）
+#   review (by AI agents)   → 评审（AI 做的；人工的仍写「复核」）
 # Voice rule: ZH keeps its native register and may add explanatory glosses;
 # disclosures, hedges, numbers, and limitations must match EN exactly.
 # ---------------------------------------------------------------------------
 
 en:
   html_lang: "en"
-  tagline: "Software engineer, mostly in Rust. I publish selected work with its status, evidence, and limits visible."
+  tagline: "Software engineer building useful software with AI. I share selected work with its status, evidence, and limits visible."
   # Short suffix for the <title> element on the home page, where page title ==
   # site title. head.html builds the document title so the suffix follows the
   # page locale; jekyll-seo-tag can only read the single global site.tagline.
-  short_tagline: "Software engineer, mostly in Rust"
+  short_tagline: "Software engineer"
   meta:
     site_description: "Personal site of Frank Xue — software engineer. Notes and selected work."
-  # Shared more-link for work-list project rows (home + projects index). Note
+  # Shared more-link for work-list project rows (projects index). Note
   # rows keep their own, shorter `notes.read_more` in English.
   list:
     read_more: "Read more →"
@@ -212,8 +214,8 @@ en:
     earlier_releases: "Earlier releases (v0.6.0 – v0.13.0)"
 zh:
   html_lang: "zh-CN"
-  tagline: "软件工程师，主要使用 Rust。我会公开一部分作品，并把状态、证据和限制写在明面上。"
-  short_tagline: "软件工程师，主要使用 Rust"
+  tagline: "软件工程师，借助 AI 做有用的软件。我会分享一部分作品，并把状态、证据和限制写在明面上。"
+  short_tagline: "软件工程师"
   meta:
     site_description: "Frank Xue 的个人主页。软件工程师——笔记与精选作品，发布状态与限制写在明面上。"
   # ZH uses one more-link phrase for every list row — project rows and note

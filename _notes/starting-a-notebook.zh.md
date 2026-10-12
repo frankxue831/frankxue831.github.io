@@ -10,7 +10,7 @@ image:
   path: /assets/img/social-card.zh.png
   width: 1200
   height: 630
-  alt: "Frank Xue——软件工程师。为代码、系统和 Agent，写可审计、状态清晰的工具。"
+  alt: "Frank Xue——软件工程师。借助 AI，做有用的软件。"
 alternate: /notes/starting-a-notebook/
 description: "这个笔记本写什么：可核对的工作笔记，不是发版通告，也不是精修长文。"
 excerpt: "公开的工程笔记本要站得住，每篇至少得有一个有用的判断、一个具体决定，以及让多疑读者能顺着查的证据。"
@@ -37,7 +37,7 @@ excerpt: "公开的工程笔记本要站得住，每篇至少得有一个有用�
 站上已经有的例子：
 
 - 一条常量时间说法怎么把可信度交出去——[常量时间的说法，是信任问题，不是理解问题]({{ '/zh/notes/constant-time-warrant/' | relative_url }})。
-- 为什么没改任何输出字节的一轮工作不配单独版本号——[什么都没变的版本，就不发]({{ '/zh/notes/releases-that-change-nothing/' | relative_url }})，并挂到 [gm-crypto-rs 版本线]({{ '/zh/projects/gm-crypto-rs/releases/' | relative_url }})。
+- 为什么有几轮没改任何输出字节的工作，没有单独的版本号——[跳过那些什么都没变的版本]({{ '/zh/notes/releases-that-change-nothing/' | relative_url }})，并挂到 [gm-crypto-rs 版本线]({{ '/zh/projects/gm-crypto-rs/releases/' | relative_url }})。
 - 常量时间 CI 检查怎么接线、在它运行的 PR 上要付什么代价——[在 CI 里抓出常量时间回归]({{ '/zh/notes/constant-time-ci-gate/' | relative_url }})。
 - 共用代码还不构成单独拆包的理由——[「共用代码」和「共用一个包」，是两个决定]({{ '/zh/notes/extraction-trigger/' | relative_url }})。
 - 何时把 `unsafe` 挡在默认构建之外——[把 unsafe 挡在默认构建之外]({{ '/zh/notes/unsafe-opt-in/' | relative_url }})。
@@ -48,12 +48,12 @@ excerpt: "公开的工程笔记本要站得住，每篇至少得有一个有用�
 
 - **只有状态的更新**——「发了 X」「还在做 Y」，没有决定，也没有证据。
 - **放之四海的教训**——不点名任何约束、换个项目也能贴的句子。
-- **已有归宿的发版说明**——版本表和 crate 历史在项目页；只有跳过发版或门禁背后的**规则**需要单独论证时，才进笔记本。
+- **已有归宿的发版说明**——版本表和 crate 历史在项目页；只有跳过发版或门禁背后的**理由**需要单独论证时，才进笔记本。
 - **再解释「为什么有笔记本」**——这一篇之后，栏目本身不必反复自我介绍；第一次来的人看[笔记索引的导语]({{ '/zh/notes/' | relative_url }})即可。
 
 ## 一个落地的例子
 
-gm-crypto-rs 在 crates.io 上跳过若干版本号，很容易被读成「发版偷懒」。真正的规矩更窄：若这一轮没改任何运行时输出字节，只加固测试、工具或流程，就合进主干、不单独发版。这条规矩写在[案例页的「证据」]({{ '/zh/projects/gm-crypto-rs/' | relative_url }})里，也在发版笔记里展开成论证——包括读者能在 crates.io 上核对的缺口。笔记本要填的是中间那一层：不是单张版本表，也不是空泛的「发版纪律」散文，而是**判断 + 规则 + 能去核对的地方**。
+gm-crypto-rs 在 crates.io 上跳过若干版本号，很容易被读成「发版偷懒」。项目记录说得更具体，而且是按轮次写的：每个跳过的轮次都没改任何运行时输出字节，各自的记录也写明了它为什么合进主干、没单独发版。这些缺口列在[案例页的「证据」]({{ '/zh/projects/gm-crypto-rs/' | relative_url }})里，也在发版笔记里展开成论证——包括读者能在 crates.io 上核对的缺口。笔记本要填的是中间那一层：不是单张版本表，也不是空泛的「发版纪律」散文，而是**判断 + 记录下来的理由 + 能去核对的地方**。
 
 ## 对读者的承诺
 

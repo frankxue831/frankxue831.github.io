@@ -12,7 +12,7 @@ image:
   path: /assets/img/social-card.zh.png
   width: 1200
   height: 630
-  alt: "Frank Xue——软件工程师。为代码、系统和 Agent，写可审计、状态清晰的工具。"
+  alt: "Frank Xue——软件工程师。借助 AI，做有用的软件。"
 alternate: /notes/constant-time-ci-gate/
 description: "一条可信的常量时间 CI 门，不只要在正常路径上通过，还要让负对照故意触发，并把测量值、阈值和证据边界一起公开。"
 excerpt: "「常量时间」是那种你做对一次、又会悄悄丢掉的性质。这篇讲 CI 里那根绊线：时序泄漏一回来就让 PR 上的检查变红——以及为什么它是检测，不是证明。"
