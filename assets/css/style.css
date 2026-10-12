@@ -238,7 +238,9 @@
         --ghost-ink: rgba(237, 228, 204, 0.05);
     }
     :root:not([data-theme]) .grain { display: none; }
-    :root:not([data-theme]) .dudect,
+    :root:not([data-theme]) .dudect {
+        --dudect-panel: var(--bg-elevated);
+    }
     :root:not([data-theme]) .install {
         background: var(--bg-elevated);
     }
@@ -297,7 +299,8 @@ html.theme-anim *::after {
     transition: background-color var(--dur) var(--ease),
                 color var(--dur) var(--ease),
                 border-color var(--dur) var(--ease),
-                fill var(--dur) var(--ease) !important;
+                fill var(--dur) var(--ease),
+                flood-color var(--dur) var(--ease) !important; /* dudect label plates track their panel */
 }
 @media (prefers-reduced-motion: reduce) {
     html.theme-anim,
@@ -2270,11 +2273,28 @@ details.drawer .version-grid {
    overrides. Status hues reinforce position+text, never sole signal.
    ========================================================= */
 .dudect {
+    --dudect-panel: var(--bg-sunk); /* panel fill; the chart's label plates reuse it */
     margin: var(--space-6) 0 var(--space-8);
     padding: var(--space-5);
     border: 1px solid var(--rule);
     border-radius: 4px;
-    background: var(--bg-sunk);
+    background: var(--dudect-panel);
+}
+/* Wide figure. The five-column table needs ~40rem, more than the 36rem
+   reading measure, so wherever the column has spare width (tablet up, or
+   beside the contents rail on desktop) the figure takes it rather than
+   scroll. The case-study section is the size container; prose inside the
+   figure keeps the reading measure. Without :has()/container queries the
+   figure simply stays in the column and the table scrolls, as before. */
+.section:has(.dudect) { container-type: inline-size; }
+@container (min-width: 36rem) {
+    .dudect { width: min(48rem, 100cqi); }
+}
+@media screen and (min-width: 1024px) {
+    @container (min-width: 36rem) {
+        /* rail track (12rem) + column gap, as in .section.has-toc (print drops the rail) */
+        .section.has-toc .dudect { width: min(48rem, 100cqi - 12rem - var(--space-12)); }
+    }
 }
 .dudect__title {
     font-family: var(--mono);
@@ -2290,37 +2310,44 @@ details.drawer .version-grid {
     font-size: var(--text-sm);
     color: var(--fg-muted);
     margin: 0 0 var(--space-4);
-    max-width: var(--maxw-reading, 42rem);
+    max-width: 36rem; /* the reading measure, kept when the figure widens */
 }
 .dudect__chart {
+    display: block;
     width: 100%;
-    height: auto;
     overflow: visible;
+    font-family: var(--mono);
+    font-size: 12px;
 }
-/* SVG strokes/fills via tokens. font-size in SVG text is in user units. */
+/* SVG strokes/fills via tokens. The chart has no viewBox (see the include),
+   so font sizes, strokes and radii are CSS px at every width. Each label
+   sits on a plate in the panel colour: a line it crosses passes behind it. */
+.dudect__chart text { filter: url(#dudect-plate); }
+.dudect__plate { flood-color: var(--dudect-panel); }
 .dudect__axis { stroke: var(--rule); stroke-width: 1.5; }
 .dudect__axis-label,
-.dudect__ticks text { font-family: var(--mono); font-size: 11px; fill: var(--fg-subtle); }
+.dudect__ticks text { fill: var(--fg-subtle); }
 .dudect__gate { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 3; }
-.dudect__gate-label { font-family: var(--mono); font-size: 11px; fill: var(--accent); }
+.dudect__gate-label { fill: var(--accent); }
 .dudect__sentinel { stroke: var(--fg-subtle); stroke-width: 1; stroke-dasharray: 2 3; }
 .dudect__control { fill: var(--danger); opacity: 0.10; }
 .dudect__control-label,
-.dudect__cluster-label { font-family: var(--mono); font-size: 11px; fill: var(--fg-muted); }
+.dudect__cluster-label { fill: var(--fg-muted); }
 .dudect__pt { fill: var(--status-released); }
-.dudect__leak-heading { font-family: var(--mono); font-size: 11px; fill: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.04em; }
+.dudect__leak-heading { fill: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.04em; }
 .dudect__leak-arrow { stroke: var(--fg-muted); stroke-width: 1.5; }
 .dudect__arrowhead { fill: var(--fg-muted); }
 .dudect__leak-before { fill: var(--danger); }
 .dudect__leak-after { fill: var(--status-released); }
 .dudect__leak-before-label,
-.dudect__leak-after-label { font-family: var(--mono); font-size: 12px; fill: var(--fg); }
+.dudect__leak-after-label { font-size: 13px; fill: var(--fg); }
 .dudect__caveat {
     font-family: var(--sans);
     font-size: var(--text-sm);
     color: var(--fg-muted);
     font-style: italic;
     margin: var(--space-3) 0 var(--space-4);
+    max-width: 36rem;
 }
 .dudect__table-scroll {
     max-width: 100%;
@@ -2357,19 +2384,69 @@ details.drawer .version-grid {
 }
 .dudect__table th { color: var(--fg-subtle); font-weight: 600; }
 .dudect__table code { font-family: var(--mono); font-size: var(--text-xs); }
+/* ZH: keep short CJK terms (哨兵, 门槛, 已捕获) whole in the narrow gate and
+   status cells; break-word only steps in if a term would overflow its cell. */
+:lang(zh) .dudect__table td:nth-child(n+4) {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
 .dudect__provenance {
     font-family: var(--sans);
     font-size: var(--text-xs);
     color: var(--fg-subtle);
     margin: 0;
+    max-width: 36rem;
 }
 /* Reduced-motion: the figure carries `reveal`; the global reveal/motion
    gate + the prefers-reduced-motion reset already neutralise its animation.
    No bespoke motion here, so nothing extra to disable. */
 @media (max-width: 759px) {
     .dudect { padding: var(--space-4); }
-    .dudect__table { font-size: var(--text-xs); }
-    .dudect__table th, .dudect__table td { padding: var(--space-1) var(--space-2); }
+    /* Phone: each row becomes a stacked record (target, what it measures,
+       then |τ| / gate / status side by side under their own labels), so no
+       column hides off the right edge. The thead stays in the a11y tree,
+       visually hidden, and the include's explicit table roles keep cells
+       announced with their headers despite the display changes. */
+    .dudect__table {
+        display: block;
+        min-width: 0;
+    }
+    .dudect__table caption { display: block; }
+    .dudect__table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+    .dudect__table tbody {
+        display: block;
+        border-top: 1px solid var(--rule);
+    }
+    .dudect__table tr {
+        display: grid;
+        /* fixed |τ| track (fits "≈0.006") so gate/status align across
+           records; at the narrowest widths status may grow to fit its
+           longest unbreakable term (必须故意失败) instead of orphaning a glyph */
+        grid-template-columns: 4.5em minmax(0, 1fr) minmax(min-content, 1fr);
+        gap: var(--space-1) var(--space-4);
+        padding: var(--space-3) 0;
+        border-bottom: 1px solid var(--rule);
+    }
+    .dudect__table td {
+        padding: 0;
+        border-bottom: 0;
+    }
+    .dudect__table td:not([data-label]) { grid-column: 1 / -1; }
+    .dudect__table td[data-label]::before {
+        content: attr(data-label);
+        content: attr(data-label) / ""; /* decorative: the hidden thead names the column */
+        display: block;
+        color: var(--fg-subtle);
+        font-weight: 600;
+        white-space: nowrap;
+    }
 }
 
 /* =========================================================
@@ -2382,7 +2459,9 @@ details.drawer .version-grid {
    prefers-color-scheme block near the top of this file.
    Spec: docs/superpowers/specs/2026-06-11-visual-evolution-design.md
    ========================================================= */
-[data-theme="dark"] .dudect,
+[data-theme="dark"] .dudect {
+    --dudect-panel: var(--bg-elevated);
+}
 [data-theme="dark"] .install {
     background: var(--bg-elevated);
 }

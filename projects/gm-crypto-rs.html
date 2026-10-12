@@ -110,10 +110,10 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             Constant-time behavior is treated as a property CI re-checks, not
             a claim review signs off. A <code>dudect-bencher</code> harness
             exercises twenty secret-touching paths on every run; a core set
-            is <em>gated</em> at <code>|τ|&nbsp;&lt;&nbsp;0.20</code>, so a
+            is <em>gated</em> at <code class="nowrap">|τ|&nbsp;&lt;&nbsp;0.20</code>, so a
             timing regression fails the build instead of waiting for someone
             to notice. The harness reports <em>detection events</em> — a low
-            <code>|τ|</code> means no leak was detected under the budget
+            <code class="nowrap">|τ|</code> means no leak was detected under the budget
             given, <em>not</em> that none exists (the wording is
             <code>dudect-bencher</code>'s own).
             <strong>Cost:</strong> every PR pays the measurement budget, and
