@@ -37,7 +37,7 @@ excerpt: "公开的工程笔记本要站得住，每篇至少得有一个有用�
 站上已经有的例子：
 
 - 一条常量时间说法怎么把可信度交出去——[常量时间的说法，是信任问题，不是理解问题]({{ '/zh/notes/constant-time-warrant/' | relative_url }})。
-- 为什么没改任何输出字节的一轮工作不配单独版本号——[什么都没变的版本，就不发]({{ '/zh/notes/releases-that-change-nothing/' | relative_url }})，并挂到 [gm-crypto-rs 版本线]({{ '/zh/projects/gm-crypto-rs/releases/' | relative_url }})。
+- 为什么有几轮没改任何输出字节的工作，没有单独的版本号——[跳过那些什么都没变的版本]({{ '/zh/notes/releases-that-change-nothing/' | relative_url }})，并挂到 [gm-crypto-rs 版本线]({{ '/zh/projects/gm-crypto-rs/releases/' | relative_url }})。
 - 常量时间 CI 检查怎么接线、在它运行的 PR 上要付什么代价——[在 CI 里抓出常量时间回归]({{ '/zh/notes/constant-time-ci-gate/' | relative_url }})。
 - 共用代码还不构成单独拆包的理由——[「共用代码」和「共用一个包」，是两个决定]({{ '/zh/notes/extraction-trigger/' | relative_url }})。
 - 何时把 `unsafe` 挡在默认构建之外——[把 unsafe 挡在默认构建之外]({{ '/zh/notes/unsafe-opt-in/' | relative_url }})。
@@ -53,7 +53,7 @@ excerpt: "公开的工程笔记本要站得住，每篇至少得有一个有用�
 
 ## 一个落地的例子
 
-gm-crypto-rs 在 crates.io 上跳过若干版本号，很容易被读成「发版偷懒」。真正的规矩更窄：若这一轮没改任何运行时输出字节，只加固测试、工具或流程，就合进主干、不单独发版。这条规矩写在[案例页的「证据」]({{ '/zh/projects/gm-crypto-rs/' | relative_url }})里，也在发版笔记里展开成论证——包括读者能在 crates.io 上核对的缺口。笔记本要填的是中间那一层：不是单张版本表，也不是空泛的「发版纪律」散文，而是**判断 + 规则 + 能去核对的地方**。
+gm-crypto-rs 在 crates.io 上跳过若干版本号，很容易被读成「发版偷懒」。项目记录比这更窄，而且是按轮次写的：每个跳过的轮次都没改任何运行时输出字节，各自的记录也写明了它为什么合进主干、没单独发版。这些缺口列在[案例页的「证据」]({{ '/zh/projects/gm-crypto-rs/' | relative_url }})里，也在发版笔记里展开成论证——包括读者能在 crates.io 上核对的缺口。笔记本要填的是中间那一层：不是单张版本表，也不是空泛的「发版纪律」散文，而是**判断 + 记录下来的理由 + 能去核对的地方**。
 
 ## 对读者的承诺
 

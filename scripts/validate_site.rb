@@ -345,6 +345,12 @@ home_pages = %w[index.html zh/index.html]
   if website_nodes.length == 1 && website_nodes.first["description"] != expected_site_description
     record(failures, "#{relative}: WebSite description must equal localized #{lang}.meta.site_description")
   end
+  # 2026-10-12 (PR 2): About states "Fengxiang (Frank) Xue"; the Person node
+  # carries the full name as alternateName while "Frank Xue" stays the name.
+  if person_nodes.length == 1
+    record(failures, "#{relative}: Person name must stay \"Frank Xue\"") unless person_nodes.first["name"] == "Frank Xue"
+    record(failures, "#{relative}: Person alternateName must be \"Fengxiang Xue\"") unless person_nodes.first["alternateName"] == "Fengxiang Xue"
+  end
 end
 
 core_pages.each do |relative, config|
@@ -437,6 +443,18 @@ home_pages.each do |relative|
   private_release_labels.each do |release|
     record(failures, "#{relative}: exposes private or local release label #{release}") if html.include?(release)
   end
+
+  # 2026-10-12 (PR 2): with the repeated list gone from section (03), the Status
+  # panel is the home page's only per-project public/private/release record.
+  # Every project keeps its own status pill there, in data order (tool rows,
+  # which carry the --tool modifier, are not projects and are skipped).
+  lang = relative.start_with?("zh/") ? "zh" : "en"
+  panel = html[%r{<aside class="hero-proof".*?</aside>}m].to_s
+  pills = panel.scan(%r{<li class="hero-proof__item">.*?<span class="status-pill" data-status="([^"]+)">([^<]+)</span>}m)
+  expected_pills = PROJECTS.map { |project| [project["status"].to_s, project.dig("status_label", lang).to_s] }
+  unless pills == expected_pills
+    record(failures, "#{relative}: Status panel must show one status pill per project #{expected_pills.inspect}, got #{pills.inspect}")
+  end
 end
 
 internal_targets = Set.new
@@ -528,10 +546,14 @@ end
   record(failures, "#{relative}: hero headline must not load a scramble script") if html.include?("decrypt.js")
 end
 record(failures, "assets/js/decrypt.js must stay removed (#100 spec A)") if ROOT.join("assets/js/decrypt.js").exist?
-{ "index.html" => "auditable tools", "zh/index.html" => "可审计" }.each do |relative, needle|
+# 2026-10-12 (PR 2): the headline is "Building useful software with AI." The
+# footer tagline now carries the same words, so match inside the <h1> only — a
+# page-wide match would pass even if the headline lost its text.
+{ "index.html" => "useful software", "zh/index.html" => "有用的软件" }.each do |relative, needle|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
-  record(failures, "#{relative}: hero title lost real text (#{needle.inspect})") unless html.include?(needle)
+  hero_title = html[%r{<h1 class="hero__title">(.*?)</h1>}m, 1].to_s
+  record(failures, "#{relative}: hero title lost real text (#{needle.inspect})") unless hero_title.include?(needle)
   record(failures, "#{relative}: hero__title missing") unless html.include?(%(class="hero__title"))
 end
 
@@ -541,8 +563,8 @@ end
 # github-pages bump changes seo-tag's output shape, or the splice regresses,
 # this fails loudly instead of shipping an English tagline in the Chinese tab.
 {
-  "index.html" => "Frank Xue | Software engineer, mostly in Rust",
-  "zh/index.html" => "Frank Xue | 软件工程师，主要使用 Rust",
+  "index.html" => "Frank Xue | Software engineer",
+  "zh/index.html" => "Frank Xue | 软件工程师",
   "about/index.html" => "About | Frank Xue",
   "zh/about/index.html" => "关于 | Frank Xue"
 }.each do |relative, expected_title|
@@ -796,10 +818,18 @@ case_study = {
                    # byte-identity notes and the v1.10 release rows are pinned in
                    # source_contracts), and no effective date is assigned to the
                    # required check (only the ruleset's own history is inspectable).
-                   "skipped with a warning and the check still passes"],
+                   "skipped with a warning and the check still passes",
+                   # 2026-10-12 (PR 2): the short opening keeps the Owner-confirmed
+                   # contribution wording and the GmSSL caveat as the workflow runs it;
+                   # the release line is described per cycle, not as a general rule.
+                   "<strong>My part.</strong> I defined the initial requirements and used AI coding assistants to implement features.",
+                   "provisioning and version check succeed; if either fails, the comparison is skipped with a warning while the job still passes",
+                   "the site does not state a general rule"],
     forbid: ["on every PR", "on every commit", "build-failing", "re-audit", "multi-model",
              "constant-time on every commit", "fails the build", "The gate has teeth",
-             "since 2026-10-11", "for merging since"],
+             "since 2026-10-11", "for merging since",
+             "skip releases that change nothing", "The same rule", "is never published",
+             "a cycle that changes no output bytes merges"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "zh/projects/gm-crypto-rs/index.html" => {
@@ -813,9 +843,13 @@ case_study = {
     # ZH mirror of the releases-page inbound-link guard above (2026-08-05).
     must_include: ["这两个项目", "/zh/projects/gm-crypto-rs/releases/",
                    "未经独立审计", "不是合并的必需检查", "改动密码代码的 PR", "x86-64 Linux",
-                   "带着警告跳过，这项检查照样通过"],
+                   "带着警告跳过，这项检查照样通过",
+                   "<strong>我做的部分。</strong>最初的需求由我来定，功能用 AI 编程助手实现。",
+                   "准备和版本校验都成功时才运行；任一步失败，比对就会带着警告跳过，而这项任务照样通过",
+                   "本站不把它们归纳成一条通用规则"],
     forbid: ["每个 PR 都", "每次提交", "复审", "多模型", "让构建失败", "构建就会失败", "每次都", "门禁不是摆设",
-             "自 2026-10-11", "起是合并的必需检查"],
+             "自 2026-10-11", "起是合并的必需检查",
+             "输出没变就不发版", "同一条规矩", "一轮没改任何输出字节的工作，不发版"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "projects/repolens-rs/index.html" => {
@@ -977,8 +1011,9 @@ end
 # terms of record so the next blurb edit keeps them.
 # ghrunners blurbs lead with purpose ("跑一次就能看出…为什么卡住"); the
 # term-of-record 单次运行 stays on the detail page + glossary, not the blurb.
+# 2026-10-12 (PR 2): the home page no longer repeats these blurbs (section 03
+# now features one case study), so only the projects index carries them.
 {
-  "zh/index.html" => %w[会衰减 跑一次就能看出 核对源码],
   "zh/projects/index.html" => %w[会衰减 跑一次就能看出 核对源码]
 }.each do |relative, phrases|
   html = read_file(SITE.join(relative), failures)
@@ -1410,8 +1445,35 @@ rejected_content = {
   "projects/gm-crypto-rs.html" => ["<code>1.9.0</code>, behind", "<code>hash</code> / <code>sign</code> /"],
   "zh/projects/gm-crypto-rs.html" => ["固定在 <code>1.9.0</code>", "<code>hash</code> / <code>sign</code> /"],
   "projects/repolens-rs.html" => ["Planned until"],
-  "notes.html" => ["Rust, cryptography, CI, and tooling."]
+  "notes.html" => ["Rust, cryptography, CI, and tooling."],
+  # 2026-10-12 (PR 2): the release line is explained per cycle from the project
+  # records; the notes must not state a general rule as the project's policy.
+  "_notes/releases-that-change-nothing.md" => ["follows a rule:", "The rule has kept applying", "That rule shows up"],
+  "_notes/releases-that-change-nothing.zh.md" => ["有条规矩", "这条规矩后来也一直在用", "这条规矩，体现成", "什么都没变的版本，就不发"],
+  "_notes/starting-a-notebook.md" => ["The real rule is narrower", "That rule is stated under Evidence"],
+  "_notes/starting-a-notebook.zh.md" => ["真正的规矩更窄", "这条规矩写在", "[什么都没变的版本，就不发]"],
+  # Positioning (PR 2): "mostly Rust" describes the projects, not the person.
+  "index.html" => ["software engineer, mostly Rust", "Outcomes, <em>mostly in Rust.</em>"],
+  "zh/index.html" => ["软件工程师，主要写 Rust", "大多用 Rust。</em>"]
 }.freeze
+
+# 2026-10-12 (PR 2): contribution statements stay within what the Owner
+# confirmed: requirements by him, implementation by AI coding assistants, review
+# shifted to AI agents following defined rules. No authorship, audit or
+# every-finding claims; rule authorship and merge/release authority stay unstated.
+{
+  "en" => ["I wrote", "I personally", "every finding", "single-handedly", "sole author",
+           "I audited", "I designed all", "I reviewed every", "I approve", "my approval"],
+  "zh" => ["我亲手写", "每一条发现", "我审计", "独自完成", "由我一个人", "我批准", "须经我"]
+}.then do |overclaims|
+  %w[index.html about.html projects/gm-crypto-rs.html zh/index.html zh/about.html zh/projects/gm-crypto-rs.html].each do |relative|
+    normalized = read_file(ROOT.join(relative), failures).gsub(/\s+/, " ")
+    lang = relative.start_with?("zh/") ? "zh" : "en"
+    overclaims[lang].each do |phrase|
+      record(failures, "#{relative}: unconfirmed contribution claim #{phrase.inspect}") if normalized.include?(phrase)
+    end
+  end
+end
 
 rejected_content.each do |relative, phrases|
   source = read_file(ROOT.join(relative), failures)
@@ -1423,12 +1485,12 @@ end
 i18n_content = YAML.load_file(ROOT.join("_data/i18n.yml"))
 expected_identity = {
   "en" => {
-    "tagline" => "Software engineer, mostly in Rust. I publish selected work with its status, evidence, and limits visible.",
-    "short_tagline" => "Software engineer, mostly in Rust"
+    "tagline" => "Software engineer building useful software with AI. I share selected work with its status, evidence, and limits visible.",
+    "short_tagline" => "Software engineer"
   },
   "zh" => {
-    "tagline" => "软件工程师，主要使用 Rust。我会公开一部分作品，并把状态、证据和限制写在明面上。",
-    "short_tagline" => "软件工程师，主要使用 Rust"
+    "tagline" => "软件工程师，借助 AI 做有用的软件。我会分享一部分作品，并把状态、证据和限制写在明面上。",
+    "short_tagline" => "软件工程师"
   }
 }.freeze
 expected_identity.each do |lang, values|
@@ -1473,8 +1535,21 @@ source_contracts = {
   "zh/contact.html" => [
     'description: "联系 Frank Xue 的方式、回复预期，以及公开作品链接。"'
   ],
-  "index.html" => ["View selected work", "Browse all notes", "Private project — no public source link.", "Local prototype — no public source link."],
-  "zh/index.html" => ["查看精选作品", "浏览全部笔记", "私有项目——暂无公开源码链接。", "本地原型——暂无公开源码链接。"],
+  # 2026-10-12 (PR 2): section (03) no longer repeats the project list, so the
+  # per-project "no public source link" notes live on the projects index (pinned
+  # below). The home page keeps the Status-panel disclosure, an intro that says
+  # status is stated per project and that some work is private or pre-release,
+  # and the featured case study's audit disclosure.
+  "index.html" => ["View selected work", "Browse all notes",
+                   "Only public-tagged work is independently verifiable here.",
+                   "I build software with AI coding assistants and share selected work, with each project's status, evidence and limits made clear.",
+                   "private or pre-release tools",
+                   "including that it has not been independently audited"],
+  "zh/index.html" => ["查看精选作品", "浏览全部笔记",
+                      "别人能自己核对的，只有已打公开标签（tag）的作品。",
+                      "挑一部分作品拿出来分享，每个项目的状态、证据和限制都交代清楚。",
+                      "私有或预发布的工具",
+                      "包括它未经独立审计"],
   "projects.html" => ["Private project — no public source link.", "Local prototype — no public source link."],
   "zh/projects.html" => ["私有项目——暂无公开源码链接。", "本地原型——暂无公开源码链接。"],
   "notes.html" => [
@@ -1534,15 +1609,20 @@ end
 %w[about.html zh/about.html].each do |relative|
   source = read_file(ROOT.join(relative), failures)
   normalized = source.gsub(/\s+/, " ")
-  # 2026-10-12: the About summary must keep the consequence of crossing the
-  # limit (the check fails), its real scope, and the audit disclosure — and
-  # must not drift back to "every commit" / "fails the build".
+  # 2026-10-12: About must not drift back to "every commit" / "fails the build".
+  # PR 2 moved the timing-check scope to the case study; About keeps the two
+  # limits next to its remaining timing-check mention (statistical evidence,
+  # not proof; not independently audited), states the full name exactly once,
+  # and no longer describes the person as working "mostly in Rust".
   zh = relative.start_with?("zh/")
-  required = zh ? ["这项检查就失败", "改动密码代码的 PR", "没有经过独立审计", "不是证明"] :
-                  ["fails that check", "pull requests that change the crypto code", "not been independently audited", "not a proof"]
-  stale = zh ? ["每次提交", "构建就会失败", "在发布前拦住"] : ["every commit", "fails the build", "before a release"]
-  required.each { |phrase| record(failures, "#{relative}: About timing summary missing #{phrase.inspect}") unless normalized.include?(phrase) }
-  stale.each { |phrase| record(failures, "#{relative}: stale timing claim #{phrase.inspect}") if normalized.include?(phrase) }
+  required = zh ? ["没有经过独立审计", "不是证明", "AI 编程助手"] :
+                  ["not been independently audited", "not a proof", "AI coding assistants"]
+  stale = zh ? ["每次提交", "构建就会失败", "在发布前拦住", "主要写 Rust", "主要使用 Rust"] :
+               ["every commit", "fails the build", "before a release", "mostly Rust", "mostly in Rust"]
+  required.each { |phrase| record(failures, "#{relative}: About summary missing #{phrase.inspect}") unless normalized.include?(phrase) }
+  stale.each { |phrase| record(failures, "#{relative}: stale About claim #{phrase.inspect}") if normalized.include?(phrase) }
+  full_name_count = normalized.scan("Fengxiang (Frank) Xue").length
+  record(failures, "#{relative}: \"Fengxiang (Frank) Xue\" must appear exactly once (found #{full_name_count})") unless full_name_count == 1
 end
 
 # --- 2026-08-10 site-review accessibility contracts ---

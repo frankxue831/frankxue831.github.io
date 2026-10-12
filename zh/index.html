@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Frank Xue
-description: Frank Xue 的个人主页。软件工程师——笔记与精选作品，发布状态与限制写在明面上。
+description: 软件工程师，借助 AI 做有用的软件。精选项目，每个都把状态、证据和限制写在明面上。
 permalink: /zh/
 lang: zh
 alternate: /
@@ -14,15 +14,14 @@ alternate: /
 
     <div class="hero__grid">
         <div class="hero__copy">
-            <p class="hero__eyebrow">Frank Xue — 软件工程师，主要写 Rust</p>
+            <p class="hero__eyebrow">Frank Xue — 软件工程师</p>
 
             <h1 class="hero__title">
-                为代码、系统和 Agent，<wbr>写<span class="nowrap">可审计、</span><em class="nowrap">状态清晰的工具。</em>
+                借助 AI，<wbr><em class="nowrap">做有用的软件。</em>
             </h1>
 
             <p class="hero__lede">
-                密码学软件、给 AI 编程 Agent 用的仓库上下文、本地开发基础设施——
-                做出来的工具，正确性、当前状态和限制都保持可查。每个项目页都写清发布到哪一步、凭什么这么说；没公开的项目也一样。
+                我借助 AI 编程助手写软件，挑一部分作品拿出来分享，每个项目的状态、证据和限制都交代清楚。大多用 Rust：一个国密 SM2 / SM3 / SM4 密码学库，已在 crates.io 发布；另有几个私有或预发布的工具，面向 AI 编程 Agent、CI runner 和讲解视频。
             </p>
 
             <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
@@ -97,48 +96,24 @@ alternate: /
         <span class="ghost-num" aria-hidden="true">03</span>
         <p class="section__num">(03)  作品</p>
         <h2 id="work-h" class="section__title">
-            做出来的东西，<wbr><em class="nowrap">大多用 Rust。</em>
+            一个项目，<wbr><em class="nowrap">细细讲。</em>
         </h2>
     </header>
 
-    <ul class="work-list">
-        {% for project in projects %}
-        <li class="work-list__item reveal">
-            <a class="work-list__row"
-               href="{{ project.zh_detail_url | relative_url }}">
-                <span class="work-list__head">
-                    <span class="work-list__title">{{ project.title }}</span>
-                    <span class="work-list__tags">{{ project.tags.zh | join: ' · ' }}</span>
-                </span>
-                <span class="work-list__meta">
-                    <span class="status-pill" data-status="{{ project.status }}">{{ project.status_label.zh }}</span>
-                    {% if project.release_source == 'public_tag' %}<span class="work-list__rel">{{ project.release }}</span>{% endif %}
-                    <span class="work-list__year">{{ project.years.zh }}</span>
-                </span>
-            </a>
-            <p class="work-list__note">
-                {% case project.slug %}
-                {% when 'gm-crypto-rs' %}
-                给需要国密算法的 Rust 项目用的纯 Rust SDK，覆盖 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4。公开版 <strong>{{ project.release }}</strong> 在
-                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对上当前代码，新会话不必冷启动重新摸清项目。<strong>{{ project.status_label.zh }}</strong>。私有项目——暂无公开源码链接。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% when 'ghrunners' %}
-                macOS 上的命令行工具，跑一次就能看出 self-hosted GitHub Actions runner 为什么卡住。汇总 launchd 状态、进程树、日志和 GitHub API 为类型化 findings，外加受控的 launchd 控制。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% when 'explainer-engine' %}
-                把 storyboard 渲染成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。当前状态：{{ project.status_label.zh }}。源码：<a href="https://github.com/frankxue831/ManimSimpleRender" rel="noopener noreferrer">GitHub 上的 ManimSimpleRender</a>——尚未打正式发布标签。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% else %}
-                精选工程作品——做到哪一步、限制在哪，会写清楚。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% endcase %}
+    {% assign featured = projects | where: 'slug', 'gm-crypto-rs' | first %}
+    <div class="preview reveal">
+        <p class="preview__label">案例</p>
+        <div class="preview__body">
+            <p>
+                <strong>gm-crypto-rs</strong> 是一个纯 Rust 的国密 SM2 / SM3 / SM4 密码学库，已在
+                <a href="{{ featured.crate_url }}" rel="noopener noreferrer">crates.io</a>
+                发布。我开始做它，是因为当时在 Rust 里，能满足我需要的工具有缺口。案例页讲了要解决的问题、怎么分工、证据，以及它不声称的事——包括它未经独立审计。
             </p>
-        </li>
-        {% endfor %}
-    </ul>
+            <a href="{{ featured.zh_detail_url | relative_url }}" class="preview__link">
+                看案例 <span aria-hidden="true">→</span>
+            </a>
+        </div>
+    </div>
 
     <a href="{{ '/zh/projects/' | relative_url }}" class="preview__link preview__link--section">
         看全部作品 <span aria-hidden="true">→</span>

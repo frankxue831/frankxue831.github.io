@@ -22,7 +22,8 @@
     {
       "@type": "Person",
       "@id": {{ person_id | jsonify }},
-      "name": {{ site.author.name | default: site.title | jsonify }},
+      "name": {{ site.author.name | default: site.title | jsonify }},{% if site.author.alternate_name %}
+      "alternateName": {{ site.author.alternate_name | jsonify }},{% endif %}
       "url": {{ site_url | jsonify }},
       "sameAs": [
         {{ 'https://github.com/' | append: site.github_username | jsonify }}{% if site.linkedin_username %},

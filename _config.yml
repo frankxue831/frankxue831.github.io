@@ -2,6 +2,9 @@ title: Frank Xue
 tagline: Software engineer.
 author:
   name: Frank Xue
+  # Full name, stated once on About as "Fengxiang (Frank) Xue"; the Person
+  # JSON-LD carries it as alternateName. "Frank Xue" stays the site name.
+  alternate_name: Fengxiang Xue
 # Email intentionally omitted from public site for now.
 # When re-enabling, restore `email:` and `author.email:` below;
 # the footer link, hero meta, contact form action, and any
