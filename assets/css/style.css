@@ -1684,6 +1684,10 @@ body.lang-zh .note li {
     transition: color var(--dur) var(--ease);
 }
 .prose a:hover { color: var(--accent); }
+/* Chrome and Safari never break a path like scripts/validate_site.rb, so on
+   the colophon it ran past the column at 320–367px. break-word (not anywhere)
+   only acts on a line that would overflow: nothing that fits today moves. */
+.prose code { overflow-wrap: break-word; }
 
 /* =========================================================
    Note bodies — long-form article typography on top of .prose

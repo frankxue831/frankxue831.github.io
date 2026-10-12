@@ -1770,6 +1770,14 @@ if css_path.exist?
     record(failures, "style.css: .dudect__table-scroll missing horizontal overflow")
   end
 
+  # Inline code in prose must be allowed to wrap: Chrome and Safari never break
+  # a path like scripts/validate_site.rb, which ran 28px past a 320px viewport
+  # on /zh/colophon/ before this rule.
+  prose_code_rule = css[/^\.prose code\s*\{[^}]*\}/m].to_s
+  unless prose_code_rule.match?(/overflow-wrap:\s*(?:break-word|anywhere)\s*;/)
+    record(failures, "style.css: .prose code missing overflow-wrap (long inline code overflows at 320px)")
+  end
+
   print_blocks = css.scan(/@media\s+print\s*\{.*?\n\}/m).join("\n")
   %w[.nav-toggle .primary-nav__item--theme .primary-nav__item--switch].each do |selector|
     record(failures, "style.css: print CSS must hide #{selector}") unless print_blocks.include?(selector)
