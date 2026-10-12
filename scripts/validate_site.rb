@@ -563,6 +563,33 @@ record(failures, "assets/js/decrypt.js must stay removed (#100 spec A)") if ROOT
   record(failures, "#{relative}: hero title lost real text (#{needle.inspect})") unless hero_title.include?(needle)
   record(failures, "#{relative}: hero__title missing") unless html.include?(%(class="hero__title"))
 end
+# 2026-10-12 (PR 2): the ZH accent line is pinned to one line (.nowrap), so it
+# is as many em wide as it has glyphs. style.css caps the ZH title at
+# 100cqi / 7.1 inside a size-container copy column so the line stays in its
+# column from 760px up; a longer phrase needs a new divisor.
+zh_hero = read_file(SITE.join("zh/index.html"), failures)
+zh_accent = zh_hero[%r{<h1 class="hero__title">.*?<em class="nowrap">(.*?)</em>.*?</h1>}m, 1].to_s
+if zh_accent.empty?
+  record(failures, "zh/index.html: hero accent line must stay one .nowrap <em> (the style.css width cap assumes it)")
+elsif zh_accent.length > 7
+  record(failures, "zh/index.html: hero accent line is #{zh_accent.length} glyphs; style.css caps the ZH title for 7 (100cqi / 7.1) — change both together")
+end
+hero_css = read_file(SITE.join("assets/css/style.css"), failures).gsub(/\s+/, " ")
+zh_cap_clamp = hero_css[%r{body\.lang-zh \.hero__title \{ font-size: min\((clamp\([^;]*?\)), 100cqi / 7\.1\); \}}, 1]
+unless hero_css.include?("body.lang-zh .hero__copy { container-type: inline-size; }") && zh_cap_clamp
+  record(failures, "style.css: the ZH hero title must keep its column cap (size-container .hero__copy, font-size min(…, 100cqi / 7.1))")
+end
+# The cap repeats the base clamp (a var() would turn into the inherited size in
+# engines without cqi), so the two must stay equal.
+base_title_clamp = hero_css.scan(/\} \.hero__title \{([^}]*)\}/).flatten.map { |body| body[/font-size: (clamp\([^;]*\));/, 1] }.compact.first
+if zh_cap_clamp && zh_cap_clamp != base_title_clamp
+  record(failures, "style.css: the ZH hero cap's clamp #{zh_cap_clamp.inspect} must equal the base .hero__title clamp #{base_title_clamp.inspect}")
+end
+# The ZH About Interests value nests .nowrap spans, so the facts label/value
+# selectors must stay scoped to the row's direct children.
+unless hero_css.include?(".facts dt, .facts li > span:first-child {") && hero_css.include?(".facts dd, .facts li > span:last-child {")
+  record(failures, "style.css: .facts label/value selectors must target direct children (li > span), or nested value spans take the label style")
+end
 
 # The locale-aware <title> splice in _includes/head.html rebuilds jekyll-seo-tag's
 # document title so the home-page suffix follows the page locale. Pin both
@@ -1467,6 +1494,10 @@ rejected_content = {
                                                    "输出没变就不发版", "的周期都合进了主干", "拒绝把「只做保障」的变动"],
   "_notes/starting-a-notebook.md" => ["The real rule is narrower", "That rule is stated under Evidence", "the *policy* behind a skip"],
   "_notes/starting-a-notebook.zh.md" => ["真正的规矩更窄", "这条规矩写在", "[什么都没变的版本，就不发]", "背后的**规则**"],
+  # PR 2: the note describes the project's opt-in design from its source and
+  # does not say who made the decision.
+  "_notes/unsafe-opt-in.md" => ["I didn't, because", "That's the property I", "I chose", "I decided"],
+  "_notes/unsafe-opt-in.zh.md" => ["我没这么干", "这正是我想让它默认成立", "我选择", "我决定"],
   # Positioning (PR 2): "mostly Rust" describes the projects, not the person.
   "index.html" => ["software engineer, mostly Rust", "Outcomes, <em>mostly in Rust.</em>"],
   "zh/index.html" => ["软件工程师，主要写 Rust", "大多用 Rust。</em>"]
@@ -1491,7 +1522,8 @@ rejected_content = {
 end
 
 rejected_content.each do |relative, phrases|
-  source = read_file(ROOT.join(relative), failures)
+  # Whitespace-normalized, so a phrase hard-wrapped across lines still counts.
+  source = read_file(ROOT.join(relative), failures).gsub(/\s+/, " ")
   phrases.each do |phrase|
     record(failures, "#{relative}: rejected reviewed phrase remains: #{phrase.inspect}") if source.include?(phrase)
   end
@@ -1539,10 +1571,13 @@ end
 
 source_contracts = {
   "about.html" => [
-    'description: "How I work, what I optimize for, and how I present evidence and limitations across public and private projects."'
+    'description: "How I work, what I optimize for, and how I present evidence and limitations across public and private projects."',
+    "<span>Building with AI, developer tools, cryptography, verified explanation</span>"
   ],
   "zh/about.html" => [
-    'description: "我的工作方式、取舍，以及公开与私有项目如何呈现证据和限制。"'
+    'description: "我的工作方式、取舍，以及公开与私有项目如何呈现证据和限制。"',
+    # Each item is one .nowrap run, so the row breaks only after 、 (never inside 密码学).
+    '<span><span class="nowrap">借助 AI 做软件</span>、<span class="nowrap">开发者工具</span>、<span class="nowrap">密码学</span>、<span class="nowrap">能按源码核对的讲解</span></span>'
   ],
   "contact.html" => [
     'description: "Ways to contact Frank Xue, with response expectations and links to public work."'
@@ -1594,6 +1629,11 @@ source_contracts = {
   "_notes/byte-identity.md" => ["skipped with a warning"],
   "_notes/byte-identity.zh.md" => ["带着警告跳过"],
   "projects/gm-crypto-rs-releases.html" => ["skips it with a warning"],
+  # PR 2: the opt-in design is stated with the reason gmcrypto-core's Cargo.toml gives.
+  "_notes/unsafe-opt-in.md" => ["The core's default feature set is empty, and its",
+                                "gm-crypto-rs/blob/v1.16.0/crates/gmcrypto-core/Cargo.toml#L51-L54) gives the reason for the split"],
+  "_notes/unsafe-opt-in.zh.md" => ["核心的默认 feature 集合是空的；它的",
+                                   "gm-crypto-rs/blob/v1.16.0/crates/gmcrypto-core/Cargo.toml#L51-L54) 也写明了这样拆的原因"],
   "zh/projects/gm-crypto-rs-releases.html" => ["带着警告跳过"]
 }.freeze
 
