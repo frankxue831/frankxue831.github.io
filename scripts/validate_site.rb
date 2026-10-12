@@ -793,7 +793,7 @@ case_study = {
                    "Not independently audited", "not a required merge check",
                    "pull requests that change the crypto code", "x86-64 Linux"],
     forbid: ["on every PR", "on every commit", "build-failing", "re-audit", "multi-model",
-             "constant-time on every commit"],
+             "constant-time on every commit", "fails the build", "The gate has teeth"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "zh/projects/gm-crypto-rs/index.html" => {
@@ -807,7 +807,7 @@ case_study = {
     # ZH mirror of the releases-page inbound-link guard above (2026-08-05).
     must_include: ["这两个项目", "/zh/projects/gm-crypto-rs/releases/",
                    "未经独立审计", "不是合并的必需检查", "改动密码代码的 PR", "x86-64 Linux"],
-    forbid: ["每个 PR 都", "每次提交", "复审", "多模型", "让构建失败"],
+    forbid: ["每个 PR 都", "每次提交", "复审", "多模型", "让构建失败", "构建就会失败", "每次都", "门禁不是摆设"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "projects/repolens-rs/index.html" => {
@@ -1526,7 +1526,7 @@ end
   zh = relative.start_with?("zh/")
   required = zh ? ["这项检查就失败", "改动密码代码的 PR", "没有经过独立审计", "不是证明"] :
                   ["fails that check", "pull requests that change the crypto code", "not been independently audited", "not a proof"]
-  stale = zh ? ["每次提交", "构建就会失败"] : ["every commit", "fails the build"]
+  stale = zh ? ["每次提交", "构建就会失败", "在发布前拦住"] : ["every commit", "fails the build", "before a release"]
   required.each { |phrase| record(failures, "#{relative}: About timing summary missing #{phrase.inspect}") unless normalized.include?(phrase) }
   stale.each { |phrase| record(failures, "#{relative}: stale timing claim #{phrase.inspect}") if normalized.include?(phrase) }
 end
@@ -1646,7 +1646,13 @@ version_key = ->(v) { v.split(".").map(&:to_i) }
     label = label.strip
     text = body.gsub(/<[^>]+>/, "").strip
     if text.start_with?(unpublished_marker)
-      record(failures, "#{relative}: v#{label} marked unpublished but crates.io has it") if pubs.key?(label)
+      if (lo, hi = label.split(/\s*[–-]\s*/)) && hi
+        lo_k = version_key.(lo)[0, 2]; hi_k = version_key.(hi)[0, 2]
+        inside = pubs.keys.select { |v| k = version_key.(v)[0, 2]; (k <=> lo_k) >= 0 && (k <=> hi_k) <= 0 }
+        record(failures, "#{relative}: range #{label} marked unpublished but crates.io has #{inside.join(', ')}") unless inside.empty?
+      elsif pubs.key?(label)
+        record(failures, "#{relative}: v#{label} marked unpublished but crates.io has it")
+      end
       next
     end
     date = text[/\A(\d{4}-\d{2}-\d{2})/, 1]
@@ -1664,11 +1670,14 @@ end
 %w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
-  m = html.match(%r{<strong>v([0-9.]+)</strong>[^<]*?(\d{4}-\d{2}-\d{2})\s*(?:\(UTC\)|（UTC）)})
+  m = html.match(%r{<dt>\s*(?:Current|当前版本)\s*</dt>\s*<dd>\s*<strong>v([0-9.]+)</strong>[^<]*?(\d{4}-\d{2}-\d{2})\s*(?:\(UTC\)|（UTC）)})
+  newest = pubs.keys.max_by(&version_key)
   if m.nil?
-    record(failures, "#{relative}: current-release row must show a UTC-labelled publication date")
+    record(failures, "#{relative}: Current row must show a version with a UTC-labelled publication date")
   elsif pubs[m[1]].nil? || pubs[m[1]][0, 10] != m[2]
     record(failures, "#{relative}: current release v#{m[1]} shows #{m[2]}, crates.io UTC date is #{pubs[m[1]].to_s[0, 10]}")
+  elsif m[1] != newest
+    record(failures, "#{relative}: Current row shows v#{m[1]} but the newest published version is v#{newest}")
   end
 end
 
@@ -1694,13 +1703,17 @@ else
 end
 
 # --- Corrected notes keep their dated correction (2026-10-12) ----------------
-{ "notes/constant-time-ci-gate/index.html" => "Correction (2026-10-12, UTC)",
-  "zh/notes/constant-time-ci-gate/index.html" => "更正（2026-10-12，UTC）",
-  "notes/constant-time-warrant/index.html" => "Corrected 2026-10-12 (UTC)",
-  "zh/notes/constant-time-warrant/index.html" => "2026-10-12（UTC）更正" }.each do |relative, phrase|
+# Each banner must also END its own blockquote: without a blank line after the
+# "> " line, kramdown folds the note's first paragraph into the banner.
+{ "notes/constant-time-ci-gate/index.html" => ["Correction (2026-10-12, UTC)", "case study</a>."],
+  "zh/notes/constant-time-ci-gate/index.html" => ["更正（2026-10-12，UTC）", "案例页</a>。"],
+  "notes/constant-time-warrant/index.html" => ["Corrected 2026-10-12 (UTC)", "scope and enforcement."],
+  "zh/notes/constant-time-warrant/index.html" => ["2026-10-12（UTC）更正", "约束力一致。"] }.each do |relative, (phrase, ending)|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
   record(failures, "#{relative}: dated correction notice missing") unless html.include?(phrase)
+  quote = html.scan(%r{<blockquote>(.*?)</blockquote>}m).map(&:first).find { |q| q.include?(phrase) }
+  record(failures, "#{relative}: correction notice must stand alone (its blockquote swallowed body text)") if quote && !quote.strip.sub(%r{</p>\z}, "").rstrip.end_with?(ending)
   record(failures, "#{relative}: timing threshold shown as \"<\"; the check passes at the limit") if html.match?(/\|τ\|(?:<\/code>)?\s*(?:&lt;|<)\s*0\.20/)
 end
 

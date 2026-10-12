@@ -114,9 +114,10 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             the crypto code, a core set must keep a median
             <code class="nowrap">|τ|&nbsp;≤&nbsp;0.20</code> over three runs, so a
             timing regression on those paths fails that check instead of
-            waiting for someone to notice. It is not a required merge check:
-            a failure flags the pull request rather than blocking the merge on
-            its own. The harness reports <em>detection events</em> — a low
+            waiting for someone to notice. A skip marker such as
+            <code>[skip ci]</code> in the pull-request title skips it, and it is
+            not a required merge check: a failure flags the pull request rather
+            than blocking the merge on its own. The harness reports <em>detection events</em> — a low
             <code class="nowrap">|τ|</code> means no leak was detected under the budget
             given, <em>not</em> that none exists (the wording is
             <code>dudect-bencher</code>'s own).
@@ -192,8 +193,10 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             audit has been performed; everything below is the project's own
             evidence. Every output is checked for byte-identity: against the standard
             KAT vectors, against GmSSL 3.2.0 for interop — an in-CI job
-            pinned to a from-source oracle build since v1.10, and a required
-            check for merging — and against
+            pinned to a from-source oracle build since v1.10; since
+            2026-10-11 (UTC) it is a required check for merging, where a byte
+            mismatch fails it but an oracle that cannot be built skips the
+            suite with a warning instead of failing — and against
             OpenSSL 3.x <code>SM4-XTS</code> (<code>xts_standard=GB</code>)
             for the tweakable mode. The timing checks above run on pull
             requests that change the crypto code and daily on <code>main</code>,
@@ -273,7 +276,7 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             <li>Not an HSM / SDF / SKF integration.</li>
             <li>Not a certified cryptographic module under the U.S. Federal Information Processing Standards (FIPS) or another certification program.</li>
             <li>Not constant-time on CPUs with data-dependent multiply latencies (some older x86, some embedded).</li>
-            <li>Not timing-tested beyond the CI evidence shown here, which comes from x86-64 Linux runners; this page makes no timing claim for other hardware.</li>
+            <li>No timing claim for other hardware: the timing claims here rest only on the CI evidence shown, which comes from x86-64 Linux runners.</li>
         </ul>
 
         <p>

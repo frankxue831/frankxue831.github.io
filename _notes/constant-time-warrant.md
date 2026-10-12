@@ -9,6 +9,7 @@ excerpt: "Explaining constant-time execution is the easy part, and it isn't what
 ---
 
 > **Corrected 2026-10-12 (UTC):** the description of the CI timing check below now matches its actual scope and enforcement.
+
 Constant-time claims are common in cryptographic libraries. The phrase costs
 nothing to write, and that is most of what's wrong with it: it is one of the easiest claims
 to assert and one of the hardest to substantiate. A reader has no way to tell a library that
@@ -28,8 +29,8 @@ Two artifacts do more work here than explanation.
 The crate runs an in-CI [dudect-bencher](https://docs.rs/dudect-bencher/) harness:
 twenty targets that split inputs into two classes, measure the two timing distributions, and
 reduce "how different are they" to a t-statistic. Sixteen are checked on pull requests that
-change the crypto code, at a median `|τ| ≤ 0.20` over three runs; that check is not required
-for merging. How it is wired, and what it costs on the pull requests it runs on, is
+change the crypto code, at a median `|τ| ≤ 0.20` over three runs (one path gets 0.55 on one runner CPU model);
+that check is not required for merging. How it is wired, and what it costs on the pull requests it runs on, is
 [its own note]({{ '/notes/constant-time-ci-gate/' | relative_url }}).
 
 A leak detector that reports "no leak found" is uninformative on its own. It reports the same
