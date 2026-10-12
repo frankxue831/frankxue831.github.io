@@ -1121,16 +1121,22 @@ end
 # Jekyll's auto-generated excerpt (a note without `excerpt:`). A written excerpt
 # cut at the old 160-character cap broke mid-word, and the EN warrant note lost
 # the closing caveat that the ZH list kept. Liquid 4 also appends the ellipsis
-# to a text of exactly the truncatewords count, hence the second check.
+# to a text of exactly the truncatewords count, hence the "…" check. Each
+# excerpt is read from its own row's note, and a page with no matched rows
+# fails, so changed row markup cannot turn this guard into a silent pass.
 %w[index.html notes/index.html zh/index.html zh/notes/index.html].each do |relative|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
+  listed = 0
   note_specs.each_value do |spec|
+    row_note = html[%r{class="work-list__row" href="#{Regexp.escape(spec['permalink'].to_s)}".*?<p class="work-list__note">(.*?)</p>}m, 1]
+    next unless row_note
+    listed += 1
     excerpt = spec["excerpt"].to_s
-    next if excerpt.empty? || !html.include?(%(class="work-list__row" href="#{spec['permalink']}"))
-    next if html.include?(excerpt) && !html.include?("#{excerpt}…")
+    next if excerpt.empty? || (row_note.include?(excerpt) && !row_note.include?("#{excerpt}…"))
     record(failures, "#{relative}: excerpt of #{spec['permalink']} is cut; written excerpts must fit the list cap (EN under 40 words, ZH at most 160 characters)")
   end
+  record(failures, "#{relative}: excerpt guard matched no note rows (did the work-list row markup change?)") if listed.zero?
 end
 
 # Terminal pages (notes, contact) carry an onward CTA so reading doesn't
