@@ -1255,7 +1255,7 @@ end
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
   record(failures, "#{relative}: colophon missing audit substance (validator self-reference)") unless html.gsub("<wbr>", "").include?("scripts/validate_site.rb")
-  # The <wbr> is the path's only break point on a narrow phone (see .prose wbr in style.css).
+  # The <wbr> is the path's only break point on a narrow phone (see .prose code wbr in style.css).
   record(failures, "#{relative}: colophon validator path lost its <wbr> (it overflows a 320px screen)") unless html.include?("<code>scripts/<wbr>validate_site.rb</code>")
   record(failures, "#{relative}: colophon missing onward CTA (preview__link--section)") unless html.include?("preview__link--section")
 end
@@ -1772,14 +1772,11 @@ if css_path.exist?
     record(failures, "style.css: .dudect__table-scroll missing horizontal overflow")
   end
 
-  # The colophon path's <wbr> is live only on narrow phones. Without the media
-  # rule the path runs 28px past a 320px screen again (/zh/colophon/); without
-  # the base rule, wider lines in that paragraph re-wrap.
-  unless css.match?(/^\.prose wbr\s*\{\s*display:\s*none;\s*\}/)
-    record(failures, "style.css: missing .prose wbr { display: none; } (the colophon path's <wbr> would re-wrap wider lines)")
-  end
-  unless css.match?(/@media\s*\(max-width:\s*22em\)\s*\{\s*\.prose wbr\s*\{\s*display:\s*inline;\s*\}\s*\}/)
-    record(failures, "style.css: missing @media (max-width: 22em) { .prose wbr { display: inline; } } (the colophon path overflows a 320px screen)")
+  # The colophon path's <wbr> (guarded above) is switched off from 22em up, so
+  # it breaks the path only on narrow phones. Without this rule wider lines in
+  # that paragraph re-wrap (ZH from 416px).
+  unless css.match?(/@media\s*\(min-width:\s*22em\)\s*\{\s*\.prose code wbr\s*\{\s*display:\s*none;\s*\}\s*\}/)
+    record(failures, "style.css: missing @media (min-width: 22em) { .prose code wbr { display: none; } } (the colophon path's <wbr> would re-wrap wider lines)")
   end
 
   print_blocks = css.scan(/@media\s+print\s*\{.*?\n\}/m).join("\n")
