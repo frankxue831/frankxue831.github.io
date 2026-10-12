@@ -577,11 +577,16 @@ body.lang-zh .note li {
 }
 
 @media (max-width: 759px) {
+    /* The stacked menu gives every row one left edge: drop the desktop
+       offsets that separate the switcher and the theme toggle. */
     .primary-nav__item--switch {
         padding-left: 0;
         border-left: 0;
         margin-left: 0;
         margin-top: var(--space-2);
+    }
+    .primary-nav__item--theme {
+        margin-left: 0;
     }
 }
 

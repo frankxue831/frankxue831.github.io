@@ -39,7 +39,7 @@ alternate: /zh/notes/
                 </span>
             </a>
             <p class="work-list__note">
-                {{ note.excerpt | default: note.description | strip_html | truncate: 160 }}
+                {{ note.excerpt | default: note.description | strip_html | truncatewords: 40, "…" }}
                 <a href="{{ note.url | relative_url }}" class="work-list__more">{{ t.notes.read_more }}</a>
             </p>
         </li>
