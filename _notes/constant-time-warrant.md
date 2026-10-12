@@ -35,8 +35,8 @@ that check is not required for merging. How it is wired, and what it costs on th
 
 A leak detector that reports "no leak found" is uninformative on its own. It reports the same
 thing when it is broken, when it is misconfigured, and when it was never wired up at all. So
-the interesting artifact is not the twenty passing targets — it's the one target that must
-fail:
+the interesting artifact is not the twenty passing targets — it's the **negative control**
+below. The detector must flag its deliberately introduced leak; if it does not, the check fails.
 
 ```rust
 fn negative_control(runner: &mut CtRunner, rng: &mut BenchRng) {

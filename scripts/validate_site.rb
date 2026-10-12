@@ -1727,6 +1727,15 @@ end
   record(failures, "#{relative}: negative control excerpt must describe detection") unless excerpt.include?(phrase)
 end
 
+# Check the body as well: a corrected excerpt must not hide the opposite claim.
+{
+  "_notes/constant-time-warrant.md" => "The detector must flag its deliberately introduced leak; if it does not, the check fails.",
+  "_notes/constant-time-warrant.zh.md" => "检测器必须检出其中刻意引入的泄漏；未检出才会导致这项检查失败。"
+}.each do |relative, phrase|
+  body = read_file(ROOT.join(relative), failures).split("---", 3).last.gsub(/\s+/, " ")
+  record(failures, "#{relative}: negative control body must distinguish detection from check failure") unless body.include?(phrase)
+end
+
 # --- 2026-08-10 site-review accessibility contracts ---
 accessibility_i18n_keys = %w[
   nav.menu nav.skip theme.aria_template install.copy install.copied install.aria
