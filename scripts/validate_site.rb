@@ -1045,9 +1045,13 @@ else
 end
 
 dudect_chart_source = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
-record(failures, "dudect-chart.html: sentinel threshold must preserve display precision from dudect.yml") unless dudect_chart_source.include?("{{ d.sentinel_display }}")
-record(failures, "dudect-chart.html: gate threshold must preserve display precision from dudect.yml") unless dudect_chart_source.include?("{{ d.gate_display }}")
-if dudect_chart_source.match?(/&lt;\s+0\.(?:20|55)/)
+# Table thresholds are "&lt;" + a space or no-break space + the display string;
+# match the cell form so a bare "{{ d.sentinel_display }}" elsewhere (the axis
+# tick) can't satisfy the precision guard, and &nbsp; can't dodge the hardcode guard.
+threshold_sep = /(?:\s|&nbsp;|&#160;| )+/
+record(failures, "dudect-chart.html: sentinel threshold must preserve display precision from dudect.yml") unless dudect_chart_source.match?(/&lt;#{threshold_sep}\{\{\s*d\.sentinel_display\s*\}\}/)
+record(failures, "dudect-chart.html: gate threshold must preserve display precision from dudect.yml") unless dudect_chart_source.match?(/&lt;#{threshold_sep}\{\{\s*d\.gate_display\s*\}\}/)
+if dudect_chart_source.match?(/&lt;#{threshold_sep}0\.(?:20|55)/)
   record(failures, "dudect-chart.html: policy threshold is hardcoded instead of rendered from dudect.yml")
 end
 

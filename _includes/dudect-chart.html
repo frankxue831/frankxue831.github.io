@@ -9,8 +9,9 @@
   scaled. Every x is a percentage of the chart's rendered width (computed here
   from the data); every y, radius and font size is CSS px. Labels render at
   their CSS size at any width while the marks stretch to fit. Rows are stacked
-  so labels clear each other down to a 320px viewport; where a line crosses a
-  label it passes behind the label's plate (the dudect-plate filter).
+  so labels clear each other and the lines down to a 320px viewport: the gate
+  and leak labels sit right of the gate line, and the gate line breaks for the
+  cluster label, the one label that always spans it.
 {%- endcomment -%}
 {%- assign d = site.data.dudect -%}
 {%- assign t = site.data.i18n[page.lang].dudect -%}
@@ -47,24 +48,20 @@
       <marker id="dudect-arrow" viewBox="0 0 10 10" refX="16" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
         <path d="M0,0 L10,5 L0,10 z" class="dudect__arrowhead"/>
       </marker>
-      <!-- Label plate: floods each label's box with the panel colour, then
-           draws the label on it, so a line the label crosses stops cleanly
-           at the label instead of running through its spaces and dashes.
-           sRGB interpolation keeps the flood exactly the panel colour (the
-           linearRGB default shifts dark colours into visible boxes). -->
-      <filter id="dudect-plate" x="-0.02" y="-0.1" width="1.04" height="1.2" color-interpolation-filters="sRGB">
-        <feFlood class="dudect__plate"/>
-        <feComposite in="SourceGraphic"/>
-      </filter>
     </defs>
-    <!-- Marks first, labels last: each label paints over any line it
-         crosses, so its plate can mask the line. -->
+    <!-- negative_control zone past 1.0 (a translucent wash: below a ~335px
+         viewport the end of the English cluster label runs over it). The SVG carries
+         the bare identifier (language-neutral, never overflows); the full
+         "must fire here" meaning lives in the caveat + the data table below. -->
+    <rect class="dudect__control" x="{{ control_x }}%" y="{{ axis_y | minus: 42 }}" width="{{ control_w }}%" height="42"/>
     <!-- axis baseline -->
     <line class="dudect__axis" x1="{{ xl }}%" y1="{{ axis_y }}" x2="{{ xr }}%" y2="{{ axis_y }}"/>
     <!-- sentinel marker (subtle) -->
     <line class="dudect__sentinel" x1="{{ sentinel_x }}%" y1="{{ axis_y | minus: 18 }}" x2="{{ sentinel_x }}%" y2="{{ axis_y }}"/>
-    <!-- gate line -->
-    <line class="dudect__gate" x1="{{ gate_x }}%" y1="4" x2="{{ gate_x }}%" y2="{{ axis_y }}"/>
+    <!-- gate line, broken where the cluster label (which starts at 0 and is
+         always wider than the gap to 0.20) crosses it -->
+    <line class="dudect__gate" x1="{{ gate_x }}%" y1="4" x2="{{ gate_x }}%" y2="{{ cluster_label_y | minus: 14 }}"/>
+    <line class="dudect__gate" x1="{{ gate_x }}%" y1="{{ cluster_label_y | plus: 7 }}" x2="{{ gate_x }}%" y2="{{ axis_y }}"/>
     <!-- Row A: the four measured points, clustered near zero, on the axis -->
     <g class="dudect__points">
       {%- for m in d.measured -%}
@@ -80,9 +77,10 @@
     </g>
     <!-- labels -->
     <text class="dudect__gate-label" x="{{ gate_x }}%" dx="6" y="{{ gate_label_y }}">{{ t.gate_label | escape }}</text>
-    <text class="dudect__leak-heading" x="{{ xl }}%" y="{{ leak_heading_y }}">{{ t.leak_heading | escape }}</text>
+    <text class="dudect__leak-heading" x="{{ gate_x }}%" dx="6" y="{{ leak_heading_y }}">{{ t.leak_heading | escape }}</text>
     <text class="dudect__leak-before-label" x="{{ before_x }}%" y="{{ leak_y | minus: 14 }}" text-anchor="middle">≈{{ d.leak.before }}</text>
-    <text class="dudect__leak-after-label" x="{{ after_x }}%" dx="-5" y="{{ leak_y | plus: 22 }}">≈{{ d.leak.after }}</text>
+    <!-- dx -8: ends clear of the gate line down to a 320px viewport -->
+    <text class="dudect__leak-after-label" x="{{ after_x }}%" dx="-8" y="{{ leak_y | plus: 22 }}">≈{{ d.leak.after }}</text>
     <text class="dudect__control-label" x="{{ xr }}%" y="{{ control_label_y }}" text-anchor="end">negative_control</text>
     <text class="dudect__cluster-label" x="{{ xl }}%" y="{{ cluster_label_y }}">{{ t.cluster_label | escape }}</text>
     <!-- axis ticks: 0, sentinel, control -->
@@ -92,12 +90,6 @@
       <text x="{{ control_x }}%" y="{{ axis_y | plus: 20 }}" text-anchor="middle">{{ d.control_floor }}</text>
     </g>
     <text class="dudect__axis-label" x="{{ xl }}%" y="{{ H | minus: 8 }}">{{ t.axis_label | escape }}</text>
-    <!-- negative_control zone past 1.0, a translucent wash drawn last: at the
-         narrowest widths the end of the cluster label runs under it and is
-         tinted, not cut out. The SVG carries the bare identifier
-         (language-neutral, never overflows); the full "must fire here" meaning
-         lives in the caveat + the data table below. -->
-    <rect class="dudect__control" x="{{ control_x }}%" y="{{ axis_y | minus: 42 }}" width="{{ control_w }}%" height="42"/>
   </svg>
   <p class="dudect__caveat">{{ t.caveat | escape | replace: "|τ|", tau_nowrap }}</p>
   <div class="dudect__table-scroll" tabindex="0" role="region"
@@ -159,7 +151,7 @@
     </tbody>
     </table>
   </div>
-  <p class="dudect__provenance">{{ t.provenance | escape | replace: "|τ|", tau_nowrap }}
+  <p class="dudect__provenance">{{ t.provenance | escape | replace: "|τ|", tau_nowrap | replace: " ≥ ", "&nbsp;≥&nbsp;" }}
     <a href="{{ d.source_url }}" rel="noopener noreferrer">{{ t.source | escape }} ↗</a>
   </p>
 </figure>

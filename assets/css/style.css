@@ -238,9 +238,7 @@
         --ghost-ink: rgba(237, 228, 204, 0.05);
     }
     :root:not([data-theme]) .grain { display: none; }
-    :root:not([data-theme]) .dudect {
-        --dudect-panel: var(--bg-elevated);
-    }
+    :root:not([data-theme]) .dudect,
     :root:not([data-theme]) .install {
         background: var(--bg-elevated);
     }
@@ -299,8 +297,7 @@ html.theme-anim *::after {
     transition: background-color var(--dur) var(--ease),
                 color var(--dur) var(--ease),
                 border-color var(--dur) var(--ease),
-                fill var(--dur) var(--ease),
-                flood-color var(--dur) var(--ease) !important; /* dudect label plates track their panel */
+                fill var(--dur) var(--ease) !important;
 }
 @media (prefers-reduced-motion: reduce) {
     html.theme-anim,
@@ -1499,9 +1496,12 @@ body.lang-zh .note li {
 
 @media (min-width: 1024px) {
     .section.has-toc {
+        /* rail track + gap, also read by the wide .dudect figure so it stops short of the rail */
+        --toc-track: 12rem;
+        --toc-gap: var(--space-12);
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 12rem;
-        column-gap: var(--space-12);
+        grid-template-columns: minmax(0, 1fr) var(--toc-track);
+        column-gap: var(--toc-gap);
         align-items: start;
     }
     .section.has-toc > .project-detail { grid-column: 1; }
@@ -2273,12 +2273,11 @@ details.drawer .version-grid {
    overrides. Status hues reinforce position+text, never sole signal.
    ========================================================= */
 .dudect {
-    --dudect-panel: var(--bg-sunk); /* panel fill; the chart's label plates reuse it */
     margin: var(--space-6) 0 var(--space-8);
     padding: var(--space-5);
     border: 1px solid var(--rule);
     border-radius: 4px;
-    background: var(--dudect-panel);
+    background: var(--bg-sunk);
 }
 /* Wide figure. The five-column table needs ~40rem, more than the 36rem
    reading measure, so wherever the column has spare width (tablet up, or
@@ -2289,11 +2288,15 @@ details.drawer .version-grid {
 .section:has(.dudect) { container-type: inline-size; }
 @container (min-width: 36rem) {
     .dudect { width: min(48rem, 100cqi); }
+    /* Once the figure is wide the table may also give up its 640px floor,
+       so a classic (space-taking) scrollbar can't push Status off-screen.
+       (Two classes: this sits above the base .dudect__table rule.) */
+    .dudect .dudect__table { min-width: 0; }
 }
 @media screen and (min-width: 1024px) {
     @container (min-width: 36rem) {
-        /* rail track (12rem) + column gap, as in .section.has-toc (print drops the rail) */
-        .section.has-toc .dudect { width: min(48rem, 100cqi - 12rem - var(--space-12)); }
+        /* minus the contents rail's track and gap (print drops the rail) */
+        .section.has-toc .dudect { width: min(48rem, 100cqi - var(--toc-track) - var(--toc-gap)); }
     }
 }
 .dudect__title {
@@ -2320,10 +2323,7 @@ details.drawer .version-grid {
     font-size: 12px;
 }
 /* SVG strokes/fills via tokens. The chart has no viewBox (see the include),
-   so font sizes, strokes and radii are CSS px at every width. Each label
-   sits on a plate in the panel colour: a line it crosses passes behind it. */
-.dudect__chart text { filter: url(#dudect-plate); }
-.dudect__plate { flood-color: var(--dudect-panel); }
+   so font sizes, strokes and radii are CSS px at every width. */
 .dudect__axis { stroke: var(--rule); stroke-width: 1.5; }
 .dudect__axis-label,
 .dudect__ticks text { fill: var(--fg-subtle); }
@@ -2381,6 +2381,7 @@ details.drawer .version-grid {
     padding: var(--space-2) var(--space-3);
     border-bottom: 1px solid var(--rule);
     vertical-align: top;
+    text-wrap: pretty; /* no one-word/one-glyph last lines in the narrow columns */
 }
 .dudect__table th { color: var(--fg-subtle); font-weight: 600; }
 .dudect__table code { font-family: var(--mono); font-size: var(--text-xs); }
@@ -2443,7 +2444,7 @@ details.drawer .version-grid {
         content: attr(data-label);
         content: attr(data-label) / ""; /* decorative: the hidden thead names the column */
         display: block;
-        color: var(--fg-subtle);
+        color: var(--fg-muted); /* AA on both panels; --fg-subtle is 4.46:1 on dark */
         font-weight: 600;
         white-space: nowrap;
     }
@@ -2459,9 +2460,7 @@ details.drawer .version-grid {
    prefers-color-scheme block near the top of this file.
    Spec: docs/superpowers/specs/2026-06-11-visual-evolution-design.md
    ========================================================= */
-[data-theme="dark"] .dudect {
-    --dudect-panel: var(--bg-elevated);
-}
+[data-theme="dark"] .dudect,
 [data-theme="dark"] .install {
     background: var(--bg-elevated);
 }
