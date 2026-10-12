@@ -55,6 +55,7 @@
 #   consumer (of a core)    → 使用方（不用「消费者」）
 #   extraction trigger      → 触发条件（不用「触发器」）
 #   code smell              → 坏味道
+#   oracle (interop reference build) → 对照实现（oracle）（每页首次括注；后续可用裸 oracle）
 # Voice rule: ZH keeps its native register and may add explanatory glosses;
 # disclosures, hedges, numbers, and limitations must match EN exactly.
 # ---------------------------------------------------------------------------

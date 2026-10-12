@@ -792,13 +792,14 @@ case_study = {
                    # enforcement (path-filtered, not a required merge check) must survive.
                    "Not independently audited", "not a required merge check",
                    "pull requests that change the crypto code", "x86-64 Linux",
-                   # GmSSL interop: the skip condition must stay visible wherever the
-                   # comparison is summarised, and no effective date is assigned to
-                   # the required check (only the ruleset's own history is inspectable).
+                   # GmSSL interop: the skip condition must stay visible here (the
+                   # byte-identity notes and the v1.10 release rows are pinned in
+                   # source_contracts), and no effective date is assigned to the
+                   # required check (only the ruleset's own history is inspectable).
                    "skipped with a warning and the check still passes"],
     forbid: ["on every PR", "on every commit", "build-failing", "re-audit", "multi-model",
              "constant-time on every commit", "fails the build", "The gate has teeth",
-             "since 2026-10-11", "required check for merging since"],
+             "since 2026-10-11", "for merging since"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "zh/projects/gm-crypto-rs/index.html" => {
@@ -812,9 +813,9 @@ case_study = {
     # ZH mirror of the releases-page inbound-link guard above (2026-08-05).
     must_include: ["这两个项目", "/zh/projects/gm-crypto-rs/releases/",
                    "未经独立审计", "不是合并的必需检查", "改动密码代码的 PR", "x86-64 Linux",
-                   "带着警告跳过"],
+                   "带着警告跳过，这项检查照样通过"],
     forbid: ["每个 PR 都", "每次提交", "复审", "多模型", "让构建失败", "构建就会失败", "每次都", "门禁不是摆设",
-             "自 2026-10-11"],
+             "自 2026-10-11", "起是合并的必需检查"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "projects/repolens-rs/index.html" => {
@@ -1495,7 +1496,13 @@ source_contracts = {
     "/zh/notes/extraction-trigger/"
   ],
   "projects/repolens-rs.html" => ["Planned work remains uncommitted until it is tied to a public milestone."],
-  "zh/projects/repolens-rs.html" => ["后续工作在绑定公开里程碑之前，不写成已承诺计划。"]
+  "zh/projects/repolens-rs.html" => ["后续工作在绑定公开里程碑之前，不写成已承诺计划。"],
+  # 2026-10-12: the GmSSL interop skip condition must stay visible wherever the
+  # comparison is summarised outside the case study (which pins it in case_study).
+  "_notes/byte-identity.md" => ["skipped with a warning"],
+  "_notes/byte-identity.zh.md" => ["带着警告跳过"],
+  "projects/gm-crypto-rs-releases.html" => ["skips it with a warning"],
+  "zh/projects/gm-crypto-rs-releases.html" => ["带着警告跳过"]
 }.freeze
 
 source_contracts.each do |relative, phrases|
