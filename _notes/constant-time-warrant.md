@@ -5,7 +5,7 @@ permalink: /notes/constant-time-warrant/
 lang: en
 alternate: /zh/notes/constant-time-warrant/
 description: "Constant-time claims are common in cryptographic libraries. Two artifacts do more to transfer warrant for a particular claim than explanation: a detector you can watch fire on purpose, and limits stated before anyone asks."
-excerpt: "Explaining constant-time execution is the easy part, and it isn't what a skeptical reader needs. What transfers warrant is a leak detector that must fail on purpose, and a caveat written before anyone asks for it."
+excerpt: "Explaining constant-time execution is the easy part, and it isn't what a skeptical reader needs. What transfers warrant is a detector that must flag a deliberately introduced leak, and a caveat written before anyone asks for it."
 ---
 
 > **Corrected 2026-10-12 (UTC):** the description of the CI timing check below now matches its actual scope and enforcement.
