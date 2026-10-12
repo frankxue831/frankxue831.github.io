@@ -2339,8 +2339,10 @@ details.drawer .version-grid {
 .dudect__arrowhead { fill: var(--fg-muted); }
 .dudect__leak-before { fill: var(--danger); }
 .dudect__leak-after { fill: var(--status-released); }
+/* The values stand out by ink (--fg), not size: at the chart's 12px the
+   "≈0.006" label keeps >= 4px clear of the gate line at a 320px viewport. */
 .dudect__leak-before-label,
-.dudect__leak-after-label { font-size: 13px; fill: var(--fg); }
+.dudect__leak-after-label { fill: var(--fg); }
 .dudect__caveat {
     font-family: var(--sans);
     font-size: var(--text-sm);

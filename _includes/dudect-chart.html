@@ -79,7 +79,7 @@
     <text class="dudect__gate-label" x="{{ gate_x }}%" dx="6" y="{{ gate_label_y }}">{{ t.gate_label | escape }}</text>
     <text class="dudect__leak-heading" x="{{ gate_x }}%" dx="6" y="{{ leak_heading_y }}">{{ t.leak_heading | escape }}</text>
     <text class="dudect__leak-before-label" x="{{ before_x }}%" y="{{ leak_y | minus: 14 }}" text-anchor="middle">≈{{ d.leak.before }}</text>
-    <!-- dx -8: ends clear of the gate line down to a 320px viewport -->
+    <!-- dx -8 at 12px: ends >= 4px clear of the gate line down to a 320px viewport -->
     <text class="dudect__leak-after-label" x="{{ after_x }}%" dx="-8" y="{{ leak_y | plus: 22 }}">≈{{ d.leak.after }}</text>
     <text class="dudect__control-label" x="{{ xr }}%" y="{{ control_label_y }}" text-anchor="end">negative_control</text>
     <text class="dudect__cluster-label" x="{{ xl }}%" y="{{ cluster_label_y }}">{{ t.cluster_label | escape }}</text>
