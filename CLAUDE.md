@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository
 
-Personal site for Frank Xue at https://www.frankxue.dev — a Jekyll static site deployed via GitHub Pages (custom domain via `CNAME`). No JS framework and no build step beyond Jekyll; interactivity is seven focused vanilla JavaScript files in `assets/js/` (approximately 570 lines total: contents rail, install copy, home decrypt cells, shared-404 locale handling, mobile nav, scroll reveal, and theme toggle) used purely as progressive enhancement — every page works with JavaScript disabled.
+Personal site for Frank Xue at https://www.frankxue.dev — a Jekyll static site deployed via GitHub Pages (custom domain via `CNAME`). No JS framework and no build step beyond Jekyll; interactivity is six focused vanilla JavaScript files in `assets/js/` (approximately 515 lines total: contents rail, install copy, shared-404 locale handling, mobile nav, scroll reveal, and theme toggle) used purely as progressive enhancement — every page works with JavaScript disabled.
 
 ## Commands
 
