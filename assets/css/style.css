@@ -1684,10 +1684,15 @@ body.lang-zh .note li {
     transition: color var(--dur) var(--ease);
 }
 .prose a:hover { color: var(--accent); }
-/* Chrome and Safari never break a path like scripts/validate_site.rb, so on
-   the colophon it ran past the column at 320–367px. break-word (not anywhere)
-   only acts on a line that would overflow: nothing that fits today moves. */
-.prose code { overflow-wrap: break-word; }
+/* Chrome and Safari find no break point in the colophon's
+   scripts/<wbr>validate_site.rb, which ran past a 320px screen. Its <wbr> is
+   live only at 22em (352px) and below, so no wider line moves. overflow-wrap
+   would split the name anywhere and could open a line with the closing
+   bracket; em lets the threshold follow the reader's default font size. */
+.prose wbr { display: none; }
+@media (max-width: 22em) {
+    .prose wbr { display: inline; }
+}
 
 /* =========================================================
    Note bodies — long-form article typography on top of .prose

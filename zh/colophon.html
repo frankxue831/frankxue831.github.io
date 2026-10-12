@@ -43,7 +43,7 @@ alternate: /colophon/
             <code>connect-src 'self'</code>——页面无法向别处发起请求：没有站点分析（analytics）、没有 CDN、没有远程调用。
         </p>
         <p>
-            每一处改动都由构建后校验器（<code>scripts/validate_site.rb</code>）把关，
+            每一处改动都由构建后校验器（<code>scripts/<wbr>validate_site.rb</code>）把关，
             CI 在每个 pull request 和推送到 main 时都会跑它：核对元数据、双语
             <code>hreflang</code>、安全策略和静态资源完整性。源码公开：可读、可 clone、可开 issue。
         </p>
