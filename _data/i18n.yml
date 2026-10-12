@@ -98,6 +98,12 @@ en:
     built_with: "Built with Jekyll. Hosted on GitHub Pages."
     colophon_more: "How it's built"
     last_built: "Last built"
+  explainer_video:
+    label: "Captions below the picture"
+    "off": "Off"
+    waiting: "Captions appear here during playback."
+    off_message: "Captions are off."
+    download: "Open video (MP4)"
   project_summary:
     aria: "Project summary"
     role: "Role"
@@ -242,6 +248,12 @@ zh:
     built_with: "Jekyll 构建，托管于 GitHub Pages。"
     colophon_more: "本站如何构建"
     last_built: "最近构建"
+  explainer_video:
+    label: "画面下方字幕"
+    "off": "关闭"
+    waiting: "播放时，字幕显示在这里。"
+    off_message: "字幕已关闭。"
+    download: "打开视频（MP4）"
   project_summary:
     aria: "项目摘要"
     role: "角色"

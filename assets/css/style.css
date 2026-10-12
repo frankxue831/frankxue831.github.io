@@ -2538,3 +2538,103 @@ details.drawer .version-grid {
     color: var(--accent);
     white-space: nowrap;
 }
+
+/* Explainer case study: actual videos lead; reading measure stays modest. */
+.explainer-header { padding-bottom: var(--space-8); }
+.explainer-header .page-header__title { max-width: 22ch; }
+.explainer-header .page-header__lede {
+    max-width: 42rem;
+    font-family: var(--sans);
+    font-size: var(--text-lg);
+    line-height: 1.75;
+}
+.explainer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+    margin-top: var(--space-5);
+    font-family: var(--sans);
+}
+.explainer-actions a { padding-block: var(--space-2); border-bottom: 1px solid var(--accent); }
+.explainer-actions span { color: var(--fg-muted); font-size: var(--text-sm); }
+.explainer-detail { max-width: none; min-width: 0; }
+.explainer-detail > p,
+.explainer-detail > ul,
+.explainer-detail > ol,
+.explainer-detail .project-summary,
+.explainer-history { max-width: 42rem; }
+.explainer-detail p,
+.explainer-detail li { font-family: var(--sans); font-size: var(--text-lg); line-height: 1.75; }
+.explainer-detail h2 {
+    font-family: var(--serif);
+    font-size: var(--text-3xl);
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--fg);
+}
+.explainer-detail h3 { font-family: var(--sans); font-size: var(--text-xl); margin-bottom: var(--space-2); }
+.explainer-example { margin-block: var(--space-8) var(--space-12); scroll-margin-top: var(--space-20); }
+.explainer-example > p { max-width: 42rem; }
+.explainer-video { max-width: none; margin-block: var(--space-4) 0; }
+.explainer-detail .fig__cap,
+.explainer-pair figcaption { font-family: var(--sans); font-size: var(--text-sm); line-height: 1.65; }
+.explainer-video .fig__cap a { display: inline-block; margin-left: var(--space-2); }
+.video-captions {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--rule);
+    background: var(--bg-sunk);
+    font-family: var(--sans);
+    font-size: var(--text-sm);
+}
+.video-captions label { margin-right: var(--space-3); }
+.video-captions select {
+    min-height: 44px;
+    max-width: 100%;
+    padding: var(--space-2);
+    border: 1px solid var(--rule);
+    border-radius: 0;
+    font: inherit;
+    color: var(--fg);
+    background: var(--bg);
+}
+.explainer-detail .video-captions__text {
+    min-height: 3.5em;
+    margin: var(--space-2) 0 0;
+    white-space: pre-line;
+    font-size: var(--text-base);
+}
+.explainer-pair { display: grid; gap: var(--space-6); margin-block: var(--space-6); }
+.explainer-pair figure { min-width: 0; margin: 0; }
+.explainer-pair figcaption { margin-block: var(--space-2); color: var(--fg-muted); }
+.explainer-pair pre,
+.explainer-command {
+    overflow-x: auto;
+    padding: var(--space-4);
+    border: 1px solid var(--rule);
+    background: var(--bg-sunk);
+    font-family: var(--mono);
+    font-size: var(--text-sm);
+    line-height: 1.65;
+    margin-block: var(--space-3) var(--space-5);
+}
+.explainer-pair a { display: block; border: 0; }
+.explainer-flow { padding-left: var(--space-6); margin-block: var(--space-6); }
+.explainer-flow li { padding-left: var(--space-2); }
+.explainer-flow li::before { content: none; }
+.explainer-flow li > span { display: block; }
+.explainer-history { border-block: 1px solid var(--rule); padding-block: var(--space-4); margin-block: var(--space-6); }
+.explainer-history summary { cursor: pointer; font-family: var(--sans); min-height: 44px; padding-block: var(--space-2); }
+.explainer-history[open] summary { margin-bottom: var(--space-4); }
+.explainer-detail code { overflow-wrap: anywhere; }
+.explainer-detail pre code { overflow-wrap: normal; }
+@media (min-width: 760px) {
+    .explainer-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@media (min-width: 1024px) {
+    .page--explainer-engine .section.has-toc { --toc-track: 10rem; --toc-gap: var(--space-8); }
+}
+@media print { .video-captions { display: none; } }
+@media (max-width: 759px) {
+    .explainer-header .page-header__title { font-size: var(--text-4xl); line-height: 1.2; }
+}
