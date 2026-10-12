@@ -1684,6 +1684,15 @@ body.lang-zh .note li {
     transition: color var(--dur) var(--ease);
 }
 .prose a:hover { color: var(--accent); }
+/* Chrome and Safari find no break point in scripts/validate_site.rb, so on the
+   colophon it ran past a 320px screen. The <wbr> after its slash gives it one,
+   switched off from 22em (352px) up so no wider line moves; ZH needs 349px for
+   the path, its brackets and the 20px gutter. overflow-wrap would split the
+   name anywhere and could open a line with the closing bracket. em lets the
+   threshold follow the reader's default font size. */
+@media (min-width: 22em) {
+    .prose code wbr { display: none; }
+}
 
 /* =========================================================
    Note bodies — long-form article typography on top of .prose
