@@ -17,6 +17,8 @@ alternate: /zh/projects/gm-crypto-rs/releases/
         that merged without a published version because they changed no output
         bytes. The case study is
         <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}">here</a>.
+        Dates are crates.io publication dates in UTC; cycles marked
+        <em>Not published</em> have no publication date.
     </p>
 </section>
 
@@ -24,7 +26,7 @@ alternate: /zh/projects/gm-crypto-rs/releases/
     <article class="project-detail prose">
         <dl class="version-grid">
             <dt>v1.16.0</dt>
-            <dd>2026-10-10 — GFNI SM4 S-box on x86_64 (performance only, no public API change). Under <code>sm4-bitsliced-simd</code>, on CPUs with GFNI, AVX2 and OS-enabled AVX-512 state, both the batch path (<code>encrypt_blocks</code> / <code>decrypt_blocks</code>, so CTR, GCM, CCM and CBC decryption) and the single-block path compute the S-box with <code>GF2P8AFFINEQB</code> + <code>GF2P8AFFINEINVQB</code>. The changelog reports about 10x the AVX2 bitsliced batch throughput on an AMD EPYC 9V45 hosted runner (22 → 229 MB/s) and about 60x single-block on an Intel Xeon 6973P-C. The GFNI path compiles only on rustc 1.89 or newer; MSRV stays 1.85 and older compilers build the previous code. CI gains an Intel SDE job asserting the GFNI path runs; the internal <code>cpufeatures</code> 0.3.1 fixes the Rust 1.99 build. This replaces the premise of the AVX-512 <code>sbox_x64</code> item parked since v0.5. C ABI surface stays 112.</dd>
+            <dd>2026-10-09 — GFNI SM4 S-box on x86_64 (performance only, no public API change). Under <code>sm4-bitsliced-simd</code>, on CPUs with GFNI, AVX2 and OS-enabled AVX-512 state, both the batch path (<code>encrypt_blocks</code> / <code>decrypt_blocks</code>, so CTR, GCM, CCM and CBC decryption) and the single-block path compute the S-box with <code>GF2P8AFFINEQB</code> + <code>GF2P8AFFINEINVQB</code>. The changelog reports about 10x the AVX2 bitsliced batch throughput on an AMD EPYC 9V45 hosted runner (22 → 229 MB/s) and about 60x single-block on an Intel Xeon 6973P-C. The GFNI path compiles only on rustc 1.89 or newer; MSRV stays 1.85 and older compilers build the previous code. CI gains an Intel SDE job asserting the GFNI path runs; the internal <code>cpufeatures</code> 0.3.1 fixes the Rust 1.99 build. This replaces the premise of the AVX-512 <code>sbox_x64</code> item parked since v0.5. C ABI surface stays 112.</dd>
 
             <dt>v1.15.0</dt>
             <dd><em>Not published.</em> Assurance cycle: a frozen timing-calibration study on pinned pre-GFNI source. No crate changed, so crates.io skipped it.</dd>
@@ -36,7 +38,7 @@ alternate: /zh/projects/gm-crypto-rs/releases/
             <dd>2026-09-04 — streaming SM4-CCM in the C ABI plus zeroize across the SM4 streaming family (additive). Eight new symbols, <code>gmcrypto_sm4_ccm_encryptor_{new,update,finalize,free}</code> and <code>gmcrypto_sm4_ccm_decryptor_{new,update,finalize_verify,free}</code>, take the C ABI from <strong>104 → 112</strong> entry points. Every SM4 streaming type (GCM, CTR, CBC and the CCM decryptor, joining <code>Sm4Cipher</code> and <code>Sm4CcmEncryptor</code>) now zeroizes on drop. No signature changes; outputs byte-identical; MSRV 1.85.</dd>
 
             <dt>v1.12.0</dt>
-            <dd>2026-09-04 — length-committed streaming SM4-CCM behind the existing <code>sm4-aead</code> feature (additive). <code>sm4::Sm4CcmEncryptor</code> commits to the plaintext length up front and emits each chunk's ciphertext with <code>O(chunk)</code> memory; an over-feed poisons it and <code>finalize</code> refuses to tag a partial stream. <code>sm4::Sm4CcmDecryptor</code> is incremental-input, commit-on-verify. Two new differential fuzz targets (census <strong>33 → 35</strong>). Default build byte-identical; no C ABI change.</dd>
+            <dd>2026-09-03 — length-committed streaming SM4-CCM behind the existing <code>sm4-aead</code> feature (additive). <code>sm4::Sm4CcmEncryptor</code> commits to the plaintext length up front and emits each chunk's ciphertext with <code>O(chunk)</code> memory; an over-feed poisons it and <code>finalize</code> refuses to tag a partial stream. <code>sm4::Sm4CcmDecryptor</code> is incremental-input, commit-on-verify. Two new differential fuzz targets (census <strong>33 → 35</strong>). Default build byte-identical; no C ABI change.</dd>
 
             <dt>v1.11.2</dt>
             <dd>2026-08-23 — documentation-only patch release.</dd>
@@ -84,7 +86,7 @@ alternate: /zh/projects/gm-crypto-rs/releases/
             <dd>2026-06-01 — first stable release: all three crates published lockstep at <code>=1.0.0</code>. The only published migration is 0.16 → 1.0; the runtime wire output (SM2 signatures / ciphertexts, SM4 mode bytes) is byte-identical to 0.16.0 (KAT + GmSSL 3.1.1 interop 11/11), so the breaking changes are API <em>shape</em> only. From 1.0, <code>cargo-semver-checks</code> gates forward breaking changes.</dd>
 
             <dt>0.17 – 0.23</dt>
-            <dd><em>Not published.</em> Assurance &amp; API-finalization cycles — public-API freeze with a <code>cargo-public-api</code> drift-check, <code>crypto-bigint</code> decoupled from the always-on surface, and a multi-model adversarial pre-1.0 re-audit. crates.io skips them; their changes ship together in <code>1.0.0</code>.</dd>
+            <dd><em>Not published.</em> Assurance &amp; API-finalization cycles — public-API freeze with a <code>cargo-public-api</code> drift-check, <code>crypto-bigint</code> decoupled from the always-on surface, and an adversarial pre-1.0 review by two AI models (not an independent audit). crates.io skips them; their changes ship together in <code>1.0.0</code>.</dd>
 
             <dt>v0.16.0</dt>
             <dd>2026-05-29 — multi-sector SM4-XTS C FFI; every cipher mode now reachable from C / C++ / Go / Zig / Python.</dd>

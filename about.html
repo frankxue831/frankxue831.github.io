@@ -32,9 +32,11 @@ alternate: /zh/about/
         <p>
             <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}">gm-crypto-rs</a> is a pure-Rust SDK for the Chinese national
             crypto standards. Its secret-handling paths are designed to run in
-            constant time, and an in-CI leak harness re-checks that on every
-            commit rather than trusting the design review. The core group fails
-            the build when it crosses the published gate.
+            constant time, and an in-CI timing-leak harness re-tests the core
+            paths on pull requests that change the crypto code, rather than
+            trusting the design review; a core path over its limit fails that
+            check. It's statistical evidence on the tested paths and hardware,
+            not a proof, and the library has not been independently audited.
         </p>
         <p>
             <a href="{{ '/gm-crypto-web/?lang=en' | relative_url }}">gm-crypto-web</a> is the part of it you can use right now: a

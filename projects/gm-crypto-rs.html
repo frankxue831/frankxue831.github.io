@@ -1,12 +1,12 @@
 ---
 layout: default
 title: "gm-crypto-rs"
-description: A pure-Rust SDK for China's SM2/SM3/SM4 cryptography standards, with in-CI dudect leak-regression gating on its constant-time-designed secret-handling paths.
+description: A pure-Rust SDK for China's SM2/SM3/SM4 cryptography standards, with in-CI dudect timing-leak checks on its constant-time-designed secret-handling paths. Not independently audited.
 permalink: /projects/gm-crypto-rs/
 lang: en
 alternate: /zh/projects/gm-crypto-rs/
 project_slug: gm-crypto-rs
-summary_outcome: "In-CI leak-regression gates for secret-touching paths."
+summary_outcome: "In-CI timing-leak checks on secret-handling paths."
 ---
 
 <section class="page-header wrap">
@@ -17,7 +17,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
     <p class="page-header__lede">
         A pure-Rust SDK for the Chinese national cryptography standards
         — SM2, SM3, SM4 — with constant-time-designed secret-handling
-        paths guarded by an in-CI leak-regression harness.
+        paths checked by an in-CI timing-leak harness.
     </p>
 </section>
 
@@ -101,7 +101,8 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             across releases, and a C ABI that hands those same paths to
             non-Rust callers (C, C++, Go, Zig, Python). The question it is
             built around isn't <em>is it constant-time today</em> — it's
-            <em>what keeps it constant-time on every commit.</em>
+            <em>how a change that brings a timing leak back gets noticed</em>,
+            on the paths and hardware the tests actually cover.
         </p>
 
         <h2 id="decisions">Constraints &amp; key decisions</h2>
@@ -109,30 +110,36 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             <strong>Verify continuously, don't assert once.</strong>
             Constant-time behavior is treated as a property CI re-checks, not
             a claim review signs off. A <code>dudect-bencher</code> harness
-            exercises twenty secret-touching paths on every run; a core set
-            is <em>gated</em> at <code class="nowrap">|τ|&nbsp;&lt;&nbsp;0.20</code>, so a
-            timing regression fails the build instead of waiting for someone
-            to notice. The harness reports <em>detection events</em> — a low
+            measures twenty secret-touching paths. On pull requests that change
+            the crypto code, a core set must keep a median
+            <code class="nowrap">|τ|&nbsp;≤&nbsp;0.20</code> over three runs, so a
+            timing regression on those paths fails that check instead of
+            waiting for someone to notice. It is not a required merge check:
+            a failure flags the pull request rather than blocking the merge on
+            its own. The harness reports <em>detection events</em> — a low
             <code class="nowrap">|τ|</code> means no leak was detected under the budget
             given, <em>not</em> that none exists (the wording is
             <code>dudect-bencher</code>'s own).
-            <strong>Cost:</strong> every PR pays the measurement budget, and
+            <strong>Cost:</strong> every crypto-touching PR pays the measurement budget, and
             statistics can never turn "not detected" into "absent."
         </p>
         <p>
-            <strong>Gate the core, observe the rest.</strong> Not every path
-            fits a PR's time budget, so the harness splits them. Gated
-            (build-failing), sixteen paths: both scalar multiplications
+            <strong>Check the core, observe the rest.</strong> Not every path
+            fits a PR's time budget, so the harness splits them. Checked on
+            pull requests (a failure fails the check), sixteen paths: both scalar multiplications
             (fixed- and variable-base), SM2 sign, decrypt, and key exchange,
             SM4 key schedule, SM4 encrypt (default linear-scan and bitsliced
             SIMD S-box), SM4-CTR, CBC-decrypt fanout, single-shot SM4-GCM /
             SM4-CCM decrypt plus buffered SM4-GCM decrypt, SM4-XTS decrypt,
             encrypted-PKCS#8 decrypt, and — since v1.7 — the TLCP CBC record
-            deprotect, the Lucky13 residual guard. Telemetry-only, four: the
+            deprotect, the Lucky13 residual guard. One of them, CBC-decrypt
+            fanout, is held to <code>0.55</code> instead of <code>0.20</code>
+            when the runner's CPU is an AMD EPYC 9V74, whose no-change noise
+            band is wider. Telemetry-only, four: the
             field-inversion diagnostics, the k-class sign, and — since
-            2026-06-17 — HMAC-SM3, watched on the nightly run against a
-            <code>0.55</code> gross-regression sentinel rather than the
-            <code>0.20</code> gate — shared-runner class-split noise made
+            2026-06-17 — HMAC-SM3, reported but not checked on pull requests and
+            held to a <code>0.55</code> gross-regression sentinel on the daily
+            100,000-sample run rather than the <code>0.20</code> limit — shared-runner class-split noise made
             their tighter gates fire falsely, so each was demoted with the
             reasoning published. <strong>Cost:</strong> the telemetry paths are
             watched, not enforced, and the two-tier split is a permanent
@@ -171,8 +178,8 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             published, so crates.io skips <code>0.14.0</code>. The same rule then
             scaled up across the <code>0.17</code>–<code>0.23</code> gap — chiefly the
             <code>v0.21</code>–<code>v0.23</code> readiness work (public-API freeze,
-            <code>crypto-bigint</code> decoupling, a multi-model adversarial pre-1.0
-            re-audit) — which stayed unpublished and shipped together in the
+            <code>crypto-bigint</code> decoupling, an adversarial pre-1.0 review
+            by two AI models) — which stayed unpublished and shipped together in the
             deliberate <code>1.0.0</code> release.
             <strong>Cost:</strong> the version line carries a deliberate gap to
             explain, and the C ABI doubles the surface every mode has to be
@@ -181,12 +188,16 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
         <h2 id="evidence">Evidence</h2>
         <p>
-            Every output is checked for byte-identity: against the standard
+            <strong>Not independently audited.</strong> No third-party security
+            audit has been performed; everything below is the project's own
+            evidence. Every output is checked for byte-identity: against the standard
             KAT vectors, against GmSSL 3.2.0 for interop — an in-CI job
-            pinned to a from-source oracle build since v1.10 — and against
+            pinned to a from-source oracle build since v1.10, and a required
+            check for merging — and against
             OpenSSL 3.x <code>SM4-XTS</code> (<code>xts_standard=GB</code>)
-            for the tweakable mode. The leak-regression gates above run in CI
-            on every commit, and the core forbids unsafe code via its
+            for the tweakable mode. The timing checks above run on pull
+            requests that change the crypto code and daily on <code>main</code>,
+            on GitHub-hosted x86-64 Linux runners, and the core forbids unsafe code via its
             <code>[lints]</code> table. The v0.14 cycle added a
             <code>cargo-fuzz</code> (libFuzzer) harness over the
             untrusted-input decode / decrypt surface — sixteen targets then,
@@ -207,7 +218,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/src/sm4/cipher.rs#L627" rel="noopener noreferrer">cipher.rs:627 <span aria-hidden="true">&#8599;</span></a>.</li>
             <li>The core crate forbids unsafe code —
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/Cargo.toml#L177" rel="noopener noreferrer">Cargo.toml:177 <span aria-hidden="true">&#8599;</span></a>.</li>
-            <li>A dudect timing-leak gate runs on every PR —
+            <li>A dudect timing-leak check runs on pull requests that change the crypto code —
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/.github/workflows/dudect-pr.yml#L169" rel="noopener noreferrer">dudect-pr.yml:169 <span aria-hidden="true">&#8599;</span></a>.</li>
         </ul>
         <p>
@@ -215,8 +226,8 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
             easy to assert and hard to prove:
         </p>
         <ul class="audit-notes">
-            <li>The gate has teeth &mdash; a deliberately-leaky <code>negative_control</code>
-                the harness must flag, or CI fails &mdash;
+            <li>The check has a built-in control &mdash; a deliberately-leaky <code>negative_control</code>
+                the harness must flag, or the timing check fails &mdash;
                 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.11.0/crates/gmcrypto-core/benches/timing_leaks.rs#L167" rel="noopener noreferrer">timing_leaks.rs:167 <span aria-hidden="true">&#8599;</span></a>.</li>
             <li>Stated honestly &mdash; the harness detects leaks; it does not prove
                 constant-time &mdash;
@@ -224,7 +235,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         </ul>
         <p>
             Four notes unpack the evidence boundary:
-            <a href="{{ '/notes/constant-time-ci-gate/' | relative_url }}">how the CI gate works</a>,
+            <a href="{{ '/notes/constant-time-ci-gate/' | relative_url }}">how the CI timing check works</a>,
             and <a href="{{ '/notes/constant-time-warrant/' | relative_url }}">why the negative
             control — not the green checks — is the part worth showing</a>;
             <a href="{{ '/notes/byte-identity/' | relative_url }}">byte identity as an interop test</a>;
@@ -238,7 +249,7 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
         </p>
         <dl class="version-grid">
             <dt>Current</dt>
-            <dd><strong>v1.16.0</strong>, 2026-10-10 — GFNI SM4 S-box on x86_64 under <code>sm4-bitsliced-simd</code>; performance only, no public API change. The C ABI surface stays 112 entry points.</dd>
+            <dd><strong>v1.16.0</strong>, published 2026-10-09 (UTC) — GFNI SM4 S-box on x86_64 under <code>sm4-bitsliced-simd</code>; performance only, no public API change. The C ABI surface stays 112 entry points.</dd>
 
             <dt>Unpublished</dt>
             <dd>Five gaps in the published version line — v0.14, 0.17–0.23, v1.5, v1.10, v1.14–v1.15 — none of them changed an output byte.</dd>
@@ -255,12 +266,14 @@ summary_outcome: "In-CI leak-regression gates for secret-touching paths."
 
         <h2 id="limits">What it isn't</h2>
         <ul>
+            <li>Not independently audited — no third-party security audit has been performed. The pre-1.0 review was an adversarial review by two AI models, which is not an audit.</li>
             <li>Not a TLS/TLCP stack — the <code>tlcp</code> work is a toolkit of primitives (key schedule, record protect / deprotect, chain and pair verification). There is no handshake state machine, no negotiation, and no session management: a caller drives the protocol, as the v1.9 C examples do.</li>
             <li>Not endpoint authentication — <code>verify_chain</code> / <code>verify_pair</code> establish structural trust only. Binding a verified chain to a peer identity, the TLCP equivalent of hostname verification, stays the caller's permanently.</li>
             <li>Not SM9, ZUC, or post-quantum.</li>
             <li>Not an HSM / SDF / SKF integration.</li>
             <li>Not a certified cryptographic module under the U.S. Federal Information Processing Standards (FIPS) or another certification program.</li>
             <li>Not constant-time on CPUs with data-dependent multiply latencies (some older x86, some embedded).</li>
+            <li>Not timing-tested beyond the CI evidence shown here, which comes from x86-64 Linux runners; this page makes no timing claim for other hardware.</li>
         </ul>
 
         <p>

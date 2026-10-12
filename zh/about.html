@@ -27,7 +27,7 @@ alternate: /about/
             截至 2026 年 10 月，主要在做五件事。
         </p>
         <p>
-            第一件是 <a href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}">gm-crypto-rs</a>，一套纯 Rust 的国密 SM2 / SM3 / SM4 SDK。我特别在意时序侧信道这类容易被忽略的安全风险：代码处理密钥时，执行时间不能跟密钥内容有关，否则别人可能靠测耗时反推出密钥。所以涉密路径按常量时间设计，CI 里挂着一套 dudect 泄漏回归 harness，每次提交都重测——核心那一组一旦越过公开门槛，构建就会失败，而不是只相信设计评审。
+            第一件是 <a href="{{ '/zh/projects/gm-crypto-rs/' | relative_url }}">gm-crypto-rs</a>，一套纯 Rust 的国密 SM2 / SM3 / SM4 SDK。我特别在意时序侧信道这类容易被忽略的安全风险：代码处理密钥时，执行时间不能跟密钥内容有关，否则别人可能靠测耗时反推出密钥。所以涉密路径按常量时间设计，CI 里挂着一套 dudect 时序泄漏 harness，改动密码代码的 PR 都会重测核心路径——核心路径一旦超过阈值，这项检查就失败，而不是只相信设计评审。这是针对已测路径和硬件的统计证据，不是证明；这个库也没有经过独立审计。
         </p>
         <p>
             第二件是 <a href="{{ '/gm-crypto-web/?lang=zh' | relative_url }}">gm-crypto-web</a>，也就是上面那套 SDK 能直接上手的样子：一个浏览器里的 SM2 / SM3 / SM4 工具，底下是编译成 WebAssembly 的 gm-crypto-rs。所有计算都在本地页面里完成，打开时自检 11/11（SM3、SM4 对国标向量，SM2 做往返校验）。它是拿来调试的，别放生产密钥，也还没经过审计。<a href="{{ '/gm-crypto-web/?lang=zh' | relative_url }}">在线试用</a>。

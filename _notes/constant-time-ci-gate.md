@@ -5,9 +5,10 @@ permalink: /notes/constant-time-ci-gate/
 lang: en
 alternate: /zh/notes/constant-time-ci-gate/
 description: "A credible constant-time CI gate must pass normal paths, make a negative control fire deliberately, and publish its measurements, thresholds, and evidence limits."
-excerpt: "Constant-time is easy to satisfy once and lose without noticing. Here's the CI tripwire that fails the build when a leak creeps back — a detector, not a proof."
+excerpt: "Constant-time is easy to satisfy once and lose without noticing. Here's the CI tripwire that turns a pull-request check red when a leak creeps back — a detector, not a proof."
 ---
 
+> **Correction (2026-10-12, UTC):** this note overstates how the check is enforced. The timing check runs only on pull requests that change the crypto code, benchmarks or dependency files, and a skip marker such as `[skip ci]` in the pull-request title skips it. It fails when a core path's median \|τ\| over three runs is above 0.20 (one path, CBC-decrypt fanout, gets 0.55 on one runner CPU model). It is not a required merge check: a failure marks the pull request red but does not by itself stop the change from landing. The measurements come from x86-64 Linux CI runners. Current details are in the [case study]({{ '/projects/gm-crypto-rs/' | relative_url }}).
 "Constant-time" is one of those properties you can satisfy once and then lose
 without anyone noticing. A routine that doesn't branch on secret bits today picks
 up a fast path next month, a dependency bumps, a review waves it through — and the
