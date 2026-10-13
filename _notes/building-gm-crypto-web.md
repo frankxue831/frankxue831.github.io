@@ -50,6 +50,12 @@ round trip: key derivation, sign and verify with the default or a custom
 ID, tampered message and wrong ID must fail, and encrypt then decrypt. A
 tool that only ever says "yes" hasn't shown you anything.
 
+{% include picture.html src_base='/assets/img/gm-crypto-web/sm4'
+   alt_en="gm-crypto-web SM4 encryption in ECB mode with the GB/T 32907 test vector: key and plaintext 0123456789abcdeffedcba9876543210 give the output 681edf34d206965e86b3e94f536e4246, with a green check reading “Matches the official test vector (GB/T 32907)”."
+   alt_zh="gm-crypto-web 用 GB/T 32907 标准测试向量做 SM4 加密（ECB 模式）：密钥和明文都是 0123456789abcdeffedcba9876543210，输出 681edf34d206965e86b3e94f536e4246，下方绿色对勾提示“与国标向量一致”。"
+   width=1200 height=750
+   caption_en="The tool checks itself against the GB/T 32907 example vector." caption_zh="工具会用 GB/T 32907 的标准示例自检。" %}
+
 You can also run the self-test by hand and see each case's result.
 
 ## Honest limits

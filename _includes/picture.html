@@ -1,0 +1,23 @@
+{%- comment -%}
+  Bilingual screenshot. Usage:
+    {% include picture.html src_base='/assets/img/gm-crypto-web/sm4'
+       alt_en='...' alt_zh='...' width=1200 height=750
+       caption_en='...' caption_zh='...' eager=true %}
+  Picks <src_base>.zh.webp + alt_zh when page.lang == 'zh' (same
+  `page.lang | default: 'en'` rule as head.html/nav.html), else .en.webp + alt_en.
+  width/height are required (no layout shift); scripts/check_images.rb enforces it.
+  eager=true (above-the-fold only) drops lazy loading and sets fetchpriority=high.
+{%- endcomment -%}
+{%- assign pic_lang = page.lang | default: 'en' -%}
+{%- if pic_lang == 'zh' -%}
+  {%- assign pic_alt = include.alt_zh -%}{%- assign pic_cap = include.caption_zh -%}
+{%- else -%}
+  {%- assign pic_alt = include.alt_en -%}{%- assign pic_cap = include.caption_en -%}
+{%- endif -%}
+{%- assign pic_src = include.src_base | append: '.' | append: pic_lang | append: '.webp' | relative_url -%}
+<figure class="shot">
+  <img src="{{ pic_src }}" width="{{ include.width }}" height="{{ include.height }}" alt="{{ pic_alt | escape }}"{% if include.eager == true or include.eager == 'true' %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">
+  {%- if pic_cap and pic_cap != '' %}
+  <figcaption class="fig__cap">{{ pic_cap }}</figcaption>
+  {%- endif %}
+</figure>
