@@ -30,7 +30,13 @@
     };
     const start = () => {
       // Do not suppress working native captions until their cues have loaded.
-      if (enhanced || initial.readyState !== 2) return;
+      if (enhanced) return;
+      if (initial.readyState !== 2) {
+        // WebKit leaves a default track disabled, with no cues loaded, unless the
+        // viewer's caption preference selects it; hidden loads cues without drawing.
+        if (initial.track.mode === 'disabled') initial.track.mode = 'hidden';
+        return;
+      }
       enhanced = true;
       panel.hidden = false;
       apply();

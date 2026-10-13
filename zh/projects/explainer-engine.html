@@ -13,10 +13,11 @@ summary_outcome: "已有两段实际视频；引用校验不代表讲解语义�
     <p class="page-header__eyebrow">Explainer Engine</p>
     <h1 class="page-header__title">把代码和技术<span class="nowrap">概念，</span><wbr><span class="nowrap">讲得更直观。</span></h1>
     <p class="page-header__lede">我想尝试用动画把代码中的关系和技术概念讲清楚，也想探索 AI 能怎样帮助完成这个过程。Explainer Engine 是其中的一次尝试：从讲解脚本出发，生成带旁白和字幕的视频，并在渲染前检查脚本中的源码引用。</p>
+    {%- assign explainer_project = site.data.projects | where: 'slug', page.project_slug | first %}
     <div class="explainer-actions">
         <a href="#examples">先看视频</a>
         <a href="https://github.com/frankxue831/ManimSimpleRender" rel="noopener noreferrer">查看源码</a>
-        <span>源码公开 · 预发布</span>
+        <span>{{ explainer_project.status_label[page.lang] }}</span>
     </div>
 </section>
 
@@ -31,16 +32,16 @@ summary_outcome: "已有两段实际视频；引用校验不代表讲解语义�
         </div>
         <div class="explainer-example" id="budget-video">
             <h3>引用需要多少证据？ · 62 秒</h3>
-            <p>用曲线和代码说明引用能带多少证据 token，以及为什么证据过弱的引用会被拒绝。</p>
+            <p>用曲线和代码说明规划器允许一条引用带多少证据 token，以及它为什么丢弃证据过弱的引用。</p>
             {% include explainer-video.html name='evidence-budget' id='budget-video' caption='公开 c345e66 样例；脚本与引用源码可查。旁白为英文，提供中英字幕。' %}
         </div>
         <p>页面支持把字幕放在画面下方，避免遮住代码。全屏或未启用 JavaScript 时使用播放器原生字幕。视频内嵌文字没有重做，在手机上仍偏小；查看细节可用全屏，或对照下方脚本。</p>
         <h2 id="what-it-is">从脚本到画面</h2>
-        <p>输入是一份 YAML {% include glossary-term.html term="storyboard" %}，写明镜头、旁白和源码引用，不是上传任意代码就能自动得到可靠讲解。下面节选第二段视频中 <code>per-line</code> 镜头的真实脚本，右图取自现有视频的第 12 秒。</p>
+        <p>输入是一份 YAML {% include glossary-term.html term="storyboard" %}，写明镜头、旁白和源码引用，不是上传任意代码就能自动得到可靠讲解。下面节选第二段视频中 <code>per-line</code> 镜头的真实脚本，对应画面取自现有视频的第 12 秒。</p>
         <div class="explainer-pair">
             <figure>
                 <figcaption>输入：真实 YAML 节选</figcaption>
-                <pre tabindex="0" aria-label="YAML 脚本节选"><code>code_callout:
+                <pre tabindex="0" role="region" aria-label="YAML 脚本节选"><code>code_callout:
   display: &quot;TOKENS_PER_LINE = 2&quot;
   language: python
   cite: &quot;explainer/plan/evidence.py:56&quot;
@@ -53,16 +54,16 @@ summary_outcome: "已有两段实际视频；引用校验不代表讲解语义�
                 <figcaption>输出：第 12 秒原始画面 · 点击看大图</figcaption>
             </figure>
         </div>
-        <p>这段脚本规定画面上的代码、引用的文件行和必须找到的证据；同一镜头的曲线写为 <code>2 * x</code>。画面代码是标注为 <code>simplified</code> 的简化视图，不冒充逐字源码。<a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/examples/evidence-budget.story.yaml" rel="noopener noreferrer">查看完整脚本</a>。</p>
+        <p>这段脚本规定画面上的代码、引用的文件行和必须找到的证据；同一镜头的曲线写为 <code class="nowrap">2 * x</code>。画面代码是标注为 <code>simplified</code> 的简化视图，不冒充逐字源码。<a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/examples/evidence-budget.story.yaml" rel="noopener noreferrer">查看完整脚本</a>。</p>
         <ol class="explainer-flow">
             <li><strong>检查引用</strong><span>引用校验门检查引用行中是否包含脚本声明的证据。</span></li>
-            <li><strong>按固定规则生成场景</strong><span>脚本编译成 {% include glossary-term.html term="manim" %} 场景代码，渲染阶段没有模型参与。</span></li>
-            <li><strong>渲染与配音</strong><span>由 Manim 渲染画面，配上合成旁白；这里的样例同时提供中英字幕轨。</span></li>
+            <li><strong>按固定规则生成场景</strong><span>脚本编译成 {% include glossary-term.html term="manim" %} 场景代码，这段代码不由语言模型编写。</span></li>
+            <li><strong>渲染与配音</strong><span>由 Manim 渲染画面，旁白由语音合成服务生成；这里的样例同时提供中英字幕轨。</span></li>
         </ol>
-        <p>可选的 <code>explainer plan</code> 可以借助 AI 从指定源码范围起草脚本。它是前面的准备步骤，草稿仍需通过同一道引用校验门；模型不在渲染阶段临时生成画面。</p>
+        <p>另外，可选的 <code>explainer plan</code> 会调用语言模型，从指定源码范围起草脚本。它是前面的准备步骤，草稿仍需通过同一道引用校验门；校验门检查的是引用，不是旁白。模型不在渲染阶段临时生成画面。</p>
         <h2 id="evidence">能核对哪些证据</h2>
         <p>第二段视频的脚本与源码位于公开 commit <code>c345e66</code>。按仓库说明准备环境并检出该 commit 后，可运行：</p>
-        <pre class="explainer-command" tabindex="0" aria-label="引用校验命令"><code>explainer verify examples/evidence-budget.story.yaml</code></pre>
+        <pre class="explainer-command" tabindex="0" role="region" aria-label="引用校验命令"><code>explainer verify examples/evidence-budget.story.yaml</code></pre>
         <p><strong>这条命令只检查引用，不会重新渲染视频。</strong>它不证明讲解语义正确，也不证明教学效果。</p>
         <ul class="explainer-sources">
             <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/examples/evidence-budget.story.yaml" rel="noopener noreferrer">视频使用的 storyboard</a></li>
@@ -70,7 +71,7 @@ summary_outcome: "已有两段实际视频；引用校验不代表讲解语义�
             <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/explainer/plan/evidence.py#L205-L211" rel="noopener noreferrer">预算计算：第 205–211 行</a></li>
             <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/explainer/plan/evidence.py#L312-L313" rel="noopener noreferrer">拒绝弱引用：第 312–313 行</a></li>
         </ul>
-        <p>这里的预算是每行两个 token 的位置，下限五个、上限二十四个；少于两个 token，或没有强 token 的引用会被丢弃。这段视频从 <code>c345e66</code> 渲染的出处由本站说明，画面本身不能证明这一点：脚本引用所在仓库，没有固定 commit，因此徽标只写 <code>verified</code>，不带 commit。</p>
+        <p>规划器的证据预算是每行两个 token 的位置，下限五个、上限二十四个；少于两个 token 或没有强 token 的引用，会被规划器丢弃。引用校验门本身只检查声明的证据是否出现。这段视频从 <code>c345e66</code> 渲染的出处由本站说明，画面本身不能证明这一点：脚本引用所在仓库，没有固定 commit，因此徽标只写 <code>verified</code>，不带 commit。</p>
         <details class="explainer-history">
             <summary>较早样例与本地快照的边界</summary>
         <p>第一段 Harness-Field 视频来自更早的 <code>diagram-canvas</code> 本地快照，是引擎实际输出。五种力来自研究知识库；画面上的 <code>simplified</code> 标签与 <code>verified @ commit</code> 徽标，标出简化视图以及「memory force」所引用的源码行和 commit。当时在渲染前通过了引用校验门，但历史校验结果缺少公开运行证据，无法由外部独立核验。视频能展示产物与这些标记，不能替代那份运行证据。</p>
@@ -84,7 +85,7 @@ summary_outcome: "已有两段实际视频；引用校验不代表讲解语义�
         <p><strong>与桌面工具共用渲染核心。</strong>同一套与 Qt 无关的核心也供批量渲染 GUI 使用。 <strong>代价：</strong>核心改动需兼顾两个使用方，不能为了脚本运行方便而阻塞 GUI。</p>
         <p><a href="{{ '/zh/notes/extraction-trigger/' | relative_url }}">实现记录：「共用代码」和「共用一个包」，是两个决定</a></p>
         <h2 id="next">目前进展</h2>
-        <p>源码公开，处于预发布阶段，没有已发布的 tag，也没有经过验证的教学效果。目前没有承诺到里程碑的计划；接下来仍想探索，哪些关系适合用动画解释，以及怎样让讲解更容易理解、引用更容易核对。</p>
+        <p>源码公开，处于预发布阶段，没有已发布的 tag，也没有经过验证的教学效果。目前没有承诺到里程碑的计划；仍待回答的问题是：哪些关系适合用动画解释，以及怎样让讲解更容易理解、引用更容易核对。</p>
         {% include project-summary.html %}
         <h2 id="limits">使用边界</h2>
         <ul>
@@ -95,6 +96,6 @@ summary_outcome: "已有两段实际视频；引用校验不代表讲解语义�
             <li>引用校验不证明讲解语义正确。徽标给出校验结论，需要核对具体说法时仍应看<a href="{{ '/zh/notes/constant-time-warrant/' | relative_url }}">源码链接与证据</a>。</li>
             <li>较早视频的历史校验结果无法独立核验；源码公开不等于所有本地快照都已发布。</li>
         </ul>
-        <div class="project-detail__links"><a href="{{ '/zh/projects/' | relative_url }}">← 全部项目</a></div>
+        <div class="project-detail__links"><a href="{{ '/zh/projects/' | relative_url }}">← 全部作品</a></div>
     </article>
 </section>

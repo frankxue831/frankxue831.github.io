@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository
 
-Personal site for Frank Xue at https://www.frankxue.dev — a Jekyll static site deployed via GitHub Pages (custom domain via `CNAME`). No JS framework and no build step beyond Jekyll; interactivity is six focused vanilla JavaScript files in `assets/js/` (approximately 515 lines total: contents rail, install copy, shared-404 locale handling, mobile nav, scroll reveal, and theme toggle) used purely as progressive enhancement — every page works with JavaScript disabled.
+Personal site for Frank Xue at https://www.frankxue.dev — a Jekyll static site deployed via GitHub Pages (custom domain via `CNAME`). No JS framework and no build step beyond Jekyll; interactivity is seven focused vanilla JavaScript files in `assets/js/` (approximately 580 lines total: contents rail, install copy, shared-404 locale handling, mobile nav, scroll reveal, theme toggle, and Explainer video captions) used purely as progressive enhancement — every page works with JavaScript disabled.
 
 ## Commands
 
@@ -43,7 +43,7 @@ Only one real layout (`_layouts/default.html`); `_layouts/page.html` is a thin w
 
 Each featured project has two HTML files: `projects/<slug>.html` (EN) and `zh/projects/<slug>.html` (ZH). Project copy is currently inlined into these pages — there is no collection or generator. The `projects.html` index repeats short summaries that must stay in sync with the detail pages. The home page lists every project only in its Status panel (one status pill per project, validator-pinned) and features gm-crypto-rs in section (03), whose summary must also stay in sync with the case study.
 
-All four detail pages follow the same six-section case-study skeleton, enforced per page (both locales) by `scripts/validate_site.rb`'s `case_study` hash: `What it is / The problem / Constraints & key decisions / Evidence / Next / What it isn't`, with at least four **Cost:** (`代价：`) trade-off cues and per-page honest-status phrase guards. A new project page must be added to that hash, or it silently escapes the discipline.
+All four detail pages have six sections, enforced per page (both locales) by `scripts/validate_site.rb`'s `case_study` hash, with at least four **Cost:** (`代价：`) trade-off cues and per-page honest-status phrase guards. Three use the skeleton `What it is / The problem / Constraints & key decisions / Evidence / Next / What it isn't`; Explainer Engine leads with its videos: `Two examples to watch / From script to screen / What you can check / Decisions and trade-offs / Where it stands / Limits`. A new project page must be added to that hash, or it silently escapes the discipline.
 
 `_data/projects.yml` is the source of truth for project facts. It drives the home Status panel on `index.html` / `zh/index.html` and the work-list rendering on `projects.html` / `zh/projects.html` via `{% for project in site.data.projects %}`. Schema per entry: `slug`, `title`, bilingual `years.{en,zh}`, bilingual `tags.{en,zh}`, `status` + bilingual `status_label.{en,zh}`, `release`, `release_source` (`public_tag` / `public_main` / `private_main` / `local_tag`), bilingual `snapshot_label.{en,zh}` (every non-`public_tag` entry), `repo_url`, `crate_url`, `docs_url`, `detail_url`, `zh_detail_url`, `public_source` (boolean — controls whether templates may render a "Source" link; it does not imply a release). `project-summary.html` renders a **Release** row only for `public_tag`; every main-branch, private, or local working state renders a **Snapshot** row from `snapshot_label`. Prose lives in the page templates; the data file is facts only.
 
@@ -63,7 +63,7 @@ When adding interactivity, reach for the lightest tool that fits, in this order:
 
 1. **CSS only** — hover/affordance states, transitions, reveals (all gated by `prefers-reduced-motion`).
 2. **Native HTML** — `<details>` (audit drawer), the Popover API (glossary), `@view-transition` (cross-document fade). Declarative, zero JS, no new CSP hash.
-3. **A small vanilla-JS IIFE** in `assets/js/` — only when 1–2 can't do it. The six files are `contents.js` (contents rail), `copy.js` (install copy), `locale-404.js` (shared-404 locale handling), `main.js` (mobile nav), `reveal.js` (scroll reveal), and `theme.js` (theme toggle). External `.js` is governed by `script-src 'self'` and needs no hash.
+3. **A small vanilla-JS IIFE** in `assets/js/` — only when 1–2 can't do it. The seven files are `contents.js` (contents rail), `copy.js` (install copy), `locale-404.js` (shared-404 locale handling), `main.js` (mobile nav), `reveal.js` (scroll reveal), `theme.js` (theme toggle), and `video-captions.js` (Explainer captions below the video). External `.js` is governed by `script-src 'self'` and needs no hash.
 4. **A new inline script** — last resort; add its sha256 to the CSP in `head.html` (the validator pins it).
 
 External CDNs, web fonts, and analytics are out — fonts are self-hosted and `connect-src` is `'self'`.

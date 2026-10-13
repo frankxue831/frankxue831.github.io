@@ -13,10 +13,11 @@ summary_outcome: "Two actual videos; citation checks do not establish semantic c
     <p class="page-header__eyebrow">Explainer Engine</p>
     <h1 class="page-header__title">Make code and technical concepts easier to see.</h1>
     <p class="page-header__lede">I want to try using animation to make relationships in code and technical concepts easier to understand, and explore how AI can help. Explainer Engine is one attempt: it starts with an explanation script, produces video with narration and captions, and checks the script’s source citations before rendering.</p>
+    {%- assign explainer_project = site.data.projects | where: 'slug', page.project_slug | first %}
     <div class="explainer-actions">
         <a href="#examples">Watch the examples</a>
         <a href="https://github.com/frankxue831/ManimSimpleRender" rel="noopener noreferrer">View source</a>
-        <span>Public source · Pre-release</span>
+        <span>{{ explainer_project.status_label[page.lang] }}</span>
     </div>
 </section>
 
@@ -31,7 +32,7 @@ summary_outcome: "Two actual videos; citation checks do not establish semantic c
         </div>
         <div class="explainer-example" id="budget-video">
             <h3>How much evidence does a citation need? · 62 seconds</h3>
-            <p>A graph and code show how many evidence tokens a citation may carry, and why a citation with too little evidence is rejected.</p>
+            <p>A graph and code show how many evidence tokens the planner lets a citation carry, and why it drops a citation with too little evidence.</p>
             {% include explainer-video.html name='evidence-budget' id='budget-video' caption='Public c345e66 example; the script and cited source are available. English narration, English and Chinese captions.' %}
         </div>
         <p>This page can show captions below the picture to keep code clear. Fullscreen playback and browsers without JavaScript use native captions. Text embedded in the videos has not been remade and remains small on phones; use fullscreen or the script below for detail.</p>
@@ -40,7 +41,7 @@ summary_outcome: "Two actual videos; citation checks do not establish semantic c
         <div class="explainer-pair">
             <figure>
                 <figcaption>Input: an actual YAML excerpt</figcaption>
-                <pre tabindex="0" aria-label="YAML script excerpt"><code>code_callout:
+                <pre tabindex="0" role="region" aria-label="YAML script excerpt"><code>code_callout:
   display: &quot;TOKENS_PER_LINE = 2&quot;
   language: python
   cite: &quot;explainer/plan/evidence.py:56&quot;
@@ -53,16 +54,16 @@ summary_outcome: "Two actual videos; citation checks do not establish semantic c
                 <figcaption>Output: the original frame at 12 seconds · Open full size</figcaption>
             </figure>
         </div>
-        <p>The excerpt specifies the displayed code, the cited source line and the evidence to find; the same beat defines its curve as <code>2 * x</code>. The on-screen code is a teaching view marked <code>simplified</code>, not a verbatim source listing. <a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/examples/evidence-budget.story.yaml" rel="noopener noreferrer">Read the full script</a>.</p>
+        <p>The excerpt specifies the displayed code, the cited source line and the evidence to find; the same beat defines its curve as <code class="nowrap">2 * x</code>. The on-screen code is a teaching view marked <code>simplified</code>, not a verbatim source listing. <a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/examples/evidence-budget.story.yaml" rel="noopener noreferrer">Read the full script</a>.</p>
         <ol class="explainer-flow">
             <li><strong>Check citations</strong><span>The citation gate checks whether the cited lines contain the evidence declared in the script.</span></li>
-            <li><strong>Generate the scene by fixed rules</strong><span>The script compiles into {% include glossary-term.html term="manim" %} scene code; no model participates in the render stage.</span></li>
-            <li><strong>Render and narrate</strong><span>Manim renders the visuals with synthesized narration. These examples also provide English and Chinese caption tracks.</span></li>
+            <li><strong>Generate the scene by fixed rules</strong><span>The script compiles into {% include glossary-term.html term="manim" %} scene code; no language model writes that code.</span></li>
+            <li><strong>Render and narrate</strong><span>Manim renders the visuals, and a text-to-speech service synthesizes the narration. These examples also provide English and Chinese caption tracks.</span></li>
         </ol>
-        <p>The optional <code>explainer plan</code> can use AI to draft a script from a selected source range. It is a preparation step: the draft must still pass the same citation gate. The model does not generate scenes during rendering.</p>
+        <p>Separately, the optional <code>explainer plan</code> uses a language model to draft a script from a selected source range. It is a preparation step: the draft must still pass the same citation gate, which checks its citations, not its narration. The model does not generate scenes during rendering.</p>
         <h2 id="evidence">What you can check</h2>
         <p>The second video’s script and source are at public commit <code>c345e66</code>. After setting up the environment as described in the repository and checking out that commit, run:</p>
-        <pre class="explainer-command" tabindex="0" aria-label="Citation verification command"><code>explainer verify examples/evidence-budget.story.yaml</code></pre>
+        <pre class="explainer-command" tabindex="0" role="region" aria-label="Citation verification command"><code>explainer verify examples/evidence-budget.story.yaml</code></pre>
         <p><strong>This command checks citations; it does not re-render the video.</strong> It does not establish that the explanation is semantically correct or educationally effective.</p>
         <ul class="explainer-sources">
             <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/examples/evidence-budget.story.yaml" rel="noopener noreferrer">The video’s storyboard</a></li>
@@ -70,7 +71,7 @@ summary_outcome: "Two actual videos; citation checks do not establish semantic c
             <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/explainer/plan/evidence.py#L205-L211" rel="noopener noreferrer">Budget calculation: lines 205–211</a></li>
             <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/explainer/plan/evidence.py#L312-L313" rel="noopener noreferrer">Weak-citation rejection: lines 312–313</a></li>
         </ul>
-        <p>The budget allows two token slots per cited line, with a floor of five and a cap of twenty-four; citations with fewer than two tokens or no strong token are dropped. This site states that the clip was rendered from <code>c345e66</code>; the picture alone does not establish that provenance. The script cites its own repository without pinning a commit, so its badge reads <code>verified</code> without a commit.</p>
+        <p>The planner’s budget allows two token slots per cited line, with a floor of five and a cap of twenty-four, and the planner drops citations with fewer than two tokens or no strong token; the citation gate itself only checks that the declared evidence is present. This site states that the clip was rendered from <code>c345e66</code>; the picture alone does not establish that provenance. The script cites its own repository without pinning a commit, so its badge reads <code>verified</code> without a commit.</p>
         <details class="explainer-history">
             <summary>Earlier example and local snapshot limits</summary>
         <p>The first Harness-Field video is actual engine output from the earlier local <code>diagram-canvas</code> snapshot. Its five forces come from a research wiki. The <code>simplified</code> label and <code>verified @ commit</code> badge identify the teaching view and the source line and commit cited for “memory force.” The citation gate passed before that render, but the historical result lacks public run evidence and is not independently checkable. The video shows the artifact and those markers; it cannot replace that run evidence.</p>

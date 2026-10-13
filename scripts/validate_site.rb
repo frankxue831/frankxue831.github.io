@@ -939,7 +939,7 @@ case_study = {
     must_include: ["simplified", "gate's verdict", "explainer-plan", "explainer plan",
       "This command checks citations; it does not re-render the video.",
       "It does not establish that the explanation is semantically correct or educationally effective.",
-      "no model participates in the render stage", "no published tag",
+      "no language model writes that code", "no published tag",
       "historical result lacks public run evidence and is not independently checkable",
       "that tag is not published", "without pinning a commit",
       "Text embedded in the videos has not been remade"]
@@ -952,7 +952,7 @@ case_study = {
     must_include: ["简化视图", "校验门的结论", "explainer-plan", "explainer plan",
       "这条命令只检查引用，不会重新渲染视频。",
       "它不证明讲解语义正确，也不证明教学效果。",
-      "渲染阶段没有模型参与", "没有已发布的 tag",
+      "这段代码不由语言模型编写", "没有已发布的 tag",
       "历史校验结果缺少公开运行证据，无法由外部独立核验",
       "这个 tag 没有公开发布", "没有固定 commit",
       "视频内嵌文字没有重做"]
@@ -1010,6 +1010,29 @@ case_study.each do |relative, spec|
   # gm-crypto-only: the now-public source link must be present.
   if spec[:source_link]
     record(failures, "#{relative}: missing public source link") unless html.include?(spec[:source_link])
+  end
+end
+
+# The colophon states how much JavaScript the site ships (EN and ZH), and the
+# count has drifted when a script was added. Tie it to assets/js: the file
+# count exactly, the "approximately N lines" figures within 5%.
+js_files = Pathname.glob(SITE.join("assets/js/*.js").to_s)
+js_lines = js_files.sum { |file| File.foreach(file).count }
+js_words = %w[zero one two three four five six seven eight nine ten eleven twelve]
+{
+  "colophon/index.html" => ["across #{js_words[js_files.size]} focused files", "lines across #{js_files.size} files"],
+  "zh/colophon/index.html" => ["分散在 #{js_files.size} 个职责集中的文件里", "#{js_files.size} 个文件、约"]
+}.each do |relative, phrases|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  text = html.gsub(/\s+/, " ")
+  phrases.each do |phrase|
+    record(failures, "#{relative}: JavaScript file count must read #{phrase.inspect} (assets/js has #{js_files.size} files)") unless text.include?(phrase)
+  end
+  stated = text.scan(/(?:approximately|~|约) ?(\d+) ?(?:lines|行)/).flatten.map(&:to_i)
+  record(failures, "#{relative}: no JavaScript line count found") if stated.empty?
+  stated.each do |count|
+    record(failures, "#{relative}: says ~#{count} lines of JavaScript; assets/js has #{js_lines}") if (count - js_lines).abs > js_lines * 0.05
   end
 end
 
