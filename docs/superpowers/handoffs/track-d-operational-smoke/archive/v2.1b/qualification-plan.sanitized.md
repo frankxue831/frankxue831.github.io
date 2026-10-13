@@ -865,7 +865,7 @@ generated from runner arrays.
 The normative `deny_rules` value is this complete ordered literal array:
 
 ```text
-["MCPTool(*)","Bash","WebFetch","WebSearch","Read(~)","Read(~/**)","Read(~*)","Read(~*/**)","Read(/[Uu][Ss][Ee][Rr][Ss]/[Ff][Ee][Nn][Gg][Xx][Ii][Aa][Nn][Gg]/.[Gg][Rr][Oo][Kk])","Read(/[Uu][Ss][Ee][Rr][Ss]/[Ff][Ee][Nn][Gg][Xx][Ii][Aa][Nn][Gg]/.[Gg][Rr][Oo][Kk]/**)","Read(/[Uu][Ss][Ee][Rr][Ss]/[Ff][Ee][Nn][Gg][Xx][Ii][Aa][Nn][Gg]/[Ll][Ii][Bb][Rr][Aa][Rr][Yy])","Read(/[Uu][Ss][Ee][Rr][Ss]/[Ff][Ee][Nn][Gg][Xx][Ii][Aa][Nn][Gg]/[Ll][Ii][Bb][Rr][Aa][Rr][Yy]/**)","Read(/[Pp][Rr][Ii][Vv][Aa][Tt][Ee])","Read(/[Pp][Rr][Ii][Vv][Aa][Tt][Ee]/**)","Read(/[Tt][Mm][Pp])","Read(/[Tt][Mm][Pp]/**)","Read(/[Vv][Aa][Rr])","Read(/[Vv][Aa][Rr]/**)","Read(/[Uu][Ss][Rr]/**)","Read(/[Bb][Ii][Nn]/**)","Read(/[Ss][Bb][Ii][Nn]/**)","Read(/[Ee][Tt][Cc]/**)","Read(/[Dd][Ee][Vv]/**)","Read(/[Ss][Yy][Ss][Tt][Ee][Mm]/**)","Read(/[Ll][Ii][Bb][Rr][Aa][Rr][Yy]/**)","Read(/[Vv][Oo][Ll][Uu][Mm][Ee][Ss]/**)","Read(/[Hh][Oo][Mm][Ee]/**)","Read(/.[Vv][Oo][Ll])","Read(/.[Vv][Oo][Ll]/**)"]
+["MCPTool(*)","Bash","WebFetch","WebSearch","Read(~)","Read(~/**)","Read(~*)","Read(~*/**)","Read(/[Uu][Ss][Ee][Rr][Ss]/<keeper-user-pattern>/.[Gg][Rr][Oo][Kk])","Read(/[Uu][Ss][Ee][Rr][Ss]/<keeper-user-pattern>/.[Gg][Rr][Oo][Kk]/**)","Read(/[Uu][Ss][Ee][Rr][Ss]/<keeper-user-pattern>/[Ll][Ii][Bb][Rr][Aa][Rr][Yy])","Read(/[Uu][Ss][Ee][Rr][Ss]/<keeper-user-pattern>/[Ll][Ii][Bb][Rr][Aa][Rr][Yy]/**)","Read(/[Pp][Rr][Ii][Vv][Aa][Tt][Ee])","Read(/[Pp][Rr][Ii][Vv][Aa][Tt][Ee]/**)","Read(/[Tt][Mm][Pp])","Read(/[Tt][Mm][Pp]/**)","Read(/[Vv][Aa][Rr])","Read(/[Vv][Aa][Rr]/**)","Read(/[Uu][Ss][Rr]/**)","Read(/[Bb][Ii][Nn]/**)","Read(/[Ss][Bb][Ii][Nn]/**)","Read(/[Ee][Tt][Cc]/**)","Read(/[Dd][Ee][Vv]/**)","Read(/[Ss][Yy][Ss][Tt][Ee][Mm]/**)","Read(/[Ll][Ii][Bb][Rr][Aa][Rr][Yy]/**)","Read(/[Vv][Oo][Ll][Uu][Mm][Ee][Ss]/**)","Read(/[Hh][Oo][Mm][Ee]/**)","Read(/.[Vv][Oo][Ll])","Read(/.[Vv][Oo][Ll]/**)"]
 ```
 
 It also lists the exact empty route fields and the dynamic field names
@@ -1059,10 +1059,10 @@ typeset -ar TRACK_D_CONTAINMENT_FLAGS=(
   --deny 'Read(~/**)'
   --deny 'Read(~*)'
   --deny 'Read(~*/**)'
-  --deny 'Read(/[Uu][Ss][Ee][Rr][Ss]/[Ff][Ee][Nn][Gg][Xx][Ii][Aa][Nn][Gg]/.[Gg][Rr][Oo][Kk])'
-  --deny 'Read(/[Uu][Ss][Ee][Rr][Ss]/[Ff][Ee][Nn][Gg][Xx][Ii][Aa][Nn][Gg]/.[Gg][Rr][Oo][Kk]/**)'
-  --deny 'Read(/[Uu][Ss][Ee][Rr][Ss]/[Ff][Ee][Nn][Gg][Xx][Ii][Aa][Nn][Gg]/[Ll][Ii][Bb][Rr][Aa][Rr][Yy])'
-  --deny 'Read(/[Uu][Ss][Ee][Rr][Ss]/[Ff][Ee][Nn][Gg][Xx][Ii][Aa][Nn][Gg]/[Ll][Ii][Bb][Rr][Aa][Rr][Yy]/**)'
+  --deny 'Read(/[Uu][Ss][Ee][Rr][Ss]/<keeper-user-pattern>/.[Gg][Rr][Oo][Kk])'
+  --deny 'Read(/[Uu][Ss][Ee][Rr][Ss]/<keeper-user-pattern>/.[Gg][Rr][Oo][Kk]/**)'
+  --deny 'Read(/[Uu][Ss][Ee][Rr][Ss]/<keeper-user-pattern>/[Ll][Ii][Bb][Rr][Aa][Rr][Yy])'
+  --deny 'Read(/[Uu][Ss][Ee][Rr][Ss]/<keeper-user-pattern>/[Ll][Ii][Bb][Rr][Aa][Rr][Yy]/**)'
   --deny 'Read(/[Pp][Rr][Ii][Vv][Aa][Tt][Ee])'
   --deny 'Read(/[Pp][Rr][Ii][Vv][Aa][Tt][Ee]/**)'
   --deny 'Read(/[Tt][Mm][Pp])'
@@ -1598,9 +1598,9 @@ zero model budget, and `precommit_sha256`. Use these exact pages and singleton
 field names:
 
 ```text
-design page id:    3b7a01fc-cd2b-81a9-a5f5-e4b040d5ca80
-readiness page id: 3b7a01fc-cd2b-81cd-abd5-db0f6a381ad5
-hub page id:       3b0a01fc-cd2b-8154-bd78-f788981dfd7a
+design page id:    <private-page-id>
+readiness page id: <private-page-id>
+hub page id:       <private-page-id>
 design_sha256
 plan_sha256
 invoker_sha256

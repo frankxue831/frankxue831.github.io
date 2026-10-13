@@ -24,7 +24,9 @@ from it.
 ## Sanitization
 
 The archived design, plan, and harness are sanitized derivatives. Prominent
-historical-only warnings were added for readers following direct file links. Personal
+historical-only warnings were added for readers following direct file links.
+Sanitization also covers bare private page IDs and usernames encoded in
+case-insensitive character classes. Personal
 absolute paths, one-use temporary paths, Keeper usernames, and private Notion
 URLs were replaced with explicit angle-bracket placeholders. Host-specific
 helper identities and private configuration-canary fingerprints were redacted
