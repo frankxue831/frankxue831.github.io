@@ -2662,3 +2662,9 @@ details.drawer .version-grid {
         border-color: color-mix(in srgb, var(--rule) 75%, var(--bg));
     }
 }
+.shot figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    text-align: left;
+}
