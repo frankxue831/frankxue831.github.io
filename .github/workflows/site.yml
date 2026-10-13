@@ -32,3 +32,6 @@ jobs:
 
       - name: Validate generated site
         run: ruby scripts/validate_site.rb
+
+      - name: Check image budget (assets/img/<project>/**)
+        run: ruby scripts/check_images.rb

@@ -2638,3 +2638,27 @@ details.drawer .version-grid {
 @media (max-width: 759px) {
     .explainer-header .page-header__title { font-size: var(--text-4xl); line-height: 1.2; }
 }
+
+/* =========================================================
+   Screenshots — _includes/picture.html (<figure class="shot">).
+   Framed like the cards (.install/.dudect: 1px --rule, 4px radius).
+   width/height attrs + height:auto reserve the box: no layout jump.
+   ========================================================= */
+.shot {
+    margin: var(--space-8) 0;
+}
+.shot img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+}
+[data-theme="dark"] .shot img {
+    border-color: color-mix(in srgb, var(--rule) 75%, var(--bg));
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .shot img {
+        border-color: color-mix(in srgb, var(--rule) 75%, var(--bg));
+    }
+}
