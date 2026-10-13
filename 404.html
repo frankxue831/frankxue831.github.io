@@ -5,6 +5,7 @@ permalink: /404.html
 description: The page you're looking for doesn't exist.
 lang: en
 sitemap: false
+robots: noindex, follow
 nav_aria: "Primary / 主导航"
 bilingual_chrome: true
 ---
@@ -36,10 +37,10 @@ bilingual_chrome: true
          data-nav-items-zh="{{ nav_zh | strip_newlines | escape }}"
          data-home-en="{{ '/' | relative_url }}"
          data-home-zh="{{ '/zh/' | relative_url }}"
-         data-skip-en="Skip to content"
-         data-skip-zh="跳到正文"
-         data-menu-en="Menu"
-         data-menu-zh="菜单"
+         data-skip-en="{{ en.nav.skip | escape }}"
+         data-skip-zh="{{ zh.nav.skip | escape }}"
+         data-menu-en="{{ en.nav.menu | escape }}"
+         data-menu-zh="{{ zh.nav.menu | escape }}"
          data-title-en="{{ page.title | append: ' | ' | append: site.title | escape }}"
          data-title-zh="找不到这个页面 | {{ site.title | escape }}">
         <p class="error-page__code"><em>404</em></p>

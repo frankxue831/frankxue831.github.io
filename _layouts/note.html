@@ -9,7 +9,11 @@ layout: default
     {%- comment -%} Section numerals are monospace chrome, not prose: halfwidth
         parentheses in both locales, matching every static ZH page header. {%- endcomment -%}
     <p class="page-header__eyebrow">(04)  {{ t.nav.writing }}</p>
-    <h1 class="page-header__title">{{ page.title }}</h1>
+    {%- comment -%} #100 spec B: ZH wrapping (keep-all / strict / balance) comes from the
+        body.lang-zh h1 rule in style.css. A note may add `title_breaks`: the same
+        title with <wbr> (and, rarely, span.nowrap) hints, trusted front matter, used only here when native wrapping still strands
+        a character or opens a line with punctuation. {%- endcomment -%}
+    <h1 class="page-header__title">{% if page.title_breaks and page.title_breaks != '' %}{{ page.title_breaks }}{% else %}{{ page.title }}{% endif %}</h1>
     <p class="page-header__lede">
         <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>
     </p>

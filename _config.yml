@@ -2,6 +2,9 @@ title: Frank Xue
 tagline: Software engineer.
 author:
   name: Frank Xue
+  # Full name, stated once on About as "Fengxiang (Frank) Xue"; the Person
+  # JSON-LD carries it as alternateName. "Frank Xue" stays the site name.
+  alternate_name: Fengxiang Xue
 # Email intentionally omitted from public site for now.
 # When re-enabling, restore `email:` and `author.email:` below;
 # the footer link, hero meta, contact form action, and any
@@ -39,7 +42,8 @@ feed:
       path: feed.xml
 
 github_username: frankxue831
-# linkedin_username:
+# LinkedIn: added 2026-10-12 at the Owner's request as the non-code contact route.
+linkedin_username: fengxiang-xue-561879141
 # twitter_username:
 
 defaults:
@@ -61,7 +65,7 @@ defaults:
         path: /assets/img/social-card.png
         width: 1200
         height: 630
-        alt: "Frank Xue — software engineer. Building auditable tools for code, systems, and agents."
+        alt: "Frank Xue — software engineer. Building useful software with AI."
   # ZH page tree: override og:locale to zh_CN, and swap in the Chinese share
   # card so a shared /zh/ URL doesn't preview as an English site. More-specific
   # path scope wins over the global "" scope above. NOTE: this matches *source*
@@ -76,7 +80,7 @@ defaults:
         path: /assets/img/social-card.zh.png
         width: 1200
         height: 630
-        alt: "Frank Xue——软件工程师。为代码、系统和 Agent，写可审计、状态清晰的工具。"
+        alt: "Frank Xue——软件工程师。借助 AI，做有用的软件。"
   # Notes are long-form documents; the more-specific scope sets their layout
   # while inheriting the share image above.
   - scope:

@@ -1,8 +1,9 @@
 name: Release drift
 
 # Does any public_tag project's _data/projects.yml release trail the version
-# actually published on crates.io? It reaches the registry, so it lives outside
-# the hermetic validate_site.rb.
+# actually published on crates.io, or the repo's latest GitHub release/tag? And
+# do the case-study demo pins (`gmcrypto-core = "=X.Y.Z"`) match it? It reaches
+# the network, so it lives outside the hermetic validate_site.rb.
 #
 # Two postures. On pull_request / push it is warn-only: an unrelated PR must
 # never go red because the registry moved ahead, so drift surfaces only as a
@@ -37,8 +38,10 @@ jobs:
         with:
           ruby-version: "3.3" # script is pure stdlib — no bundler needed
 
-      - name: Check release drift vs crates.io
+      - name: Check release drift vs crates.io + GitHub releases
         env:
+          # Read-only, contents: read; only lifts the GitHub API rate limit.
+          GITHUB_TOKEN: ${{ github.token }}
           # Strict only where a failure is a notification rather than a blocker.
           DRIFT_STRICT: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && '1' || '' }}
         run: ruby scripts/check_release_drift.rb

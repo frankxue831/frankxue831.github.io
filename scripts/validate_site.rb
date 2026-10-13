@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cgi"
+require "date"
 require "json"
 require "pathname"
 require "set"
@@ -18,7 +19,9 @@ ROOT = Pathname.new(__dir__).parent
 SITE = ROOT.join("_site")
 HOST = "www.frankxue.dev"
 BASE_URL = "https://#{HOST}"
+EXTERNAL_SUBSITE_PREFIX = "/gm-crypto-web/"
 PROJECTS = YAML.load_file(ROOT.join("_data/projects.yml"))
+I18N = YAML.load_file(ROOT.join("_data/i18n.yml"))
 
 failures = []
 
@@ -61,6 +64,9 @@ def generated_target_for(href)
 
   path = uri.path
   path = "/" if path.empty?
+  # /gm-crypto-web/ is served by the separate frankxue831/gm-crypto-web Pages repo,
+  # so it is not in this site's _site. Exact prefix only; QA checks it live by hand.
+  return nil if path.start_with?(EXTERNAL_SUBSITE_PREFIX)
 
   relative = if path.end_with?("/")
     path == "/" ? "index.html" : "#{path.delete_prefix("/")}index.html"
@@ -84,6 +90,21 @@ def json_ld_documents(html, failures, source)
     record(failures, "Invalid JSON-LD in #{source}: #{error.message}")
     nil
   end.compact
+end
+
+def json_ld_graph(html, failures, source)
+  json_ld_documents(html, failures, source).flat_map { |document| Array(document["@graph"]) }
+end
+
+def graph_nodes_of_type(graph, type)
+  graph.select { |node| node["@type"] == type }
+end
+
+def png_dimensions(path)
+  header = path.binread(24)
+  return nil unless header && header.byteslice(0, 8) == "\x89PNG\r\n\x1a\n".b
+
+  [header.byteslice(16, 4).unpack1("N"), header.byteslice(20, 4).unpack1("N")]
 end
 
 unless SITE.directory?
@@ -228,6 +249,63 @@ end
   record(failures, "notes: ZH note '#{slug}/' has no EN counterpart (notes/#{slug}/)")
 end
 
+note_specs = {}
+Pathname.glob(ROOT.join("_notes/*.md").to_s).each do |path|
+  front_matter = path.read[/\A---\s*\n(.*?)\n---\s*\n/m, 1]
+  next unless front_matter
+
+  data = YAML.safe_load(front_matter, permitted_classes: [Date, Time], aliases: true)
+  permalink = data["permalink"].to_s
+  next if permalink.empty?
+
+  relative = "#{permalink.delete_prefix('/')}index.html"
+  note_specs[relative] = data
+end
+
+note_pages.each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  graph = json_ld_graph(html, failures, relative)
+  articles = graph_nodes_of_type(graph, "BlogPosting")
+  spec = note_specs[relative]
+  if spec.nil?
+    record(failures, "#{relative}: missing source note front matter")
+    next
+  end
+
+  unless articles.length == 1
+    record(failures, "#{relative}: expected exactly one BlogPosting node, found #{articles.length}")
+    next
+  end
+
+  article = articles.first
+  page_url = expected_url_for(relative)
+  lang = relative.start_with?("zh/") ? "zh-CN" : "en"
+  expected_date = spec["date"].is_a?(Date) ? spec["date"] : Date.parse(spec["date"].to_s)
+  published = article["datePublished"].to_s
+  record(failures, "#{relative}: BlogPosting @id must end #article") unless article["@id"].to_s == "#{page_url}#article"
+  record(failures, "#{relative}: BlogPosting url mismatch") unless article["url"] == page_url
+  record(failures, "#{relative}: BlogPosting headline mismatch") unless article["headline"] == spec["title"]
+  record(failures, "#{relative}: BlogPosting description missing") if article["description"].to_s.empty?
+  unless published.match?(/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})\z/) && Date.parse(published) == expected_date
+    record(failures, "#{relative}: BlogPosting datePublished #{published.inspect} must be XML Schema date for #{expected_date}")
+  end
+  record(failures, "#{relative}: BlogPosting inLanguage must be #{lang}") unless article["inLanguage"] == lang
+  record(failures, "#{relative}: BlogPosting author must reference #person") unless article.dig("author", "@id").to_s.end_with?("#person")
+  record(failures, "#{relative}: BlogPosting isPartOf must reference #website") unless article.dig("isPartOf", "@id").to_s.end_with?("#website")
+  record(failures, "#{relative}: BlogPosting mainEntityOfPage must reference #webpage") unless article.dig("mainEntityOfPage", "@id").to_s.end_with?("#webpage")
+end
+
+blogposting_negative_pages = %w[
+  notes/index.html zh/notes/index.html
+  projects/gm-crypto-rs/releases/index.html zh/projects/gm-crypto-rs/releases/index.html
+  404.html
+] + project_pages
+blogposting_negative_pages.each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  articles = graph_nodes_of_type(json_ld_graph(html, failures, relative), "BlogPosting")
+  record(failures, "#{relative}: non-note route must not emit BlogPosting") unless articles.empty?
+end
+
 public_release_labels = PROJECTS.select { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }
 private_release_labels = PROJECTS.reject { |project| project["release_source"] == "public_tag" }.map { |project| project["release"] }.compact
 home_pages = %w[index.html zh/index.html]
@@ -250,15 +328,36 @@ home_pages = %w[index.html zh/index.html]
   expected_card = relative.start_with?("zh/") ? "social-card.zh.png" : "social-card.png"
   record(failures, "#{relative}: missing PNG Open Graph image (expected #{expected_card})") unless html.match?(%r{<meta property="og:image" content="#{Regexp.escape(BASE_URL)}/assets/img/#{Regexp.escape(expected_card)}"})
   record(failures, "#{relative}: missing og:image:alt") unless html.match?(%r{<meta property="og:image:alt" content="[^"]+"})
+  # 2026-10-12 (PR 2): the share cards carry the home headline, so their alt
+  # text must too. A headline change has to regenerate the cards
+  # (scripts/build_social_card_{en,zh}.py) and update the alt in _config.yml and
+  # the ZH notes' front matter, or this fails.
+  expected_alt = relative.start_with?("zh/") ? "借助 AI，做有用的软件。" : "Building useful software with AI."
+  card_alt = html[%r{<meta property="og:image:alt" content="([^"]+)"}, 1].to_s
+  record(failures, "#{relative}: og:image:alt does not carry the current headline (#{expected_alt})") unless card_alt.include?(expected_alt)
   record(failures, "#{relative}: og:image must not be an SVG (link previews won't render it)") if html.match?(%r{<meta property="og:image" content="[^"]+\.svg"})
   record(failures, "#{relative}: missing apple-touch-icon") unless html.match?(%r{<link rel="apple-touch-icon"[^>]*href="/assets/img/apple-touch-icon\.png"})
   record(failures, "#{relative}: missing web manifest link") unless html.include?(%(<link rel="manifest" href="/site.webmanifest">))
 
-  docs = json_ld_documents(html, failures, relative)
-  graph_types = docs.flat_map { |doc| Array(doc["@graph"]).map { |node| node["@type"] } }
-  record(failures, "#{relative}: missing WebPage JSON-LD") unless graph_types.include?("WebPage")
-  record(failures, "#{relative}: missing Person JSON-LD") unless graph_types.include?("Person")
-  record(failures, "#{relative}: missing WebSite JSON-LD") unless graph_types.include?("WebSite")
+  graph = json_ld_graph(html, failures, relative)
+  webpage_nodes = graph_nodes_of_type(graph, "WebPage")
+  website_nodes = graph_nodes_of_type(graph, "WebSite")
+  person_nodes = graph_nodes_of_type(graph, "Person")
+  record(failures, "#{relative}: expected exactly one WebPage JSON-LD node, found #{webpage_nodes.length}") unless webpage_nodes.length == 1
+  record(failures, "#{relative}: expected exactly one Person JSON-LD node, found #{person_nodes.length}") unless person_nodes.length == 1
+  record(failures, "#{relative}: expected exactly one WebSite JSON-LD node, found #{website_nodes.length}") unless website_nodes.length == 1
+
+  lang = relative.start_with?("zh/") ? "zh" : "en"
+  expected_site_description = I18N.dig(lang, "meta", "site_description").to_s
+  if website_nodes.length == 1 && website_nodes.first["description"] != expected_site_description
+    record(failures, "#{relative}: WebSite description must equal localized #{lang}.meta.site_description")
+  end
+  # 2026-10-12 (PR 2): About states "Fengxiang (Frank) Xue"; the Person node
+  # carries the full name as alternateName while "Frank Xue" stays the name.
+  if person_nodes.length == 1
+    record(failures, "#{relative}: Person name must stay \"Frank Xue\"") unless person_nodes.first["name"] == "Frank Xue"
+    record(failures, "#{relative}: Person alternateName must be \"Fengxiang Xue\"") unless person_nodes.first["alternateName"] == "Fengxiang Xue"
+  end
 end
 
 core_pages.each do |relative, config|
@@ -270,11 +369,51 @@ core_pages.each do |relative, config|
   end
 end
 
+(core_pages.keys + project_pages + note_pages).each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+
+  alternate_locales = html.scan(%r{<meta property="og:locale:alternate" content="([^"]+)">}).flatten
+  expected_alternate = relative.start_with?("zh/") ? "en_US" : "zh_CN"
+  unless alternate_locales == [expected_alternate]
+    record(failures, "#{relative}: expected one og:locale:alternate #{expected_alternate}, got #{alternate_locales.inspect}")
+  end
+
+  descriptions = html.scan(%r{<meta name="description" content="([^"]*)"}).flatten
+  twitter_descriptions = html.scan(%r{<meta name="twitter:description" content="([^"]*)"}).flatten
+  unless twitter_descriptions.length == 1 && descriptions.length == 1 &&
+         CGI.unescapeHTML(twitter_descriptions.first) == CGI.unescapeHTML(descriptions.first)
+    record(failures, "#{relative}: twitter:description must occur once and equal the page description")
+  end
+end
+
+not_found_html = read_file(SITE.join("404.html"), failures)
+unless not_found_html.empty?
+  robots = not_found_html.scan(%r{<meta name="robots" content="([^"]+)">}).flatten
+  record(failures, "404.html: expected exactly one noindex, follow robots meta") unless robots == ["noindex, follow"]
+  record(failures, "404.html: must not emit hreflang alternates") if not_found_html.include?(%(<link rel="alternate" hreflang=))
+  record(failures, "404.html: must not emit og:locale:alternate") if not_found_html.include?(%(property="og:locale:alternate"))
+end
+
 project_pages.each do |relative|
   html = read_file(SITE.join(relative), failures)
-  docs = json_ld_documents(html, failures, relative)
-  graph_types = docs.flat_map { |doc| Array(doc["@graph"]).map { |node| node["@type"] } }
-  record(failures, "#{relative}: missing SoftwareSourceCode JSON-LD") unless graph_types.include?("SoftwareSourceCode")
+  graph = json_ld_graph(html, failures, relative)
+  software_nodes = graph_nodes_of_type(graph, "SoftwareSourceCode")
+  slug = Pathname.new(relative).dirname.basename.to_s
+  project = PROJECTS.find { |entry| entry["slug"] == slug }
+  if project.nil?
+    record(failures, "#{relative}: no matching project data row for #{slug}")
+  elsif project["public_source"]
+    record(failures, "#{relative}: expected exactly one public SoftwareSourceCode node, found #{software_nodes.length}") unless software_nodes.length == 1
+    if software_nodes.length == 1 && software_nodes.first["codeRepository"].to_s.empty?
+      record(failures, "#{relative}: public SoftwareSourceCode missing codeRepository")
+    end
+  else
+    record(failures, "#{relative}: private project must not emit SoftwareSourceCode") unless software_nodes.empty?
+    if graph.any? { |node| node.key?("codeRepository") }
+      record(failures, "#{relative}: private project graph exposes codeRepository")
+    end
+  end
   record(failures, "#{relative}: missing project summary") unless html.include?(%(class="project-summary"))
 end
 
@@ -310,6 +449,18 @@ home_pages.each do |relative|
   end
   private_release_labels.each do |release|
     record(failures, "#{relative}: exposes private or local release label #{release}") if html.include?(release)
+  end
+
+  # 2026-10-12 (PR 2): with the repeated list gone from section (03), the Status
+  # panel is the home page's only per-project public/private/release record.
+  # Every project keeps its own status pill there, in data order (tool rows,
+  # which carry the --tool modifier, are not projects and are skipped).
+  lang = relative.start_with?("zh/") ? "zh" : "en"
+  panel = html[%r{<aside class="hero-proof".*?</aside>}m].to_s
+  pills = panel.scan(%r{<li class="hero-proof__item">.*?<span class="status-pill" data-status="([^"]+)">([^<]+)</span>}m)
+  expected_pills = PROJECTS.map { |project| [project["status"].to_s, project.dig("status_label", lang).to_s] }
+  unless pills == expected_pills
+    record(failures, "#{relative}: Status panel must show one status pill per project #{expected_pills.inspect}, got #{pills.inspect}")
   end
 end
 
@@ -363,25 +514,84 @@ Pathname.glob(SITE.join("zh/**/*.html").to_s).each do |path|
   end
 end
 
-# --- Interactive motion (decrypt + scroll reveal) regression checks ---
-%w[assets/js/reveal.js assets/js/decrypt.js].each do |rel|
-  record(failures, "Missing motion script: #{rel}") unless SITE.join(rel).exist?
+# --- Route-aware progressive-enhancement scripts ---
+global_scripts = %w[main.js theme.js reveal.js].freeze
+home_only_scripts = %w[].freeze
+case_study_scripts = %w[contents.js].freeze
+gm_only_scripts = %w[copy.js].freeze
+explainer_only_scripts = %w[video-captions.js].freeze
+known_scripts = global_scripts + home_only_scripts + case_study_scripts + gm_only_scripts + explainer_only_scripts
+
+known_scripts.each do |script|
+  record(failures, "Missing script asset: assets/js/#{script}") unless SITE.join("assets/js", script).exist?
 end
 
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
   source = path.relative_path_from(SITE).to_s
-  record(failures, "#{source}: missing reveal.js include") unless html.include?("/assets/js/reveal.js")
-  record(failures, "#{source}: missing decrypt.js include") unless html.include?("/assets/js/decrypt.js")
+  actual = html.scan(%r{<script\s+src="/assets/js/([^"]+)"[^>]*></script>}).flatten
+  expected = global_scripts.dup
+  expected.concat(home_only_scripts) if home_pages.include?(source)
+  expected.concat(case_study_scripts) if project_pages.include?(source)
+  expected.concat(gm_only_scripts) if %w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].include?(source)
+
+  expected.concat(explainer_only_scripts) if %w[projects/explainer-engine/index.html zh/projects/explainer-engine/index.html].include?(source)
+
+  known_scripts.each do |script|
+    count = actual.count(script)
+    wanted = expected.include?(script)
+    if wanted && count != 1
+      record(failures, "#{source}: expected exactly one #{script} include, found #{count}")
+    elsif !wanted && count != 0
+      record(failures, "#{source}: optional #{script} must not load on this route")
+    end
+  end
   record(failures, "#{source}: missing inline motion gate") unless html.include?("classList.add('motion')")
 end
 
-# Home heroes must keep their real, server-rendered title (decrypt is JS-only).
-{ "index.html" => "auditable tools", "zh/index.html" => "可审计" }.each do |relative, needle|
+# Home heroes must keep their real, server-rendered title. The decrypt effect
+# was removed for #100 (spec A): no script may rewrite the headline.
+%w[index.html zh/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  record(failures, "#{relative}: hero headline must not load a scramble script") if html.include?("decrypt.js")
+end
+record(failures, "assets/js/decrypt.js must stay removed (#100 spec A)") if ROOT.join("assets/js/decrypt.js").exist?
+# 2026-10-12 (PR 2): the headline is "Building useful software with AI." The
+# footer tagline now carries the same words, so match inside the <h1> only — a
+# page-wide match would pass even if the headline lost its text.
+{ "index.html" => "useful software", "zh/index.html" => "有用的软件" }.each do |relative, needle|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
-  record(failures, "#{relative}: hero title lost real text (#{needle.inspect})") unless html.include?(needle)
+  hero_title = html[%r{<h1 class="hero__title">(.*?)</h1>}m, 1].to_s
+  record(failures, "#{relative}: hero title lost real text (#{needle.inspect})") unless hero_title.include?(needle)
   record(failures, "#{relative}: hero__title missing") unless html.include?(%(class="hero__title"))
+end
+# 2026-10-12 (PR 2): the ZH accent line is pinned to one line (.nowrap), so it
+# is as many em wide as it has glyphs. style.css caps the ZH title at
+# 100cqi / 7.1 inside a size-container copy column so the line stays in its
+# column from 760px up; a longer phrase needs a new divisor.
+zh_hero = read_file(SITE.join("zh/index.html"), failures)
+zh_accent = zh_hero[%r{<h1 class="hero__title">.*?<em class="nowrap">(.*?)</em>.*?</h1>}m, 1].to_s
+if zh_accent.empty?
+  record(failures, "zh/index.html: hero accent line must stay one .nowrap <em> (the style.css width cap assumes it)")
+elsif zh_accent.length > 7
+  record(failures, "zh/index.html: hero accent line is #{zh_accent.length} glyphs; style.css caps the ZH title for 7 (100cqi / 7.1) — change both together")
+end
+hero_css = read_file(SITE.join("assets/css/style.css"), failures).gsub(/\s+/, " ")
+zh_cap_clamp = hero_css[%r{body\.lang-zh \.hero__title \{ font-size: min\((clamp\([^;]*?\)), 100cqi / 7\.1\); \}}, 1]
+unless hero_css.include?("body.lang-zh .hero__copy { container-type: inline-size; }") && zh_cap_clamp
+  record(failures, "style.css: the ZH hero title must keep its column cap (size-container .hero__copy, font-size min(…, 100cqi / 7.1))")
+end
+# The cap repeats the base clamp (a var() would turn into the inherited size in
+# engines without cqi), so the two must stay equal.
+base_title_clamp = hero_css.scan(/\} \.hero__title \{([^}]*)\}/).flatten.map { |body| body[/font-size: (clamp\([^;]*\));/, 1] }.compact.first
+if zh_cap_clamp && zh_cap_clamp != base_title_clamp
+  record(failures, "style.css: the ZH hero cap's clamp #{zh_cap_clamp.inspect} must equal the base .hero__title clamp #{base_title_clamp.inspect}")
+end
+# The ZH About Interests value nests .nowrap spans, so the facts label/value
+# selectors must stay scoped to the row's direct children.
+unless hero_css.include?(".facts dt, .facts li > span:first-child {") && hero_css.include?(".facts dd, .facts li > span:last-child {")
+  record(failures, "style.css: .facts label/value selectors must target direct children (li > span), or nested value spans take the label style")
 end
 
 # The locale-aware <title> splice in _includes/head.html rebuilds jekyll-seo-tag's
@@ -390,8 +600,8 @@ end
 # github-pages bump changes seo-tag's output shape, or the splice regresses,
 # this fails loudly instead of shipping an English tagline in the Chinese tab.
 {
-  "index.html" => "Frank Xue | Software engineer.",
-  "zh/index.html" => "Frank Xue | 软件工程师。",
+  "index.html" => "Frank Xue | Software engineer",
+  "zh/index.html" => "Frank Xue | 软件工程师",
   "about/index.html" => "About | Frank Xue",
   "zh/about/index.html" => "关于 | Frank Xue"
 }.each do |relative, expected_title|
@@ -446,6 +656,8 @@ end
   assets/img/apple-touch-icon.png
   assets/img/icon-192.png
   assets/img/icon-512.png
+  assets/img/icon-maskable-192.png
+  assets/img/icon-maskable-512.png
   assets/img/favicon-32.png
   assets/img/favicon-16.png
   site.webmanifest
@@ -457,17 +669,27 @@ end
   card = SITE.join("assets/img", card_name)
   next unless card.exist?
 
-  # PNG IHDR: width/height are big-endian uint32 at byte offsets 16 and 20.
-  header = card.binread(24)
-  if header && header.byteslice(0, 8) == "\x89PNG\r\n\x1a\n".b
-    width = header.byteslice(16, 4).unpack1("N")
-    height = header.byteslice(20, 4).unpack1("N")
+  dimensions = png_dimensions(card)
+  if dimensions
+    width, height = dimensions
     unless width == 1200 && height == 630
       record(failures, "#{card_name} must be 1200x630 (Open Graph), got #{width}x#{height}")
     end
   else
     record(failures, "#{card_name} is not a valid PNG")
   end
+  record(failures, "#{card_name} must be at most 175000 bytes, got #{card.size}") if card.size > 175_000
+end
+
+{
+  "icon-maskable-192.png" => [192, 192],
+  "icon-maskable-512.png" => [512, 512]
+}.each do |icon_name, expected_dimensions|
+  icon = SITE.join("assets/img", icon_name)
+  next unless icon.exist?
+
+  dimensions = png_dimensions(icon)
+  record(failures, "#{icon_name} must be #{expected_dimensions.join('x')}, got #{dimensions.inspect}") unless dimensions == expected_dimensions
 end
 
 manifest = SITE.join("site.webmanifest")
@@ -478,6 +700,13 @@ if manifest.exist?
     icons = Array(data["icons"])
     record(failures, "site.webmanifest: needs 192px and 512px icons") unless
       icons.any? { |i| i["sizes"] == "192x192" } && icons.any? { |i| i["sizes"] == "512x512" }
+    {
+      "/assets/img/icon-maskable-192.png" => "192x192",
+      "/assets/img/icon-maskable-512.png" => "512x512"
+    }.each do |src, sizes|
+      matches = icons.select { |icon| icon["src"] == src && icon["sizes"] == sizes && icon["purpose"] == "maskable" }
+      record(failures, "site.webmanifest: expected one dedicated maskable entry for #{src}") unless matches.length == 1
+    end
     icons.each do |icon|
       src = icon["src"].to_s.sub(%r{\A/}, "")
       record(failures, "site.webmanifest: icon missing on disk: #{icon["src"]}") unless src.empty? || SITE.join(src).exist?
@@ -538,17 +767,12 @@ Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
 end
 
 # --- Contents rail ("On this page") scroll-spy ---
-# contents.js must ship and load site-wide (it self-guards to detail pages).
+# contents.js must ship and load on case studies only (the route matrix above
+# guards inclusion). The script still self-guards as progressive enhancement.
 # The CSS must carry the rail styles, the sticky-header scroll-margin, and the
 # print rule that drops the rail. The bilingual label must exist in i18n and be
 # emitted as data-toc-label on the detail-page bodies the rail attaches to.
 record(failures, "Missing contents script: assets/js/contents.js") unless SITE.join("assets/js/contents.js").exist?
-
-Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
-  html = path.read
-  source = path.relative_path_from(SITE).to_s
-  record(failures, "#{source}: missing contents.js include") unless html.include?("/assets/js/contents.js")
-end
 
 if css_path.exist?
   css = css_path.read
@@ -560,7 +784,7 @@ if css_path.exist?
     css.match?(/@media print\s*\{\s*\.toc\s*\{\s*display:\s*none/)
 end
 
-i18n = YAML.load_file(ROOT.join("_data/i18n.yml"))
+i18n = I18N
 %w[en zh].each do |lang|
   label = i18n.dig(lang, "toc", "label").to_s
   record(failures, "i18n.yml: missing #{lang}.toc.label") if label.empty?
@@ -588,16 +812,10 @@ record(failures, "theme.js: missing theme-anim hook") unless
   SITE.join("assets/js/theme.js").read.include?("theme-anim")
 
 # --- Copy-to-clipboard install command (gm-crypto-rs only) ---
-# copy.js must ship and load site-wide. The gm-crypto-rs pages (EN + ZH) must
+# copy.js must ship and load on gm-crypto-rs only. The gm pages (EN + ZH) must
 # carry the install block; the private/local projects must NOT — only the
 # public crate gets an install command (source-of-truth boundary).
 record(failures, "Missing copy script: assets/js/copy.js") unless SITE.join("assets/js/copy.js").exist?
-
-Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
-  html = path.read
-  source = path.relative_path_from(SITE).to_s
-  record(failures, "#{source}: missing copy.js include") unless html.include?("/assets/js/copy.js")
-end
 
 %w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
   html = read_file(SITE.join(relative), failures)
@@ -617,41 +835,78 @@ end
 # (note the `&amp;` entity).
 case_study = {
   "projects/gm-crypto-rs/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
+               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
+               ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
-    caveat: "detection events", version_before: ["<h2>Next</h2>", "v1.11.0"],
+    caveat: "detection events", version_before: ["<h2 id=\"next\">", "v1.11.0"],
     # Non-affiliation note ties to the named interop targets (trademark-disclaimer
     # convention) instead of denying ties to unnamed parties. "either project" is
     # the tell; if it reverts to the generic enumerated form, this guard trips.
     # "/projects/gm-crypto-rs/releases/" guards the split's only inbound link (the
     # "Full history" row, 2026-08-05) — delete that row and the release page
     # becomes orphaned with nothing else to catch it.
-    must_include: ["either project", "/projects/gm-crypto-rs/releases/"],
+    must_include: ["either project", "/projects/gm-crypto-rs/releases/",
+                   # 2026-10-12: the audit disclosure and the timing check's real
+                   # enforcement (path-filtered, not a required merge check) must survive.
+                   "Not independently audited", "not a required merge check",
+                   "pull requests that change the crypto code", "x86-64 Linux",
+                   # GmSSL interop: the skip condition must stay visible here (the
+                   # byte-identity notes and the v1.10 release rows are pinned in
+                   # source_contracts), and no effective date is assigned to the
+                   # required check (only the ruleset's own history is inspectable).
+                   "skipped with a warning and the check still passes",
+                   # 2026-10-12 (PR 2): the short opening keeps the Owner-confirmed
+                   # contribution wording and the GmSSL caveat as the workflow runs it;
+                   # the release line is described per cycle, not as a general rule.
+                   "<strong>My part.</strong> I defined the initial requirements and used AI coding assistants to implement features.",
+                   "I am new to Rust and focus primarily on practical usability and compatibility with existing implementations such as GmSSL.",
+                   "I do not regularly review the code line by line.",
+                   "Initially, I reviewed changes myself; later, to improve efficiency, I shifted more of the code review to AI agents following defined rules.",
+                   "<strong>Problem.</strong> While working with Chinese cryptographic tools, I found relatively few related tools in the Rust ecosystem, which led me to start this project.",
+                   "provisioning and version check succeed; if either fails, the comparison is skipped with a warning while the job still passes",
+                   "the site does not state a general rule"],
+    forbid: ["on every PR", "on every commit", "build-failing", "re-audit", "multi-model",
+             "constant-time on every commit", "fails the build", "The gate has teeth",
+             "since 2026-10-11", "for merging since",
+             "skip releases that change nothing", "The same rule", "is never published",
+             "a cycle that changes no output bytes merges"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "zh/projects/gm-crypto-rs/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
+               ["decisions", "约束与关键决策"], ["evidence", "证据"],
+               ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全", "绝对常量时间"],
-    caveat: "检测事件", version_before: ["<h2>下一步</h2>", "v1.11.0"],
+    caveat: "检测事件", version_before: ["<h2 id=\"next\">", "v1.11.0"],
     # ZH mirror of the interop-tied non-affiliation guard ("这两个项目" = the two
     # named projects gmssl/OpenSSL); trips if it reverts to the enumerated form.
     # ZH mirror of the releases-page inbound-link guard above (2026-08-05).
-    must_include: ["这两个项目", "/zh/projects/gm-crypto-rs/releases/"],
+    must_include: ["这两个项目", "/zh/projects/gm-crypto-rs/releases/",
+                   "未经独立审计", "不是合并的必需检查", "改动密码代码的 PR", "x86-64 Linux",
+                   "带着警告跳过，这项检查照样通过",
+                   "<strong>我负责的部分。</strong>我提出了最初的需求，并借助 AI 编程助手实现功能。",
+                   "我是 Rust 新手，主要关注实际使用体验，以及与 GmSSL 等现有实现的兼容性，并不经常逐行细审代码。",
+                   "起初，我自己复核改动；后来，为了提高效率，我把更多代码评审交给了遵循既定规则的 AI Agent。",
+                   "<strong>为什么做这个项目。</strong>在使用国密工具的过程中，我发现 Rust 生态中的相关工具还比较少，于是开始了这个项目。",
+                   "准备就绪且版本校验通过后，才会执行这项比对。如果准备或版本校验失败，CI 会发出警告并跳过比对，任务仍会通过",
+                   "本站不把它们归纳成一条通用规则"],
+    forbid: ["每个 PR 都", "每次提交", "复审", "多模型", "让构建失败", "构建就会失败", "每次都", "门禁不是摆设",
+             "自 2026-10-11", "起是合并的必需检查",
+             "输出没变就不发版", "同一条规矩", "一轮没改任何输出字节的工作，不发版"],
     source_link: %(github.com/frankxue831/gm-crypto-rs")
   },
   "projects/repolens-rs/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
+               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
+               ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
     must_include: ["warnings-only", "not the typed graph", "scaffolding"]
   },
   "zh/projects/repolens-rs/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
+               ["decisions", "约束与关键决策"], ["evidence", "证据"],
+               ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
     must_include: ["只给 warning", "不是那张类型化记忆图", "脚手架"]
   },
@@ -659,47 +914,60 @@ case_study = {
   # Guard the current local tag + the "guarded" framing, and forbid the stale
   # v0.1.1 label from creeping back.
   "projects/ghrunners/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
+               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
+               ["next", "Next"], ["limits", "What it isn't"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
     must_include: ["v0.5.0", "guarded"], forbid: ["v0.1.1"]
   },
   "zh/projects/ghrunners/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
+               ["decisions", "约束与关键决策"], ["evidence", "证据"],
+               ["next", "下一步"], ["limits", "它不是什么"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
     # 单次运行 is the one-shot term of record; 一次性 regressed on this page's
     # description + lede before the 2026-08-06 readthrough closed it.
     must_include: ["v0.5.0", "受控", "单次运行"], forbid: ["v0.1.1", "一次性"]
   },
-  # explainer-engine: private/local — the verification story lives in the frame,
-  # so guard the simplified-marking and gate's-verdict phrases that carry it.
+  # Explainer: visitor-facing order differs; source and local-history limits
+  # remain mandatory, along with all four decision costs.
   "projects/explainer-engine/index.html" => {
-    headings: ["<h2>What it is</h2>", "<h2>The problem</h2>",
-               "<h2>Constraints &amp; key decisions</h2>", "<h2>Evidence</h2>",
-               "<h2>Next</h2>", "<h2>What it isn't</h2>"],
+    headings: [["examples", "Two examples to watch"], ["what-it-is", "From script to screen"],
+               ["evidence", "What you can check"], ["decisions", "Decisions and trade-offs"],
+               ["next", "Where it stands"], ["limits", "Limits"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
-    must_include: ["simplified", "gate's verdict"]
+    must_include: ["simplified", "gate's verdict", "explainer-plan", "explainer plan",
+      "This command checks citations; it does not re-render the video.",
+      "It does not establish that the explanation is semantically correct or educationally effective.",
+      "no language model writes that code", "no published tag",
+      "historical result lacks public run evidence and is not independently checkable",
+      "that tag is not published", "without pinning a commit",
+      "Text embedded in the videos has not been remade"]
   },
   "zh/projects/explainer-engine/index.html" => {
-    headings: ["<h2>是什么</h2>", "<h2>要解决的问题</h2>", "<h2>约束与关键决策</h2>",
-               "<h2>证据</h2>", "<h2>下一步</h2>", "<h2>它不是什么</h2>"],
+    headings: [["examples", "先看两段成果"], ["what-it-is", "从脚本到画面"],
+               ["evidence", "能核对哪些证据"], ["decisions", "取舍与约束"],
+               ["next", "目前进展"], ["limits", "使用边界"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
-    must_include: ["简化视图", "校验门的结论"]
+    must_include: ["简化视图", "校验门的结论", "explainer-plan", "explainer plan",
+      "这条命令只检查引用，不会重新渲染视频。",
+      "它不证明讲解语义正确，也不证明教学效果。",
+      "这段代码不由语言模型编写", "没有已发布的 tag",
+      "历史校验结果缺少公开运行证据，无法由外部独立核验",
+      "这个 tag 没有公开发布", "没有固定 commit",
+      "视频内嵌文字没有重做"]
   }
 }
 case_study.each do |relative, spec|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
 
-  # All six headings present, in order.
-  positions = spec[:headings].map { |h| [h, html.index(h)] }
-  missing = positions.select { |_, i| i.nil? }.map(&:first)
-  record(failures, "#{relative}: missing case-study heading(s): #{missing.join(', ')}") unless missing.empty?
-  if missing.empty?
-    idxs = positions.map(&:last)
-    record(failures, "#{relative}: case-study headings out of order") unless idxs == idxs.sort
+  # All six headings are source-rendered with stable, locale-independent IDs.
+  actual_headings = html.scan(%r{<h2 id="([^"]+)">(.*?)</h2>}m).map do |id, text|
+    [id, text.gsub(/\s+/, " ").strip]
+  end
+  unless actual_headings == spec[:headings]
+    record(failures, "#{relative}: case-study heading/ID sequence mismatch expected #{spec[:headings].inspect} got #{actual_headings.inspect}")
   end
 
   # Every decision must name a tradeoff: at least four visible cost cues.
@@ -743,6 +1011,68 @@ case_study.each do |relative, spec|
   if spec[:source_link]
     record(failures, "#{relative}: missing public source link") unless html.include?(spec[:source_link])
   end
+end
+
+# The colophon states how much JavaScript the site ships (EN and ZH), and the
+# count has drifted when a script was added. Tie it to assets/js: the file
+# count exactly, the "approximately N lines" figures within 5%.
+js_files = Pathname.glob(SITE.join("assets/js/*.js").to_s)
+js_lines = js_files.sum { |file| File.foreach(file).count }
+js_words = %w[zero one two three four five six seven eight nine ten eleven twelve]
+{
+  "colophon/index.html" => ["across #{js_words[js_files.size]} focused files", "lines across #{js_files.size} files"],
+  "zh/colophon/index.html" => ["分散在 #{js_files.size} 个职责集中的文件里", "#{js_files.size} 个文件、约"]
+}.each do |relative, phrases|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  text = html.gsub(/\s+/, " ")
+  phrases.each do |phrase|
+    record(failures, "#{relative}: JavaScript file count must read #{phrase.inspect} (assets/js has #{js_files.size} files)") unless text.include?(phrase)
+  end
+  stated = text.scan(/(?:approximately|~|约) ?(\d+) ?(?:lines|行)/).flatten.map(&:to_i)
+  record(failures, "#{relative}: no JavaScript line count found") if stated.empty?
+  stated.each do |count|
+    record(failures, "#{relative}: says ~#{count} lines of JavaScript; assets/js has #{js_lines}") if (count - js_lines).abs > js_lines * 0.05
+  end
+end
+
+# Explainer examples retain playable no-JS media and inspectable source.
+%w[en zh].each do |lang|
+  %w[label off waiting off_message download].each do |key|
+    record(failures, "i18n.yml: missing #{lang}.explainer_video.#{key}") if
+      I18N.dig(lang, "explainer_video", key).to_s.empty?
+  end
+end
+%w[projects/explainer-engine/index.html zh/projects/explainer-engine/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  videos = html.scan(%r{<video\b(.*?)</video>}m).flatten
+  record(failures, "#{relative}: expected two native videos") unless videos.size == 2
+  videos.each do |video|
+    record(failures, "#{relative}: video lost native controls/no-JS captions") unless
+      video.include?("controls") && video.scan(/<track\b/).size == 2 && video.scan(/ default/).size == 1
+    record(failures, "#{relative}: examples must not autoplay") if video.include?("autoplay")
+  end
+  %w[harness-field-explainer evidence-budget].each do |name|
+    record(failures, "#{relative}: missing #{name} media") unless html.include?("/assets/video/#{name}.mp4")
+  end
+  input_i = html.index('<h2 id="what-it-is">') || 0
+  video_positions = html.enum_for(:scan, /<video\b/).map { Regexp.last_match.begin(0) }
+  record(failures, "#{relative}: both examples must precede pipeline explanation") unless
+    video_positions.size == 2 && video_positions.all? { |index| index < input_i }
+  %w[examples/evidence-budget.story.yaml explainer/plan/evidence.py#L55-L58
+     explainer/plan/evidence.py#L205-L211 explainer/plan/evidence.py#L312-L313].each do |path|
+    url = "https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/#{path}"
+    record(failures, "#{relative}: missing pinned evidence #{path}") unless html.include?(url)
+  end
+  record(failures, "#{relative}: missing actual verification command") unless
+    html.include?("explainer verify examples/evidence-budget.story.yaml")
+  record(failures, "#{relative}: missing real script/frame pair") unless
+    CGI.unescapeHTML(html).include?('cite: "explainer/plan/evidence.py:56"') &&
+    html.include?("/assets/img/evidence-budget-12s.jpg")
+  record(failures, "#{relative}: captions must initialize hidden") unless
+    html.scan('<div class="video-captions" hidden>').size == 2
+  record(failures, "#{relative}: history drawer must not hide a contents heading") if
+    html.match?(/<details\b[^>]*>(?:(?!<\/details>).)*?<h2/m)
 end
 
 # Native-interactivity guards on the gm-crypto pages: the popover glossary must
@@ -795,9 +1125,12 @@ end
 # High-churn ZH work-list blurbs sit outside case_study and have re-hosted the
 # same terminology regressions (会过期, 一次性, 对过源码). Pin the current
 # terms of record so the next blurb edit keeps them.
+# ghrunners blurbs lead with purpose ("跑一次就能看出…为什么卡住"); the
+# term-of-record 单次运行 stays on the detail page + glossary, not the blurb.
+# 2026-10-12 (PR 2): the home page no longer repeats these blurbs (section 03
+# now features one case study), so only the projects index carries them.
 {
-  "zh/index.html" => %w[会衰减 单次运行 核对源码],
-  "zh/projects/index.html" => %w[会衰减 单次运行 核对源码]
+  "zh/projects/index.html" => %w[会衰减 跑一次就能看出 核对源码]
 }.each do |relative, phrases|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
@@ -879,17 +1212,26 @@ else
 end
 
 dudect_chart_source = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
-record(failures, "dudect-chart.html: sentinel threshold must render from dudect.yml") unless dudect_chart_source.include?("{{ d.sentinel }}")
-record(failures, "dudect-chart.html: gate threshold must render from dudect.yml") unless dudect_chart_source.include?("{{ d.gate }}")
-if dudect_chart_source.match?(/&lt;\s+0\.(?:20|55)/)
+# Table thresholds are "&le;" + a space or no-break space + the display string
+# (the dudect parsers fail only when the median |tau| is strictly above the limit,
+# so a value AT the limit passes: "<" would misstate the check);
+# match the cell form so a bare "{{ d.sentinel_display }}" elsewhere (the axis
+# tick) can't satisfy the precision guard, and &nbsp; can't dodge the hardcode guard.
+threshold_sep = /(?:\s|&nbsp;|&#160;| )+/
+record(failures, "dudect-chart.html: sentinel threshold must preserve display precision from dudect.yml") unless dudect_chart_source.match?(/&le;#{threshold_sep}\{\{\s*d\.sentinel_display\s*\}\}/)
+record(failures, "dudect-chart.html: gate threshold must preserve display precision from dudect.yml") unless dudect_chart_source.match?(/&le;#{threshold_sep}\{\{\s*d\.gate_display\s*\}\}/)
+if dudect_chart_source.match?(/(?:&lt;|&le;|≤)#{threshold_sep}0\.(?:20|55)/)
   record(failures, "dudect-chart.html: policy threshold is hardcoded instead of rendered from dudect.yml")
+end
+if dudect_chart_source.match?(/&lt;#{threshold_sep}\{\{\s*d\.(?:gate|sentinel)_display\s*\}\}/)
+  record(failures, "dudect-chart.html: threshold rendered with \"<\"; the check passes AT the limit, so use \"&le;\"")
 end
 
 # dudect i18n parity: every required key present + non-empty in both languages.
 %w[en zh].each do |lang|
   %w[title fig_num intro axis_label gate_label control_label cluster_label caveat
      provenance source table_caption col_target col_measures col_tau col_gate
-     col_status status_pass status_sentinel status_fire
+     col_status status_pass status_sentinel status_fire status_caught
      policy_sentinel_label].each do |key|
     record(failures, "i18n.yml: missing #{lang}.dudect.#{key}") if i18n.dig(lang, "dudect", key).to_s.empty?
   end
@@ -951,6 +1293,28 @@ record(failures, "feed.xml: no <entry> (notes feed is empty)") unless feed.inclu
   record(failures, "#{relative}: notes index lists no notes") unless html.include?(%(class="work-list__item))
 end
 
+# Note lists show each written excerpt whole. Their truncation caps only bound
+# Jekyll's auto-generated excerpt (a note without `excerpt:`). A written excerpt
+# cut at the old 160-character cap broke mid-word, and the EN warrant note lost
+# the closing caveat that the ZH list kept. Liquid 4 also appends the ellipsis
+# to a text of exactly the truncatewords count, hence the "…" check. Each
+# excerpt is read from its own row's note, and a page with no matched rows
+# fails, so changed row markup cannot turn this guard into a silent pass.
+%w[index.html notes/index.html zh/index.html zh/notes/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  listed = 0
+  note_specs.each_value do |spec|
+    row_note = html[%r{class="work-list__row" href="#{Regexp.escape(spec['permalink'].to_s)}".*?<p class="work-list__note">(.*?)</p>}m, 1]
+    next unless row_note
+    listed += 1
+    excerpt = spec["excerpt"].to_s
+    next if excerpt.empty? || (row_note.include?(excerpt) && !row_note.include?("#{excerpt}…"))
+    record(failures, "#{relative}: excerpt of #{spec['permalink']} is cut; written excerpts must fit the list cap (EN under 40 words, ZH at most 160 characters)")
+  end
+  record(failures, "#{relative}: excerpt guard matched no note rows (did the work-list row markup change?)") if listed.zero?
+end
+
 # Terminal pages (notes, contact) carry an onward CTA so reading doesn't
 # dead-end — parity with the section CTAs on the home page. Regression guard
 # for the interactivity quick-wins pass.
@@ -966,7 +1330,9 @@ end
 %w[colophon/index.html zh/colophon/index.html].each do |relative|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
-  record(failures, "#{relative}: colophon missing audit substance (validator self-reference)") unless html.include?("scripts/validate_site.rb")
+  record(failures, "#{relative}: colophon missing audit substance (validator self-reference)") unless html.gsub("<wbr>", "").include?("scripts/validate_site.rb")
+  # The <wbr> is the path's only break point on a narrow phone (see .prose code wbr in style.css).
+  record(failures, "#{relative}: colophon validator path lost its <wbr> (it overflows a 320px screen)") unless html.include?("<code>scripts/<wbr>validate_site.rb</code>")
   record(failures, "#{relative}: colophon missing onward CTA (preview__link--section)") unless html.include?("preview__link--section")
 end
 { "index.html" => "/colophon/", "zh/index.html" => "/zh/colophon/" }.each do |relative, colophon_path|
@@ -991,7 +1357,7 @@ note_pages.each do |relative|
   record(failures, "#{relative}: missing zh-CN hreflang alternate") unless html.match?(%r{<link rel="alternate" hreflang="zh-CN" href="#{Regexp.escape(BASE_URL)}/zh/notes/[^"]+">})
 end
 
-i18n = YAML.load_file(ROOT.join("_data/i18n.yml"))
+i18n = I18N
 %w[en zh].each do |lang|
   record(failures, "i18n.yml: missing #{lang}.nav.writing") if i18n.dig(lang, "nav", "writing").to_s.empty?
   %w[all read_more none].each do |key|
@@ -1074,12 +1440,20 @@ end
 
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
-  html.scan(/<link\b[^>]*\bas="font"[^>]*>/i).each do |tag|
-    next unless tag.include?('rel="preload"')
+  source = path.relative_path_from(SITE).to_s
+  font_preloads = html.scan(/<link\b[^>]*\bas="font"[^>]*>/i).select { |tag| tag.include?('rel="preload"') }
+  expected_count = home_pages.include?(source) ? 2 : 0
+  unless font_preloads.length == expected_count
+    record(failures, "#{source}: expected #{expected_count} font preloads, found #{font_preloads.length}")
+  end
+
+  font_preloads.each do |tag|
+    record(failures, "#{source}: font preload missing type=font/woff2") unless tag.include?('type="font/woff2"')
+    record(failures, "#{source}: font preload missing crossorigin") unless tag.match?(/\bcrossorigin(?:\s|=|>)/)
     href = tag[/href="([^"]+)"/, 1]
     next unless href
     rel = href.sub(%r{\Ahttps?://[^/]+}, "").sub(%r{\A/}, "")
-    record(failures, "#{path.relative_path_from(SITE)}: preload font missing on disk: #{href}") unless SITE.join(rel).exist?
+    record(failures, "#{source}: preload font missing on disk: #{href}") unless SITE.join(rel).exist?
   end
 end
 
@@ -1107,6 +1481,8 @@ end
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   html = path.read
   source = path.relative_path_from(SITE).to_s
+  json_ld_count = html.scan(%r{<script type="application/ld\+json">}).length
+  record(failures, "#{source}: expected exactly one JSON-LD script, found #{json_ld_count}") unless json_ld_count == 1
   record(failures, "#{source}: missing Content-Security-Policy meta") unless html.include?(%(http-equiv="Content-Security-Policy"))
   record(failures, "#{source}: missing referrer policy meta") unless html.include?(%(name="referrer"))
   record(failures, "#{source}: inline style= attribute (breaks strict style-src CSP)") if html.match?(/\sstyle="/)
@@ -1131,6 +1507,501 @@ PROJECTS.each do |project|
     next if url.empty?
     record(failures, "projects.yml: #{project["slug"]} #{key} is not https: #{url}") unless url.start_with?("https://")
   end
+end
+
+# --- 2026-08-09 site-review content contracts ---
+# These values are intentionally local/static: immutable public release facts
+# are verified during review, then pinned here so routine builds never depend
+# on network availability.
+release_history_expected = {
+  "v0.15.0" => "2026-05-27",
+  "v0.10.0" => "2026-05-22",
+  "v0.9.0" => "2026-05-20",
+  "v0.8.0" => "2026-05-17",
+  "v0.7.0" => "2026-05-15"
+}.freeze
+
+%w[projects/gm-crypto-rs-releases.html zh/projects/gm-crypto-rs-releases.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  release_history_expected.each do |version, date|
+    row = %r{<dt>#{Regexp.escape(version)}</dt>\s*<dd>#{Regexp.escape(date)}\b}m
+    record(failures, "#{relative}: #{version} must use public release date #{date}") unless source.match?(row)
+  end
+end
+
+gm_case_studies = %w[projects/gm-crypto-rs.html zh/projects/gm-crypto-rs.html]
+gm_case_studies.each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: demo must pin gmcrypto-core =1.16.0") unless source.include?('gmcrypto-core = "=1.16.0"')
+  record(failures, "#{relative}: dudect workflow evidence must link line 169") unless source.include?("dudect-pr.yml#L169")
+  record(failures, "#{relative}: stale dudect workflow line 166 remains") if source.include?("dudect-pr.yml#L166")
+  %w[constant-time-warrant constant-time-ci-gate byte-identity unsafe-opt-in].each do |slug|
+    record(failures, "#{relative}: missing #{slug} note link") unless source.include?(slug)
+  end
+end
+
+dudect_data = YAML.load_file(ROOT.join("_data/dudect.yml"))
+record(failures, "_data/dudect.yml: gate_display must preserve 0.20") unless dudect_data["gate_display"] == "0.20"
+record(failures, "_data/dudect.yml: sentinel_display must preserve 0.55") unless dudect_data["sentinel_display"] == "0.55"
+dudect_chart_contract = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
+record(failures, "dudect-chart.html: historical leak must use status_caught") unless dudect_chart_contract.include?("t.status_caught")
+unless dudect_chart_contract.scan("t.status_fire").length == 1
+  record(failures, "dudect-chart.html: status_fire must be exclusive to negative_control")
+end
+
+vtt = read_file(ROOT.join("assets/video/harness-field-explainer.en.vtt"), failures)
+record(failures, "harness-field-explainer.en.vtt: missing load-bearing-line wording") unless vtt.include?("The load-bearing line")
+
+claude_source = read_file(ROOT.join("CLAUDE.md"), failures)
+if claude_source.match?(/v0\.8[^\n]*AEAD[^\n]*next|v0\.8 AEAD work is "next"/i)
+  record(failures, "CLAUDE.md: stale v0.8 AEAD-next guidance remains")
+end
+
+rejected_content = {
+  "colophon.html" => ["six small files", "~500 lines"],
+  "zh/colophon.html" => ["六个小文件", "约 500 行"],
+  "projects/gm-crypto-rs.html" => ["<code>1.9.0</code>, behind", "<code>hash</code> / <code>sign</code> /"],
+  "zh/projects/gm-crypto-rs.html" => ["固定在 <code>1.9.0</code>", "<code>hash</code> / <code>sign</code> /"],
+  "projects/repolens-rs.html" => ["Planned until"],
+  "notes.html" => ["Rust, cryptography, CI, and tooling."],
+  # 2026-10-12 (PR 2): the release line is explained per cycle from the project
+  # records; the notes must not state a general rule as the project's policy.
+  "_notes/releases-that-change-nothing.md" => ["follows a rule:", "The rule has kept applying", "That rule shows up",
+                                                "a cycle that changes no output", "refused to bill assurance churn"],
+  "_notes/releases-that-change-nothing.zh.md" => ["有条规矩", "这条规矩后来也一直在用", "这条规矩，体现成", "什么都没变的版本，就不发",
+                                                   "输出没变就不发版", "的周期都合进了主干", "拒绝把「只做保障」的变动"],
+  "_notes/starting-a-notebook.md" => ["The real rule is narrower", "That rule is stated under Evidence", "the *policy* behind a skip"],
+  "_notes/starting-a-notebook.zh.md" => ["真正的规矩更窄", "这条规矩写在", "[什么都没变的版本，就不发]", "背后的**规则**"],
+  # PR 2: the note describes the project's opt-in design from its source and
+  # does not say who made the decision.
+  "_notes/unsafe-opt-in.md" => ["I didn't, because", "That's the property I", "I chose", "I decided"],
+  "_notes/unsafe-opt-in.zh.md" => ["我没这么干", "这正是我想让它默认成立", "我选择", "我决定"],
+  # Positioning (PR 2): "mostly Rust" describes the projects, not the person.
+  "index.html" => ["software engineer, mostly Rust", "Outcomes, <em>mostly in Rust.</em>"],
+  "zh/index.html" => ["软件工程师，主要写 Rust", "大多用 Rust。</em>"]
+}.freeze
+
+# 2026-10-12 (PR 2): contribution statements stay within what the Owner
+# confirmed: requirements by him, implementation by AI coding assistants, review
+# shifted to AI agents following defined rules. No authorship, audit or
+# every-finding claims; rule authorship and merge/release authority stay unstated.
+{
+  "en" => ["I wrote the code", "I wrote most", "I wrote all", "I wrote it myself", "I personally", "every finding", "single-handedly", "sole author",
+           "I audited", "I designed all", "I reviewed every", "I approve", "my approval"],
+  "zh" => ["我亲手写", "每一条发现", "我审计", "独自完成", "由我一个人", "我批准", "须经我"]
+}.then do |overclaims|
+  %w[index.html about.html projects/gm-crypto-rs.html zh/index.html zh/about.html zh/projects/gm-crypto-rs.html].each do |relative|
+    normalized = read_file(ROOT.join(relative), failures).gsub(/\s+/, " ")
+    lang = relative.start_with?("zh/") ? "zh" : "en"
+    overclaims[lang].each do |phrase|
+      record(failures, "#{relative}: unconfirmed contribution claim #{phrase.inspect}") if normalized.include?(phrase)
+    end
+  end
+end
+
+rejected_content.each do |relative, phrases|
+  # Whitespace-normalized, so a phrase hard-wrapped across lines still counts.
+  source = read_file(ROOT.join(relative), failures).gsub(/\s+/, " ")
+  phrases.each do |phrase|
+    record(failures, "#{relative}: rejected reviewed phrase remains: #{phrase.inspect}") if source.include?(phrase)
+  end
+end
+
+i18n_content = YAML.load_file(ROOT.join("_data/i18n.yml"))
+expected_identity = {
+  "en" => {
+    "tagline" => "Software engineer building useful software with AI. I share selected work with its status, evidence, and limits visible.",
+    "short_tagline" => "Software engineer"
+  },
+  "zh" => {
+    "tagline" => "软件工程师，借助 AI 开发有用的软件。我在这里分享部分项目，说明各自的进展、验证依据和使用限制。",
+    "short_tagline" => "软件工程师"
+  }
+}.freeze
+expected_identity.each do |lang, values|
+  values.each do |key, expected|
+    actual = i18n_content.dig(lang, key)
+    record(failures, "i18n.yml: #{lang}.#{key} must be #{expected.inspect}") unless actual == expected
+  end
+end
+
+# Visitors expect "Home"; "Index" reads as a monograph voice choice.
+record(failures, 'i18n.yml: en.nav.home must be "Home"') unless i18n_content.dig("en", "nav", "home") == "Home"
+record(failures, 'i18n.yml: zh.nav.home must be "首页"') unless i18n_content.dig("zh", "nav", "home") == "首页"
+
+# About's "Lately" row interpolates public_project; hide it when none exists,
+# matching the home-page guard.
+%w[about.html zh/about.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: Lately/最近 row missing {% if public_project %} guard") unless
+    source.match?(/\{%\s*if public_project\s*%\}[\s\S]*?(Released|已发布)[\s\S]*?\{%\s*endif\s*%\}/)
+end
+
+# Explainer case study back-links the published extraction-trigger note under
+# the shared-core decision (same pattern as gm-crypto → constant-time notes).
+{
+  "projects/explainer-engine.html" => "/notes/extraction-trigger/",
+  "zh/projects/explainer-engine.html" => "/zh/notes/extraction-trigger/"
+}.each do |relative, href|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: missing extraction-trigger note back-link (#{href})") unless source.include?(href)
+end
+
+source_contracts = {
+  "about.html" => [
+    'description: "Why I enjoy building software with AI, and how these projects began."',
+    "<span>Building with AI, developer tools, cryptography, verified explanation</span>"
+  ],
+  "zh/about.html" => [
+    'description: "我为什么喜欢借助 AI 做软件，以及这些项目是怎样开始的。"',
+    # Each item is one .nowrap run, so the row breaks only after 、 (never inside 密码学).
+    '<span><span class="nowrap">借助 AI 做软件</span>、<span class="nowrap">开发者工具</span>、<span class="nowrap">密码学</span>、<span class="nowrap">能按源码核对的讲解</span></span>'
+  ],
+  "contact.html" => [
+    'description: "Ways to contact Frank Xue, with response expectations and links to public work."'
+  ],
+  "zh/contact.html" => [
+    'description: "联系 Frank Xue 的方式、回复预期，以及公开作品链接。"'
+  ],
+  # 2026-10-12 (PR 2): section (03) no longer repeats the project list, so the
+  # per-project "no public source link" notes live on the projects index (pinned
+  # below). The home page keeps the Status-panel disclosure, an intro that says
+  # status is stated per project and that some work is private or pre-release,
+  # and the featured case study's audit disclosure.
+  "index.html" => ["View selected work", "Browse all notes",
+                   "Only public-tagged work is independently verifiable here.",
+                   "I enjoy building software with AI coding assistants.",
+                   "the tools for AI coding agents and CI runners are private projects",
+                   "the explainer-video pipeline is written in Python, with public source and pre-release status.",
+                   "including that it has not been independently audited"],
+  "zh/index.html" => ["查看精选项目", "浏览全部笔记",
+                      "别人能自己核对的，只有已打公开标签（tag）的作品。",
+                      "我喜欢借助 AI 编程助手做软件，也很享受这个过程。",
+                      "面向 AI 编程 Agent 和 CI runner 的工具目前是私有项目",
+                      "讲解视频生成流程则用 Python 编写，源码已公开，处于预发布阶段。",
+                      "这个库没有经过独立审计"],
+  "projects.html" => ["Private project — no public source link.", "Local prototype — no public source link."],
+  "zh/projects.html" => ["私有项目——暂无公开源码链接。", "本地原型——暂无公开源码链接。"],
+  "notes.html" => [
+    'description: "Working notes on software engineering: evidence, interfaces, reliability, cryptography, CI, and the choices behind shipped systems."',
+    "These are working notes on how software claims become inspectable"
+  ],
+  "zh/notes.html" => [
+    'description: "软件工程工作笔记：证据、接口、可靠性、密码学、CI，以及已交付系统背后的取舍。"',
+    "这些工作笔记关心的是：软件说法怎样变得可核对"
+  ],
+  "_notes/starting-a-notebook.md" => [
+    "Put the most decision-relevant evidence first, then make its limits easy to find.",
+    "/notes/constant-time-warrant/",
+    "/notes/extraction-trigger/"
+  ],
+  "_notes/starting-a-notebook.zh.md" => [
+    "先放最影响判断的证据，再让它的边界也容易找到。",
+    "/zh/notes/constant-time-warrant/",
+    "/zh/notes/extraction-trigger/"
+  ],
+  "projects/repolens-rs.html" => ["Planned work remains uncommitted until it is tied to a public milestone."],
+  "zh/projects/repolens-rs.html" => ["后续工作在绑定公开里程碑之前，不写成已承诺计划。"],
+  # 2026-10-12: the GmSSL interop skip condition must stay visible wherever the
+  # comparison is summarised outside the case study (which pins it in case_study).
+  "_notes/byte-identity.md" => ["skipped with a warning"],
+  "_notes/byte-identity.zh.md" => ["带着警告跳过"],
+  "projects/gm-crypto-rs-releases.html" => ["skips it with a warning"],
+  # PR 2: the opt-in design is stated with the reason gmcrypto-core's Cargo.toml gives.
+  "_notes/unsafe-opt-in.md" => ["The core's default feature set is empty, and its",
+                                "gm-crypto-rs/blob/v1.16.0/crates/gmcrypto-core/Cargo.toml#L51-L54) gives the reason for the split"],
+  "_notes/unsafe-opt-in.zh.md" => ["核心的默认 feature 集合是空的；它的",
+                                   "gm-crypto-rs/blob/v1.16.0/crates/gmcrypto-core/Cargo.toml#L51-L54) 也写明了这样拆的原因"],
+  "zh/projects/gm-crypto-rs-releases.html" => ["带着警告跳过"]
+}.freeze
+
+source_contracts.each do |relative, phrases|
+  source = read_file(ROOT.join(relative), failures)
+  normalized = source.gsub(/\s+/, " ")
+  phrases.each do |phrase|
+    record(failures, "#{relative}: missing reviewed content contract #{phrase.inspect}") unless normalized.include?(phrase)
+  end
+end
+
+gm_en = read_file(ROOT.join("projects/gm-crypto-rs.html"), failures)
+gm_zh = read_file(ROOT.join("zh/projects/gm-crypto-rs.html"), failures)
+# gm-crypto-rs is "MIT OR Apache-2.0"; the tag ships LICENSE-APACHE and
+# LICENSE-MIT, with no plain LICENSE file. Assert both, or a dropped half
+# would silently misstate the terms.
+{ "projects/gm-crypto-rs.html" => gm_en, "zh/projects/gm-crypto-rs.html" => gm_zh }.each do |relative, source|
+  %w[LICENSE-APACHE LICENSE-MIT].each do |file|
+    record(failures, "#{relative}: missing immutable #{file} link") unless source.include?("v1.11.0/#{file}")
+  end
+end
+record(failures, "projects/gm-crypto-rs.html: missing FIPS expansion") unless gm_en.include?("U.S. Federal Information Processing Standards (FIPS)")
+record(failures, "zh/projects/gm-crypto-rs.html: missing FIPS expansion") unless gm_zh.include?("美国联邦信息处理标准（FIPS）")
+
+%w[colophon.html zh/colophon.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  record(failures, "#{relative}: missing localStorage privacy disclosure") unless source.include?("frankxue.theme")
+end
+
+%w[about.html zh/about.html].each do |relative|
+  source = read_file(ROOT.join(relative), failures)
+  normalized = source.gsub(/\s+/, " ")
+  # 2026-10-13: the approved About is a short personal introduction.
+  # Contribution and technical disclosures remain mandatory in the case study
+  # opening below. If timing claims return here, require their caveats locally.
+  zh = relative.start_with?("zh/")
+  required = zh ? ["数学和计算机科学背景", "借助 AI 编程助手实现", "实际使用体验",
+                   "与 GmSSL 等现有实现的兼容性", "我还在学习 Rust",
+                   "/zh/projects/gm-crypto-rs/"] :
+                  ["background in mathematics and computer science", "used AI coding assistants to implement",
+                   "practical usability", "compatibility with existing implementations such as GmSSL",
+                   "I'm still learning Rust", "/projects/gm-crypto-rs/"]
+  stale = zh ? ["每次提交", "构建就会失败", "在发布前拦住", "软件工程，主要写 Rust", "主要写 Rust，做的多是", "软件工程师，主要",
+                "一份还在改的说明", "这份介绍还在修改", "关于，<em>大概如此"] :
+               ["every commit", "fails the build", "before a release", "who works mostly in Rust", "Software engineering, mostly Rust", "software engineer, mostly",
+                "A working draft", "more or less"]
+  required.each { |phrase| record(failures, "#{relative}: About summary missing #{phrase.inspect}") unless normalized.include?(phrase) }
+  stale.each { |phrase| record(failures, "#{relative}: stale About claim #{phrase.inspect}") if normalized.include?(phrase) }
+  if normalized.match?(zh ? /时序|常量时间/ : /timing|constant-time/i)
+    caveats = zh ? ["没有经过独立审计", "统计证据", "不能证明"] : ["not been independently audited", "statistical evidence", "not a proof"]
+    caveats.each { |phrase| record(failures, "#{relative}: timing mention missing caveat #{phrase.inspect}") unless normalized.include?(phrase) }
+  end
+  full_name = zh ? "Fengxiang（Frank）Xue" : "Fengxiang (Frank) Xue"
+  full_name_count = normalized.scan(full_name).length
+  record(failures, "#{relative}: #{full_name.inspect} must appear exactly once (found #{full_name_count})") unless full_name_count == 1
+end
+
+
+# Keep the case-study opening's safeguards even when About is shortened.
+{
+  "projects/gm-crypto-rs.html" => ["My part.", "AI coding assistants", "AI agents following defined rules",
+    "I do not regularly review the code line by line", "GmSSL oracle's provisioning and version check succeed",
+    "if either fails, the comparison is skipped with a warning while the job still passes",
+    "selected paths", "x86-64 Linux runners", "Not independently audited",
+    "adversarial review by two AI models", "evidence under the tested conditions, not proof of constant-time behavior"],
+  "zh/projects/gm-crypto-rs.html" => ["我负责的部分", "AI 编程助手", "遵循既定规则的 AI Agent",
+    "并不经常逐行细审代码", "准备就绪且版本校验通过后，才会执行这项比对",
+    "如果准备或版本校验失败，CI 会发出警告并跳过比对，任务仍会通过",
+    "选定路径", "x86-64 Linux runner", "没有经过独立审计", "两个 AI 模型以对抗方式进行",
+    "只能作为测试条件下的证据，不能证明常量时间行为"]
+}.each do |relative, phrases|
+  opening = read_file(ROOT.join(relative), failures).split("{% include project-summary.html %}", 2).first.gsub(/\s+/, " ")
+  phrases.each { |phrase| record(failures, "#{relative}: opening missing safeguard #{phrase.inspect}") unless opening.include?(phrase) }
+end
+
+# A deliberately leaky control must be detected; detection is not CI failure.
+{
+  "control_label" => "negative_control：必须检测到此处刻意引入的泄漏（确认检测器能识别这处泄漏）",
+  "status_fire" => "必须检出泄漏"
+}.each do |key, expected|
+  record(failures, "i18n.yml: zh.dudect.#{key} must distinguish detection from check failure") unless i18n_content.dig("zh", "dudect", key) == expected
+end
+{
+  "_notes/constant-time-warrant.md" => "a detector that must flag a deliberately introduced leak",
+  "_notes/constant-time-warrant.zh.md" => "一个必须检出刻意引入的泄漏的检测器"
+}.each do |relative, phrase|
+  excerpt = YAML.safe_load(read_file(ROOT.join(relative), failures).split("---", 3)[1], permitted_classes: [Date]).fetch("excerpt")
+  record(failures, "#{relative}: negative control excerpt must describe detection") unless excerpt.include?(phrase)
+end
+
+# Check the body as well: a corrected excerpt must not hide the opposite claim.
+{
+  "_notes/constant-time-warrant.md" => "The detector must flag its deliberately introduced leak; if it does not, the check fails.",
+  "_notes/constant-time-warrant.zh.md" => "检测器必须检出其中刻意引入的泄漏；未检出才会导致这项检查失败。"
+}.each do |relative, phrase|
+  body = read_file(ROOT.join(relative), failures).split("---", 3).last.gsub(/\s+/, " ")
+  record(failures, "#{relative}: negative control body must distinguish detection from check failure") unless body.include?(phrase)
+end
+
+# --- 2026-08-10 site-review accessibility contracts ---
+accessibility_i18n_keys = %w[
+  nav.menu nav.skip theme.aria_template install.copy install.copied install.aria
+  install.copied_aria install.manual install.manual_aria dudect.table_scroll_label
+].freeze
+%w[en zh].each do |lang|
+  accessibility_i18n_keys.each do |path|
+    value = path.split(".").reduce(i18n_content[lang]) { |node, key| node.is_a?(Hash) ? node[key] : nil }
+    record(failures, "i18n.yml: missing #{lang}.#{path}") if value.to_s.empty?
+  end
+
+  theme_template = i18n_content.dig(lang, "theme", "aria_template").to_s
+  %w[{current} {effective} {next}].each do |placeholder|
+    record(failures, "i18n.yml: #{lang}.theme.aria_template missing #{placeholder}") unless theme_template.include?(placeholder)
+  end
+end
+
+main_js = read_file(ROOT.join("assets/js/main.js"), failures)
+{
+  "main background" => "document.getElementById('main')",
+  "footer backgrounds" => "document.querySelectorAll('footer')",
+  "background inert state" => ".inert",
+  "first navigation link" => "firstNavLink",
+  "focus placement on open" => "firstNavLink.focus()",
+  "Escape focus restoration" => "setOpen(false, { restoreFocus: true })",
+  "backdrop pointer dismissal" => "pointerdown",
+  "body backdrop hit target" => "event.target === document.body",
+  "desktop media-query cleanup" => "matchMedia('(min-width: 760px)')",
+  "bfcache cleanup" => "pageshow"
+}.each do |label, needle|
+  record(failures, "main.js: missing #{label} contract") unless main_js.include?(needle)
+end
+
+copy_js = read_file(ROOT.join("assets/js/copy.js"), failures)
+{
+  "shared state updater" => "setState",
+  "manual-copy failure state" => "showManual",
+  "accessible-name update" => "setAttribute('aria-label'",
+  "localized manual label" => "data-label-manual",
+  "localized idle accessible name" => "data-aria-copy",
+  "localized success accessible name" => "data-aria-done",
+  "localized manual accessible name" => "data-aria-manual"
+}.each do |label, needle|
+  record(failures, "copy.js: missing #{label} contract") unless copy_js.include?(needle)
+end
+
+%w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  %w[data-label-manual data-aria-copy data-aria-done data-aria-manual].each do |attribute|
+    record(failures, "#{relative}: install control missing #{attribute}") unless html.include?(attribute)
+  end
+end
+
+contents_js = read_file(ROOT.join("assets/js/contents.js"), failures)
+unless contents_js.include?("if (h.id) { used.add(h.id); return h.id; }")
+  record(failures, "contents.js: source-rendered heading ID branch must be retained")
+end
+# Last-resort TOC label must follow the page locale when data-toc-label is absent.
+record(failures, "contents.js: missing ZH last-resort TOC label") unless contents_js.include?("本页内容")
+record(failures, "contents.js: TOC fallback must inspect document language") unless
+  contents_js.match?(/documentElement\.lang|lang-zh/)
+
+theme_js_source = read_file(ROOT.join("assets/js/theme.js"), failures)
+%w[跟随系统 浅色 深色].each do |needle|
+  record(failures, "theme.js: missing ZH last-resort label #{needle.inspect}") unless theme_js_source.include?(needle)
+end
+record(failures, "theme.js: state fallbacks must inspect document language") unless
+  theme_js_source.match?(/documentElement\.lang|lang-zh/)
+
+if css_path.exist?
+  css = css_path.read
+  proof_title_rule = css[/^\.hero-proof__title\s*\{[^}]*\}/m].to_s
+  record(failures, "style.css: .hero-proof__title must use supported font-weight 600") unless proof_title_rule.match?(/font-weight:\s*600\s*;/)
+  record(failures, "style.css: unsupported hero proof font-weight 650 remains") if proof_title_rule.match?(/font-weight:\s*650\s*;/)
+
+  install_copy_rule = css[/\.install__copy\s*\{[^}]*\}/m].to_s
+  unless install_copy_rule.match?(/min-(?:block-size|height):\s*44px\s*;/)
+    record(failures, "style.css: .install__copy missing 44px minimum target size")
+  end
+
+  table_scroll_rule = css[/\.dudect__table-scroll\s*\{[^}]*\}/m].to_s
+  unless table_scroll_rule.match?(/overflow-x:\s*auto\s*;/)
+    record(failures, "style.css: .dudect__table-scroll missing horizontal overflow")
+  end
+
+  # The colophon path's <wbr> (guarded above) is switched off from 22em up, so
+  # it breaks the path only on narrow phones. Without this rule wider lines in
+  # that paragraph re-wrap (ZH from 416px).
+  unless css.match?(/@media\s*\(min-width:\s*22em\)\s*\{\s*\.prose code wbr\s*\{\s*display:\s*none;\s*\}\s*\}/)
+    record(failures, "style.css: missing @media (min-width: 22em) { .prose code wbr { display: none; } } (the colophon path's <wbr> would re-wrap wider lines)")
+  end
+
+  print_blocks = css.scan(/@media\s+print\s*\{.*?\n\}/m).join("\n")
+  %w[.nav-toggle .primary-nav__item--theme .primary-nav__item--switch].each do |selector|
+    record(failures, "style.css: print CSS must hide #{selector}") unless print_blocks.include?(selector)
+  end
+end
+
+dudect_source = read_file(ROOT.join("_includes/dudect-chart.html"), failures)
+unless dudect_source.match?(/class="dudect__table-scroll"[^>]*tabindex="0"[^>]*role="region"[^>]*aria-label="\{\{\s*t\.table_scroll_label\s*\|\s*escape\s*\}\}"/m)
+  record(failures, "dudect-chart.html: table must be wrapped in a localized keyboard-scrollable region")
+end
+
+# --- crates.io publication dates (2026-10-12) ---------------------------------
+# Every dated row on the gm-crypto-rs release pages, and the case study's
+# current-release row, must show the crates.io publication date in UTC from
+# _data/crate_publications.yml. "Not published" rows must not name a version
+# that crates.io has. Catches local-time (UTC+8) dates and hand-typed drift,
+# not just a missing phrase.
+pubs = (YAML.load_file(ROOT.join("_data/crate_publications.yml"))["published_utc"] || {}).transform_keys(&:to_s)
+record(failures, "crate_publications.yml: no published versions") if pubs.empty?
+version_key = ->(v) { v.split(".").map(&:to_i) }
+{ "projects/gm-crypto-rs/releases/index.html" => ["Not published", "crates.io publication dates in UTC"],
+  "zh/projects/gm-crypto-rs/releases/index.html" => ["未单独发版", "crates.io 的发布日期（UTC）"] }.each do |relative, (unpublished_marker, utc_label)|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: missing UTC date-convention label") unless html.gsub(/\s+/, " ").include?(utc_label)
+  shown = []
+  html.scan(%r{<dt>\s*v?([0-9][0-9.]*(?:\s*[–-]\s*[0-9][0-9.]*)?)\s*</dt>\s*<dd>(.*?)</dd>}m).each do |label, body|
+    label = label.strip
+    text = body.gsub(/<[^>]+>/, "").strip
+    if text.start_with?(unpublished_marker)
+      if (lo, hi = label.split(/\s*[–-]\s*/)) && hi
+        lo_k = version_key.(lo)[0, 2]; hi_k = version_key.(hi)[0, 2]
+        inside = pubs.keys.select { |v| k = version_key.(v)[0, 2]; (k <=> lo_k) >= 0 && (k <=> hi_k) <= 0 }
+        record(failures, "#{relative}: range #{label} marked unpublished but crates.io has #{inside.join(', ')}") unless inside.empty?
+      elsif pubs.key?(label)
+        record(failures, "#{relative}: v#{label} marked unpublished but crates.io has it")
+      end
+      next
+    end
+    date = text[/\A(\d{4}-\d{2}-\d{2})/, 1]
+    next unless date
+    shown << label
+    if !pubs.key?(label)
+      record(failures, "#{relative}: v#{label} dated #{date} but not in crate_publications.yml")
+    elsif pubs[label][0, 10] != date
+      record(failures, "#{relative}: v#{label} shows #{date}, crates.io UTC date is #{pubs[label][0, 10]}")
+    end
+  end
+  missing = pubs.keys.select { |v| (version_key.(v) <=> [0, 6, 0]) >= 0 } - shown
+  record(failures, "#{relative}: published versions missing a dated row: #{missing.sort_by(&version_key).join(', ')}") unless missing.empty?
+end
+%w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  m = html.match(%r{<dt>\s*(?:Current|当前版本)\s*</dt>\s*<dd>\s*<strong>v([0-9.]+)</strong>[^<]*?(\d{4}-\d{2}-\d{2})\s*(?:\(UTC\)|（UTC）)})
+  newest = pubs.keys.max_by(&version_key)
+  if m.nil?
+    record(failures, "#{relative}: Current row must show a version with a UTC-labelled publication date")
+  elsif pubs[m[1]].nil? || pubs[m[1]][0, 10] != m[2]
+    record(failures, "#{relative}: current release v#{m[1]} shows #{m[2]}, crates.io UTC date is #{pubs[m[1]].to_s[0, 10]}")
+  elsif m[1] != newest
+    record(failures, "#{relative}: Current row shows v#{m[1]} but the newest published version is v#{newest}")
+  end
+end
+
+# --- LinkedIn contact route (2026-10-12) -------------------------------------
+config = YAML.load_file(ROOT.join("_config.yml"))
+linkedin = config["linkedin_username"].to_s
+if linkedin.empty?
+  record(failures, "_config.yml: linkedin_username missing (Owner-approved contact route)")
+else
+  linkedin_url = "https://www.linkedin.com/in/#{linkedin}/"
+  (core_pages.keys + project_pages).each do |relative|
+    html = read_file(SITE.join(relative), failures)
+    next if html.empty?
+    footer = html[%r{<footer class="site-footer".*?</footer>}m].to_s
+    record(failures, "#{relative}: footer missing LinkedIn link #{linkedin_url}") unless footer.include?(%(href="#{linkedin_url}"))
+    people = graph_nodes_of_type(json_ld_graph(html, failures, relative), "Person")
+    record(failures, "#{relative}: Person sameAs missing LinkedIn") unless people.any? { |n| Array(n["sameAs"]).include?(linkedin_url) }
+  end
+  %w[contact/index.html zh/contact/index.html].each do |relative|
+    html = read_file(SITE.join(relative), failures)
+    record(failures, "#{relative}: contact list missing LinkedIn") unless html[%r{<dl class="contact-direct">.*?</dl>}m].to_s.include?(linkedin_url)
+  end
+end
+
+# --- Corrected notes keep their dated correction (2026-10-12) ----------------
+# Each banner must also END its own blockquote: without a blank line after the
+# "> " line, kramdown folds the note's first paragraph into the banner.
+{ "notes/constant-time-ci-gate/index.html" => ["Correction (2026-10-12, UTC)", "case study</a>."],
+  "zh/notes/constant-time-ci-gate/index.html" => ["更正（2026-10-12，UTC）", "案例页</a>。"],
+  "notes/constant-time-warrant/index.html" => ["Corrected 2026-10-12 (UTC)", "scope and enforcement."],
+  "zh/notes/constant-time-warrant/index.html" => ["2026-10-12（UTC）更正", "约束力一致。"] }.each do |relative, (phrase, ending)|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  record(failures, "#{relative}: dated correction notice missing") unless html.include?(phrase)
+  quote = html.scan(%r{<blockquote>(.*?)</blockquote>}m).map(&:first).find { |q| q.include?(phrase) }
+  record(failures, "#{relative}: correction notice must stand alone (its blockquote swallowed body text)") if quote && !quote.strip.sub(%r{</p>\z}, "").rstrip.end_with?(ending)
+  record(failures, "#{relative}: timing threshold shown as \"<\"; the check passes at the limit") if html.match?(/\|τ\|(?:<\/code>)?\s*(?:&lt;|<)\s*0\.20/)
 end
 
 if failures.empty?

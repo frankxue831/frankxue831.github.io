@@ -1,152 +1,101 @@
 ---
 layout: default
 title: "Explainer Engine"
-description: "A deterministic pipeline that turns a storyboard into a narrated concept video, with every on-screen claim cited and verified against the source before render."
+description: "An experiment in explaining code and technical concepts through animation: scripted videos with source citations checked before rendering. Public source, pre-release."
 permalink: /projects/explainer-engine/
 lang: en
 alternate: /zh/projects/explainer-engine/
 project_slug: explainer-engine
-summary_outcome: "Every on-screen claim is verified against the source repo at a pinned commit before a frame is drawn."
+summary_outcome: "Two actual videos; citation checks do not establish semantic correctness or teaching effectiveness."
 ---
 
-<section class="page-header wrap">
-    <p class="page-header__eyebrow">(03)  Work / Detail</p>
-    <h1 class="page-header__title">
-        <em>Explainer Engine</em>
-    </h1>
-    <p class="page-header__lede">
-        A deterministic pipeline that turns a storyboard into a narrated concept
-        video — where every on-screen claim is cited and <em>verified against the
-        source</em> before a single frame is drawn.
-    </p>
+<section class="page-header wrap explainer-header">
+    <p class="page-header__eyebrow">Explainer Engine</p>
+    <h1 class="page-header__title">Make code and technical concepts easier to see.</h1>
+    <p class="page-header__lede">I want to try using animation to make relationships in code and technical concepts easier to understand, and explore how AI can help. Explainer Engine is one attempt: it starts with an explanation script, produces video with narration and captions, and checks the script’s source citations before rendering.</p>
+    {%- assign explainer_project = site.data.projects | where: 'slug', page.project_slug | first %}
+    <div class="explainer-actions">
+        <a href="#examples">Watch the examples</a>
+        <a href="https://github.com/frankxue831/ManimSimpleRender" rel="noopener noreferrer">View source</a>
+        <span>{{ explainer_project.status_label[page.lang] }}</span>
+    </div>
 </section>
 
 <section class="section wrap reveal">
-    <article class="project-detail prose">
-        {% include project-summary.html %}
-
-        <h2>What it is</h2>
-        <p>
-            The Explainer Engine compiles a YAML {% include glossary-term.html term="storyboard" %}
-            into a {% include glossary-term.html term="manim" %} narrated scene.
-            Each beat is a plot, a cited code callout, or — newest — an animated
-            concept <em>diagram</em>: labeled nodes placed at named anchors,
-            force edges, one path, and a node moving along it. One pass, no
-            model in the loop:
-            <code>storyboard</code> → <code>citation gate</code> →
-            <code>deterministic codegen</code> → <code>Manim render</code> with
-            synthesized narration. It is a private, local tool; the snapshot it
-            describes is named under <em>Evidence</em> below.
-        </p>
-
-        <figure class="fig fig--video">
-            <video controls preload="metadata" aria-describedby="fig-video-cap"
-                   width="1920" height="1080"
-                   poster="{{ '/assets/video/harness-field-explainer.poster.png' | relative_url }}">
-                <source src="{{ '/assets/video/harness-field-explainer.mp4' | relative_url }}" type="video/mp4">
-                <track kind="captions" srclang="en" label="English"
-                       src="{{ '/assets/video/harness-field-explainer.en.vtt' | relative_url }}" default>
-                <track kind="captions" srclang="zh-CN" label="中文"
-                       src="{{ '/assets/video/harness-field-explainer.zh.vtt' | relative_url }}">
-                <a href="{{ '/assets/video/harness-field-explainer.mp4' | relative_url }}">Download the explainer (mp4)</a>
-            </video>
-            <figcaption class="fig__cap" id="fig-video-cap">fig. 3.1 — the engine's own output, end to end
-            (English narration; English and Chinese caption tracks). The amber
-            tag marks the view <em>simplified</em>; the badge cites the source commit the
-            "memory force" claim was verified against.</figcaption>
-        </figure>
-
-        <h2>The problem</h2>
-        <p>
-            Explanations drift from the code they describe, and a rendered
-            explanation drifts <em>silently</em>: the video still plays, the
-            diagram still looks right, and nothing tells you the claim on
-            screen stopped matching the source two refactors ago. A paraphrase
-            is easy to get subtly wrong, and production polish makes it worse —
-            a well-produced claim reads as more authoritative than an
-            unchecked one has any right to. The question the engine is built
-            around isn't <em>how to render an explanation</em> — it's <em>what
-            it takes for a rendered explanation to refuse to drift.</em>
-        </p>
-
-        <h2>Constraints &amp; key decisions</h2>
-        <p>
-            <strong>Refuse to draw a claim that can't be cited.</strong> Before
-            render, a <strong>citation gate</strong> reads the cited lines from
-            the source repo at a pinned commit and checks that the stated
-            evidence is actually present; a commit-honesty check fails the
-            build if the badge's commit does not match the repo's
-            <code>HEAD</code>, or the tree is dirty without an explicit opt-in.
-            <strong>Cost:</strong> authoring slows down — every claim needs a
-            cite that resolves, and a storyboard that outruns its sources
-            doesn't render at all.
-        </p>
-        <p>
-            <strong>Mark the teaching view; never pass it off as source.</strong>
-            On-screen content is always marked <code>simplified</code> — a
-            reshaped teaching view is never presented as verbatim code. The
-            amber tag and the <code>verified @ commit</code> badge are not
-            decoration; they are the gate's verdict, rendered into the frame.
-            <strong>Cost:</strong> every frame carries permanent disclosure
-            furniture — pixels spent on provenance instead of polish.
-        </p>
-        <p>
-            <strong>Deterministic codegen, no model in the loop.</strong> The
-            same storyboard always emits the same scene, so a render is
-            reproducible and a diff in the output traces to a diff in the
-            input. The diagram canvas turns relationships into motion without
-            hand-built scene code, which is what lets a <em>concept</em> — not
-            just a code listing — be explained and still be checkable.
-            <strong>Cost:</strong> nothing the storyboard doesn't specify
-            exists, and a new beat type is engine work, not prompt work.
-        </p>
-        <p>
-            <strong>One render core, two consumers.</strong> The engine sits on
-            a shared, Qt-free render core — the same core a desktop
-            batch-render GUI drives — so the rendering path is one tested
-            surface rather than a one-off script. <strong>Cost:</strong> every
-            core change has two consumers to keep working, and the engine
-            can't take shortcuts that would wedge the GUI.
-        </p>
-
-        <h2>Evidence</h2>
-        <p>
-            A private local snapshot at <code>local tag diagram-canvas</code>
-            — there is no public source to inspect. What backs the claims is the artifact
-            itself: the clip above is the engine's output, not a mock-up. Its
-            five forces are drawn from a research wiki; the on-screen badge
-            cites the exact source line and commit the "memory force" claim
-            was verified against, and the citation gate passed before the
-            render ran. The disclosure markers — the <code>simplified</code>
-            tag and the <code>verified @ commit</code> badge — are visible in
-            every frame. The video itself can verify the rendered artifact
-            and those visible markers. The cited private source line and the
-            gate result are not independently checkable today. If the source
-            is later published, the cited line could be checked externally;
-            the historical gate result would still require public run
-            evidence.
-        </p>
-
-        <h2>Next</h2>
-        <p>
-            Nothing is committed to a milestone. The open question the diagram
-            canvas half-answers sets the direction: how much of a concept can
-            be explained in motion while staying checkable against source. A
-            public source link follows if and when the repository becomes
-            reachable.
-        </p>
-
-        <h2>What it isn't</h2>
-        <ul>
-            <li>Not an LLM video generator — codegen is deterministic and reproducible.</li>
-            <li>Not a slideshow — the diagram canvas animates relationships, not bullet points.</li>
-            <li>Not a verbatim source viewer — on-screen code is a marked simplification, with the real lines cited.</li>
-            <li>Not a warrant-transfer medium — the badge shows the gate's verdict, not the evidence; readers who need to check a claim need <a href="{{ '/notes/constant-time-warrant/' | relative_url }}">links, not narration</a>.</li>
-            <li>{{ status_label }} — not a public-source project today.</li>
-        </ul>
-
-        <div class="project-detail__links">
-            <a href="{{ '/projects/' | relative_url }}">← All work</a>
+    <article class="project-detail prose explainer-detail">
+        <h2 id="examples">Two examples to watch</h2>
+        <p class="explainer-watch-links"><a href="#harness-video">Harness-Field · 57 seconds</a> / <a href="#budget-video">Evidence budget · 62 seconds</a></p>
+        <div class="explainer-example" id="harness-video">
+            <h3>Harness-Field · 57 seconds</h3>
+            <p>Five influences on an AI agent’s actions become forces and paths—an attempt to make an abstract relationship easier to follow.</p>
+            {% include explainer-video.html name='harness-field-explainer' id='harness-video' caption='Earlier local example; its historical verification result is not independently checkable. English narration, English and Chinese captions.' %}
         </div>
+        <div class="explainer-example" id="budget-video">
+            <h3>How much evidence does a citation need? · 62 seconds</h3>
+            <p>A graph and code show how many evidence tokens the planner lets a citation carry, and why it drops a citation with too little evidence.</p>
+            {% include explainer-video.html name='evidence-budget' id='budget-video' caption='Public c345e66 example; the script and cited source are available. English narration, English and Chinese captions.' %}
+        </div>
+        <p>This page can show captions below the picture to keep code clear. Fullscreen playback and browsers without JavaScript use native captions. Text embedded in the videos has not been remade and remains small on phones; use fullscreen or the script below for detail.</p>
+        <h2 id="what-it-is">From script to screen</h2>
+        <p>The input is a YAML {% include glossary-term.html term="storyboard" %} specifying scenes, narration and source citations—not arbitrary code uploaded for an automatically reliable explanation. This is an excerpt from the second video’s <code>per-line</code> beat; the frame comes from 12 seconds into the existing video.</p>
+        <div class="explainer-pair">
+            <figure>
+                <figcaption>Input: an actual YAML excerpt</figcaption>
+                <pre tabindex="0" role="region" aria-label="YAML script excerpt"><code>code_callout:
+  display: &quot;TOKENS_PER_LINE = 2&quot;
+  language: python
+  cite: &quot;explainer/plan/evidence.py:56&quot;
+  evidence: [&quot;TOKENS_PER_LINE&quot;, &quot;2&quot;]</code></pre>
+            </figure>
+            <figure>
+                <a href="{{ '/assets/img/evidence-budget-12s.jpg' | relative_url }}">
+                    <img src="{{ '/assets/img/evidence-budget-12s.jpg' | relative_url }}" width="1920" height="1080" loading="lazy" alt="At 12 seconds: a two-tokens-per-line graph above TOKENS_PER_LINE = 2 and its evidence.py:56 citation.">
+                </a>
+                <figcaption>Output: the original frame at 12 seconds · Open full size</figcaption>
+            </figure>
+        </div>
+        <p>The excerpt specifies the displayed code, the cited source line and the evidence to find; the same beat defines its curve as <code class="nowrap">2 * x</code>. The on-screen code is a teaching view marked <code>simplified</code>, not a verbatim source listing. <a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/examples/evidence-budget.story.yaml" rel="noopener noreferrer">Read the full script</a>.</p>
+        <ol class="explainer-flow">
+            <li><strong>Check citations</strong><span>The citation gate checks whether the cited lines contain the evidence declared in the script.</span></li>
+            <li><strong>Generate the scene by fixed rules</strong><span>The script compiles into {% include glossary-term.html term="manim" %} scene code; no language model writes that code.</span></li>
+            <li><strong>Render and narrate</strong><span>Manim renders the visuals, and a text-to-speech service synthesizes the narration. These examples also provide English and Chinese caption tracks.</span></li>
+        </ol>
+        <p>Separately, the optional <code>explainer plan</code> uses a language model to draft a script from a selected source range. It is a preparation step: the draft must still pass the same citation gate, which checks its citations, not its narration. The model does not generate scenes during rendering.</p>
+        <h2 id="evidence">What you can check</h2>
+        <p>The second video’s script and source are at public commit <code>c345e66</code>. After setting up the environment as described in the repository and checking out that commit, run:</p>
+        <pre class="explainer-command" tabindex="0" role="region" aria-label="Citation verification command"><code>explainer verify examples/evidence-budget.story.yaml</code></pre>
+        <p><strong>This command checks citations; it does not re-render the video.</strong> It does not establish that the explanation is semantically correct or educationally effective.</p>
+        <ul class="explainer-sources">
+            <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/examples/evidence-budget.story.yaml" rel="noopener noreferrer">The video’s storyboard</a></li>
+            <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/explainer/plan/evidence.py#L55-L58" rel="noopener noreferrer">Evidence constants: lines 55–58</a></li>
+            <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/explainer/plan/evidence.py#L205-L211" rel="noopener noreferrer">Budget calculation: lines 205–211</a></li>
+            <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/explainer/plan/evidence.py#L312-L313" rel="noopener noreferrer">Weak-citation rejection: lines 312–313</a></li>
+        </ul>
+        <p>The planner’s budget allows two token slots per cited line, with a floor of five and a cap of twenty-four, and the planner drops citations with fewer than two tokens or no strong token; the citation gate itself only checks that the declared evidence is present. This site states that the clip was rendered from <code>c345e66</code>; the picture alone does not establish that provenance. The script cites its own repository without pinning a commit, so its badge reads <code>verified</code> without a commit.</p>
+        <details class="explainer-history">
+            <summary>Earlier example and local snapshot limits</summary>
+        <p>The first Harness-Field video is actual engine output from the earlier local <code>diagram-canvas</code> snapshot. Its five forces come from a research wiki. The <code>simplified</code> label and <code>verified @ commit</code> badge identify the teaching view and the source line and commit cited for “memory force.” The citation gate passed before that render, but the historical result lacks public run evidence and is not independently checkable. The video shows the artifact and those markers; it cannot replace that run evidence.</p>
+        <p>The project summary retains <code>local tag explainer-plan</code>: this later local snapshot added optional script drafting without changing the verified-script-to-frame path. The repository is now public, but that tag is not published, so the exact snapshot cannot be checked from outside. The public <code>c345e66</code> example is newer; they are separate bodies of evidence.</p>
+        </details>
+        <h2 id="decisions">Decisions and trade-offs</h2>
+        <p><span id="problem">Animation can make a relationship easier to see, but it can also make a wrong explanation look more convincing.</span> The checks here constrain citations; they do not replace judgment about the explanation itself.</p>
+        <p><strong>Stop rendering when a citation does not check out.</strong> The gate checks for declared evidence in source; when the script pins a commit, it also checks that the repository’s <code>HEAD</code> matches and rejects a dirty tree without explicit opt-in. <strong>Cost:</strong> Script authors must maintain resolvable citations and may need to revise them when source changes.</p>
+        <p><strong>Keep provenance on the teaching view.</strong> The <code>simplified</code> label and <code>verified</code> badge show the gate's verdict, not a guarantee that the explanation is correct. <strong>Cost:</strong> Labels and citations take space away from the diagram and code.</p>
+        <p><strong>Use a model to draft, fixed rules to generate code.</strong> The same script produces the same scene code through deterministic codegen; the actual video still depends on the render environment, fonts and narration resources. <strong>Cost:</strong> A new beat type requires engine changes, not just a new prompt; the planner cannot bypass the gate.</p>
+        <p><strong>Share the render core with the desktop tool.</strong> The same Qt-free core also serves the batch-render GUI. <strong>Cost:</strong> Core changes must serve both consumers, without blocking the GUI for the convenience of the CLI.</p>
+        <p><a href="{{ '/notes/extraction-trigger/' | relative_url }}">Implementation note: sharing code is not the same decision as sharing a package</a></p>
+        <h2 id="next">Where it stands</h2>
+        <p>The source is public and the project is pre-release, with no published tag and no validated teaching outcomes. Nothing is committed to a milestone. The open question remains which relationships benefit from animation, and how to make explanations easier to understand and citations easier to check.</p>
+        {% include project-summary.html %}
+        <h2 id="limits">Limits</h2>
+        <ul>
+            <li>Not an arbitrary-code-to-reliable-explanation tool: the input remains an explicit script.</li>
+            <li>Not video improvised by an LLM during rendering: the AI planner only provides optional script drafting.</li>
+            <li>The diagram canvas animates relationships, but learning benefits have not been validated.</li>
+            <li>On-screen code is a cited teaching view, not a verbatim source viewer.</li>
+            <li>Citation checks do not establish semantic correctness. The badge gives a verdict; to check a particular claim, readers still need <a href="{{ '/notes/constant-time-warrant/' | relative_url }}">source links and evidence</a>.</li>
+            <li>The earlier video’s historical verification result is not independently checkable; public source does not mean every local snapshot is published.</li>
+        </ul>
+        <div class="project-detail__links"><a href="{{ '/projects/' | relative_url }}">← All work</a></div>
     </article>
 </section>

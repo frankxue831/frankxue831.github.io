@@ -127,6 +127,76 @@ def normalize_release(release)
   release.to_s.strip.sub(/\Av/, "")
 end
 
+
+# --- GitHub release source (second upstream) --------------------------------
+# crates.io can lag or lead the GitHub release (publish is a separate step), so
+# the site is also compared against the repo's latest published GitHub release,
+# falling back to the highest stable semver tag when the repo has no releases.
+# Public API, no secrets; GITHUB_TOKEN (if set) only raises the rate limit.
+def github_get(path)
+  uri = URI("https://api.github.com#{path}")
+  proxy = uri.find_proxy
+  http = proxy ? Net::HTTP.new(uri.host, uri.port, proxy.host, proxy.port, proxy.user, proxy.password) : Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+  http.open_timeout = 10
+  http.read_timeout = 10
+  req = Net::HTTP::Get.new(uri.request_uri)
+  req["Accept"] = "application/vnd.github+json"
+  req["User-Agent"] = "frankxue-release-drift"
+  token = ENV["GITHUB_TOKEN"].to_s.strip
+  req["Authorization"] = "Bearer #{token}" unless token.empty?
+  http.request(req)
+end
+
+def stable_version(tag)
+  v = Gem::Version.new(normalize_release(tag))
+  v.prerelease? ? nil : v
+rescue ArgumentError
+  nil
+end
+
+# Returns [Gem::Version, label] or :unreachable / :no_stable.
+# Upstream = max(latest published GitHub Release, highest stable semver tag).
+# Both are needed: gm-crypto-rs has pushed tags (v1.16.0) without cutting a
+# GitHub Release (latest Release was still v1.13.0), so releases/latest alone
+# would report a false "site ahead"; tags alone would miss a release whose tag
+# falls past the first page.
+def latest_github_version(owner_repo)
+  candidates = []
+  res = github_get("/repos/#{owner_repo}/releases/latest")
+  if res.is_a?(Net::HTTPSuccess)
+    v = stable_version(JSON.parse(res.body)["tag_name"])
+    candidates << [v, "release"] if v
+  elsif !res.is_a?(Net::HTTPNotFound) # 404 = no releases; fall back to tags
+    warn "release-drift: #{owner_repo} releases/latest HTTP #{res.code}"
+    return :unreachable
+  end
+  res = github_get("/repos/#{owner_repo}/tags?per_page=100")
+  return :unreachable unless res.is_a?(Net::HTTPSuccess)
+
+  tag = JSON.parse(res.body).filter_map { |t| stable_version(t["name"]) }.max
+  candidates << [tag, "tag"] if tag
+  return :no_stable if candidates.empty?
+
+  best = candidates.max_by(&:first)
+  rel = candidates.find { |c| c[1] == "release" }
+  label = rel && rel[0] < best[0] ? "tag (latest GitHub Release is only v#{rel[0]})" : best[1]
+  [best[0], label]
+rescue StandardError => e
+  warn "release-drift: #{owner_repo} lookup failed — #{e.class}: #{e.message}"
+  :unreachable
+end
+
+def github_repo_from_url(url)
+  m = url.to_s.strip.match(%r{\Ahttps://github\.com/([^/]+/[^/]+?)(?:\.git)?/?\z})
+  m && m[1]
+end
+
+# Case-study pages that pin the demo dependency (`<crate> = "=X.Y.Z"`).
+DEMO_PIN_PAGES = {
+  "gm-crypto-rs" => ["projects/gm-crypto-rs.html", "zh/projects/gm-crypto-rs.html"]
+}.freeze
+
 checked = 0
 drift = 0
 unverified = 0
@@ -145,6 +215,54 @@ PROJECTS.each do |project|
   rescue ArgumentError
     warn_annotation("#{slug}: release #{project["release"].inspect} is not a comparable version — skipping drift check")
     next
+  end
+
+
+  # GitHub latest release / tag.
+  if (owner_repo = github_repo_from_url(project["repo_url"]))
+    gh = latest_github_version(owner_repo)
+    checked += 1
+    if gh.is_a?(Array)
+      gh_version, kind = gh
+      if site_version < gh_version
+        drift += 1
+        warn_annotation("#{slug}: site release v#{site_version} trails GitHub #{owner_repo} latest #{kind} v#{gh_version} — update `release:` in _data/projects.yml, the demo pins in #{(DEMO_PIN_PAGES[slug] || []).join(", ")}, and the case study copy")
+        summary("- 🔴 **#{slug}** — site `v#{site_version}` < GitHub latest #{kind} `v#{gh_version}` (DRIFT)")
+        puts "DRIFT  #{slug}: site v#{site_version} < GitHub #{owner_repo} latest #{kind} v#{gh_version}"
+        puts "       update: _data/projects.yml (#{slug} release:), #{(DEMO_PIN_PAGES[slug] || []).join(", ")}"
+      elsif site_version > gh_version
+        # Not counted as drift: crates.io (checked below) is authoritative for
+        # "published", and a tag can trail a crates.io publish briefly.
+        warn_annotation("#{slug}: site release v#{site_version} is AHEAD of GitHub #{owner_repo} latest #{kind} v#{gh_version}")
+        puts "AHEAD  #{slug}: site v#{site_version} > GitHub #{owner_repo} latest #{kind} v#{gh_version}"
+      else
+        summary("- ✅ **#{slug}** — site `v#{site_version}` matches GitHub latest #{kind}")
+        puts "OK     #{slug}: site v#{site_version} == GitHub #{owner_repo} latest #{kind} v#{gh_version}"
+      end
+    else
+      unverified += 1
+      warn_annotation("#{slug}: could not read latest release/tag for #{owner_repo} (#{gh}) — not verified this run")
+    end
+  end
+
+  # Demo dependency pins must equal the site release (local check, no network).
+  (DEMO_PIN_PAGES[slug] || []).each do |rel|
+    path = ROOT.join(rel)
+    unless path.exist?
+      warn_annotation("#{slug}: demo pin page #{rel} not found")
+      next
+    end
+    pins = path.read.scan(/#{Regexp.escape(crate)}\s*=\s*(?:"|&quot;)=([0-9][0-9A-Za-z.\-]*)/).flatten.uniq
+    checked += 1
+    if pins.empty?
+      warn_annotation("#{slug}: no `#{crate} = \"=X.Y.Z\"` pin found in #{rel}")
+    elsif pins != [site_version.to_s]
+      drift += 1
+      warn_annotation("#{slug}: #{rel} pins #{crate} =#{pins.join(", =")} but _data/projects.yml release is v#{site_version} — update the pin in #{rel}")
+      puts "PIN    #{slug}: #{rel} pins =#{pins.join(", =")} != release v#{site_version}"
+    else
+      puts "OK     #{slug}: #{rel} pins =#{pins.first}"
+    end
   end
 
   published = latest_published_version(crate)

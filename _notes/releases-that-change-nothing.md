@@ -4,19 +4,20 @@ date: 2026-06-03
 permalink: /notes/releases-that-change-nothing/
 lang: en
 alternate: /zh/notes/releases-that-change-nothing/
-description: "Why gm-crypto-rs leaves gaps in its version line — assurance cycles that change no output bytes don't earn a published release."
-excerpt: "A published version is a promise about bytes, not a diary of work. Here's why some of gm-crypto-rs's hardest cycles were never published at all."
+description: "Why gm-crypto-rs leaves gaps in its version line: several cycles that changed no output bytes merged without a published release, each for a reason its records give."
+excerpt: "A published version is a promise about bytes, not a diary of work. Here's why some of gm-crypto-rs's hardest cycles never got a version of their own."
 ---
 
 A published version number is a promise to whoever depends on you. The easy
 mistake is to treat it as a log of effort — every sprint earns a bump, every
 merge a new number on crates.io. But a dependency doesn't care how hard you
-worked; it cares whether the bytes it links against changed. So
-[`gm-crypto-rs`]({{ '/projects/gm-crypto-rs/' | relative_url }}) follows a rule:
-a version is a promise about *output*, and a cycle that changes no output doesn't
-earn one.
+worked; it cares whether the bytes it links against changed. In
+[`gm-crypto-rs`]({{ '/projects/gm-crypto-rs/' | relative_url }}), several cycles
+that changed no *output* merged without a version of their own. The project records
+give the reason cycle by cycle; the first, for `0.14`, puts it plainly:
+publishing byte-identical crypto is release noise.
 
-That rule shows up as gaps in the public version line. crates.io has no
+Those cycles show up as gaps in the public version line. crates.io has no
 `0.14.0`. The work was real — a `cargo-fuzz` sweep, sixteen targets over the
 untrusted-input decode and decrypt surface, run to completion with zero crashes.
 It raised my confidence in the parser; it changed not a single output byte.
@@ -26,15 +27,16 @@ assurance and stayed unpublished.
 
 The bigger gap is `0.17` through `0.23`. That stretch was the pre-1.0 readiness
 work: freezing the public API behind a `cargo-public-api` drift-check,
-decoupling `crypto-bigint` from the always-on surface, a multi-model adversarial
-re-audit before committing to stability. Seven version numbers' worth of the
+decoupling `crypto-bigint` from the always-on surface, an adversarial review by two AI
+models (not an independent audit) before committing to stability. Seven version numbers' worth of the
 most consequential work in the project — and crates.io skips all of them. The
-changes shipped together, once, in `1.0.0`. The rule has kept applying since:
-`v1.5` (the TLCP decomposition design cycle) and `v1.10` (the assurance cycle
-that wired the GmSSL interop suite into CI at a pinned oracle) are unpublished
-for the same reason.
+changes shipped together, once, in `1.0.0`. Later gaps have their own records:
+`v1.5`, the TLCP decomposition design cycle, made no code change; `v1.10`, the
+assurance cycle that wired the GmSSL interop suite into CI at a pinned oracle,
+changed no published crate's runtime output; and `v1.14` and `v1.15`, two
+timing-study assurance cycles, changed no crate at all.
 
-The discipline underneath is easy to state and easy to violate: publish when the
+The idea underneath is easy to state and easy to violate: publish when the
 artifact someone consumes changes, not when you've been busy. Assurance work —
 fuzzing that finds nothing, an audit that confirms what you hoped, a test added
 for peace of mind — is the work you most want to point at. The temptation is to
@@ -53,8 +55,8 @@ There's a cost, and it mirrors the
 [constant-time gate]({{ '/notes/constant-time-ci-gate/' | relative_url }})'s: a version line with
 deliberate holes needs explaining. A reader scanning crates.io sees `0.13` and
 then `0.15`, sees `0.16` and then `1.0`, and has to be told the missing numbers
-aren't abandonment —
-they're cycles that refused to bill assurance churn as a byte-changing release.
+aren't abandonment — each is a cycle whose record says why it didn't get a
+version of its own.
 I'd rather owe that explanation than overstate a release. The full history, with
 the skipped cycles named and explained, is on the
 [release history]({{ '/projects/gm-crypto-rs/releases/' | relative_url }}) and in the public

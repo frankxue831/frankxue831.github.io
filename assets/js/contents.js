@@ -34,7 +34,11 @@
   };
 
   // --- build the rail ----------------------------------------------------
-  const label = (document.body.getAttribute('data-toc-label') || 'On this page').trim();
+  // Templates pass data-toc-label from i18n. If that attribute is missing,
+  // follow the page locale instead of always falling back to English.
+  const zhPage = (document.documentElement.lang || '').toLowerCase().indexOf('zh') === 0 ||
+    document.body.classList.contains('lang-zh');
+  const label = (document.body.getAttribute('data-toc-label') || (zhPage ? '本页内容' : 'On this page')).trim();
   const nav = document.createElement('nav');
   nav.className = 'toc';
   nav.setAttribute('aria-label', label);

@@ -1,5 +1,6 @@
 {%- assign lang = page.lang | default: 'en' -%}
 {%- assign t = site.data.i18n[lang] -%}
+{%- assign meta_description = page.description | default: site.description | strip_newlines | strip | smartify -%}
 <!DOCTYPE html>
 <html lang="{{ t.html_lang }}" class="no-js">
 <head>
@@ -95,6 +96,13 @@
       {%- assign doc_title = page_doc_title | append: ' | ' | append: site.title -%}
     {%- endif -%}
     {{ seo_meta | split: '<title>' | first }}<title>{{ doc_title | escape }}</title>{{ seo_meta | split: '</title>' | last }}
+    <meta name="twitter:description" content="{{ meta_description | escape }}">
+    {%- if page.url == '/' or page.url == '/zh/' or page.alternate %}
+    <meta property="og:locale:alternate" content="{% if lang == 'zh' %}en_US{% else %}zh_CN{% endif %}">
+    {%- endif %}
+    {%- if page.robots %}
+    <meta name="robots" content="{{ page.robots | escape }}">
+    {%- endif %}
     {% include structured-data.html %}
 
     {%- comment -%} hreflang alternates for SEO {%- endcomment -%}
@@ -133,8 +141,10 @@
         above-the-fold Latin faces: EB Garamond roman (site mark + hero title +
         headings) and IBM Plex Mono 400 (eyebrow labels + metadata). Body is
         system-sans, so it needs no web font. CJK is system-served. {%- endcomment -%}
+    {% if page.url == '/' or page.url == '/zh/' %}
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ '/assets/fonts/eb-garamond-latin.woff2' | relative_url }}">
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ '/assets/fonts/ibm-plex-mono-400-latin.woff2' | relative_url }}">
+    {% endif %}
 
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
 </head>

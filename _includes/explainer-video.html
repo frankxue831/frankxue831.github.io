@@ -1,0 +1,25 @@
+{%- assign video_ui = site.data.i18n[page.lang].explainer_video -%}
+{%- assign video_base = '/assets/video/' | append: include.name -%}
+<figure class="fig fig--video explainer-video" data-video-captions>
+    <video controls playsinline preload="metadata" aria-describedby="{{ include.id }}-cap"
+           width="1920" height="1080" poster="{{ video_base | append: '.poster.png' | relative_url }}">
+        <source src="{{ video_base | append: '.mp4' | relative_url }}" type="video/mp4">
+        <track kind="captions" srclang="zh-CN" label="中文"
+               src="{{ video_base | append: '.zh.vtt' | relative_url }}"{% if page.lang == 'zh' %} default{% endif %}>
+        <track kind="captions" srclang="en" label="English"
+               src="{{ video_base | append: '.en.vtt' | relative_url }}"{% if page.lang == 'en' %} default{% endif %}>
+        <a href="{{ video_base | append: '.mp4' | relative_url }}">{{ video_ui.download }}</a>
+    </video>
+    <div class="video-captions" hidden>
+        <label for="{{ include.id }}-language">{{ video_ui.label }}</label>
+        <select id="{{ include.id }}-language">
+            <option value="zh-CN"{% if page.lang == 'zh' %} selected{% endif %}>中文</option>
+            <option value="en"{% if page.lang == 'en' %} selected{% endif %}>English</option>
+            <option value="off">{{ video_ui.off }}</option>
+        </select>
+        <p class="video-captions__text" data-waiting="{{ video_ui.waiting }}" data-off="{{ video_ui.off_message }}">{{ video_ui.waiting }}</p>
+    </div>
+    <figcaption class="fig__cap" id="{{ include.id }}-cap">{{ include.caption }}
+        <a href="{{ video_base | append: '.mp4' | relative_url }}">{{ video_ui.download }}</a>
+    </figcaption>
+</figure>

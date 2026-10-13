@@ -8,9 +8,11 @@ and the card is committed as a PNG, exactly like its English counterpart. Run it
 when the Chinese hero copy changes, then commit the regenerated image.
 
 WHY THIS EXISTS AT ALL, AND WHY IT IS ZH-ONLY
-    The English card (assets/img/social-card.png) has no generator — it is a
-    committed artifact. This script does not try to reproduce it, because the
-    brand faces ship as woff2 (assets/fonts/) and Pillow cannot read woff2.
+    The English card (assets/img/social-card.png) has no from-scratch generator —
+    it is a committed artifact whose headline band is redrawn by
+    scripts/build_social_card_en.py (via headless Chrome). This script does not
+    try to reproduce it, because the brand faces ship as woff2 (assets/fonts/)
+    and Pillow cannot read woff2.
     That does not block the Chinese card: EB Garamond and IBM Plex Mono carry
     no CJK glyphs anyway, so a Chinese card was always going to be set in the
     CJK fallbacks the site's own font stacks already name.
@@ -69,12 +71,12 @@ SONGTI = "/System/Library/Fonts/Supplemental/Songti.ttc"
 MENLO = "/System/Library/Fonts/Menlo.ttc"
 GEORGIA_IT = "/System/Library/Fonts/Supplemental/Georgia Italic.ttf"
 
-# Painted copy. Mirrors the ZH hero on /zh/ — domain first, claim second — and
-# the English card's colour semantics, where the closing clause takes accent.
+# Painted copy. Mirrors the ZH hero on /zh/ ("借助 AI，做有用的软件。") and the
+# English card's colour semantics, where the closing clause takes accent.
 EYEBROW_LATIN = "FRANK XUE  /  "
 EYEBROW_CJK = "软件工程师"
-HEAD_INK = "为代码、系统和 Agent，"
-HEAD_ACCENT = "写可审计、状态清晰的工具。"
+HEAD_INK = "借助 AI，"
+HEAD_ACCENT = "做有用的软件。"
 URL = "frankxue.dev"
 TAGS = (("Rust  ·  ", "latin"), ("密码学", "cjk"), ("  ·  ", "latin"), ("Agent 工具", "cjk"))
 

@@ -5,8 +5,10 @@ permalink: /notes/constant-time-warrant/
 lang: en
 alternate: /zh/notes/constant-time-warrant/
 description: "Constant-time claims are common in cryptographic libraries. Two artifacts do more to transfer warrant for a particular claim than explanation: a detector you can watch fire on purpose, and limits stated before anyone asks."
-excerpt: "Explaining constant-time execution is the easy part, and it isn't what a skeptical reader needs. What transfers warrant is a leak detector that must fail on purpose, and a caveat written before anyone asks for it."
+excerpt: "Explaining constant-time execution is the easy part, and it isn't what a skeptical reader needs. What transfers warrant is a detector that must flag a deliberately introduced leak, and a caveat written before anyone asks for it."
 ---
+
+> **Corrected 2026-10-12 (UTC):** the description of the CI timing check below now matches its actual scope and enforcement.
 
 Constant-time claims are common in cryptographic libraries. The phrase costs
 nothing to write, and that is most of what's wrong with it: it is one of the easiest claims
@@ -24,16 +26,17 @@ Two artifacts do more work here than explanation.
 
 ## Does the test have teeth?
 
-The crate gates on an in-CI [dudect-bencher](https://docs.rs/dudect-bencher/) harness:
+The crate runs an in-CI [dudect-bencher](https://docs.rs/dudect-bencher/) harness:
 twenty targets that split inputs into two classes, measure the two timing distributions, and
-reduce "how different are they" to a t-statistic. Most gate at `|τ| < 0.20`. How that gate
-is wired, and what it costs on every pull request, is
+reduce "how different are they" to a t-statistic. Sixteen are checked on pull requests that
+change the crypto code, at a median `|τ| ≤ 0.20` over three runs (one path gets 0.55 on one runner CPU model);
+that check is not required for merging. How it is wired, and what it costs on the pull requests it runs on, is
 [its own note]({{ '/notes/constant-time-ci-gate/' | relative_url }}).
 
 A leak detector that reports "no leak found" is uninformative on its own. It reports the same
 thing when it is broken, when it is misconfigured, and when it was never wired up at all. So
-the interesting artifact is not the twenty passing targets — it's the one target that must
-fail:
+the interesting artifact is not the twenty passing targets — it's the **negative control**
+below. The detector must flag its deliberately introduced leak; if it does not, the check fails.
 
 ```rust
 fn negative_control(runner: &mut CtRunner, rng: &mut BenchRng) {
@@ -69,6 +72,10 @@ making it. From the README:
 > The harness reports timing-leak detection events. **It does not prove constant-time.** Low
 > `|τ|` values mean the test could not detect a leak with the budget given, not that no
 > leak exists.
+
+The telemetry shows that the harness can catch its deliberate negative control and records
+one historical regression it caught; low observed values support the implementation claim
+but do not prove constant-time behavior.
 
 The language is lifted directly from `dudect-bencher`'s own docs, and it is kept verbatim
 rather than softened. The same file carries a comparison table against the established

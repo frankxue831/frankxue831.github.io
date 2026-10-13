@@ -25,8 +25,9 @@ the inputs someone thought to write down.
 
 So the second half is differential testing against independent implementations.
 SM2/SM3/SM4 output is cross-checked byte-for-byte against GmSSL 3.2.0 — an
-in-CI job pinned to a from-source oracle build since the v1.10 cycle — and the
-tweakable disk-encryption mode, SM4-XTS, against OpenSSL 3.x. When two
+in-CI job pinned to a from-source oracle build since the v1.10 cycle; today,
+when that oracle cannot be built, the comparison is skipped with a warning —
+and the tweakable disk-encryption mode, SM4-XTS, against OpenSSL 3.x. When two
 implementations written by different people from the same standard agree on the
 bytes across a wide range of inputs, the chance that all of them share my exact
 bug drops sharply.

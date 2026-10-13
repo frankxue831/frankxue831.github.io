@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Frank Xue
-description: Personal site of Frank Xue — software engineer. Notes and selected work.
+description: Software engineer who enjoys building useful software with AI. Selected projects, with their progress and limitations explained.
 lang: en
 alternate: /zh/
 ---
@@ -13,30 +13,30 @@ alternate: /zh/
 
     <div class="hero__grid">
         <div class="hero__copy">
-            <p class="hero__eyebrow">Frank Xue — software engineer, mostly Rust</p>
+            <p class="hero__eyebrow">Frank Xue — software engineer</p>
 
             <h1 class="hero__title">
-                Building auditable tools
-                <em>for code, systems, and agents.</em>
+                Building useful software
+                <em>with AI.</em>
             </h1>
 
             <p class="hero__lede">
-                Cryptographic software, repository context for coding agents,
-                and local developer infrastructure — tools built so their
-                correctness, state, and limits stay inspectable. Release state
-                and evidence are on every project page, including for the work
-                that isn't public.
+                I enjoy building software with AI coding assistants. I usually start with a problem I have encountered, write down what I want to make, and use AI to help implement it. I want to keep exploring what useful things I can create this way.
+            </p>
+
+            <p class="hero__lede">
+                The projects here are mostly written in Rust: gm-crypto-rs is a library for China's SM2, SM3 and SM4 cryptography standards, published on crates.io; the tools for AI coding agents and CI runners are private projects; and the explainer-video pipeline is written in Python, with public source and pre-release status.
             </p>
 
             <a href="{{ '/projects/' | relative_url }}" class="hero__cta">
-                Review selected work
+                View selected work
                 <span class="hero__cta__arrow" aria-hidden="true">→</span>
             </a>
         </div>
 
-        <aside class="hero-proof" aria-label="Selected project proof">
+        <aside class="hero-proof" aria-label="Selected project status">
             <div class="hero-proof__header">
-                <p class="hero-proof__label">Proof</p>
+                <p class="hero-proof__label">Status</p>
                 {% if public_project %}
                 <p class="hero-proof__recent">
                     Public release:
@@ -62,6 +62,7 @@ alternate: /zh/
                         </span>
                     </a>
                 </li>
+                {% if project.slug == 'gm-crypto-rs' %}{% include tool-row.html variant='proof' parent='gm-crypto-rs' lang='en' %}{% endif %}
                 {% endfor %}
             </ul>
 
@@ -79,7 +80,7 @@ alternate: /zh/
         <span class="ghost-num" aria-hidden="true">02</span>
         <p class="section__num">(02)  About</p>
         <h2 id="about-h" class="section__title">
-            A short version, <em>for the impatient.</em>
+            A little <em>about me.</em>
         </h2>
     </header>
 
@@ -103,59 +104,27 @@ alternate: /zh/
         <span class="ghost-num" aria-hidden="true">03</span>
         <p class="section__num">(03)  Selected work</p>
         <h2 id="work-h" class="section__title">
-            Outcomes, <em>mostly in Rust.</em>
+            One project, <em>in depth.</em>
         </h2>
     </header>
 
-    <ul class="work-list">
-        {% for project in projects %}
-        <li class="work-list__item reveal">
-            <a class="work-list__row"
-               href="{{ project.detail_url | relative_url }}">
-                <span class="work-list__head">
-                    <span class="work-list__title">{{ project.title }}</span>
-                    <span class="work-list__tags">{{ project.tags.en | join: ' · ' }}</span>
-                </span>
-                <span class="work-list__meta">
-                    <span class="status-pill" data-status="{{ project.status }}">{{ project.status_label.en }}</span>
-                    {% if project.release_source == 'public_tag' %}<span class="work-list__rel">{{ project.release }}</span>{% endif %}
-                    <span class="work-list__year">{{ project.years.en }}</span>
-                </span>
-            </a>
-            <p class="work-list__note">
-                {% case project.slug %}
-                {% when 'gm-crypto-rs' %}
-                Pure-Rust SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 SDK with
-                constant-time-designed secret paths and in-CI leak-regression
-                gates. Public <strong>{{ project.release }}</strong> is on
-                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% when 'repolens-rs' %}
-                Repository context and typed memory for AI coding agents, built
-                to help sessions restart with grounded project understanding.
-                <strong>{{ project.status_label.en }}</strong> — source not
-                public today.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% when 'ghrunners' %}
-                One-shot macOS observability for GitHub Actions self-hosted
-                runners — launchd state, process trees, logs, and API status as
-                typed findings — plus guarded launchd control. {{ project.status_label.en }}
-                today.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% when 'explainer-engine' %}
-                A deterministic pipeline that renders narrated concept videos
-                where every on-screen claim is verified against the source at a
-                pinned commit before a frame is drawn. {{ project.status_label.en }}.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% else %}
-                Selected engineering work with status and project facts kept
-                explicit.
-                <a href="{{ project.detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% endcase %}
+    {% assign featured = projects | where: 'slug', 'gm-crypto-rs' | first %}
+    <div class="preview reveal">
+        <p class="preview__label">Case study</p>
+        <div class="preview__body">
+            <p>
+                <strong>gm-crypto-rs</strong> is a pure-Rust library for China's
+                SM2, SM3 and SM4 cryptography standards, published on
+                <a href="{{ featured.crate_url }}" rel="noopener noreferrer">crates.io</a>.
+                While working with Chinese cryptographic tools, I found relatively few related tools in the Rust ecosystem, which led me to start this project. The case study covers the problem, how
+                the work was divided, the evidence, and what it doesn't claim,
+                including that it has not been independently audited.
             </p>
-        </li>
-        {% endfor %}
-    </ul>
+            <a href="{{ featured.detail_url | relative_url }}" class="preview__link">
+                Read the case study <span aria-hidden="true">→</span>
+            </a>
+        </div>
+    </div>
 
     <a href="{{ '/projects/' | relative_url }}" class="preview__link preview__link--section">
         See all work <span aria-hidden="true">→</span>
@@ -185,7 +154,7 @@ alternate: /zh/
                 </span>
             </a>
             <p class="work-list__note">
-                {{ note.excerpt | default: note.description | strip_html | truncate: 160 }}
+                {{ note.excerpt | default: note.description | strip_html | truncatewords: 40, "…" }}
                 <a href="{{ note.url | relative_url }}" class="work-list__more">{{ t.notes.read_more }}</a>
             </p>
         </li>
@@ -193,7 +162,7 @@ alternate: /zh/
     </ul>
 
     <a href="{{ '/notes/' | relative_url }}" class="preview__link preview__link--section">
-        See all writing <span aria-hidden="true">→</span>
+        Browse all notes <span aria-hidden="true">→</span>
     </a>
 </section>
 {%- endif -%}
@@ -213,7 +182,9 @@ alternate: /zh/
             <p>
                 <em>GitHub</em> is the most direct way right now —
                 <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>.
-                An issue or discussion on any of my repos reaches me too.
+                An issue or discussion on any of my repos reaches me too;
+                for other conversations,
+                <a href="https://www.linkedin.com/in/{{ site.linkedin_username }}/" rel="noopener noreferrer">LinkedIn</a> works.
             </p>
             <a href="{{ '/contact/' | relative_url }}" class="preview__link">
                 How to get in touch <span aria-hidden="true">→</span>

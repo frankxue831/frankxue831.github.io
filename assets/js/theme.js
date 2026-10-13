@@ -56,13 +56,19 @@
 
   // Templates own their own punctuation — ZH uses "：" and "。", EN uses ": "
   // and ". " — so the whole aria sentence is a template string per language,
-  // with {current}/{next} placeholders that JS substitutes.
+  // with {current}/{effective}/{next} placeholders that JS substitutes.
+  // Templates pass localized data-* labels. If those attributes are missing,
+  // follow the page locale instead of always falling back to English.
+  const zhPage = (document.documentElement.lang || '').toLowerCase().indexOf('zh') === 0 ||
+    document.body.classList.contains('lang-zh');
   const state = {
-    auto:  btn.dataset.stateAuto  || 'Auto',
-    light: btn.dataset.stateLight || 'Light',
-    dark:  btn.dataset.stateDark  || 'Dark'
+    auto:  btn.dataset.stateAuto  || (zhPage ? '跟随系统' : 'Auto'),
+    light: btn.dataset.stateLight || (zhPage ? '浅色' : 'Light'),
+    dark:  btn.dataset.stateDark  || (zhPage ? '深色' : 'Dark')
   };
-  const ariaTemplate = btn.dataset.ariaTemplate || 'Theme: {current}. Switch to {next}.';
+  const ariaTemplate = btn.dataset.ariaTemplate || (zhPage
+    ? '主题偏好：{current}。当前显示：{effective}。切换到{next}。'
+    : 'Theme preference: {current}. Current appearance: {effective}. Switch to {next}.');
 
   // Briefly enable a colour transition for an explicit theme switch (toggle or
   // OS change) — never on the initial load (that would flash), never under
@@ -89,7 +95,10 @@
     const next = CYCLE[pref];
     btn.setAttribute(
       'aria-label',
-      ariaTemplate.replace('{current}', state[pref]).replace('{next}', state[next])
+      ariaTemplate
+        .replace('{current}', state[pref])
+        .replace('{effective}', state[effective])
+        .replace('{next}', state[next])
     );
     setThemeColorOverride(effective, pref !== 'auto');
   };

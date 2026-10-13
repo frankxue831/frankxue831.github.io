@@ -2,7 +2,7 @@
 layout: default
 title: About
 permalink: /about/
-description: About Frank Xue — software engineer.
+description: "Why I enjoy building software with AI, and how these projects began."
 lang: en
 alternate: /zh/about/
 ---
@@ -11,63 +11,23 @@ alternate: /zh/about/
     <span class="ghost-num" aria-hidden="true">02</span>
     <p class="page-header__eyebrow">(02)  About</p>
     <h1 class="page-header__title">
-        About,
-        <em>more or less.</em>
+        About <em>me.</em>
     </h1>
-    <p class="page-header__lede">
-        A working draft. I'd rather say a little honestly than a lot vaguely.
-    </p>
 </section>
 
 <section class="section wrap reveal">
     <div class="prose">
         <p>
-            I'm Frank — a software engineer who works mostly in Rust,
-            mostly at the seam between developer tools and the systems
-            they sit on top of.
+            I'm Fengxiang (Frank) Xue, a software engineer with a background in mathematics and computer science. I like building software with AI and enjoy turning ideas into things I can use. I want to keep exploring what else I can create with AI that is useful.
         </p>
         <p>
-            Lately that's meant four things.
+            I was happy when <code>gmcrypto-core</code> v1.16.0 was published on crates.io. Seeing someone star a project on GitHub or submit a PR motivates me too. This kind of feedback is one reason I want to keep going.
         </p>
         <p>
-            <em>gm-crypto-rs</em> is a pure-Rust SDK for the Chinese national
-            crypto standards. Its secret-handling paths are designed to run in
-            constant time, and an in-CI leak harness re-checks that on every
-            commit rather than trusting the design review.
+            While working with Chinese cryptographic tools, I found relatively few related tools in the Rust ecosystem, which led me to start <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}">gm-crypto-rs</a>. I set out the requirements, used AI coding assistants to implement them, and focused on practical usability and compatibility with existing implementations such as GmSSL.
         </p>
         <p>
-            <em>RepoLens</em> is a repository memory layer for AI coding
-            agents — a typed, decaying memory graph exposed over MCP, so a new
-            session doesn't start cold.
-        </p>
-        <p>
-            <em>ghrunners</em> is a small observability CLI that exists
-            because debugging self-hosted GitHub Actions runners on macOS
-            shouldn't take an hour.
-        </p>
-        <p>
-            <em>Explainer Engine</em> is a rendering pipeline for concept
-            videos that refuses to draw an explanatory claim it can't verify
-            against the source.
-        </p>
-        <p>
-            I build tools where correctness, state, and failure modes need
-            to remain <em>inspectable</em>. The projects differ in subject;
-            the recurring concern is the same — software that can explain
-            what it knows, what it changed, and where its boundaries are.
-        </p>
-        <p>
-            In practice that is a preference for the unglamorous parts of
-            the work: <em>clear naming</em>, the regression gate that catches
-            a leak before a release, the comment that finally explains
-            <em>why</em>. The opinionated stuff.
-        </p>
-        <p>
-            The <a href="{{ '/projects/' | relative_url }}">project pages here</a>
-            are the honest snapshot — each states its release state, evidence,
-            and limits, including for the work that isn't public.
-            <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">GitHub</a>
-            carries the source for what is public.
+            I'm still learning Rust and exploring how to use AI more effectively. This site records some of my attempts: what I have made, where each project stands, and what still needs work.
         </p>
     </div>
 
@@ -75,11 +35,11 @@ alternate: /zh/about/
     <ul class="facts" aria-label="At a glance">
         <li>
             <span>Discipline</span>
-            <span>Software engineering, mostly Rust</span>
+            <span>Software engineering</span>
         </li>
         <li>
             <span>Interests</span>
-            <span>Cryptography, agent tooling, CLIs, verified explanation</span>
+            <span>Building with AI, developer tools, cryptography, verified explanation</span>
         </li>
         <li>
             <span>{{ site.data.i18n[page.lang].nav.writing }}</span>
@@ -93,9 +53,11 @@ alternate: /zh/about/
             <span>On crates.io</span>
             <span><a href="https://crates.io/crates/gmcrypto-core" rel="noopener noreferrer" class="facts__link">gmcrypto-core</a></span>
         </li>
+        {% if public_project %}
         <li>
             <span>Lately</span>
             <span>Released {{ public_project.title }} {{ public_project.release }}</span>
         </li>
+        {% endif %}
     </ul>
 </section>

@@ -17,9 +17,9 @@ answers that with crate boundaries.
 The core crate, `gmcrypto-core`, forbids unsafe in its `Cargo.toml` `[lints]`
 table — `unsafe_code = "forbid"`. Not `deny`, which a stray `allow` can loosen,
 but `forbid`, which holds for the whole crate and can't be locally overridden. Every line of the SM2/SM3/SM4 core is checked
-by the compiler; `forbid` leaves no room for an exception. That's the property I
-want true by default and checkable without reading the code: install the crate
-with its defaults, and none of this project's own code that you run carries
+by the compiler; `forbid` leaves no room for an exception. That property holds
+by default and can be checked without reading the code: install the crate with
+its defaults, and none of this project's own code that you run carries
 `unsafe`.
 
 But the fast paths want it. The bitsliced SM4 S-box reaches for SIMD intrinsics;
@@ -27,13 +27,18 @@ so does the carryless-multiply GHASH behind SM4's AEAD modes. Those intrinsics
 are `unsafe` — there's no safe way to spell them today. The performance is worth
 having; the question is where it's allowed to live.
 
-The obvious move is to gate them behind feature flags in the same crate and call
-it done. I didn't, because a feature that introduces `unsafe` into a
+The obvious move would be to gate them behind feature flags in the same crate.
+That would break the guarantee: a feature that introduces `unsafe` into a
 `forbid(unsafe_code)` crate is a contradiction you can only resolve by weakening
-the `forbid`. So all of that SIMD code lives in a *separate* crate,
-`gmcrypto-simd`, reached only through opt-in features — the bitsliced S-box
-behind `sm4-bitsliced-simd`, the GHASH path behind `sm4-aead`. The core keeps
-its `forbid` intact; the unsafe has a name, a boundary, and an opt-in.
+the `forbid`. Instead, all of that SIMD code lives in a *separate* crate,
+`gmcrypto-simd`, which `gmcrypto-core` pulls in only through opt-in features —
+the bitsliced S-box behind `sm4-bitsliced-simd`, the GHASH path behind
+`sm4-aead`. The core's default feature set is empty, and its
+[`Cargo.toml`](https://github.com/frankxue831/gm-crypto-rs/blob/v1.16.0/crates/gmcrypto-core/Cargo.toml#L51-L54)
+gives the reason for the split: the sibling crate quarantines the unavoidable `unsafe`
+of SIMD intrinsics so that `gmcrypto-core` itself can keep
+`unsafe_code = "forbid"`. The core keeps its `forbid` intact; the unsafe has a
+name, a boundary, and an opt-in.
 
 The cost is real, and it's the right one to pay: those paths aren't the default.
 A stock build runs the slower linear-scan S-box. You reach the SIMD versions by

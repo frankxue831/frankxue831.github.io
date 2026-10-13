@@ -23,7 +23,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
     <article class="project-detail prose">
         {% include project-summary.html %}
 
-        <h2>是什么</h2>
+        <h2 id="what-it-is">是什么</h2>
         <p>
             <code>RepoLens</code> 会把整个仓库扫描成一份结构化、不可变的「pack」（一份给 Agent 看的仓库快照），通过 {% include glossary-term.html term="mcp" %} 服务端暴露出来，同时维护一张会随时间衰减的类型化记忆图。它不替 Agent 写代码，只是让每个新会话不必冷启动。目前是私有预发布；对应的快照写在下面的<em>「证据」</em>里。
         </p>
@@ -33,7 +33,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             <figcaption class="fig__cap">图 3.1 — packs 与会衰减的记忆，经 26 个 MCP 工具暴露给 Agent</figcaption>
         </figure>
 
-        <h2>要解决的问题</h2>
+        <h2 id="problem">要解决的问题</h2>
         <p>
             AI 编程 Agent 写代码不差，但会话一结束，项目上下文就丢了。每个新会话都得冷启动：重新 grep 同样的文件、重新推导同样的约定、重新犯几周前就发现并回滚过的老错——没有纠正信号，Agent 就把似是而非的猜测当真。
         </p>
@@ -41,7 +41,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             最朴素的办法——把上下文窗口开大、把更多文件塞进提示词——只会让信号淹没在噪声里（<em>「lost in the middle」</em>，中段迷失）。瓶颈不在模型够不够聪明，而在它有没有一份<em>持久、类型化、有结构的感知</em>。
         </p>
 
-        <h2>约束与关键决策</h2>
+        <h2 id="decisions">约束与关键决策</h2>
         <p>
             <strong>给它一份类型化、有结构的感知，而不是更大的提示词。</strong>问题既然出在冷启动时的重新发现，而塞更多文件只会稀释信号，
             RepoLens 就把仓库扫描成不可变的类型化 pack——文件、符号、依赖图、仓库画像（profile）——再通过 26 个 MCP 工具（代码搜索、图遍历、摘要、约定提取、记忆、知识库（wiki））暴露出来，而不是去扩大上下文窗口。<strong>代价：</strong>pack 要先构建、还要持续更新；而且它不可变，要等下次扫描才刷新（pack 会过时）。
@@ -64,7 +64,7 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             评估还是脚手架——由人打分，不是自动证明。
         </p>
 
-        <h2>证据</h2>
+        <h2 id="evidence">证据</h2>
         <p>
             <code>origin/main</code> 的私有工作快照——没有可查看的公开源码、crate 或文档页。支撑这些说法的，是真正能跑的界面：
             <code>scan</code>、<code>init</code>、<code>brief --task</code>、
@@ -77,17 +77,17 @@ summary_outcome: "仓库 pack 和类型化记忆，让 Agent 新开会话也能�
             最强的信号，是项目自带的<em>「诚实状态」准则</em>：一张按能力面逐条标明「已交付还是脚手架」的清单，刻意保持校准，好让日后的夸大一眼露馅。再加上一份项目自用的评估契约（五个用例，其中一个防回归锁定），一起守住上下文质量这条线。
         </p>
 
-        <h2>下一步</h2>
+        <h2 id="next">下一步</h2>
         <p>
             要到 v0.1 这个里程碑，RepoLens 才真正站得住、读得清：更丰富的记忆类型——<code>Hypothesis</code>、
             <code>Constraint</code>、<code>FailedAttempt</code>、
             <code>FrictionFinding</code>——以及一个明确的
             <code>Confidence</code> 枚举（<code>TestValidated</code> /
             <code>HumanVerified</code> / <code>ScanExtracted</code> /
-            <code>AgentAsserted</code>）。在它们落到公开发版或公开 main 快照之前，仍只是规划——边界与能力对读者仍不够一目了然。
+            <code>AgentAsserted</code>）。后续工作在绑定公开里程碑之前，不写成已承诺计划。
         </p>
 
-        <h2>它不是什么</h2>
+        <h2 id="limits">它不是什么</h2>
         <ul>
             <li>不替你写代码——那是 Agent 的事。</li>
             <li>不替代测试或人工复核。</li>

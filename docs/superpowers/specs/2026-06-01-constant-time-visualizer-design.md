@@ -220,3 +220,22 @@ Add to `scripts/validate_site.rb`:
   note could link to it later).
 - Per-target values for the other 14 targets (not published; would be fabrication).
 - Animating the four points / interactive hover detail (table is the detail layer).
+
+## Addendum (2026-10-12) — legible at every width
+
+The shipped chart scaled a 720×300 `viewBox` into the 36rem column, so its
+11–12-unit labels rendered at ~8px on desktop and ~4.6px on a 375px phone, and
+the five-column table (640px min) hid Status behind a sideways scroll even on
+desktop. Same data, same strings, same claims; the presentation changed:
+
+- **Chart.** No `viewBox`: every x is a percentage computed from `_data/dudect.yml`;
+  y, radii and type are CSS px, so labels render at 12–13px at any width while
+  the marks stretch. Still CLS-safe: the SVG carries `height="212"`. Labels are
+  placed so none crosses a line from a 320px viewport up (gate and leak labels
+  right of the gate line; the gate line breaks for the cluster label).
+- **Wide figure.** The case-study section is a size container; the figure takes
+  the column's spare width beside the reading measure (up to the contents rail),
+  so the full table fits from 760px. Prose inside keeps 36rem.
+- **Phone table (<760px).** Rows stack as records with |τ| / Gate / Status labels
+  (`content: attr(data-label) / ""`); explicit table roles keep the semantics.
+- **`|τ|`** (U+007C breaks after) is wrapped in `.nowrap` wherever it is HTML text.

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Frank Xue
-description: Frank Xue 的个人主页。软件工程师——笔记与精选作品，发布状态与限制写在明面上。
+description: 软件工程师，借助 AI 开发有用的软件，享受创造的过程。这里收录部分项目，并说明各自的进展和使用限制。
 permalink: /zh/
 lang: zh
 alternate: /
@@ -14,26 +14,29 @@ alternate: /
 
     <div class="hero__grid">
         <div class="hero__copy">
-            <p class="hero__eyebrow">Frank Xue — 软件工程师，主要写 Rust</p>
+            <p class="hero__eyebrow">Frank Xue — 软件工程师</p>
 
             <h1 class="hero__title">
-                为代码、系统和 Agent，写可审计、<em>状态清晰的工具。</em>
+                借助 AI，<wbr><em class="nowrap">做有用的软件。</em>
             </h1>
 
             <p class="hero__lede">
-                密码学软件、给 AI 编程 Agent 用的仓库上下文、本地开发基础设施——
-                做出来的工具，正确性、当前状态和限制都保持可查。每个项目页都写清发布到哪一步、凭什么这么说；没公开的项目也一样。
+                我喜欢借助 AI 编程助手做软件，也很享受这个过程。我通常从自己遇到的问题出发，写清楚想做什么，再借助 AI 实现。我想继续探索，看看这样还能做出什么有价值的东西。
+            </p>
+
+            <p class="hero__lede">
+                这里收录了我的一些项目，大多用 Rust 编写：gm-crypto-rs 是实现国密 SM2、SM3、SM4 算法的密码学库，已在 crates.io 发布；面向 AI 编程 Agent 和 CI runner 的工具目前是私有项目；讲解视频生成流程则用 Python 编写，源码已公开，处于预发布阶段。
             </p>
 
             <a href="{{ '/zh/projects/' | relative_url }}" class="hero__cta">
-                看精选作品
+                查看精选项目
                 <span class="hero__cta__arrow" aria-hidden="true">→</span>
             </a>
         </div>
 
-        <aside class="hero-proof" aria-label="作品凭证">
+        <aside class="hero-proof" aria-label="作品状态">
             <div class="hero-proof__header">
-                <p class="hero-proof__label">作品凭证</p>
+                <p class="hero-proof__label">作品状态</p>
                 {% if public_project %}
                 <p class="hero-proof__recent">
                     公开发布：
@@ -59,6 +62,7 @@ alternate: /
                         </span>
                     </a>
                 </li>
+                {% if project.slug == 'gm-crypto-rs' %}{% include tool-row.html variant='proof' parent='gm-crypto-rs' lang='zh' %}{% endif %}
                 {% endfor %}
             </ul>
 
@@ -74,7 +78,7 @@ alternate: /
         <span class="ghost-num" aria-hidden="true">02</span>
         <p class="section__num">(02)  关于</p>
         <h2 id="about-h" class="section__title">
-            短一点，<em>给急性子。</em>
+            简单介绍<em class="nowrap">一下自己。</em>
         </h2>
     </header>
 
@@ -82,10 +86,10 @@ alternate: /
         <p class="preview__label">一句话</p>
         <div class="preview__body">
             <p>
-                我是软件工程师，在意的是<em>清楚</em>：代码能不能被审计，工具有没有把自身状态说清楚，界面会不会把日常工作弄得神秘兮兮。
+                我是软件工程师，希望软件<em>清楚易懂</em>：代码便于审计，工具能清晰呈现自身状态，界面让日常操作容易理解。
             </p>
             <a href="{{ '/zh/about/' | relative_url }}" class="preview__link">
-                看长一点的版本 <span aria-hidden="true">→</span>
+                了解更多 <span aria-hidden="true">→</span>
             </a>
         </div>
     </div>
@@ -96,51 +100,27 @@ alternate: /
         <span class="ghost-num" aria-hidden="true">03</span>
         <p class="section__num">(03)  作品</p>
         <h2 id="work-h" class="section__title">
-            做出来的东西，<em>大多用 Rust。</em>
+            详细介绍<em class="nowrap">一个项目。</em>
         </h2>
     </header>
 
-    <ul class="work-list">
-        {% for project in projects %}
-        <li class="work-list__item reveal">
-            <a class="work-list__row"
-               href="{{ project.zh_detail_url | relative_url }}">
-                <span class="work-list__head">
-                    <span class="work-list__title">{{ project.title }}</span>
-                    <span class="work-list__tags">{{ project.tags.zh | join: ' · ' }}</span>
-                </span>
-                <span class="work-list__meta">
-                    <span class="status-pill" data-status="{{ project.status }}">{{ project.status_label.zh }}</span>
-                    {% if project.release_source == 'public_tag' %}<span class="work-list__rel">{{ project.release }}</span>{% endif %}
-                    <span class="work-list__year">{{ project.years.zh }}</span>
-                </span>
-            </a>
-            <p class="work-list__note">
-                {% case project.slug %}
-                {% when 'gm-crypto-rs' %}
-                国密 SM2&nbsp;/&nbsp;SM3&nbsp;/&nbsp;SM4 的纯 Rust SDK。涉密路径按常量时间设计，CI 里用 dudect 门禁拦泄漏回归。公开版 <strong>{{ project.release }}</strong> 在
-                <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的类型化仓库记忆：记忆会衰减，也能对上当前代码，新会话不必冷启动重新摸清项目。<strong>{{ project.status_label.zh }}</strong>——源码未公开。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% when 'ghrunners' %}
-                macOS 上查 self-hosted runner 的单次运行工具：launchd 状态、进程树、日志和 GitHub API 汇总成类型化 findings，外加受控的 launchd 控制。目前{{ project.status_label.zh }}。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% when 'explainer-engine' %}
-                把 storyboard 渲染成讲解视频；每个说法画出来之前，都按固定 commit 核对源码。{{ project.status_label.zh }}。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% else %}
-                精选工程作品——做到哪一步、限制在哪，会写清楚。
-                <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
-                {% endcase %}
+    {% assign featured = projects | where: 'slug', 'gm-crypto-rs' | first %}
+    <div class="preview reveal">
+        <p class="preview__label">案例</p>
+        <div class="preview__body">
+            <p>
+                <strong>gm-crypto-rs</strong> 是一个纯 Rust 的国密 SM2 / SM3 / SM4 密码学库，已在
+                <a href="{{ featured.crate_url }}" rel="noopener noreferrer">crates.io</a>
+                发布。在使用国密工具的过程中，我发现 Rust 生态中的相关工具还比较少，于是开始了这个项目。案例页介绍了要解决的问题、工作的分工、验证依据，以及这些依据不能支持哪些结论。这个库没有经过独立审计。
             </p>
-        </li>
-        {% endfor %}
-    </ul>
+            <a href="{{ featured.zh_detail_url | relative_url }}" class="preview__link">
+                阅读案例 <span aria-hidden="true">→</span>
+            </a>
+        </div>
+    </div>
 
     <a href="{{ '/zh/projects/' | relative_url }}" class="preview__link preview__link--section">
-        看全部作品 <span aria-hidden="true">→</span>
+        查看全部项目 <span aria-hidden="true">→</span>
     </a>
 </section>
 
@@ -151,7 +131,7 @@ alternate: /
         <span class="ghost-num" aria-hidden="true">04</span>
         <p class="section__num">(04)  笔记</p>
         <h2 id="writing-h" class="section__title">
-            把一个问题<em>写透。</em>
+            思考<em>一个问题。</em>
         </h2>
     </header>
 
@@ -167,7 +147,7 @@ alternate: /
                 </span>
             </a>
             <p class="work-list__note">
-                {{ note.excerpt | default: note.description | strip_html | truncate: 160 }}
+                {{ note.excerpt | default: note.description | strip_html | truncate: 160, "……" }}
                 <a href="{{ note.url | relative_url }}" class="work-list__more">{{ t.notes.read_more }}</a>
             </p>
         </li>
@@ -175,7 +155,7 @@ alternate: /
     </ul>
 
     <a href="{{ '/zh/notes/' | relative_url }}" class="preview__link preview__link--section">
-        看全部笔记 <span aria-hidden="true">→</span>
+        浏览全部笔记 <span aria-hidden="true">→</span>
     </a>
 </section>
 {%- endif -%}
@@ -190,14 +170,15 @@ alternate: /
     </header>
 
     <div class="preview">
-        <p class="preview__label">直接</p>
+        <p class="preview__label">联系方式</p>
         <div class="preview__body">
             <p>
-                眼下最直接的是 <em>GitHub</em>：
-                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>。在任意仓库开 issue 或 discussion，我都会看到。
+                目前最直接的联系方式是 <em>GitHub</em>：
+                <a href="https://github.com/{{ site.github_username }}" rel="noopener noreferrer">@{{ site.github_username }}</a>。你也可以在我的任一仓库发起 issue 或 discussion；其他交流可以通过
+                <a href="https://www.linkedin.com/in/{{ site.linkedin_username }}/" rel="noopener noreferrer">LinkedIn</a>。
             </p>
             <a href="{{ '/zh/contact/' | relative_url }}" class="preview__link">
-                怎么联系 <span aria-hidden="true">→</span>
+                联系我 <span aria-hidden="true">→</span>
             </a>
         </div>
     </div>

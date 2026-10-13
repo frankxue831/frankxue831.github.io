@@ -39,19 +39,19 @@ alternate: /projects/
                 {% case project.slug %}
                 {% when 'gm-crypto-rs' %}
                 国密 SM2 / SM3 / SM4 的纯 Rust SDK。涉密路径按常量时间设计，
-                CI 里用 dudect 门禁拦泄漏回归。公开版
+                CI 里用 dudect 做时序泄漏检查。公开版
                 <strong>{{ project.release }}</strong> 在
                 <a href="{{ project.crate_url }}" rel="noopener noreferrer">crates.io</a>。按版本展开的证据，写在发布历史那一页。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'repolens-rs' %}
-                给 AI 编程 Agent 用的仓库记忆与上下文：经 MCP 暴露 26 个工具，记忆有类型、会衰减。{{ project.status_label.zh }}——源码未公开。
+                给 AI 编程 Agent 用的仓库记忆与上下文：经 MCP 暴露 26 个工具，记忆有类型、会衰减。{{ project.status_label.zh }}。私有项目——暂无公开源码链接。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'ghrunners' %}
-                macOS 上查 GitHub Actions self-hosted runner 的单次运行 CLI：只读观测（launchd 域、PID、进程树、日志、可选 GitHub API），外加受控的 launchd 控制；缺项降级为部分输出，而不是硬失败。源码目前{{ project.status_label.zh }}。
+                macOS 上的命令行工具，跑一次就能看出 self-hosted GitHub Actions runner 为什么卡住。只读观测（launchd 域、PID、进程树、日志、可选 GitHub API），外加受控的 launchd 控制；缺项降级为部分输出，而不是硬失败。当前状态：{{ project.status_label.zh }}。本地原型——暂无公开源码链接。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
-                确定性流水线：把 YAML storyboard 渲染成带旁白的讲解视频——每个 beat 可以是图示、带引用的代码标注，或会动的概念图。画面标 <em>simplified</em>（简化视图）；画帧前，引用校验门按固定 commit 核对源码——
-                视频里的 <code>verified @ commit</code> 是校验门的结论，不是装饰。目前{{ project.status_label.zh }}。
+                用动画讲解代码与技术概念的一次尝试：把 YAML 脚本渲染成带旁白的讲解视频——每个 beat 可以是图示、带引用的代码标注，或会动的概念图。画面代码标 <em>simplified</em>（简化视图）；渲染前，引用校验门按脚本里的引用核对源码——
+                它只核对引用，不判断讲解是否正确。当前状态：{{ project.status_label.zh }}。源码：<a href="https://github.com/frankxue831/ManimSimpleRender" rel="noopener noreferrer">GitHub 上的 ManimSimpleRender</a>——尚未打正式发布标签。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
@@ -59,10 +59,11 @@ alternate: /projects/
                 {% endcase %}
             </p>
         </li>
+                {% if project.slug == 'gm-crypto-rs' %}{% include tool-row.html variant='work' parent='gm-crypto-rs' lang='zh' %}{% endif %}
         {% endfor %}
     </ul>
 
     <a href="{{ '/zh/notes/' | relative_url }}" class="preview__link preview__link--section">
-        看全部笔记 <span aria-hidden="true">→</span>
+        浏览全部笔记 <span aria-hidden="true">→</span>
     </a>
 </section>

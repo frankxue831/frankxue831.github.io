@@ -24,7 +24,7 @@ summary_outcome: "Typed findings and guarded control act on the same authoritati
     <article class="project-detail prose">
         {% include project-summary.html %}
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
         <p>
             <code>ghrunners</code> discovers every actions-runner on a Mac and
             cross-checks <code>launchctl</code> domain state, the process tree,
@@ -42,7 +42,7 @@ summary_outcome: "Typed findings and guarded control act on the same authoritati
             <figcaption class="fig__cap">fig. 3.1 — five evidence sources → typed findings → guarded control</figcaption>
         </figure>
 
-        <h2>The problem</h2>
+        <h2 id="problem">The problem</h2>
         <p>
             When a {% include glossary-term.html term="self-hosted-runner" %} quietly dies on a Mac, the truth is
             scattered: {% include glossary-term.html term="launchd" %} holds the domain and last-exit state, the process
@@ -54,7 +54,7 @@ summary_outcome: "Typed findings and guarded control act on the same authoritati
             wrong launchd domain.
         </p>
 
-        <h2>Constraints &amp; key decisions</h2>
+        <h2 id="decisions">Constraints &amp; key decisions</h2>
         <p>
             <strong>One-shot observability from authoritative state.</strong>
             Rather than run a monitoring {% include glossary-term.html term="daemon" %}, <code>ghrunners</code> is a
@@ -105,7 +105,7 @@ summary_outcome: "Typed findings and guarded control act on the same authoritati
             catalogue, not free text.
         </p>
 
-        <h2>Evidence</h2>
+        <h2 id="evidence">Evidence</h2>
         <p>
             Private snapshot at <code>local tag v0.5.0</code> — there is no public
             source to inspect. What backs the claims is the running surface:
@@ -121,14 +121,14 @@ summary_outcome: "Typed findings and guarded control act on the same authoritati
             <code>OrphanListener</code> in v0.4.
         </p>
 
-        <h2>Next</h2>
+        <h2 id="next">Next</h2>
         <p>
             Candidate scope, not committed — deeper GitHub API enrichment and new
             findings as edge cases surface on real hosts. A public source link
             follows if and when the repository becomes reachable.
         </p>
 
-        <h2>What it isn't</h2>
+        <h2 id="limits">What it isn't</h2>
         <ul>
             <li>Not a runner installer or unregister tool.</li>
             <li>Not a daemon or persistent monitor.</li>

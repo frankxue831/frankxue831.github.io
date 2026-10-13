@@ -552,16 +552,14 @@ body.lang-zh em {
     color: var(--accent-cool);
 }
 
-/* CJK display headlines breathe better at neutral tracking.
-   text-wrap: balance stays Latin-only — Chromium's balancer mishandles
-   mixed CJK/Latin display lines (it can open a line with a fullwidth
-   comma, which native wrapping correctly forbids). */
+/* CJK display headlines breathe better at neutral tracking. Wrapping
+   (keep-all + strict + balance) lives in the #100 spec B block below;
+   line-break: strict keeps the balancer from opening a line with 、，。. */
 body.lang-zh .hero__title,
 body.lang-zh .page-header__title,
 body.lang-zh .section__title {
     letter-spacing: 0;
     line-height: 1.08;
-    text-wrap: wrap;
 }
 
 /* CJK body text reads comfortably with slightly more leading — clreq
@@ -579,11 +577,16 @@ body.lang-zh .note li {
 }
 
 @media (max-width: 759px) {
+    /* The stacked menu gives every row one left edge: drop the desktop
+       offsets that separate the switcher and the theme toggle. */
     .primary-nav__item--switch {
         padding-left: 0;
         border-left: 0;
         margin-left: 0;
         margin-top: var(--space-2);
+    }
+    .primary-nav__item--theme {
+        margin-left: 0;
     }
 }
 
@@ -825,7 +828,7 @@ body.lang-zh .note li {
 .hero__title {
     font-family: var(--serif);
     font-weight: 600;
-    font-size: clamp(3.1rem, 5.8vw, 4.85rem);
+    font-size: clamp(3.1rem, 5.8vw, 4.85rem); /* ZH reuses it in a column cap (#100 spec B block) */
     line-height: 1.04;
     letter-spacing: 0;
     color: var(--fg);
@@ -945,7 +948,7 @@ body.lang-zh .note li {
 .hero-proof__title {
     font-family: var(--sans);
     font-size: var(--text-lg);
-    font-weight: 650;
+    font-weight: 600;
     color: var(--fg);
     line-height: 1.25;
     transition: color var(--dur) var(--ease);
@@ -974,9 +977,9 @@ body.lang-zh .note li {
     letter-spacing: 0.02em;
 }
 
-/* Stagger reveal on load */
+/* Stagger reveal on load. The headline is deliberately excluded (#100
+   spec A): it must be fully readable, unmoved, from the first frame. */
 .hero__eyebrow,
-.hero__title,
 .hero__lede,
 .hero-proof,
 .hero__cta {
@@ -985,7 +988,6 @@ body.lang-zh .note li {
     animation: rise var(--dur-slow) var(--ease) forwards;
 }
 .hero__eyebrow { animation-delay: 60ms; }
-.hero__title { animation-delay: 140ms; }
 .hero__lede { animation-delay: 280ms; }
 .hero__cta { animation-delay: 420ms; }
 .hero-proof { animation-delay: 260ms; }
@@ -1180,7 +1182,8 @@ body.lang-zh .note li {
     background: var(--status-released);
     border-color: var(--status-released);
 }
-.status-pill[data-status="private-pre-release"]::before {
+.status-pill[data-status="private-pre-release"]::before,
+.status-pill[data-status="public-pre-release"]::before {
     background: var(--status-pre);
     border-color: var(--status-pre);
 }
@@ -1336,6 +1339,10 @@ body.lang-zh .note li {
 }
 .install__copy {
     flex: none;
+    min-block-size: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-family: var(--mono);
     font-size: var(--text-xs);
     letter-spacing: 0.04em;
@@ -1369,6 +1376,14 @@ body.lang-zh .note li {
 /* No JS: keep the command selectable, drop the dead button. */
 .no-js .install__copy { display: none; }
 @media print { .install__copy { display: none; } }
+
+@media print {
+    .nav-toggle,
+    .primary-nav__item--theme,
+    .primary-nav__item--switch {
+        display: none !important;
+    }
+}
 
 .project-detail h2 {
     font-family: var(--mono);
@@ -1426,7 +1441,7 @@ body.lang-zh .note li {
 
 .version-grid {
     display: grid;
-    grid-template-columns: 120px 1fr;
+    grid-template-columns: 120px minmax(0, 1fr);
     gap: var(--space-3) var(--space-6);
     margin: 0 0 var(--space-6);
     font-family: var(--mono);
@@ -1439,12 +1454,14 @@ body.lang-zh .note li {
     letter-spacing: 0.04em;
 }
 .version-grid dd {
+    min-width: 0;
+    overflow-wrap: anywhere; /* long symbols/feature lists (#100): wrap, don't overflow at 360 */
     margin: 0;
     color: var(--fg);
 }
 @media (max-width: 759px) {
     .version-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: var(--space-1) 0;
     }
     .version-grid dt { margin-top: var(--space-3); }
@@ -1484,9 +1501,12 @@ body.lang-zh .note li {
 
 @media (min-width: 1024px) {
     .section.has-toc {
+        /* rail track + gap, also read by the wide .dudect figure so it stops short of the rail */
+        --toc-track: 12rem;
+        --toc-gap: var(--space-12);
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 12rem;
-        column-gap: var(--space-12);
+        grid-template-columns: minmax(0, 1fr) var(--toc-track);
+        column-gap: var(--toc-gap);
         align-items: start;
     }
     .section.has-toc > .project-detail { grid-column: 1; }
@@ -1561,7 +1581,7 @@ body.lang-zh .note li {
         max-width: 12ch;
     }
     body.lang-zh .hero__title {
-        max-width: 13ch;
+        max-width: none; /* the nowrap accent phrase must fit inside the box */
         font-size: clamp(2.35rem, 11.8vw, 3rem);
         word-break: keep-all;
     }
@@ -1664,6 +1684,15 @@ body.lang-zh .note li {
     transition: color var(--dur) var(--ease);
 }
 .prose a:hover { color: var(--accent); }
+/* Chrome and Safari find no break point in scripts/validate_site.rb, so on the
+   colophon it ran past a 320px screen. The <wbr> after its slash gives it one,
+   switched off from 22em (352px) up so no wider line moves; ZH needs 349px for
+   the path, its brackets and the 20px gutter. overflow-wrap would split the
+   name anywhere and could open a line with the closing bracket. em lets the
+   threshold follow the reader's default font size. */
+@media (min-width: 22em) {
+    .prose code wbr { display: none; }
+}
 
 /* =========================================================
    Note bodies — long-form article typography on top of .prose
@@ -1750,13 +1779,15 @@ body.lang-zh .note li {
     padding-left: var(--space-6);
     border-left: var(--rule-w) solid var(--rule);
 }
-.facts dt, .facts span:first-child {
+/* Label and value are the row's direct children; a value may hold inline
+   spans of its own (the ZH Interests row keeps each item in a .nowrap). */
+.facts dt, .facts li > span:first-child {
     color: var(--fg-subtle);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-size: var(--text-xs);
 }
-.facts dd, .facts span:last-child { color: var(--fg); }
+.facts dd, .facts li > span:last-child { color: var(--fg); }
 /* Inline link inside a fact value (Notes / GitHub / crates.io). Class, not an
    inline style, so a strict style-src CSP needs no 'unsafe-inline'. */
 .facts__link {
@@ -2080,19 +2111,37 @@ body.lang-zh .note li {
 }
 
 /* ============================================================
-   Hero decrypt cells (built in place by decrypt.js).
-   Widths are locked inline by JS to each glyph's final advance;
-   overflow:hidden keeps a wider random glyph from overlapping
-   its neighbour (no reflow, ever). Accent cells inherit the
-   <em> indigo. Only present while JS runs.
+   #100 spec B: Chinese heading wrapping. ZH only; EN untouched.
+   keep-all + strict keep CJK runs and punctuation together, balance
+   evens line lengths; .nowrap pins phrases that must never split.
    ============================================================ */
-.hero-word { white-space: nowrap; }
-.hero-cell {
-    display: inline-block;
-    overflow: hidden;
-    text-align: center;
-    white-space: pre;          /* keep space cells from collapsing */
-    vertical-align: baseline;
+body.lang-zh h1,
+body.lang-zh h2,
+body.lang-zh .section__title,
+body.lang-zh .page-header__title,
+:lang(zh) h1,
+:lang(zh) h2 {
+    word-break: keep-all;
+    line-break: strict;
+    text-wrap: balance;
+    overflow-wrap: anywhere; /* last-resort guard against overflow at 360 */
+}
+.nowrap { white-space: nowrap; }
+
+/* The ZH hero accent line (做有用的软件。) is seven full-width glyphs pinned
+   to one line, so it is 7em wide. In the two-column layout the copy column is
+   narrower than that at 760-800px and again from ~1246px, where the column
+   stops growing but the clamp does not, and the line ran up to 41px into the
+   gutter. Cap the size at what the column holds, with a little air; where the
+   clamp already fits, it wins and nothing changes. Engines without container
+   units drop the declaration and keep the clamp. The validator ties the 7 to
+   the phrase's length and the clamp to the base .hero__title one. The query is
+   the exact complement of the stacked layout's (max-width: 759px), so no
+   fractional width falls between the two; the stacked layout fits at its own
+   clamp. */
+@media not all and (max-width: 759px) {
+    body.lang-zh .hero__copy { container-type: inline-size; }
+    body.lang-zh .hero__title { font-size: min(clamp(3.1rem, 5.8vw, 4.85rem), 100cqi / 7.1); }
 }
 
 
@@ -2262,6 +2311,26 @@ details.drawer .version-grid {
     border-radius: 4px;
     background: var(--bg-sunk);
 }
+/* Wide figure. The five-column table needs ~40rem, more than the 36rem
+   reading measure, so wherever the column has spare width (tablet up, or
+   beside the contents rail on desktop) the figure takes it rather than
+   scroll. The case-study section is the size container; prose inside the
+   figure keeps the reading measure. Without :has()/container queries the
+   figure simply stays in the column and the table scrolls, as before. */
+.section:has(.dudect) { container-type: inline-size; }
+@container (min-width: 36rem) {
+    .dudect { width: min(48rem, 100cqi); }
+    /* Once the figure is wide the table may also give up its 640px floor,
+       so a classic (space-taking) scrollbar can't push Status off-screen.
+       (Two classes: this sits above the base .dudect__table rule.) */
+    .dudect .dudect__table { min-width: 0; }
+}
+@media screen and (min-width: 1024px) {
+    @container (min-width: 36rem) {
+        /* minus the contents rail's track and gap (print drops the rail) */
+        .section.has-toc .dudect { width: min(48rem, 100cqi - var(--toc-track) - var(--toc-gap)); }
+    }
+}
 .dudect__title {
     font-family: var(--mono);
     font-size: var(--text-xs);
@@ -2276,40 +2345,56 @@ details.drawer .version-grid {
     font-size: var(--text-sm);
     color: var(--fg-muted);
     margin: 0 0 var(--space-4);
-    max-width: var(--maxw-reading, 42rem);
+    max-width: 36rem; /* the reading measure, kept when the figure widens */
 }
 .dudect__chart {
+    display: block;
     width: 100%;
-    height: auto;
     overflow: visible;
+    font-family: var(--mono);
+    font-size: 12px;
 }
-/* SVG strokes/fills via tokens. font-size in SVG text is in user units. */
+/* SVG strokes/fills via tokens. The chart has no viewBox (see the include),
+   so font sizes, strokes and radii are CSS px at every width. */
 .dudect__axis { stroke: var(--rule); stroke-width: 1.5; }
 .dudect__axis-label,
-.dudect__ticks text { font-family: var(--mono); font-size: 11px; fill: var(--fg-subtle); }
+.dudect__ticks text { fill: var(--fg-subtle); }
 .dudect__gate { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 3; }
-.dudect__gate-label { font-family: var(--mono); font-size: 11px; fill: var(--accent); }
+.dudect__gate-label { fill: var(--accent); }
 .dudect__sentinel { stroke: var(--fg-subtle); stroke-width: 1; stroke-dasharray: 2 3; }
 .dudect__control { fill: var(--danger); opacity: 0.10; }
 .dudect__control-label,
-.dudect__cluster-label { font-family: var(--mono); font-size: 11px; fill: var(--fg-muted); }
+.dudect__cluster-label { fill: var(--fg-muted); }
 .dudect__pt { fill: var(--status-released); }
-.dudect__leak-heading { font-family: var(--mono); font-size: 11px; fill: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.04em; }
+.dudect__leak-heading { fill: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.04em; }
 .dudect__leak-arrow { stroke: var(--fg-muted); stroke-width: 1.5; }
 .dudect__arrowhead { fill: var(--fg-muted); }
 .dudect__leak-before { fill: var(--danger); }
 .dudect__leak-after { fill: var(--status-released); }
+/* The values stand out by ink (--fg), not size: at the chart's 12px the
+   "≈0.006" label keeps >= 4px clear of the gate line at a 320px viewport. */
 .dudect__leak-before-label,
-.dudect__leak-after-label { font-family: var(--mono); font-size: 12px; fill: var(--fg); }
+.dudect__leak-after-label { fill: var(--fg); }
 .dudect__caveat {
     font-family: var(--sans);
     font-size: var(--text-sm);
     color: var(--fg-muted);
     font-style: italic;
     margin: var(--space-3) 0 var(--space-4);
+    max-width: 36rem;
+}
+.dudect__table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+}
+.dudect__table-scroll:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
 }
 .dudect__table {
     width: 100%;
+    min-width: 640px;
     border-collapse: collapse;
     font-family: var(--sans);
     font-size: var(--text-sm);
@@ -2330,22 +2415,73 @@ details.drawer .version-grid {
     padding: var(--space-2) var(--space-3);
     border-bottom: 1px solid var(--rule);
     vertical-align: top;
+    text-wrap: pretty; /* no one-word/one-glyph last lines in the narrow columns */
 }
 .dudect__table th { color: var(--fg-subtle); font-weight: 600; }
 .dudect__table code { font-family: var(--mono); font-size: var(--text-xs); }
+/* ZH: keep short CJK terms (哨兵, 门槛, 已捕获) whole in the narrow gate and
+   status cells; break-word only steps in if a term would overflow its cell. */
+:lang(zh) .dudect__table td:nth-child(n+4) {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
 .dudect__provenance {
     font-family: var(--sans);
     font-size: var(--text-xs);
     color: var(--fg-subtle);
     margin: 0;
+    max-width: 36rem;
 }
 /* Reduced-motion: the figure carries `reveal`; the global reveal/motion
    gate + the prefers-reduced-motion reset already neutralise its animation.
    No bespoke motion here, so nothing extra to disable. */
 @media (max-width: 759px) {
     .dudect { padding: var(--space-4); }
-    .dudect__table { font-size: var(--text-xs); }
-    .dudect__table th, .dudect__table td { padding: var(--space-1) var(--space-2); }
+    /* Phone: each row becomes a stacked record (target, what it measures,
+       then |τ| / gate / status side by side under their own labels), so no
+       column hides off the right edge. The thead stays in the a11y tree,
+       visually hidden, and the include's explicit table roles keep cells
+       announced with their headers despite the display changes. */
+    .dudect__table {
+        display: block;
+        min-width: 0;
+    }
+    .dudect__table caption { display: block; }
+    .dudect__table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+    .dudect__table tbody {
+        display: block;
+        border-top: 1px solid var(--rule);
+    }
+    .dudect__table tr {
+        display: grid;
+        /* fixed |τ| track (fits "≈0.006") so gate/status align across
+           records; at the narrowest widths status may grow to fit its
+           longest unbreakable term (必须故意失败) instead of orphaning a glyph */
+        grid-template-columns: 4.5em minmax(0, 1fr) minmax(min-content, 1fr);
+        gap: var(--space-1) var(--space-4);
+        padding: var(--space-3) 0;
+        border-bottom: 1px solid var(--rule);
+    }
+    .dudect__table td {
+        padding: 0;
+        border-bottom: 0;
+    }
+    .dudect__table td:not([data-label]) { grid-column: 1 / -1; }
+    .dudect__table td[data-label]::before {
+        content: attr(data-label);
+        content: attr(data-label) / ""; /* decorative: the hidden thead names the column */
+        display: block;
+        color: var(--fg-muted); /* AA on both panels; --fg-subtle is 4.46:1 on dark */
+        font-weight: 600;
+        white-space: nowrap;
+    }
 }
 
 /* =========================================================
@@ -2379,3 +2515,126 @@ details.drawer .version-grid {
 
 /* Audit notes: code-reference links read as mono. */
 .audit-notes a { font-family: var(--mono); font-size: 0.9em; white-space: nowrap; }
+
+/* Live tool rows (gm-crypto-web): very faint tint so the one live tool reads
+   as distinct without leaving the editorial list style. */
+.hero-proof__item--tool .hero-proof__row,
+.work-list__item--tool .work-list__row {
+    background: var(--bg-sunk);
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+}
+.hero-proof__item--tool .hero-proof__row:hover,
+.hero-proof__item--tool .hero-proof__row:focus-visible,
+.work-list__item--tool:hover .work-list__row,
+.work-list__item--tool .work-list__row:focus-visible {
+    background: var(--bg-elevated);
+}
+.tool-cta {
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    white-space: nowrap;
+}
+
+/* Explainer case study: actual videos lead; reading measure stays modest. */
+.explainer-header { padding-bottom: var(--space-8); }
+.explainer-header .page-header__title { max-width: 22ch; }
+.explainer-header .page-header__lede {
+    max-width: 42rem;
+    font-family: var(--sans);
+    font-size: var(--text-lg);
+    line-height: 1.75;
+}
+.explainer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+    margin-top: var(--space-5);
+    font-family: var(--sans);
+}
+.explainer-actions a { padding-block: var(--space-2); border-bottom: 1px solid var(--accent); }
+.explainer-actions span { color: var(--fg-muted); font-size: var(--text-sm); }
+.explainer-detail { max-width: none; min-width: 0; }
+.explainer-detail > p,
+.explainer-detail > ul,
+.explainer-detail > ol,
+.explainer-detail .project-summary,
+.explainer-history { max-width: 42rem; }
+.explainer-detail p,
+.explainer-detail li { font-family: var(--sans); font-size: var(--text-lg); line-height: 1.75; }
+.explainer-detail h2 {
+    font-family: var(--serif);
+    font-size: var(--text-3xl);
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--fg);
+}
+.explainer-detail h3 { font-family: var(--sans); font-size: var(--text-xl); margin-bottom: var(--space-2); }
+.explainer-example { margin-block: var(--space-8) var(--space-12); scroll-margin-top: var(--space-20); }
+.explainer-example > p { max-width: 42rem; }
+.explainer-video { max-width: none; margin-block: var(--space-4) 0; }
+.explainer-detail .fig__cap,
+.explainer-pair figcaption { font-family: var(--sans); font-size: var(--text-sm); line-height: 1.65; }
+.explainer-video .fig__cap a { display: inline-block; margin-left: var(--space-2); }
+.video-captions {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--rule);
+    background: var(--bg-sunk);
+    font-family: var(--sans);
+    font-size: var(--text-sm);
+}
+.video-captions label { margin-right: var(--space-3); }
+.video-captions select {
+    min-height: 44px;
+    max-width: 100%;
+    padding: var(--space-2);
+    border: 1px solid var(--rule);
+    border-radius: 0;
+    font: inherit;
+    color: var(--fg);
+    background: var(--bg);
+}
+.explainer-detail .video-captions__text {
+    min-height: 3.5em;
+    margin: var(--space-2) 0 0;
+    white-space: pre-line;
+    font-size: var(--text-base);
+}
+.explainer-pair { display: grid; gap: var(--space-6); margin-block: var(--space-6); }
+.explainer-pair figure { min-width: 0; margin: 0; }
+.explainer-pair figcaption { margin-block: var(--space-2); color: var(--fg-muted); }
+.explainer-pair pre,
+.explainer-command {
+    overflow-x: auto;
+    padding: var(--space-4);
+    border: 1px solid var(--rule);
+    background: var(--bg-sunk);
+    font-family: var(--mono);
+    font-size: var(--text-sm);
+    line-height: 1.65;
+    margin-block: var(--space-3) var(--space-5);
+}
+.explainer-pair a { display: block; border: 0; }
+.explainer-flow { padding-left: var(--space-6); margin-block: var(--space-6); }
+.explainer-flow li { padding-left: var(--space-2); }
+.explainer-flow li::before { content: none; }
+.explainer-flow li > span { display: block; }
+.explainer-history { border-block: 1px solid var(--rule); padding-block: var(--space-4); margin-block: var(--space-6); }
+.explainer-history summary { cursor: pointer; font-family: var(--sans); min-height: 44px; padding-block: var(--space-2); }
+.explainer-history[open] summary { margin-bottom: var(--space-4); }
+.explainer-detail code { overflow-wrap: anywhere; }
+.explainer-detail pre code { overflow-wrap: normal; }
+@media (min-width: 760px) {
+    .explainer-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@media (min-width: 1024px) {
+    .page--explainer-engine .section.has-toc { --toc-track: 10rem; --toc-gap: var(--space-8); }
+}
+@media print { .video-captions { display: none; } }
+@media (max-width: 759px) {
+    .explainer-header .page-header__title { font-size: var(--text-4xl); line-height: 1.2; }
+}
