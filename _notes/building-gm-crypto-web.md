@@ -26,15 +26,15 @@ Nothing to install, nothing to configure.
 I didn't want a second implementation. A debugging tool that disagrees
 with the library it's meant to help debug is worse than no tool. So the
 page runs gm-crypto-rs itself: the `gmcrypto-core` crate at 1.16.0,
-pinned to a fixed commit and compiled to WebAssembly through
+[pinned to a fixed commit](https://github.com/frankxue831/gm-crypto-web/blob/6b88d03c4330999bc771f9057759650554cb8eb4/Cargo.toml#L11) and compiled to WebAssembly through
 `wasm-bindgen`. The release build is size-optimised with link-time
 optimisation, but the arithmetic is the same arithmetic the crate ships.
 
 That also settles where the computation happens. Everything runs in your
-browser. There's no backend, no account and no storage; the keys and
-messages you paste don't leave the page. That's not a policy I'm asking
-you to trust so much as the shape of the thing: there's nowhere for them
-to go.
+browser. The tool has no backend or account and does not upload or persist
+the keys and messages you enter. It does [save your language preference
+in localStorage](https://github.com/frankxue831/gm-crypto-web/blob/6b88d03c4330999bc771f9057759650554cb8eb4/www/i18n.js#L108).
+That describes this implementation, not a security guarantee.
 
 ## A self-test that actually runs
 
@@ -61,11 +61,13 @@ testing. Please don't paste production keys into it, or into any web
 page.
 
 **Inputs have size limits.** SM4 inputs are capped at 256 KB, and SM3 and
-SM2 inputs at 1 MB. Those numbers weren't picked for being round. I
-measured: SM4 in WebAssembly costs roughly 2.1 seconds per megabyte here,
-while SM3 and SM2 are fast, so these caps keep every action under about
-a second in Chromium, Firefox and WebKit. A debugging tool that freezes
-the tab isn't helping anyone debug.
+SM2 inputs at 1 MB, measured in decoded bytes, with room for padding or
+ciphertext overhead when decrypting. The [implementation records a
+development measurement](https://github.com/frankxue831/gm-crypto-web/blob/6b88d03c4330999bc771f9057759650554cb8eb4/www/app.js#L20)
+of roughly 2.1 seconds per megabyte for SM4 in WebAssembly. The caps aim
+to keep actions responsive; they do not guarantee a one-second response
+on every device or browser. A debugging tool that freezes the tab isn't
+helping anyone debug.
 
 **The scope is deliberately small.** No X.509, no GCM, CCM or XTS. Those
 are real needs, but they'd turn a focused checker into a half-finished
@@ -75,10 +77,10 @@ toolkit.
 
 The page is tested with Playwright across Chromium, Firefox and WebKit,
 on desktop and mobile viewports, in both English and Chinese. The scripts
-live in the repo's `pw/` folder. They load the page the way a visitor
+live in the [public repo's `pw/` folder](https://github.com/frankxue831/gm-crypto-web/tree/6b88d03c4330999bc771f9057759650554cb8eb4/pw). They load the page the way a visitor
 would, drive the inputs, compare outputs against expected bytes, check
-clipboard and error behaviour, and watch for long tasks that would make
-the page feel stuck.
+clipboard and error behaviour, and, in Chromium, watch for long tasks
+when rejecting oversized inputs.
 
 It's not a substitute for an audit, and I don't present it as one. What
 it does give me is a page whose claims I can re-check whenever I change
