@@ -519,7 +519,8 @@ global_scripts = %w[main.js theme.js reveal.js].freeze
 home_only_scripts = %w[].freeze
 case_study_scripts = %w[contents.js].freeze
 gm_only_scripts = %w[copy.js].freeze
-known_scripts = global_scripts + home_only_scripts + case_study_scripts + gm_only_scripts
+explainer_only_scripts = %w[video-captions.js].freeze
+known_scripts = global_scripts + home_only_scripts + case_study_scripts + gm_only_scripts + explainer_only_scripts
 
 known_scripts.each do |script|
   record(failures, "Missing script asset: assets/js/#{script}") unless SITE.join("assets/js", script).exist?
@@ -533,6 +534,8 @@ Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
   expected.concat(home_only_scripts) if home_pages.include?(source)
   expected.concat(case_study_scripts) if project_pages.include?(source)
   expected.concat(gm_only_scripts) if %w[projects/gm-crypto-rs/index.html zh/projects/gm-crypto-rs/index.html].include?(source)
+
+  expected.concat(explainer_only_scripts) if %w[projects/explainer-engine/index.html zh/projects/explainer-engine/index.html].include?(source)
 
   known_scripts.each do |script|
     count = actual.count(script)
@@ -926,23 +929,33 @@ case_study = {
     # description + lede before the 2026-08-06 readthrough closed it.
     must_include: ["v0.5.0", "受控", "单次运行"], forbid: ["v0.1.1", "一次性"]
   },
-  # explainer-engine: private/local — the verification story lives in the frame,
-  # so guard the simplified-marking and gate's-verdict phrases that carry it.
-  # Pin is local tag explainer-plan; diagram-canvas may appear only as the
-  # earlier video provenance, not as the current snapshot.
+  # Explainer: visitor-facing order differs; source and local-history limits
+  # remain mandatory, along with all four decision costs.
   "projects/explainer-engine/index.html" => {
-    headings: [["what-it-is", "What it is"], ["problem", "The problem"],
-               ["decisions", "Constraints &amp; key decisions"], ["evidence", "Evidence"],
-               ["next", "Next"], ["limits", "What it isn't"]],
+    headings: [["examples", "Two examples to watch"], ["what-it-is", "From script to screen"],
+               ["evidence", "What you can check"], ["decisions", "Decisions and trade-offs"],
+               ["next", "Where it stands"], ["limits", "Limits"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
-    must_include: ["simplified", "gate's verdict", "explainer-plan", "explainer plan"]
+    must_include: ["simplified", "gate's verdict", "explainer-plan", "explainer plan",
+      "This command checks citations; it does not re-render the video.",
+      "It does not establish that the explanation is semantically correct or educationally effective.",
+      "no language model writes that code", "no published tag",
+      "historical result lacks public run evidence and is not independently checkable",
+      "that tag is not published", "without pinning a commit",
+      "Text embedded in the videos has not been remade"]
   },
   "zh/projects/explainer-engine/index.html" => {
-    headings: [["what-it-is", "是什么"], ["problem", "要解决的问题"],
-               ["decisions", "约束与关键决策"], ["evidence", "证据"],
-               ["next", "下一步"], ["limits", "它不是什么"]],
+    headings: [["examples", "先看两段成果"], ["what-it-is", "从脚本到画面"],
+               ["evidence", "能核对哪些证据"], ["decisions", "取舍与约束"],
+               ["next", "目前进展"], ["limits", "使用边界"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
-    must_include: ["简化视图", "校验门的结论", "explainer-plan", "explainer plan"]
+    must_include: ["简化视图", "校验门的结论", "explainer-plan", "explainer plan",
+      "这条命令只检查引用，不会重新渲染视频。",
+      "它不证明讲解语义正确，也不证明教学效果。",
+      "这段代码不由语言模型编写", "没有已发布的 tag",
+      "历史校验结果缺少公开运行证据，无法由外部独立核验",
+      "这个 tag 没有公开发布", "没有固定 commit",
+      "视频内嵌文字没有重做"]
   }
 }
 case_study.each do |relative, spec|
@@ -998,6 +1011,68 @@ case_study.each do |relative, spec|
   if spec[:source_link]
     record(failures, "#{relative}: missing public source link") unless html.include?(spec[:source_link])
   end
+end
+
+# The colophon states how much JavaScript the site ships (EN and ZH), and the
+# count has drifted when a script was added. Tie it to assets/js: the file
+# count exactly, the "approximately N lines" figures within 5%.
+js_files = Pathname.glob(SITE.join("assets/js/*.js").to_s)
+js_lines = js_files.sum { |file| File.foreach(file).count }
+js_words = %w[zero one two three four five six seven eight nine ten eleven twelve]
+{
+  "colophon/index.html" => ["across #{js_words[js_files.size]} focused files", "lines across #{js_files.size} files"],
+  "zh/colophon/index.html" => ["分散在 #{js_files.size} 个职责集中的文件里", "#{js_files.size} 个文件、约"]
+}.each do |relative, phrases|
+  html = read_file(SITE.join(relative), failures)
+  next if html.empty?
+  text = html.gsub(/\s+/, " ")
+  phrases.each do |phrase|
+    record(failures, "#{relative}: JavaScript file count must read #{phrase.inspect} (assets/js has #{js_files.size} files)") unless text.include?(phrase)
+  end
+  stated = text.scan(/(?:approximately|~|约) ?(\d+) ?(?:lines|行)/).flatten.map(&:to_i)
+  record(failures, "#{relative}: no JavaScript line count found") if stated.empty?
+  stated.each do |count|
+    record(failures, "#{relative}: says ~#{count} lines of JavaScript; assets/js has #{js_lines}") if (count - js_lines).abs > js_lines * 0.05
+  end
+end
+
+# Explainer examples retain playable no-JS media and inspectable source.
+%w[en zh].each do |lang|
+  %w[label off waiting off_message download].each do |key|
+    record(failures, "i18n.yml: missing #{lang}.explainer_video.#{key}") if
+      I18N.dig(lang, "explainer_video", key).to_s.empty?
+  end
+end
+%w[projects/explainer-engine/index.html zh/projects/explainer-engine/index.html].each do |relative|
+  html = read_file(SITE.join(relative), failures)
+  videos = html.scan(%r{<video\b(.*?)</video>}m).flatten
+  record(failures, "#{relative}: expected two native videos") unless videos.size == 2
+  videos.each do |video|
+    record(failures, "#{relative}: video lost native controls/no-JS captions") unless
+      video.include?("controls") && video.scan(/<track\b/).size == 2 && video.scan(/ default/).size == 1
+    record(failures, "#{relative}: examples must not autoplay") if video.include?("autoplay")
+  end
+  %w[harness-field-explainer evidence-budget].each do |name|
+    record(failures, "#{relative}: missing #{name} media") unless html.include?("/assets/video/#{name}.mp4")
+  end
+  input_i = html.index('<h2 id="what-it-is">') || 0
+  video_positions = html.enum_for(:scan, /<video\b/).map { Regexp.last_match.begin(0) }
+  record(failures, "#{relative}: both examples must precede pipeline explanation") unless
+    video_positions.size == 2 && video_positions.all? { |index| index < input_i }
+  %w[examples/evidence-budget.story.yaml explainer/plan/evidence.py#L55-L58
+     explainer/plan/evidence.py#L205-L211 explainer/plan/evidence.py#L312-L313].each do |path|
+    url = "https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/#{path}"
+    record(failures, "#{relative}: missing pinned evidence #{path}") unless html.include?(url)
+  end
+  record(failures, "#{relative}: missing actual verification command") unless
+    html.include?("explainer verify examples/evidence-budget.story.yaml")
+  record(failures, "#{relative}: missing real script/frame pair") unless
+    CGI.unescapeHTML(html).include?('cite: "explainer/plan/evidence.py:56"') &&
+    html.include?("/assets/img/evidence-budget-12s.jpg")
+  record(failures, "#{relative}: captions must initialize hidden") unless
+    html.scan('<div class="video-captions" hidden>').size == 2
+  record(failures, "#{relative}: history drawer must not hide a contents heading") if
+    html.match?(/<details\b[^>]*>(?:(?!<\/details>).)*?<h2/m)
 end
 
 # Native-interactivity guards on the gm-crypto pages: the popover glossary must
