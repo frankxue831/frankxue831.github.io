@@ -1,3 +1,7 @@
+> **Completed publication record (2026-08-09).** The steps below document the
+> original handoff preparation; they are not a current execution request.
+> Operational work still requires the authority described in the handoff.
+
 # Track D Handoff Publication Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

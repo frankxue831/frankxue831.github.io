@@ -23,7 +23,8 @@ from it.
 
 ## Sanitization
 
-The archived design, plan, and harness are mechanical derivatives. Personal
+The archived design, plan, and harness are sanitized derivatives. Prominent
+historical-only warnings were added for readers following direct file links. Personal
 absolute paths, one-use temporary paths, Keeper usernames, and private Notion
 URLs were replaced with explicit angle-bracket placeholders. Host-specific
 helper identities and private configuration-canary fingerprints were redacted

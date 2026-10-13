@@ -1,4 +1,7 @@
 #!/bin/zsh -df
+# HISTORICAL ARCHIVE — DO NOT EXECUTE. Frozen on 2026-08-09.
+# Incomplete research history, not a qualification gate or authorization.
+# See README.md and ../../DECISION.md for the current boundary.
 setopt ERR_EXIT NO_CLOBBER PIPE_FAIL
 
 [[ -o interactive ]] && exit 90

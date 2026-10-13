@@ -1,6 +1,6 @@
 # Track D Operational Smoke Handoff
 
-Status: `HANDOFF READY ON DRAFT PR #87 / NO LIVE AUTHORITY`
+Status: `DOCUMENTATION HANDOFF / NO LIVE AUTHORITY`
 
 Remote handoff: https://github.com/frankxue831/frankxue831.github.io/pull/87
 

@@ -1,9 +1,9 @@
-8609eef2ce9cab50eedc62e408be45ec986697e18bd499b758b75c1a7f30b9f5  docs/superpowers/handoffs/track-d-operational-smoke/archive/v2.1b/design.sanitized.md
-366a86744a01156a31c71dc68d41fa14bcaf3f291a35f48a137bd349db769664  docs/superpowers/handoffs/track-d-operational-smoke/archive/v2.1b/instrument-readme.md
+8f28b5424ff1a07be3991cf2f77db45db04d615864e9c9f4cb92ee58ae6365a4  docs/superpowers/handoffs/track-d-operational-smoke/archive/v2.1b/design.sanitized.md
+1aa47f4a89fd87362eec09f79812b2ca4c206553e66d1a6f2a2106405d565776  docs/superpowers/handoffs/track-d-operational-smoke/archive/v2.1b/instrument-readme.md
 6e390cdad689f264118674a7c7db39d5d2840d4ce917bcfa87b2fdbfd3cca219  docs/superpowers/handoffs/track-d-operational-smoke/archive/v2.1b/precommit.json
-ecda220b3cf1d53891d93d658e79512e456cfef1f94546b391265956b35fae5b  docs/superpowers/handoffs/track-d-operational-smoke/archive/v2.1b/qualification-plan.sanitized.md
-ab4e14baebf14d61030215069b50e47bdc0db9737f5498f0d39afa7ff08c19ee  docs/superpowers/handoffs/track-d-operational-smoke/archive/v2.1b/README.md
-c85cd8667dc295bec0c80dd7f92620cc55f6d0a8f734371b0cce0e6b1502a27b  docs/superpowers/handoffs/track-d-operational-smoke/archive/v2.1b/red-harness.sanitized.zsh
+0eab6de14617f2ac85da23eceec0af022fd34febdef9c64a027566794bec7e82  docs/superpowers/handoffs/track-d-operational-smoke/archive/v2.1b/qualification-plan.sanitized.md
+c25e296ae649fd2340ce6444914e30caf6acf1b21f70b06a939a6575fd28d389  docs/superpowers/handoffs/track-d-operational-smoke/archive/v2.1b/README.md
+4d14dd0690bd83d3e2b3184a8af35416f8a753539846171ee35d5b1fc0a81f72  docs/superpowers/handoffs/track-d-operational-smoke/archive/v2.1b/red-harness.sanitized.zsh
 765dee84744222e2c0f385c6cc4e386c88864a64f6f08f841dd1baf5f40a8fe7  docs/superpowers/handoffs/track-d-operational-smoke/DECISION.md
 bc0a81228e32e0c613f1d389bf710a04287d8992fba979eb3569fe4c1640c3d3  docs/superpowers/handoffs/track-d-operational-smoke/NEXT_AGENT.md
 3889210a2f3a3715dcda5ecfce310763e63731c59d2477102553e1c1b8d22b23  docs/superpowers/handoffs/track-d-operational-smoke/operational/attempt-01/RESULT.md
@@ -11,5 +11,5 @@ bc0a81228e32e0c613f1d389bf710a04287d8992fba979eb3569fe4c1640c3d3  docs/superpowe
 062876ccd85bffd06495f18ab901c0c24c8d8dbc1d47a2a44b58cd7a26de7389  docs/superpowers/handoffs/track-d-operational-smoke/operational/packet.template.md
 679a6066749bce97740a109f243279d7dc873b2fbae248c2014bcf1954e2c03f  docs/superpowers/handoffs/track-d-operational-smoke/operational/plugin-config.toml
 e300a79f4bfb2d1b94b82094f000529de3818cf9315caabf792977bde9a150f2  docs/superpowers/handoffs/track-d-operational-smoke/operational/verify.sh
-2619b696e1c3f51d9b1298f01fe5bb8f3114437df680ff91933eb34bc8477b87  docs/superpowers/handoffs/track-d-operational-smoke/README.md
-8fe048080fbadac2f811a7ccb0d1c417b81f5873c2c0a997d8ef0ee1ba944ad9  docs/superpowers/plans/2026-08-09-track-d-handoff-publication.md
+61077e44f8d008043f7531585dd59fb6a4de958a9f27e979d9eb9c82cfbecb3d  docs/superpowers/handoffs/track-d-operational-smoke/README.md
+c330afd10205696fc8781ed77206eef995e47bb2e0f7f633d0d5893e3fa8c90e  docs/superpowers/plans/2026-08-09-track-d-handoff-publication.md

@@ -1,3 +1,8 @@
+> **Historical archive — do not execute.** Frozen on 2026-08-09. The instructions
+> below are retained research history, not a current plan, qualification gate, or
+> authorization. See [the archive boundary](README.md) and the current
+> [decision record](../../DECISION.md).
+
 # Track D Bounded-Edit Envelope v2.1-B Qualification Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
