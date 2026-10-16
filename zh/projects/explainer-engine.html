@@ -37,10 +37,10 @@ summary_outcome: "已有三段实际视频；引用校验不代表讲解语义�
         </div>
         <div class="explainer-example" id="gate-video">
             <h3>verified 徽标究竟担保什么？ · 76 秒</h3>
-            <p>用引用校验门自己的代码，说明 <code>verified</code> 徽标检查什么：证据要按整词匹配，并落在引用范围的首行和末行；脚本固定了 commit 时，<code>HEAD</code> 还必须与之一致。也说明这个徽标不担保什么。<a href="https://github.com/frankxue831/ManimSimpleRender/blob/9a59b3f0f92f7742709f15edd2c0a0a40ff03933/examples/citation-gate.story.yaml" rel="noopener noreferrer">阅读脚本</a>。</p>
+            <p>用引用校验门自己的代码，说明拿到 <code>verified</code> 徽标要满足什么：普通 token 要按整词匹配，证据要落在引用范围的首行和末行；脚本固定了 commit 时，<code>HEAD</code> 还必须与之一致，工作区也必须干净（除非显式允许）。也说明这个徽标不担保什么。<a href="https://github.com/frankxue831/ManimSimpleRender/blob/9a59b3f0f92f7742709f15edd2c0a0a40ff03933/examples/citation-gate.story.yaml" rel="noopener noreferrer">阅读脚本</a>。</p>
             {% include explainer-video.html name='citation-gate' id='gate-video' caption='公开 9a59b3f 样例；脚本与引用源码可查。旁白为英文，提供中英字幕。' %}
         </div>
-        <p>页面支持把字幕放在画面下方，避免遮住代码。全屏或未启用 JavaScript 时使用播放器原生字幕。视频内嵌文字没有重做，在手机上仍偏小；查看细节可用全屏，或对照下方脚本。</p>
+        <p>页面支持把字幕放在画面下方，避免遮住代码。全屏或未启用 JavaScript 时使用播放器原生字幕。视频内嵌文字没有重做，在手机上仍偏小；查看细节可用全屏，或对照脚本。</p>
         <h2 id="what-it-is">从脚本到画面</h2>
         <p>输入是一份 YAML {% include glossary-term.html term="storyboard" %}，写明镜头、旁白和源码引用，不是上传任意代码就能自动得到可靠讲解。下面节选第二段视频中 <code>per-line</code> 镜头的真实脚本，对应画面取自现有视频的第 12 秒。</p>
         <div class="explainer-pair">
@@ -76,11 +76,11 @@ summary_outcome: "已有三段实际视频；引用校验不代表讲解语义�
             <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/explainer/plan/evidence.py#L205-L211" rel="noopener noreferrer">预算计算：第 205–211 行</a></li>
             <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/explainer/plan/evidence.py#L312-L313" rel="noopener noreferrer">拒绝弱引用：第 312–313 行</a></li>
         </ul>
-        <p>规划器的证据预算是每行两个 token 的位置，下限五个、上限二十四个；少于两个 token 或没有强 token 的引用，会被规划器丢弃。引用校验门本身只检查声明的证据是否出现。这段视频从 <code>c345e66</code> 渲染的出处由本站说明，画面本身不能证明这一点：脚本引用所在仓库，没有固定 commit，因此徽标只写 <code>verified</code>，不带 commit。</p>
+        <p>规划器的证据预算是每行两个 token 的位置，下限五个、上限二十四个；少于两个 token 或没有强 token 的引用，会被规划器丢弃。引用校验门本身不执行这套预算；它在被引用的行里核对声明的证据。这段视频从 <code>c345e66</code> 渲染、第三段从 <code>9a59b3f</code> 渲染，出处都由本站说明，画面本身不能证明这一点：两份脚本都引用所在仓库，没有固定 commit，因此徽标只写 <code>verified</code>，不带 commit。</p>
         <details class="explainer-history">
             <summary>较早样例与本地快照的边界</summary>
         <p>第一段 Harness-Field 视频来自更早的 <code>diagram-canvas</code> 本地快照，是引擎实际输出。五种力来自研究知识库；画面上的 <code>simplified</code> 标签与 <code>verified @ commit</code> 徽标，标出简化视图以及「memory force」所引用的源码行和 commit。当时在渲染前通过了引用校验门，但历史校验结果缺少公开运行证据，无法由外部独立核验。视频能展示产物与这些标记，不能替代那份运行证据。</p>
-        <p>项目摘要保留的是 <code>local tag explainer-plan</code>：这个较晚的本地快照加入了可选脚本起草步骤，未改变校验后生成画面的流程。仓库现已公开，但这个 tag 没有公开发布，因此外部无法核对这份精确快照。公开的 <code>c345e66</code> 示例比它更新，不能把两者当成同一份证据。</p>
+        <p>项目摘要保留的是 <code>local tag explainer-plan</code>：这个较晚的本地快照加入了可选脚本起草步骤，未改变校验后生成画面的流程。仓库现已公开，但这个 tag 没有公开发布，因此外部无法核对这份精确快照。公开的 <code>c345e66</code> 与 <code>9a59b3f</code> 示例都比它更新，不能和它当成同一份证据。</p>
         </details>
         <h2 id="decisions">取舍与约束</h2>
         <p><span id="problem">动画可以让关系更直观，也可能让一个错误说法显得更可信。</span>这里的校验只能约束引用，不能代替对讲解本身的判断。</p>

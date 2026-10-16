@@ -1055,6 +1055,10 @@ end
   %w[harness-field-explainer evidence-budget citation-gate].each do |name|
     record(failures, "#{relative}: missing #{name} media") unless html.include?("/assets/video/#{name}.mp4")
   end
+  # Every poster, video and caption file the page references must exist in the build.
+  html.scan(/\b(?:poster|src)="(\/assets\/video\/[^"]+)"/).flatten.uniq.each do |asset|
+    record(failures, "#{relative}: missing video asset #{asset}") unless SITE.join(asset.delete_prefix("/")).exist?
+  end
   input_i = html.index('<h2 id="what-it-is">') || 0
   video_positions = html.enum_for(:scan, /<video\b/).map { Regexp.last_match.begin(0) }
   record(failures, "#{relative}: all examples must precede pipeline explanation") unless

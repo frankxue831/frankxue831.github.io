@@ -58,6 +58,10 @@
 #   oracle (interop reference build) → 对照实现（oracle）（每页首次括注；后续可用裸 oracle）
 #   AI coding assistant     → AI 编程助手（与「AI 编程 Agent」区分，不混用）
 #   review (by AI agents)   → 评审（AI 做的；人工的仍写「复核」）
+#   badge (verified)        → 徽标
+#   pin (a commit)          → 固定 commit
+#   plain token             → 普通 token（token 不译）
+#   dirty tree              → 脏工作区
 # Voice rule: ZH keeps its native register and may add explanatory glosses;
 # disclosures, hedges, numbers, and limitations must match EN exactly.
 # ---------------------------------------------------------------------------
