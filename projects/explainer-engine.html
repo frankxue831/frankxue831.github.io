@@ -6,7 +6,7 @@ permalink: /projects/explainer-engine/
 lang: en
 alternate: /zh/projects/explainer-engine/
 project_slug: explainer-engine
-summary_outcome: "Two actual videos; citation checks do not establish semantic correctness or teaching effectiveness."
+summary_outcome: "Three actual videos; citation checks do not establish semantic correctness or teaching effectiveness."
 ---
 
 <section class="page-header wrap explainer-header">
@@ -23,8 +23,8 @@ summary_outcome: "Two actual videos; citation checks do not establish semantic c
 
 <section class="section wrap reveal">
     <article class="project-detail prose explainer-detail">
-        <h2 id="examples">Two examples to watch</h2>
-        <p class="explainer-watch-links"><a href="#harness-video">Harness-Field · 57 seconds</a> / <a href="#budget-video">Evidence budget · 62 seconds</a></p>
+        <h2 id="examples">Three examples to watch</h2>
+        <p class="explainer-watch-links"><a href="#harness-video" class="nowrap">Harness-Field · 57 seconds</a> / <a href="#budget-video" class="nowrap">Evidence budget · 62 seconds</a> / <a href="#gate-video" class="nowrap">Citation gate · 76 seconds</a></p>
         <div class="explainer-example" id="harness-video">
             <h3>Harness-Field · 57 seconds</h3>
             <p>Five influences on an AI agent’s actions become forces and paths—an attempt to make an abstract relationship easier to follow.</p>
@@ -35,7 +35,12 @@ summary_outcome: "Two actual videos; citation checks do not establish semantic c
             <p>A graph and code show how many evidence tokens the planner lets a citation carry, and why it drops a citation with too little evidence.</p>
             {% include explainer-video.html name='evidence-budget' id='budget-video' caption='Public c345e66 example; the script and cited source are available. English narration, English and Chinese captions.' %}
         </div>
-        <p>This page can show captions below the picture to keep code clear. Fullscreen playback and browsers without JavaScript use native captions. Text embedded in the videos has not been remade and remains small on phones; use fullscreen or the script below for detail.</p>
+        <div class="explainer-example" id="gate-video">
+            <h3>What the verified badge actually promises · 76 seconds</h3>
+            <p>The gate’s own code shows what it takes to earn a <code>verified</code> badge—plain tokens that match whole words, evidence on the first and last cited lines and, when the script pins a commit, a matching <code>HEAD</code> on a clean tree unless explicitly allowed—and what the badge does not promise. <a href="https://github.com/frankxue831/ManimSimpleRender/blob/9a59b3f0f92f7742709f15edd2c0a0a40ff03933/examples/citation-gate.story.yaml" rel="noopener noreferrer">Read its script</a>.</p>
+            {% include explainer-video.html name='citation-gate' id='gate-video' caption='Public 9a59b3f example; the script and cited source are available. English narration, English and Chinese captions.' %}
+        </div>
+        <p>This page can show captions below the picture to keep code clear. Fullscreen playback and browsers without JavaScript use native captions. Text embedded in the videos has not been remade and remains small on phones; use fullscreen or the scripts for detail.</p>
         <h2 id="what-it-is">From script to screen</h2>
         <p>The input is a YAML {% include glossary-term.html term="storyboard" %} specifying scenes, narration and source citations—not arbitrary code uploaded for an automatically reliable explanation. This is an excerpt from the second video’s <code>per-line</code> beat; the frame comes from 12 seconds into the existing video.</p>
         <div class="explainer-pair">
@@ -71,11 +76,11 @@ summary_outcome: "Two actual videos; citation checks do not establish semantic c
             <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/explainer/plan/evidence.py#L205-L211" rel="noopener noreferrer">Budget calculation: lines 205–211</a></li>
             <li><a href="https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/explainer/plan/evidence.py#L312-L313" rel="noopener noreferrer">Weak-citation rejection: lines 312–313</a></li>
         </ul>
-        <p>The planner’s budget allows two token slots per cited line, with a floor of five and a cap of twenty-four, and the planner drops citations with fewer than two tokens or no strong token; the citation gate itself only checks that the declared evidence is present. This site states that the clip was rendered from <code>c345e66</code>; the picture alone does not establish that provenance. The script cites its own repository without pinning a commit, so its badge reads <code>verified</code> without a commit.</p>
+        <p>The planner’s budget allows two token slots per cited line, with a floor of five and a cap of twenty-four, and the planner drops citations with fewer than two tokens or no strong token. The citation gate itself does not apply that budget; it checks the declared evidence against the cited lines. This site states that this clip was rendered from <code>c345e66</code> and the third from <code>9a59b3f</code>; the pictures alone do not establish that provenance. Both scripts cite their own repository without pinning a commit, so their badges read <code>verified</code> without a commit.</p>
         <details class="explainer-history">
             <summary>Earlier example and local snapshot limits</summary>
         <p>The first Harness-Field video is actual engine output from the earlier local <code>diagram-canvas</code> snapshot. Its five forces come from a research wiki. The <code>simplified</code> label and <code>verified @ commit</code> badge identify the teaching view and the source line and commit cited for “memory force.” The citation gate passed before that render, but the historical result lacks public run evidence and is not independently checkable. The video shows the artifact and those markers; it cannot replace that run evidence.</p>
-        <p>The project summary retains <code>local tag explainer-plan</code>: this later local snapshot added optional script drafting without changing the verified-script-to-frame path. The repository is now public, but that tag is not published, so the exact snapshot cannot be checked from outside. The public <code>c345e66</code> example is newer; they are separate bodies of evidence.</p>
+        <p>The project summary retains <code>local tag explainer-plan</code>: this later local snapshot added optional script drafting without changing the verified-script-to-frame path. The repository is now public, but that tag is not published, so the exact snapshot cannot be checked from outside. The public <code>c345e66</code> and <code>9a59b3f</code> examples are newer; they are separate bodies of evidence.</p>
         </details>
         <h2 id="decisions">Decisions and trade-offs</h2>
         <p><span id="problem">Animation can make a relationship easier to see, but it can also make a wrong explanation look more convincing.</span> The checks here constrain citations; they do not replace judgment about the explanation itself.</p>

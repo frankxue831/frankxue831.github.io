@@ -1,0 +1,55 @@
+WEBVTT
+
+00:03.000 --> 00:06.812
+Every snippet comes from a storyboard entry like this.
+
+00:06.900 --> 00:09.303
+Display is what you see. It may be
+
+00:09.403 --> 00:12.248
+simplified, so the gate never checks it.
+
+00:12.333 --> 00:15.953
+Evidence is what the gate checks, in the cited lines.
+
+00:19.050 --> 00:21.758
+The gate reads those lines from disk.
+
+00:21.850 --> 00:24.902
+A plain token must match whole words, so
+
+00:25.002 --> 00:27.582
+a two is not found in twenty-four.
+
+00:30.666 --> 00:34.070
+Evidence must also reach both ends of the range.
+
+00:34.166 --> 00:36.491
+If code moves down a line, the
+
+00:36.591 --> 00:40.210
+range's first line usually loses its evidence.
+
+00:40.300 --> 00:43.704
+Then the cite fails instead of keeping its badge.
+
+00:46.800 --> 00:51.212
+A storyboard can also pin a commit for the badge to name.
+
+00:51.300 --> 00:53.648
+Then HEAD must match that commit.
+
+00:53.733 --> 00:57.113
+And uncommitted changes fail, unless allowed.
+
+01:00.200 --> 01:02.692
+All of this runs before rendering.
+
+01:02.783 --> 01:07.267
+One failure stops the render before any scene code exists.
+
+01:07.366 --> 01:10.615
+So a badge vouches for the cited evidence when
+
+01:10.715 --> 01:13.818
+the video was made, not for the explanation.

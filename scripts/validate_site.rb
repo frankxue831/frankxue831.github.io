@@ -932,7 +932,7 @@ case_study = {
   # Explainer: visitor-facing order differs; source and local-history limits
   # remain mandatory, along with all four decision costs.
   "projects/explainer-engine/index.html" => {
-    headings: [["examples", "Two examples to watch"], ["what-it-is", "From script to screen"],
+    headings: [["examples", "Three examples to watch"], ["what-it-is", "From script to screen"],
                ["evidence", "What you can check"], ["decisions", "Decisions and trade-offs"],
                ["next", "Where it stands"], ["limits", "Limits"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
@@ -945,7 +945,7 @@ case_study = {
       "Text embedded in the videos has not been remade"]
   },
   "zh/projects/explainer-engine/index.html" => {
-    headings: [["examples", "先看两段成果"], ["what-it-is", "从脚本到画面"],
+    headings: [["examples", "先看三段成果"], ["what-it-is", "从脚本到画面"],
                ["evidence", "能核对哪些证据"], ["decisions", "取舍与约束"],
                ["next", "目前进展"], ["limits", "使用边界"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
@@ -1046,31 +1046,37 @@ end
 %w[projects/explainer-engine/index.html zh/projects/explainer-engine/index.html].each do |relative|
   html = read_file(SITE.join(relative), failures)
   videos = html.scan(%r{<video\b(.*?)</video>}m).flatten
-  record(failures, "#{relative}: expected two native videos") unless videos.size == 2
+  record(failures, "#{relative}: expected three native videos") unless videos.size == 3
   videos.each do |video|
     record(failures, "#{relative}: video lost native controls/no-JS captions") unless
       video.include?("controls") && video.scan(/<track\b/).size == 2 && video.scan(/ default/).size == 1
     record(failures, "#{relative}: examples must not autoplay") if video.include?("autoplay")
   end
-  %w[harness-field-explainer evidence-budget].each do |name|
+  %w[harness-field-explainer evidence-budget citation-gate].each do |name|
     record(failures, "#{relative}: missing #{name} media") unless html.include?("/assets/video/#{name}.mp4")
+  end
+  # Every poster, video and caption file the page references must exist in the build.
+  html.scan(/\b(?:poster|src)="(\/assets\/video\/[^"]+)"/).flatten.uniq.each do |asset|
+    record(failures, "#{relative}: missing video asset #{asset}") unless SITE.join(asset.delete_prefix("/")).exist?
   end
   input_i = html.index('<h2 id="what-it-is">') || 0
   video_positions = html.enum_for(:scan, /<video\b/).map { Regexp.last_match.begin(0) }
-  record(failures, "#{relative}: both examples must precede pipeline explanation") unless
-    video_positions.size == 2 && video_positions.all? { |index| index < input_i }
+  record(failures, "#{relative}: all examples must precede pipeline explanation") unless
+    video_positions.size == 3 && video_positions.all? { |index| index < input_i }
   %w[examples/evidence-budget.story.yaml explainer/plan/evidence.py#L55-L58
      explainer/plan/evidence.py#L205-L211 explainer/plan/evidence.py#L312-L313].each do |path|
     url = "https://github.com/frankxue831/ManimSimpleRender/blob/c345e667dae448860b449e82415c81c80e59f7b1/#{path}"
     record(failures, "#{relative}: missing pinned evidence #{path}") unless html.include?(url)
   end
+  record(failures, "#{relative}: missing pinned citation-gate script") unless
+    html.include?("https://github.com/frankxue831/ManimSimpleRender/blob/9a59b3f0f92f7742709f15edd2c0a0a40ff03933/examples/citation-gate.story.yaml")
   record(failures, "#{relative}: missing actual verification command") unless
     html.include?("explainer verify examples/evidence-budget.story.yaml")
   record(failures, "#{relative}: missing real script/frame pair") unless
     CGI.unescapeHTML(html).include?('cite: "explainer/plan/evidence.py:56"') &&
     html.include?("/assets/img/evidence-budget-12s.jpg")
   record(failures, "#{relative}: captions must initialize hidden") unless
-    html.scan('<div class="video-captions" hidden>').size == 2
+    html.scan('<div class="video-captions" hidden>').size == 3
   record(failures, "#{relative}: history drawer must not hide a contents heading") if
     html.match?(/<details\b[^>]*>(?:(?!<\/details>).)*?<h2/m)
 end
