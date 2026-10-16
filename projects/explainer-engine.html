@@ -6,7 +6,7 @@ permalink: /projects/explainer-engine/
 lang: en
 alternate: /zh/projects/explainer-engine/
 project_slug: explainer-engine
-summary_outcome: "Two actual videos; citation checks do not establish semantic correctness or teaching effectiveness."
+summary_outcome: "Three actual videos; citation checks do not establish semantic correctness or teaching effectiveness."
 ---
 
 <section class="page-header wrap explainer-header">
@@ -23,8 +23,8 @@ summary_outcome: "Two actual videos; citation checks do not establish semantic c
 
 <section class="section wrap reveal">
     <article class="project-detail prose explainer-detail">
-        <h2 id="examples">Two examples to watch</h2>
-        <p class="explainer-watch-links"><a href="#harness-video">Harness-Field · 57 seconds</a> / <a href="#budget-video">Evidence budget · 62 seconds</a></p>
+        <h2 id="examples">Three examples to watch</h2>
+        <p class="explainer-watch-links"><a href="#harness-video" class="nowrap">Harness-Field · 57 seconds</a> / <a href="#budget-video" class="nowrap">Evidence budget · 62 seconds</a> / <a href="#gate-video" class="nowrap">Citation gate · 76 seconds</a></p>
         <div class="explainer-example" id="harness-video">
             <h3>Harness-Field · 57 seconds</h3>
             <p>Five influences on an AI agent’s actions become forces and paths—an attempt to make an abstract relationship easier to follow.</p>
@@ -34,6 +34,11 @@ summary_outcome: "Two actual videos; citation checks do not establish semantic c
             <h3>How much evidence does a citation need? · 62 seconds</h3>
             <p>A graph and code show how many evidence tokens the planner lets a citation carry, and why it drops a citation with too little evidence.</p>
             {% include explainer-video.html name='evidence-budget' id='budget-video' caption='Public c345e66 example; the script and cited source are available. English narration, English and Chinese captions.' %}
+        </div>
+        <div class="explainer-example" id="gate-video">
+            <h3>What the verified badge actually promises · 76 seconds</h3>
+            <p>The gate’s own code shows what a <code>verified</code> badge checks—evidence that matches whole words and sits on the first and last cited lines, plus a matching <code>HEAD</code> when the script pins a commit—and what the badge does not promise. <a href="https://github.com/frankxue831/ManimSimpleRender/blob/9a59b3f0f92f7742709f15edd2c0a0a40ff03933/examples/citation-gate.story.yaml" rel="noopener noreferrer">Read its script</a>.</p>
+            {% include explainer-video.html name='citation-gate' id='gate-video' caption='Public 9a59b3f example; the script and cited source are available. English narration, English and Chinese captions.' %}
         </div>
         <p>This page can show captions below the picture to keep code clear. Fullscreen playback and browsers without JavaScript use native captions. Text embedded in the videos has not been remade and remains small on phones; use fullscreen or the script below for detail.</p>
         <h2 id="what-it-is">From script to screen</h2>

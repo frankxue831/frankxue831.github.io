@@ -6,7 +6,7 @@ permalink: /zh/projects/explainer-engine/
 lang: zh
 alternate: /projects/explainer-engine/
 project_slug: explainer-engine
-summary_outcome: "已有两段实际视频；引用校验不代表讲解语义正确或教学效果已验证。"
+summary_outcome: "已有三段实际视频；引用校验不代表讲解语义正确或教学效果已验证。"
 ---
 
 <section class="page-header wrap explainer-header">
@@ -23,8 +23,8 @@ summary_outcome: "已有两段实际视频；引用校验不代表讲解语义�
 
 <section class="section wrap reveal">
     <article class="project-detail prose explainer-detail">
-        <h2 id="examples">先看两段成果</h2>
-        <p class="explainer-watch-links"><a href="#harness-video">Harness-Field · 57 秒</a> / <a href="#budget-video">证据预算 · 62 秒</a></p>
+        <h2 id="examples">先看三段成果</h2>
+        <p class="explainer-watch-links"><a href="#harness-video" class="nowrap">Harness-Field · 57 秒</a> / <a href="#budget-video" class="nowrap">证据预算 · 62 秒</a> / <a href="#gate-video" class="nowrap">引用校验门 · 76 秒</a></p>
         <div class="explainer-example" id="harness-video">
             <h3>Harness-Field · 57 秒</h3>
             <p>把影响 AI Agent 行动的五种因素画成力与路径，尝试让抽象关系更容易理解。</p>
@@ -34,6 +34,11 @@ summary_outcome: "已有两段实际视频；引用校验不代表讲解语义�
             <h3>引用需要多少证据？ · 62 秒</h3>
             <p>用曲线和代码说明规划器允许一条引用带多少证据 token，以及它为什么丢弃证据过弱的引用。</p>
             {% include explainer-video.html name='evidence-budget' id='budget-video' caption='公开 c345e66 样例；脚本与引用源码可查。旁白为英文，提供中英字幕。' %}
+        </div>
+        <div class="explainer-example" id="gate-video">
+            <h3>verified 徽标究竟担保什么？ · 76 秒</h3>
+            <p>用引用校验门自己的代码，说明 <code>verified</code> 徽标检查什么：证据要按整词匹配，并落在引用范围的首行和末行；脚本固定了 commit 时，<code>HEAD</code> 还必须与之一致。也说明这个徽标不担保什么。<a href="https://github.com/frankxue831/ManimSimpleRender/blob/9a59b3f0f92f7742709f15edd2c0a0a40ff03933/examples/citation-gate.story.yaml" rel="noopener noreferrer">阅读脚本</a>。</p>
+            {% include explainer-video.html name='citation-gate' id='gate-video' caption='公开 9a59b3f 样例；脚本与引用源码可查。旁白为英文，提供中英字幕。' %}
         </div>
         <p>页面支持把字幕放在画面下方，避免遮住代码。全屏或未启用 JavaScript 时使用播放器原生字幕。视频内嵌文字没有重做，在手机上仍偏小；查看细节可用全屏，或对照下方脚本。</p>
         <h2 id="what-it-is">从脚本到画面</h2>
