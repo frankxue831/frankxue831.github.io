@@ -51,7 +51,7 @@ All four detail pages have six sections, enforced per page (both locales) by `sc
 
 `assets/css/style.css` is a single hand-written stylesheet (~2.4k lines, no preprocessor). Jekyll plugins are declared in the `Gemfile` `:jekyll_plugins` group: `github-pages` (umbrella), `jekyll-feed` (atom), `jekyll-seo-tag` (meta / OG / hreflang), `jekyll-sitemap`. All design tokens live in `:root` custom properties at the top: `--bg` / `--fg` / `--accent` for the paper-and-ink palette, `--serif` / `--sans` / `--mono` for typography, `--space-*` for the spacing scale.
 
-**Type system (per `2026-05-17-home-page-readability-design.md`, shipped):** sans-serif (`--sans`: system stack) is the default for body, nav, buttons, metadata, preview blocks, and project-row interface text (tags, status, year). Serif (`--serif`: EB Garamond → Noto Serif SC fallback chain) is reserved for the site mark, hero title, selected section headings, and the short prose note under each work-list row (`.work-list__note` — intentional; see the spec's 2026-06-11 addendum). Mono (`--mono`: IBM Plex Mono) is for compact technical labels only. Do not expand serif coverage on the home page without checking the spec. CJK glyphs fall through automatically via the font-family chain — do not split into separate stacks per locale.
+**Type system (updated by #119 / PR #120, Oct 2026; supersedes the hybrid split in `2026-05-17-home-page-readability-design.md`):** serif for identity and reading text, sans for UI, mono for metadata. Serif (`--serif`: EB Garamond → Noto Serif SC local fallback → Songti SC/STSong → SimSun → serif) covers the site mark, hero title and lede, section headings, and reading text in both EN and ZH: home preview paragraphs, work-list notes, project-detail paragraphs and lists, prose, notes and the contact intro. Sans (`--sans`: system stack) is for interface text: nav, buttons, controls, tags and status. Mono (`--mono`: IBM Plex Mono) is for metadata and compact technical labels, including the uppercase home eyebrow. CJK glyphs fall through automatically via the font-family chain — do not split into separate stacks per locale. Open check (#119 item 11): ZH serif on real Windows may fall back to SimSun; if that reads badly, the agreed fallback is switching only ZH body text to sans.
 
 The aesthetic is "Codex — paper & ink" (light, monograph-feel). Keep new components consistent with the existing tokens; don't introduce new color values inline.
 
@@ -73,7 +73,7 @@ External CDNs, web fonts, and analytics are out — fonts are self-hosted and `c
 Specs in `docs/superpowers/specs/` encode current design direction — read the most recent before substantive content or design changes:
 
 - `2026-05-16-portfolio-project-depth-design.md` — project data model + the source-of-truth rule below.
-- `2026-05-17-home-page-readability-design.md` — hybrid type system (sans for body, serif for display, mono for labels).
+- `2026-05-17-home-page-readability-design.md` — hybrid type system (sans for body, serif for display, mono for labels). Type split superseded by #119 (serif for reading text); see Type system above.
 
 The portfolio spec defines a strict **source-of-truth** rule for project copy:
 
