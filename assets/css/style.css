@@ -699,6 +699,8 @@ body.lang-zh .note li {
     }
     html:not(.no-js) .primary-nav__link--switch {
         min-height: 44px;
+        min-width: 44px; /* "⇄ EN" is ~39px wide in Firefox/WebKit (#120 M1) */
+        justify-content: center;
         padding-top: 0;
         padding-bottom: 0;
         align-items: center;
