@@ -246,6 +246,13 @@
     :root:not([data-theme]) .install {
         background: var(--bg-elevated);
     }
+    :root:not([data-theme]) .dudect__title,
+    :root:not([data-theme]) .dudect__table caption,
+    :root:not([data-theme]) .dudect__table th,
+    :root:not([data-theme]) .install__label,
+    :root:not([data-theme]) .install__cmd::before {
+        color: var(--fg-muted); /* mirror of the dark small-text lift (#124 B) */
+    }
     :root:not([data-theme]) details.drawer {
         background: var(--bg-elevated);
     }
@@ -2551,6 +2558,16 @@ details.drawer .version-grid {
 [data-theme="dark"] .dudect,
 [data-theme="dark"] .install {
     background: var(--bg-elevated);
+}
+/* On that raised panel --fg-subtle is 4.46:1, under AA for the 12-14px
+   labels inside it; lift them one step to --fg-muted in dark only, the same
+   fix as the hover tint (#119 item 8). Light keeps --fg-subtle (#124 B). */
+[data-theme="dark"] .dudect__title,
+[data-theme="dark"] .dudect__table caption,
+[data-theme="dark"] .dudect__table th,
+[data-theme="dark"] .install__label,
+[data-theme="dark"] .install__cmd::before {
+    color: var(--fg-muted);
 }
 [data-theme="dark"] details.drawer {
     background: var(--bg-elevated);
