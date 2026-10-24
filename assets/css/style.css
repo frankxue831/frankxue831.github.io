@@ -2557,7 +2557,6 @@ details.drawer .version-grid {
     font-family: var(--sans);
 }
 .explainer-actions a { padding-block: var(--space-2); border-bottom: 1px solid var(--accent); }
-.explainer-actions span { color: var(--fg-muted); font-size: var(--text-sm); }
 .explainer-detail { max-width: none; min-width: 0; }
 .explainer-detail > p,
 .explainer-detail > ul,
@@ -2619,6 +2618,9 @@ details.drawer .version-grid {
     margin-block: var(--space-3) var(--space-5);
 }
 .explainer-pair a { display: block; border: 0; }
+.explainer-still { margin: var(--space-3) 0 0; }
+.explainer-still a { display: block; max-width: 24rem; border: 0; }
+.explainer-still figcaption { margin-block: var(--space-2); font-family: var(--sans); font-size: var(--text-sm); color: var(--fg-muted); }
 .explainer-flow { padding-left: var(--space-6); margin-block: var(--space-6); }
 .explainer-flow li { padding-left: var(--space-2); }
 .explainer-flow li::before { content: none; }
