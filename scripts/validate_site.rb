@@ -936,7 +936,7 @@ case_study = {
                ["evidence", "What you can check"], ["decisions", "Decisions and trade-offs"],
                ["next", "Where it stands"], ["limits", "Limits"]],
     cost: "Cost:", overclaims: %w[production-ready guaranteed secure],
-    must_include: ["simplified", "gate's verdict", "explainer plan", "releases/tag/v0.2.0",
+    must_include: ["simplified", "gate's verdict", "explainer plan", "tree/v0.2.0",
       "This command checks citations; it does not re-render the video.",
       "It does not establish that the explanation is semantically correct or educationally effective.",
       "no language model writes that code", "first public tag", "<code>v0.1.0</code>", "2026-10-15",
@@ -944,18 +944,18 @@ case_study = {
       "without pinning a commit",
       "Text embedded in the videos has not been remade",
       "blob/v0.2.0/CHANGELOG.md\" rel=\"noopener noreferrer\">Changelog</a>",
-      "<span class=\"status-pill\" data-status=\"public-pre-release\">Public source, pre-release</span>"],
+      "<span class=\"status-pill\" data-status=\"public-pre-release\">Public source, pre-release</span>", "<dt>Tag</dt>"],
     # ManimSimpleRender has a public tag: v0.1.0, annotated tagger timestamp
     # 2026-10-15 05:07:40 UTC.
     forbid: ["no published tag", "No published tag", "no tagged release", "No tagged release", "explainer-plan",
-             "GitHub Release", "PyPI"]
+             "GitHub Release", "PyPI", "ManimSimpleRender/releases/tag/", "<dt>Release</dt>"]
   },
   "zh/projects/explainer-engine/index.html" => {
     headings: [["examples", "先看三段成果"], ["what-it-is", "从脚本到画面"],
                ["evidence", "能核对哪些证据"], ["decisions", "取舍与约束"],
                ["next", "目前进展"], ["limits", "使用边界"]],
     cost: "代价：", overclaims: ["生产就绪", "保证安全"],
-    must_include: ["简化视图", "校验门的结论", "explainer plan", "releases/tag/v0.2.0",
+    must_include: ["简化视图", "校验门的结论", "explainer plan", "tree/v0.2.0",
       "这条命令只检查引用，不会重新渲染视频。",
       "它不证明讲解语义正确，也不证明教学效果。",
       "这段代码不由语言模型编写", "首个公开 tag", "<code>v0.1.0</code>", "2026-10-15",
@@ -963,8 +963,8 @@ case_study = {
       "没有固定 commit",
       "视频内嵌文字没有重做",
       "blob/v0.2.0/CHANGELOG.md\" rel=\"noopener noreferrer\">更新日志</a>",
-      "<span class=\"status-pill\" data-status=\"public-pre-release\">源码公开、预发布</span>"],
-    forbid: ["没有已发布的 tag", "尚未打正式发布标签", "explainer-plan", "GitHub Release", "PyPI"]
+      "<span class=\"status-pill\" data-status=\"public-pre-release\">源码公开、预发布</span>", "<dt>tag</dt>"],
+    forbid: ["没有已发布的 tag", "尚未打正式发布标签", "explainer-plan", "GitHub Release", "PyPI", "ManimSimpleRender/releases/tag/", "<dt>Release</dt>", "<dt>发布</dt>"]
   }
 }
 case_study.each do |relative, spec|
@@ -1158,10 +1158,10 @@ end
 # ManimSimpleRender's current public tag on the work-list blurbs (v0.2.0;
 # v0.1.0 was the first, tagged 2026-10-15 UTC); the pre-tag phrasings must not come back.
 {
-  "projects/index.html" => { must: ["releases/tag/v0.2.0", "<code>v0.2.0</code>"],
-                             forbid: ["no tagged release", "No tagged release", "no published tag", "No published tag"] },
-  "zh/projects/index.html" => { must: ["当前 tag 为", "releases/tag/v0.2.0", "<code>v0.2.0</code>"],
-                                forbid: ["尚未打正式发布标签", "没有已发布的 tag"] }
+  "projects/index.html" => { must: ["tree/v0.2.0", "<code>v0.2.0</code>"],
+                             forbid: ["no tagged release", "No tagged release", "no published tag", "No published tag", "ManimSimpleRender/releases/tag/"] },
+  "zh/projects/index.html" => { must: ["当前 tag 为", "tree/v0.2.0", "<code>v0.2.0</code>"],
+                                forbid: ["尚未打正式发布标签", "没有已发布的 tag", "ManimSimpleRender/releases/tag/"] }
 }.each do |relative, spec|
   html = read_file(SITE.join(relative), failures)
   next if html.empty?
