@@ -132,7 +132,11 @@
     --space-24: 6rem;
     --space-32: 8rem;
 
-    /* Type - serif for identity, sans for reading, mono for metadata. */
+    /* One corner radius for framed surfaces, inline code and small controls
+       (#119). Focus rings (2px) and status dots (50%) stay their own values. */
+    --radius: 4px;
+
+    /* Type - serif for identity and reading text, sans for UI, mono for metadata. */
     /* CJK serif is no longer downloaded; 'Noto Serif SC' is kept only as a
        local-install fallback, then system serifs 'Songti SC'/'STSong' (Apple)
        and 'SimSun' (Windows), then generic serif. */
@@ -248,13 +252,6 @@
     :root:not([data-theme]) details.drawer > summary:hover,
     :root:not([data-theme]) details.drawer > summary:focus-visible {
         background: var(--bg-sunk);
-    }
-    :root:not([data-theme]) .hero-proof {
-        border-top-color: var(--accent);
-    }
-    :root:not([data-theme]) .hero-proof__release,
-    :root:not([data-theme]) .work-list__rel {
-        color: var(--accent);
     }
 }
 /* Print stays paper no matter the chosen theme. Reset the full token set
@@ -509,7 +506,7 @@ a { color: inherit; text-decoration: none; }
     width: 44px; /* match the 44px nav-toggle tap target */
     height: 44px;
     padding: 0;
-    border-radius: 999px;
+    border-radius: var(--radius);
     color: var(--fg-muted);
     background: transparent;
     border: 0;
@@ -550,6 +547,11 @@ body.lang-zh em {
     font-style: normal;
     font-weight: 500;
     color: var(--accent-cool);
+}
+/* Home paragraphs hold the contact links, so blue must mean "link" there:
+   emphasis stays upright/500 but in ink (#119 item 2). */
+body.lang-zh .preview__body em {
+    color: var(--fg);
 }
 
 /* CJK display headlines breathe better at neutral tracking. Wrapping
@@ -681,6 +683,29 @@ body.lang-zh .note li {
     .primary-nav__num { font-size: var(--text-xs); }
     .primary-nav__link::after { display: none; }
 
+    /* One-tap language switch (#119 item 6): lift the existing switch item
+       into the header bar, just left of the menu button. .site-header's
+       backdrop-filter makes it the containing block for position: fixed,
+       so the item escapes the closed nav's overflow clip; visibility:
+       visible overrides the nav's hidden state for this item only. DOM
+       order is unchanged; no-JS keeps the static stacked list. */
+    html:not(.no-js) .primary-nav__item--switch {
+        position: fixed;
+        top: var(--space-4);
+        right: calc(var(--gutter) + 44px + var(--space-2));
+        margin-top: 0;
+        border-top: 0;
+        visibility: visible;
+    }
+    html:not(.no-js) .primary-nav__link--switch {
+        min-height: 44px;
+        min-width: 44px; /* "⇄ EN" is ~39px wide in Firefox/WebKit (#120 M1) */
+        justify-content: center;
+        padding-top: 0;
+        padding-bottom: 0;
+        align-items: center;
+    }
+
     body.is-nav-open .nav-toggle__bar:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
     body.is-nav-open .nav-toggle__bar:nth-child(2) { opacity: 0; }
     body.is-nav-open .nav-toggle__bar:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
@@ -809,10 +834,11 @@ body.lang-zh .note li {
 }
 
 .hero__eyebrow {
-    font-family: var(--sans);
-    font-size: var(--text-sm);
+    font-family: var(--mono);
+    font-size: var(--text-xs);
     color: var(--fg-muted);
-    letter-spacing: 0;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     display: inline-flex;
     align-items: center;
     gap: var(--space-3);
@@ -820,7 +846,7 @@ body.lang-zh .note li {
 }
 .hero__eyebrow::before {
     content: "";
-    width: 32px;
+    width: 24px;
     height: 1px;
     background: var(--accent);
 }
@@ -846,7 +872,7 @@ body.lang-zh .note li {
 }
 
 .hero__lede {
-    font-family: var(--sans);
+    font-family: var(--serif);
     font-size: var(--text-xl);
     line-height: 1.65;
     font-weight: 400;
@@ -969,6 +995,12 @@ body.lang-zh .note li {
 .hero-proof__note {
     color: var(--fg-subtle);
 }
+/* On the --bg-elevated hover tint --fg-subtle drops under 4.5:1; lift the
+   year one step while the row is hovered/focused (#119 item 8). */
+.hero-proof__row:hover .hero-proof__year,
+.hero-proof__row:focus-visible .hero-proof__year {
+    color: var(--fg-muted);
+}
 
 .hero-proof__note {
     max-width: 46ch;
@@ -1039,17 +1071,29 @@ body.lang-zh .note li {
 }
 
 .preview__body {
-    font-family: var(--sans);
-    font-size: var(--text-lg);
+    font-family: var(--serif);
+    font-size: var(--text-xl);
     line-height: 1.7;
     color: var(--fg);
     max-width: 62ch;
 }
 .preview__body p + p { margin-top: var(--space-6); }
 .preview__body em {
-    font-style: normal;
-    font-weight: 600;
-    color: var(--accent-cool);
+    font-style: italic;
+    font-weight: inherit;
+    color: var(--fg);
+}
+/* Inline text links in home paragraphs and page ledes: same look as
+   .prose a — ink with a 1px accent underline (#119 item 2). */
+.preview__body a:not(.preview__link),
+.page-header__lede a {
+    color: var(--fg);
+    border-bottom: 1px solid var(--accent);
+    transition: color var(--dur) var(--ease);
+}
+.preview__body a:not(.preview__link):hover,
+.page-header__lede a:hover {
+    color: var(--accent);
 }
 
 .preview__link {
@@ -1060,8 +1104,8 @@ body.lang-zh .note li {
     font-family: var(--sans);
     font-size: var(--text-base);
     font-weight: 600;
-    color: var(--fg-muted);
-    border-bottom: 1px solid var(--rule);
+    color: var(--fg);
+    border-bottom: 1px solid var(--accent);
     padding-bottom: 2px;
     transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
@@ -1158,6 +1202,10 @@ body.lang-zh .note li {
     color: var(--fg-subtle);
     letter-spacing: 0.02em;
 }
+.work-list__item:hover .work-list__year,
+.work-list__row:focus-visible .work-list__year {
+    color: var(--fg-muted); /* AA on the hover tint (#119 item 8) */
+}
 
 /* Status pill — colored dot + always-present text label. */
 .status-pill {
@@ -1220,7 +1268,7 @@ body.lang-zh .note li {
     color: var(--fg);
     background: var(--bg-elevated);
     padding: 1px 6px;
-    border-radius: 3px;
+    border-radius: var(--radius);
 }
 .work-list__note a {
     color: var(--fg);
@@ -1234,10 +1282,8 @@ body.lang-zh .note li {
     font-family: var(--mono);
     font-size: 0.85em;
     letter-spacing: 0.04em;
-    border-bottom: 0 !important;
-    color: var(--accent) !important;
+    /* Colour, underline and hover come from .work-list__note a (#119 item 4). */
 }
-.work-list__more:hover { color: var(--accent-cool) !important; }
 
 /* =========================================================
    Project detail page
@@ -1308,7 +1354,7 @@ body.lang-zh .note li {
     margin: 0 0 var(--space-8);
     padding: var(--space-4) var(--space-5);
     border: 1px solid var(--rule);
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--bg-sunk);
 }
 .install__label {
@@ -1347,8 +1393,8 @@ body.lang-zh .note li {
     font-size: var(--text-xs);
     letter-spacing: 0.04em;
     color: var(--fg-muted);
-    border: 1px solid var(--rule);
-    border-radius: 3px;
+    border: 1px solid var(--fg-muted); /* >= 3:1 on .install in both themes (#119 item 9) */
+    border-radius: var(--radius);
     padding: var(--space-1) var(--space-3);
     transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
@@ -1410,7 +1456,7 @@ body.lang-zh .note li {
     color: var(--accent);
     background: var(--bg-elevated);
     padding: 1px 6px;
-    border-radius: 3px;
+    border-radius: var(--radius);
 }
 .project-detail em { color: var(--accent-cool); }
 .project-detail a {
@@ -1586,7 +1632,7 @@ body.lang-zh .note li {
         word-break: keep-all;
     }
     .hero__lede {
-        font-size: var(--text-lg);
+        font-size: var(--text-xl); /* matches .page-header__lede on mobile */
         line-height: 1.65;
     }
     .hero-proof__header {
@@ -1732,7 +1778,7 @@ body.lang-zh .note li {
     color: var(--accent);
     background: var(--bg-elevated);
     padding: 1px 6px;
-    border-radius: 3px;
+    border-radius: var(--radius);
 }
 .note pre {
     font-family: var(--mono);
@@ -1740,7 +1786,7 @@ body.lang-zh .note li {
     line-height: 1.5;
     background: var(--bg-sunk);
     border: 1px solid var(--rule);
-    border-radius: 4px;
+    border-radius: var(--radius);
     padding: var(--space-4);
     overflow-x: auto;
     margin: 0 0 var(--space-6);
@@ -2062,6 +2108,12 @@ body.lang-zh .note li {
     font-style: italic;
     color: var(--accent-cool);
 }
+/* Detail pages (project, note, colophon — no plate): ink title; italic
+   stays, blue is reserved for the section-page plate accent (#119 item 3).
+   (0,3,1) also beats body.lang-zh em on ZH pages. */
+.page-header:not(.page-header--plate) .page-header__title em {
+    color: var(--fg);
+}
 .page-header__lede {
     margin-top: var(--space-6);
     font-family: var(--serif);
@@ -2203,7 +2255,7 @@ body.lang-zh .page-header__title,
     margin: auto;
     padding: var(--space-3) var(--space-4);
     border: 1px solid var(--rule);
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--bg-sunk);
     color: var(--fg);
     font-family: var(--sans);
@@ -2216,7 +2268,7 @@ body.lang-zh .page-header__title,
 details.drawer {
     margin: var(--space-5) 0 var(--space-6);
     border: 1px solid var(--rule);
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--bg-sunk);
 }
 details.drawer > summary {
@@ -2295,7 +2347,7 @@ details.drawer .version-grid {
     width: 100%;
     height: auto;
     border: 1px solid var(--fg);
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: #1a1814;
 }
 
@@ -2308,7 +2360,7 @@ details.drawer .version-grid {
     margin: var(--space-6) 0 var(--space-8);
     padding: var(--space-5);
     border: 1px solid var(--rule);
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--bg-sunk);
 }
 /* Wide figure. The five-column table needs ~40rem, more than the 36rem
@@ -2487,9 +2539,11 @@ details.drawer .version-grid {
 /* =========================================================
    Second-design dark — deliberate choices, not value flips.
    Light keeps sunken paper panels; dark raises them to the
-   warm elevated surface and lets accents go moonlit (release
-   numerals, the proof-ledger hairline). Status pills need no
-   override — their dots already carry dark-tuned tokens.
+   warm elevated surface. Release numerals and the proof-ledger
+   hairline stay ink/--rule in both themes (#119 reverses the
+   2026-06-11 "moonlit accent" detail: in dark they read as links).
+   Status pills need no override — their dots already carry
+   dark-tuned tokens.
    Twin rules for the no-JS dark path live in the
    prefers-color-scheme block near the top of this file.
    Spec: docs/superpowers/specs/2026-06-11-visual-evolution-design.md
@@ -2504,13 +2558,6 @@ details.drawer .version-grid {
 [data-theme="dark"] details.drawer > summary:hover,
 [data-theme="dark"] details.drawer > summary:focus-visible {
     background: var(--bg-sunk);
-}
-[data-theme="dark"] .hero-proof {
-    border-top-color: var(--accent);
-}
-[data-theme="dark"] .hero-proof__release,
-[data-theme="dark"] .work-list__rel {
-    color: var(--accent);
 }
 
 /* Audit notes: code-reference links read as mono. */
@@ -2654,7 +2701,7 @@ details.drawer .version-grid {
     max-width: 100%;
     height: auto;
     border: 1px solid var(--rule);
-    border-radius: 4px;
+    border-radius: var(--radius);
 }
 [data-theme="dark"] .shot img {
     border-color: color-mix(in srgb, var(--rule) 75%, var(--bg));
