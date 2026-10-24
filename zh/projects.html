@@ -51,7 +51,7 @@ alternate: /projects/
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% when 'explainer-engine' %}
                 用动画讲解代码与技术概念的一次尝试：把 YAML 脚本渲染成带旁白的讲解视频——每个 beat 可以是图示、带引用的代码标注，或会动的概念图。画面代码标 <em>simplified</em>（简化视图）；渲染前，引用校验门按脚本里的引用核对源码——
-                它只核对引用，不判断讲解是否正确。当前状态：{{ project.status_label.zh }}。源码：<a href="https://github.com/frankxue831/ManimSimpleRender" rel="noopener noreferrer">GitHub 上的 ManimSimpleRender</a>——首个公开 tag 为 <code>v0.1.0</code>，于 2026-10-15（UTC）打上。
+                它只核对引用，不判断讲解是否正确。当前状态：{{ project.status_label.zh }}。源码：<a href="https://github.com/frankxue831/ManimSimpleRender" rel="noopener noreferrer">GitHub 上的 ManimSimpleRender</a>，当前 tag 为 <a href="https://github.com/frankxue831/ManimSimpleRender/releases/tag/v0.2.0" rel="noopener noreferrer"><code>v0.2.0</code></a>。
                 <a href="{{ project.zh_detail_url | relative_url }}" class="work-list__more">{{ t.list.read_more }}</a>
                 {% else %}
                 精选工程作品——做到哪一步、限制在哪，会写清楚。
