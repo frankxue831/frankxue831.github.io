@@ -1,8 +1,9 @@
 ---
 title: "「共用代码」和「共用一个包」，是两个决定"
 # Display-only line-break hints for the ZH h1 (#100 spec B); title stays plain for <title>/OG.
-# nowrap keeps WebKit from breaking between 」 and ，.
-title_breaks: "「共用代码」和<wbr><span class=\"nowrap\">「共用一个包」，</span><wbr>是两个决定"
+# nowrap keeps WebKit from breaking between 」 and ， (包」，) and after the opening 「 (「共).
+# The phrase between them can wrap, so the h1 fits at 320px (#124 C).
+title_breaks: "「共用代码」和<wbr><span class=\"nowrap\">「共</span>用一个<span class=\"nowrap\">包」，</span><wbr>是两个决定"
 date: 2026-08-09
 permalink: /zh/notes/extraction-trigger/
 lang: zh
