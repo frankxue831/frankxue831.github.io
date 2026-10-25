@@ -1030,6 +1030,19 @@ body.lang-zh .note li {
 .hero__lede { animation-delay: 280ms; }
 .hero__cta { animation-delay: 420ms; }
 .hero-proof { animation-delay: 260ms; }
+/* Reduced motion: the global reset shortens the duration but keeps each
+   delay, so these sat invisible for 60-420ms first (#124 D). Drop the
+   entrance entirely: visible and in place from the first frame. */
+@media (prefers-reduced-motion: reduce) {
+    .hero__eyebrow,
+    .hero__lede,
+    .hero-proof,
+    .hero__cta {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
 
 @keyframes rise {
     to { opacity: 1; transform: translateY(0); }
