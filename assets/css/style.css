@@ -585,36 +585,6 @@ body.lang-zh .note li {
     line-height: 1.75;
 }
 
-/* ZH reading text takes the sans stack (#124 item A, the fallback Frank
-   approved on #119 item 11). --serif has no downloaded CJK face: on a Mac
-   Han glyphs fall to Songti SC, but on stock Windows the first face in
-   that stack with Han glyphs is SimSun, which is expected to read thin
-   and dated at body sizes (never measured, nobody has a Windows machine).
-   --sans reaches Microsoft YaHei there. Latin runs inside ZH reading text
-   (crate names, handles, acronyms) move to sans with it, on every
-   platform. ZH titles (hero, page-header, section, note h2/h3, explainer
-   h2) and the site mark stay serif, and nothing changes for EN. The list
-   mirrors every reading-text surface that #120 (and earlier) set to
-   --serif, plus the 404 page's ZH paragraph for the JS-off case (its
-   body class is lang-en until locale-404.js swaps it); the footer's
-   "EB Garamond" specimen is Latin-only and stays serif, and the contact
-   page's mono rationale note is excluded by :not(). The validator pins
-   both lists. */
-body.lang-zh .hero__lede,
-body.lang-zh .page-header__lede,
-body.lang-zh .preview__body,
-body.lang-zh .work-list__note,
-body.lang-zh .project-detail p,
-body.lang-zh .project-detail li,
-body.lang-zh .prose p,
-body.lang-zh .note li,
-body.lang-zh .contact-intro p:not(.contact-direct__note),
-body.lang-zh .contact-direct dd,
-body.lang-zh .error-page__body,
-.error-page__locale[lang="zh-CN"] .error-page__body {
-    font-family: var(--sans);
-}
-
 @media (max-width: 759px) {
     /* The stacked menu gives every row one left edge: drop the desktop
        offsets that separate the switcher and the theme toggle. */
@@ -1924,9 +1894,7 @@ body.lang-zh .error-page__body,
 /* The rationale note under the contact list — a standalone paragraph after the
    <dl> (own the GitHub-first stance), mono + muted to read as an aside. The
    `.contact-intro` prefix outranks the `.contact-intro p` serif rule below
-   (same single-class specificity would otherwise let source order win), and
-   the ZH sans block excludes it with :not(.contact-direct__note) so it stays
-   mono on /zh/contact/ too. */
+   (same single-class specificity would otherwise let source order win). */
 .contact-intro .contact-direct__note {
     font-family: var(--mono);
     font-size: var(--text-sm);
