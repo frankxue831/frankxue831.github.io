@@ -28,7 +28,7 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
             <strong>我负责的部分。</strong>我提出了最初的需求，并借助 AI 编程助手实现功能。我是 Rust 新手，主要关注实际使用体验，以及与 GmSSL 等现有实现的兼容性，并不经常逐行细审代码。起初，我自己复核改动；后来，为了提高效率，我把更多代码评审交给了遵循既定规则的 AI Agent。
         </p>
         <p>
-            <strong>目前的结果。</strong><code>gmcrypto-core</code> v1.16.0 已于 2026 年 10 月 9 日（UTC）在 crates.io 发布。CI 会核对标准测试向量，并将输出与 GmSSL 比对。GmSSL 对照实现（oracle）准备就绪且版本校验通过后，才会执行这项比对。如果准备或版本校验失败，CI 会发出警告并跳过比对，任务仍会通过。统计时序测试则在 x86-64 Linux runner 上，对选定路径检查时序泄漏回归。
+            <strong>目前的结果。</strong><code>gmcrypto-core</code> v1.17.0 已于 2026 年 10 月 26 日（UTC）在 crates.io 发布。CI 会核对标准测试向量，并将输出与 GmSSL 比对。GmSSL 对照实现（oracle）准备就绪且版本校验通过后，才会执行这项比对。如果准备或版本校验失败，CI 会发出警告并跳过比对，任务仍会通过。统计时序测试则在 x86-64 Linux runner 上，对选定路径检查时序泄漏回归。
         </p>
         <p>
             <strong>使用限制。</strong>这个库没有经过独立审计；1.0 之前的那轮评审由两个 AI 模型以对抗方式进行。时序测试通过，只能作为测试条件下的证据，不能证明常量时间行为。
@@ -74,7 +74,7 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
         </p>
         <p>
             整套依赖都不碰标准库（{% include glossary-term.html term="no_std" %} + <code>alloc</code>），能编译到 <code>wasm32-unknown-unknown</code>，也实现了 RustCrypto 的
-            <code>digest</code> / <code>mac</code> / <code>cipher</code> trait，方便接入现有生态；从 v1.11 起，还可选适配 <code>aead</code> 0.6（SM4-GCM / SM4-CCM）。v1.12 和 v1.13 先后在 Rust 和 C 里加上长度预先承诺的流式 SM4-CCM，所有 SM4 流式类型在 drop 时都会清零；从 v1.16 起，可选的 SIMD SM4 路径在支持的 x86_64 CPU 上改用 GFNI 计算 S 盒。
+            <code>digest</code> / <code>mac</code> / <code>cipher</code> trait，方便接入现有生态；从 v1.11 起，还可选适配 <code>aead</code> 0.6（SM4-GCM / SM4-CCM）。v1.12 和 v1.13 先后在 Rust 和 C 里加上长度预先承诺的流式 SM4-CCM，所有 SM4 流式类型在 drop 时都会清零；从 v1.16 起，可选的 SIMD SM4 路径在支持的 x86_64 CPU 上改用 GFNI 计算 S 盒；v1.17 修复了两条依赖安全公告，MSRV 升到 Rust 1.87，代价是 SM2 的域运算变慢。
         </p>
         <p>
             从 v1.3 起，它还能解析 X.509 v3 证书并验证其 SM2-with-SM3 签名（GM/T 0015 profile，严格 DER，不做任何信任判定）；对应的 C ABI 接口（在 <code>gmcrypto-c</code> crate 里）在 v1.4 跟上。v1.6 到 v1.9 把 TLCP（GB/T 38636）铺成了一套<em>工具集</em>：密钥派生（key schedule）与一条免密钥确认的 SM2 密钥交换路径（v1.6）、记录层的保护 / 解保护（v1.7）、证书对与证书链的签名验证（v1.8），
@@ -84,12 +84,12 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
             已发布的
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>
             是面向使用者的示例与冒烟测试导览，覆盖散列、签名与验签、加解密、密钥交换和编码等代表性能力。它把依赖固定为
-            <code>gmcrypto-core = "=1.16.0"</code>，即当前版本；下文的源码行证据仍固定在 <code>v1.11.0</code>。
+            <code>gmcrypto-core = "=1.17.0"</code>，即当前版本；下文的源码行证据仍固定在 <code>v1.11.0</code>。
         </p>
 
         <figure class="fig">
             {% include figures/gm-crypto-crates.zh.svg %}
-            <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口，至 v1.8 未变；v1.9.0 起为 104 个，v1.13.0 起为 112 个，v1.16.0 仍为 112）</figcaption>
+            <figcaption class="fig__cap">图 3.1 — crate 与 C ABI 结构（v1.4.0 共 85 个 FFI 入口，至 v1.8 未变；v1.9.0 起为 104 个，v1.13.0 起为 112 个，v1.17.0 仍为 112）</figcaption>
         </figure>
 
         <h2 id="problem">要解决的问题</h2>
@@ -194,7 +194,7 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
         </p>
         <dl class="version-grid">
             <dt>当前版本</dt>
-            <dd><strong>v1.16.0</strong>，2026-10-09（UTC）发布——开启 <code>sm4-bitsliced-simd</code> 时，x86_64 上用 GFNI 算 SM4 S 盒；纯性能改动，公开 API 不变。C ABI 仍是 112 个入口。</dd>
+            <dd><strong>v1.17.0</strong>，2026-10-26（UTC）发布——把 <code>crypto-bigint</code> 最低版本提到 0.7.6，修复 RUSTSEC-2026-0387 和 RUSTSEC-2026-0385；MSRV 随之升到 1.87，SM2 变慢，输出的字节格式不变。C ABI 仍是 112 个入口。</dd>
 
             <dt>版本缺口</dt>
             <dd>已发布的版本线上有五处缺口——v0.14、0.17–0.23、v1.5、v1.10、v1.14–v1.15——它们都没改动任何输出字节。</dd>
