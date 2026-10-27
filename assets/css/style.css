@@ -587,13 +587,18 @@ body.lang-zh .note li {
 
 /* ZH reading text takes the sans stack (#124 item A, the fallback Frank
    approved on #119 item 11). --serif has no downloaded CJK face: on a Mac
-   Han glyphs fall to Songti SC, but on stock Windows the first serif with
-   Han glyphs is SimSun, which reads thin and dated at body sizes and has
-   never been measured. --sans reaches Microsoft YaHei there. ZH headings
-   (hero, page-header, section, note h2/h3, explainer h2) and the site mark
-   stay serif, and nothing changes for EN. The selector list mirrors every
-   reading-text surface that #120 (and earlier) set to --serif; the
-   validator pins both lists. */
+   Han glyphs fall to Songti SC, but on stock Windows the first face in
+   that stack with Han glyphs is SimSun, which is expected to read thin
+   and dated at body sizes (never measured, nobody has a Windows machine).
+   --sans reaches Microsoft YaHei there. Latin runs inside ZH reading text
+   (crate names, handles, acronyms) move to sans with it, on every
+   platform. ZH titles (hero, page-header, section, note h2/h3, explainer
+   h2) and the site mark stay serif, and nothing changes for EN. The list
+   mirrors every reading-text surface that #120 (and earlier) set to
+   --serif, plus the 404 page's ZH paragraph for the JS-off case (its
+   body class is lang-en until locale-404.js swaps it); the footer's
+   "EB Garamond" specimen is Latin-only and stays serif. The validator
+   pins both lists. */
 body.lang-zh .hero__lede,
 body.lang-zh .page-header__lede,
 body.lang-zh .preview__body,
@@ -604,8 +609,8 @@ body.lang-zh .prose p,
 body.lang-zh .note li,
 body.lang-zh .contact-intro p,
 body.lang-zh .contact-direct dd,
-body.lang-zh .site-footer__detail em,
-body.lang-zh .error-page__body {
+body.lang-zh .error-page__body,
+.error-page__locale[lang="zh-CN"] .error-page__body {
     font-family: var(--sans);
 }
 

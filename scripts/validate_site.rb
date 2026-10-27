@@ -1468,25 +1468,36 @@ if css_path.exist?
   end
 
   # #124 item A: ZH reading text uses the sans stack, because on stock Windows
-  # the first serif with Han glyphs is SimSun, which reads thin at body sizes.
-  # ZH headings and every EN surface keep --serif. One block, one rule.
-  zh_body_block = css[/^body\.lang-zh \.hero__lede,\n(?:body\.lang-zh [^\n{]*,\n)*body\.lang-zh [^\n{]*\{\s*font-family: var\(--sans\);\s*\}/]
-  zh_body_selectors = [".hero__lede", ".page-header__lede", ".preview__body", ".work-list__note",
-                       ".project-detail p", ".project-detail li", ".prose p", ".note li",
-                       ".contact-intro p", ".contact-direct dd", ".site-footer__detail em",
-                       ".error-page__body"]
-  zh_heading_selectors = [".hero__title", ".section__title", ".page-header__title",
-                          ".note h2", ".note h3", ".explainer-detail h2", ".site-mark__glyph"]
-  if zh_body_block.nil? || !zh_body_block.include?("font-family: var(--sans);")
-    record(failures, "style.css: ZH body text no longer falls back to the sans stack (#124 A)")
+  # the first face in --serif with Han glyphs is SimSun, expected to read thin
+  # at body sizes. ZH titles and every EN surface keep --serif. One block, one
+  # declaration; the 404 page's ZH paragraph is covered for the JS-off case
+  # by its lang="zh-CN" wrapper because its body class starts as lang-en.
+  zh_body_block = css[/^body\.lang-zh \.hero__lede,\n(?:[^\n{]*,\n)*[^\n{]*\{\s*font-family: var\(--sans\);\s*\}/]
+  zh_body_selectors = ["body.lang-zh .hero__lede", "body.lang-zh .page-header__lede",
+                       "body.lang-zh .preview__body", "body.lang-zh .work-list__note",
+                       "body.lang-zh .project-detail p", "body.lang-zh .project-detail li",
+                       "body.lang-zh .prose p", "body.lang-zh .note li",
+                       "body.lang-zh .contact-intro p", "body.lang-zh .contact-direct dd",
+                       "body.lang-zh .error-page__body",
+                       '.error-page__locale[lang="zh-CN"] .error-page__body']
+  zh_title_selectors = [".hero__title", ".section__title", ".page-header__title",
+                        ".note h2", ".note h3", ".explainer-detail h2", ".site-mark__glyph",
+                        ".error-page__title", ".empty-state__title", ".site-footer__name"]
+  if zh_body_block.nil?
+    record(failures, "style.css: ZH reading-text sans block (#124 A) is missing, reformatted, or has extra declarations (expected one block starting `body.lang-zh .hero__lede,` whose only declaration is `font-family: var(--sans);`)")
   else
+    block_selectors = zh_body_block[/\A[^{]*/].split(",").map(&:strip)
     zh_body_selectors.each do |sel|
-      next if zh_body_block.include?("body.lang-zh #{sel}")
-      record(failures, "style.css: ZH sans block (#124 A) is missing body.lang-zh #{sel}")
+      next if block_selectors.include?(sel)
+      record(failures, "style.css: ZH sans block (#124 A) is missing #{sel}")
     end
-    zh_heading_selectors.each do |sel|
-      next unless zh_body_block.include?("body.lang-zh #{sel}")
-      record(failures, "style.css: ZH heading body.lang-zh #{sel} must stay serif (#124 A)")
+  end
+  # No rule anywhere may hand a ZH title to --sans (titles keep serif by design).
+  css.gsub(%r{/\*.*?\*/}m, "").scan(/([^{}]*?body\.lang-zh[^{}]*?)\{([^}]*)\}/m).each do |selectors, decls|
+    next unless decls.include?("font-family: var(--sans)")
+    selectors.split(",").map(&:strip).each do |sel|
+      hit = zh_title_selectors.find { |t| sel == "body.lang-zh #{t}" }
+      record(failures, "style.css: ZH title #{sel} must stay serif (#124 A)") if hit
     end
   end
 end
