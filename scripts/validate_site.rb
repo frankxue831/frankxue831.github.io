@@ -1466,6 +1466,29 @@ if css_path.exist?
   unless serif && serif.match?(/Songti SC|STSong|SimSun|Noto Serif SC/)
     record(failures, "style.css: --serif lost its system CJK serif fallback")
   end
+
+  # #124 item A: ZH reading text uses the sans stack, because on stock Windows
+  # the first serif with Han glyphs is SimSun, which reads thin at body sizes.
+  # ZH headings and every EN surface keep --serif. One block, one rule.
+  zh_body_block = css[/^body\.lang-zh \.hero__lede,\n(?:body\.lang-zh [^\n{]*,\n)*body\.lang-zh [^\n{]*\{\s*font-family: var\(--sans\);\s*\}/]
+  zh_body_selectors = [".hero__lede", ".page-header__lede", ".preview__body", ".work-list__note",
+                       ".project-detail p", ".project-detail li", ".prose p", ".note li",
+                       ".contact-intro p", ".contact-direct dd", ".site-footer__detail em",
+                       ".error-page__body"]
+  zh_heading_selectors = [".hero__title", ".section__title", ".page-header__title",
+                          ".note h2", ".note h3", ".explainer-detail h2", ".site-mark__glyph"]
+  if zh_body_block.nil? || !zh_body_block.include?("font-family: var(--sans);")
+    record(failures, "style.css: ZH body text no longer falls back to the sans stack (#124 A)")
+  else
+    zh_body_selectors.each do |sel|
+      next if zh_body_block.include?("body.lang-zh #{sel}")
+      record(failures, "style.css: ZH sans block (#124 A) is missing body.lang-zh #{sel}")
+    end
+    zh_heading_selectors.each do |sel|
+      next unless zh_body_block.include?("body.lang-zh #{sel}")
+      record(failures, "style.css: ZH heading body.lang-zh #{sel} must stay serif (#124 A)")
+    end
+  end
 end
 
 Pathname.glob(SITE.join("**/*.html").to_s).each do |path|
