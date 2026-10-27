@@ -1588,8 +1588,10 @@ if claude_source.match?(/v0\.8[^\n]*AEAD[^\n]*next|v0\.8 AEAD work is "next"/i)
 end
 
 rejected_content = {
-  "colophon.html" => ["six small files", "~500 lines"],
-  "zh/colophon.html" => ["六个小文件", "约 500 行"],
+  # 2026-10-27: the pre-#119 type split ("sans for body") and the pre-#129
+  # ZH description (serif titles only, no named fallbacks) must not return.
+  "colophon.html" => ["six small files", "~500 lines", "sans-serif for body", "for display type"],
+  "zh/colophon.html" => ["六个小文件", "约 500 行", "标题字用", "中文回退到 Noto Serif SC 或"],
   "projects/gm-crypto-rs.html" => ["<code>1.9.0</code>, behind", "<code>hash</code> / <code>sign</code> /"],
   "zh/projects/gm-crypto-rs.html" => ["固定在 <code>1.9.0</code>", "<code>hash</code> / <code>sign</code> /"],
   "projects/repolens-rs.html" => ["Planned until"],
@@ -1769,6 +1771,13 @@ record(failures, "zh/projects/gm-crypto-rs.html: missing FIPS expansion") unless
 %w[colophon.html zh/colophon.html].each do |relative|
   source = read_file(ROOT.join(relative), failures)
   record(failures, "#{relative}: missing localStorage privacy disclosure") unless source.include?("frankxue.theme")
+  # 2026-10-27: the "Set in" / 字体 copy names the stacks the stylesheet uses
+  # today (#119: EN reading text serif; #129: ZH reading text sans, with the
+  # system faces each platform reaches). Both locales carry the same facts.
+  type_copy = source.gsub(/\s+/, " ")
+  %w[Songti\ SC SimSun Noto\ Serif\ SC PingFang\ SC Microsoft\ YaHei Noto\ Sans\ SC].each do |face|
+    record(failures, "#{relative}: colophon type copy no longer names #{face}") unless type_copy.include?(face)
+  end
 end
 
 %w[about.html zh/about.html].each do |relative|
