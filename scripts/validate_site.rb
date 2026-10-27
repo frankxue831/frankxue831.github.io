@@ -1477,7 +1477,7 @@ if css_path.exist?
                        "body.lang-zh .preview__body", "body.lang-zh .work-list__note",
                        "body.lang-zh .project-detail p", "body.lang-zh .project-detail li",
                        "body.lang-zh .prose p", "body.lang-zh .note li",
-                       "body.lang-zh .contact-intro p", "body.lang-zh .contact-direct dd",
+                       "body.lang-zh .contact-intro p:not(.contact-direct__note)", "body.lang-zh .contact-direct dd",
                        "body.lang-zh .error-page__body",
                        '.error-page__locale[lang="zh-CN"] .error-page__body']
   zh_title_selectors = [".hero__title", ".section__title", ".page-header__title",
