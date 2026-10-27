@@ -1,5 +1,9 @@
 ---
 title: "常量时间的说法，是信任问题，不是理解问题"
+# Display-only line-break hints for the ZH h1; title stays plain for <title>/OG.
+# nowrap keeps each ， with the words before it, so no line starts with ，;
+# at 320px the first clause breaks after 常量时间的.
+title_breaks: "<span class=\"nowrap\">常量时间的</span><wbr><span class=\"nowrap\">说法，</span><wbr><span class=\"nowrap\">是信任问题，</span><wbr><span class=\"nowrap\">不是理解问题</span>"
 date: 2026-08-03
 permalink: /zh/notes/constant-time-warrant/
 lang: zh
