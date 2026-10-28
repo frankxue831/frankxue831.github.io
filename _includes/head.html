@@ -139,8 +139,8 @@
     {%- comment -%} Self-hosted fonts (no Google origin — see assets/fonts/ +
         the @font-face block at the top of style.css). Preload only the two
         above-the-fold Latin faces: EB Garamond roman (site mark + hero title +
-        headings) and IBM Plex Mono 400 (eyebrow labels + metadata). Body is
-        system-sans, so it needs no web font. CJK is system-served. {%- endcomment -%}
+        headings) and IBM Plex Mono 400 (eyebrow labels + metadata). Reading
+        text is EB Garamond too; UI text is system sans (no web font). CJK is system-served. {%- endcomment -%}
     {% if page.url == '/' or page.url == '/zh/' %}
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ '/assets/fonts/eb-garamond-latin.woff2' | relative_url }}">
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ '/assets/fonts/ibm-plex-mono-400-latin.woff2' | relative_url }}">
