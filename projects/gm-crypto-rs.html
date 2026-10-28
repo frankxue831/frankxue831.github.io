@@ -30,8 +30,8 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             used AI coding assistants to implement features. I am new to Rust and focus primarily on practical usability and compatibility with existing implementations such as GmSSL. I do not regularly review the code line by line. Initially, I reviewed changes myself; later, to improve efficiency, I shifted more of the code review to AI agents following defined rules.
         </p>
         <p>
-            <strong>Outcome.</strong> <code>gmcrypto-core</code> v1.16.0 is on
-            crates.io (published 2026-10-09, UTC). CI checks the standard test
+            <strong>Outcome.</strong> <code>gmcrypto-core</code> v1.17.0 is on
+            crates.io (published 2026-10-26, UTC). CI checks the standard test
             vectors and compares outputs against GmSSL. That comparison runs
             only when the GmSSL oracle's provisioning and version check
             succeed; if either fails, the comparison is skipped with a warning
@@ -99,20 +99,22 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             v1.12 and v1.13 add length-committed streaming SM4-CCM, in Rust
             and then from C, and every SM4 streaming type now zeroizes on
             drop. Since v1.16, the opt-in SIMD SM4 path computes its S-box
-            with GFNI on capable x86_64 CPUs.
+            with GFNI on capable x86_64 CPUs. v1.17 fixes two dependency
+            advisories and raises the MSRV to Rust 1.87, at the cost of slower
+            SM2 field arithmetic.
             The published
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>
             is a consumer and smoke-test tour of representative crate
             capabilities, including hashing, signing and verification,
             encryption and decryption, key exchange, and encoding flows. Its
-            dependency is pinned to <code>gmcrypto-core = "=1.16.0"</code>, the
+            dependency is pinned to <code>gmcrypto-core = "=1.17.0"</code>, the
             current release; the source-line evidence below stays pinned to
             <code>v1.11.0</code>.
         </p>
 
         <figure class="fig">
             {% include figures/gm-crypto-crates.svg %}
-            <figcaption class="fig__cap">fig. 3.1 — crate &amp; C ABI surface (85 entry points at v1.4.0, unchanged through v1.8; 104 as of v1.9.0, 112 as of v1.13.0, still 112 at v1.16.0)</figcaption>
+            <figcaption class="fig__cap">fig. 3.1 — crate &amp; C ABI surface (85 entry points at v1.4.0, unchanged through v1.8; 104 as of v1.9.0, 112 as of v1.13.0, still 112 at v1.17.0)</figcaption>
         </figure>
 
         <h2 id="problem">The problem</h2>
@@ -283,7 +285,7 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
         </p>
         <dl class="version-grid">
             <dt>Current</dt>
-            <dd><strong>v1.16.0</strong>, published 2026-10-09 (UTC) — GFNI SM4 S-box on x86_64 under <code>sm4-bitsliced-simd</code>; performance only, no public API change. The C ABI surface stays 112 entry points.</dd>
+            <dd><strong>v1.17.0</strong>, published 2026-10-26 (UTC) — fixes RUSTSEC-2026-0387 and RUSTSEC-2026-0385 by flooring <code>crypto-bigint</code> at 0.7.6, which raises the MSRV to 1.87 and makes SM2 slower; wire output is unchanged. The C ABI surface stays 112 entry points.</dd>
 
             <dt>Unpublished</dt>
             <dd>Five gaps in the published version line — v0.14, 0.17–0.23, v1.5, v1.10, v1.14–v1.15 — none of them changed an output byte.</dd>
