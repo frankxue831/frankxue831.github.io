@@ -1590,8 +1590,8 @@ end
 rejected_content = {
   # 2026-10-28: neither the pre-#119 split ("sans for body") nor the
   # reverted #129 split (ZH reading text in sans, titles in serif) may return.
-  "colophon.html" => ["six small files", "~500 lines", "sans-serif for body", "for display type", "set in the system sans-serif instead"],
-  "zh/colophon.html" => ["六个小文件", "约 500 行", "标题字用", "中文回退到 Noto Serif SC 或", "正文用系统无衬线体", "则改用系统无衬线体"],
+  "colophon.html" => ["six small files", "~500 lines", "sans-serif for body", "for display type", "set in the system sans-serif instead", "page and section headings"],
+  "zh/colophon.html" => ["六个小文件", "约 500 行", "标题字用", "中文回退到 Noto Serif SC 或", "正文用系统无衬线体", "则改用系统无衬线体", "页面标题和章节标题"],
   "projects/gm-crypto-rs.html" => ["<code>1.9.0</code>, behind", "<code>hash</code> / <code>sign</code> /"],
   "zh/projects/gm-crypto-rs.html" => ["固定在 <code>1.9.0</code>", "<code>hash</code> / <code>sign</code> /"],
   "projects/repolens-rs.html" => ["Planned until"],
