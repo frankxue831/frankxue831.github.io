@@ -1588,8 +1588,10 @@ if claude_source.match?(/v0\.8[^\n]*AEAD[^\n]*next|v0\.8 AEAD work is "next"/i)
 end
 
 rejected_content = {
-  "colophon.html" => ["six small files", "~500 lines"],
-  "zh/colophon.html" => ["六个小文件", "约 500 行"],
+  # 2026-10-28: neither the pre-#119 split ("sans for body") nor the
+  # reverted #129 split (ZH reading text in sans, titles in serif) may return.
+  "colophon.html" => ["six small files", "~500 lines", "sans-serif for body", "for display type", "set in the system sans-serif instead", "page and section headings"],
+  "zh/colophon.html" => ["六个小文件", "约 500 行", "标题字用", "中文回退到 Noto Serif SC 或", "正文用系统无衬线体", "则改用系统无衬线体", "页面标题和章节标题"],
   "projects/gm-crypto-rs.html" => ["<code>1.9.0</code>, behind", "<code>hash</code> / <code>sign</code> /"],
   "zh/projects/gm-crypto-rs.html" => ["固定在 <code>1.9.0</code>", "<code>hash</code> / <code>sign</code> /"],
   "projects/repolens-rs.html" => ["Planned until"],
@@ -1769,6 +1771,14 @@ record(failures, "zh/projects/gm-crypto-rs.html: missing FIPS expansion") unless
 %w[colophon.html zh/colophon.html].each do |relative|
   source = read_file(ROOT.join(relative), failures)
   record(failures, "#{relative}: missing localStorage privacy disclosure") unless source.include?("frankxue.theme")
+  # 2026-10-28: the "Set in" / 字体 copy says ZH reading text is serif, like
+  # EN (#133 reverted #129), and names only the first CJK serif in --serif;
+  # no render on a real Mac or Windows is confirmed, so no platform faces.
+  type_copy = source.gsub(/\s+/, " ")
+  record(failures, "#{relative}: colophon type copy no longer names Noto Serif SC") unless type_copy.include?("Noto Serif SC")
+  %w[Songti SimSun PingFang YaHei].each do |face|
+    record(failures, "#{relative}: colophon type copy names unverified platform face #{face}") if type_copy.include?(face)
+  end
 end
 
 %w[about.html zh/about.html].each do |relative|
