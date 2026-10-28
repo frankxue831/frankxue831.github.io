@@ -27,6 +27,8 @@ gm-crypto-web 就是我给自己的答案。它是 [frankxue.dev/gm-crypto-web](
 
 我不想再写一套实现。一个调试工具如果和它要帮忙调试的库结论不一致，还不如没有。所以页面里跑的就是 gm-crypto-rs 本身：`gmcrypto-core` 1.16.0，[固定到一个 commit](https://github.com/frankxue831/gm-crypto-web/blob/6b88d03c4330999bc771f9057759650554cb8eb4/Cargo.toml#L11)，经 `wasm-bindgen` 编译成 WebAssembly。发布构建为了体积做了优化、开了 LTO，但算的还是这个库发布出去的那套逻辑。
 
+> **2026-10-28 更新：**工具现在跑的是 `gmcrypto-core` v1.17.0，[固定到 v1.17.0 的 commit](https://github.com/frankxue831/gm-crypto-web/blob/1eb3248f41ee9d5bf6eee0481879f92ca1416687/Cargo.toml#L11)（[PR #12](https://github.com/frankxue831/gm-crypto-web/pull/12)）。上面 1.16.0 的链接是写这篇笔记时的状态。
+
 这也顺带回答了"在哪儿算"的问题：全部在你的浏览器里。工具没有后端和账号，不会上传或持久保存你输入的密钥和消息。不过，它会[把语言偏好保存在 localStorage 里](https://github.com/frankxue831/gm-crypto-web/blob/6b88d03c4330999bc771f9057759650554cb8eb4/www/i18n.js#L108)。这是对当前实现的描述，不是安全保证。
 
 ## 真的会跑的自检

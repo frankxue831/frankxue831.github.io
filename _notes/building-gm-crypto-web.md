@@ -30,6 +30,11 @@ page runs gm-crypto-rs itself: the `gmcrypto-core` crate at 1.16.0,
 `wasm-bindgen`. The release build is size-optimised with link-time
 optimisation, but the arithmetic is the same arithmetic the crate ships.
 
+> **Update, 2026-10-28:** the tool now runs `gmcrypto-core` v1.17.0,
+> [pinned to the v1.17.0 commit](https://github.com/frankxue831/gm-crypto-web/blob/1eb3248f41ee9d5bf6eee0481879f92ca1416687/Cargo.toml#L11)
+> ([PR #12](https://github.com/frankxue831/gm-crypto-web/pull/12)). The 1.16.0 link above
+> shows what it ran when this note was written.
+
 That also settles where the computation happens. Everything runs in your
 browser. The tool has no backend or account and does not upload or persist
 the keys and messages you enter. It does [save your language preference
