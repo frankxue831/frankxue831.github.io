@@ -28,7 +28,7 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
             <strong>我负责的部分。</strong>我提出了最初的需求，并借助 AI 编程助手实现功能。我是 Rust 新手，主要关注实际使用体验，以及与 GmSSL 等现有实现的兼容性，并不经常逐行细审代码。起初，我自己复核改动；后来，为了提高效率，我把更多代码评审交给了遵循既定规则的 AI Agent。
         </p>
         <p>
-            <strong>目前的结果。</strong><code>gmcrypto-core</code> v1.17.0 已于 2026 年 10 月 26 日（UTC）在 crates.io 发布。CI 会核对标准测试向量，并将输出与 GmSSL 比对。GmSSL 对照实现（oracle）准备就绪且版本校验通过后，才会执行这项比对。如果准备或版本校验失败，CI 会发出警告并跳过比对，任务仍会通过。统计时序测试则在 x86-64 Linux runner 上，对选定路径检查时序泄漏回归。
+            <strong>目前的结果。</strong><code>gmcrypto-core</code> v1.18.0 已于 2026 年 11 月 22 日（UTC）在 crates.io 发布。CI 会核对标准测试向量，并将输出与 GmSSL 比对。GmSSL 对照实现（oracle）准备就绪且版本校验通过后，才会执行这项比对。如果准备或版本校验失败，CI 会发出警告并跳过比对，任务仍会通过。统计时序测试则在 x86-64 Linux runner 上，对选定路径检查时序泄漏回归。
         </p>
         <p>
             <strong>使用限制。</strong>这个库没有经过独立审计；1.0 之前的那轮评审由两个 AI 模型以对抗方式进行。时序测试通过，只能作为测试条件下的证据，不能证明常量时间行为。
@@ -84,7 +84,7 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
             已发布的
             <a href="https://github.com/frankxue831/gm-crypto-rs-demo" rel="noopener noreferrer">gm-crypto-rs-demo</a>
             是面向使用者的示例与冒烟测试导览，覆盖散列、签名与验签、加解密、密钥交换和编码等代表性能力。它把依赖固定为
-            <code>gmcrypto-core = "=1.17.0"</code>，即当前版本；下文的源码行证据仍固定在 <code>v1.11.0</code>。
+            <code>gmcrypto-core = "=1.18.0"</code>，即当前版本；下文的源码行证据仍固定在 <code>v1.11.0</code>。
         </p>
 
         <figure class="fig">
@@ -194,7 +194,7 @@ summary_outcome: "在 CI 里对涉密路径做时序泄漏检查。"
         </p>
         <dl class="version-grid">
             <dt>当前版本</dt>
-            <dd><strong>v1.17.0</strong>，2026-10-26（UTC）发布——把 <code>crypto-bigint</code> 最低版本提到 0.7.6，修复 RUSTSEC-2026-0387 和 RUSTSEC-2026-0385；MSRV 随之升到 1.87，SM2 变慢，输出的字节格式不变。C ABI 仍是 112 个入口。</dd>
+            <dd><strong>v1.18.0</strong>，2026-11-22（UTC）发布。新增 HKDF-SM3、SM2 密钥生成，以及 SM2 流式哈希和基于预计算摘要的签名与验签。改进 SM4 内部批处理，并清零临时缓冲区。C ABI 仍有 112 个入口，最低 Rust 版本仍为 1.87。详见 <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.18.0/CHANGELOG.md" rel="noopener noreferrer">v1.18.0 变更日志</a>。</dd>
 
             <dt>版本缺口</dt>
             <dd>已发布的版本线上有五处缺口——v0.14、0.17–0.23、v1.5、v1.10、v1.14–v1.15——它们都没改动任何输出字节。</dd>

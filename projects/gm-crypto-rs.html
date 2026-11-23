@@ -30,8 +30,8 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             used AI coding assistants to implement features. I am new to Rust and focus primarily on practical usability and compatibility with existing implementations such as GmSSL. I do not regularly review the code line by line. Initially, I reviewed changes myself; later, to improve efficiency, I shifted more of the code review to AI agents following defined rules.
         </p>
         <p>
-            <strong>Outcome.</strong> <code>gmcrypto-core</code> v1.17.0 is on
-            crates.io (published 2026-10-26, UTC). CI checks the standard test
+            <strong>Outcome.</strong> <code>gmcrypto-core</code> v1.18.0 is on
+            crates.io (published 2026-11-22, UTC). CI checks the standard test
             vectors and compares outputs against GmSSL. That comparison runs
             only when the GmSSL oracle's provisioning and version check
             succeed; if either fails, the comparison is skipped with a warning
@@ -107,7 +107,7 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
             is a consumer and smoke-test tour of representative crate
             capabilities, including hashing, signing and verification,
             encryption and decryption, key exchange, and encoding flows. Its
-            dependency is pinned to <code>gmcrypto-core = "=1.17.0"</code>, the
+            dependency is pinned to <code>gmcrypto-core = "=1.18.0"</code>, the
             current release; the source-line evidence below stays pinned to
             <code>v1.11.0</code>.
         </p>
@@ -285,7 +285,7 @@ summary_outcome: "In-CI timing-leak checks on secret-handling paths."
         </p>
         <dl class="version-grid">
             <dt>Current</dt>
-            <dd><strong>v1.17.0</strong>, published 2026-10-26 (UTC) — fixes RUSTSEC-2026-0387 and RUSTSEC-2026-0385 by flooring <code>crypto-bigint</code> at 0.7.6, which raises the MSRV to 1.87 and makes SM2 slower; wire output is unchanged. The C ABI surface stays 112 entry points.</dd>
+            <dd><strong>v1.18.0</strong>, published 2026-11-22 (UTC). Adds HKDF-SM3, SM2 key generation, and streaming SM2 hashing with pre-hashed signing and verification. Improves internal SM4 batching and wipes temporary buffers. The C ABI still has 112 entry points, and the minimum Rust version remains 1.87. See the <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.18.0/CHANGELOG.md" rel="noopener noreferrer">v1.18.0 changelog</a>.</dd>
 
             <dt>Unpublished</dt>
             <dd>Five gaps in the published version line — v0.14, 0.17–0.23, v1.5, v1.10, v1.14–v1.15 — none of them changed an output byte.</dd>

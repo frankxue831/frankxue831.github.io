@@ -1560,9 +1560,10 @@ release_history_expected = {
 end
 
 gm_case_studies = %w[projects/gm-crypto-rs.html zh/projects/gm-crypto-rs.html]
+gm_demo_version = PROJECTS.find { |project| project["slug"] == "gm-crypto-rs" }.fetch("release").delete_prefix("v")
 gm_case_studies.each do |relative|
   source = read_file(ROOT.join(relative), failures)
-  record(failures, "#{relative}: demo must pin gmcrypto-core =1.17.0") unless source.include?('gmcrypto-core = "=1.17.0"')
+  record(failures, "#{relative}: demo must pin gmcrypto-core =#{gm_demo_version}") unless source.include?(%Q(gmcrypto-core = "=#{gm_demo_version}"))
   record(failures, "#{relative}: dudect workflow evidence must link line 169") unless source.include?("dudect-pr.yml#L169")
   record(failures, "#{relative}: stale dudect workflow line 166 remains") if source.include?("dudect-pr.yml#L166")
   %w[constant-time-warrant constant-time-ci-gate byte-identity unsafe-opt-in].each do |slug|

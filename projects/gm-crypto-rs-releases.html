@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "gm-crypto-rs — release history"
-description: The full release line for gm-crypto-rs, v0.6.0 through v1.17.0, including the cycles that merged without a published version.
+description: The full release line for gm-crypto-rs, v0.6.0 through v1.18.0, including the cycles that merged without a published version.
 permalink: /projects/gm-crypto-rs/releases/
 lang: en
 alternate: /zh/projects/gm-crypto-rs/releases/
@@ -13,7 +13,7 @@ alternate: /zh/projects/gm-crypto-rs/releases/
         gm-crypto-rs <em>release history</em>
     </h1>
     <p class="page-header__lede">
-        Every cycle from v0.6.0 to v1.17.0, newest first — including the ones
+        Every cycle from v0.6.0 to v1.18.0, newest first — including the ones
         that merged without a published version because they changed no output
         bytes. The case study is
         <a href="{{ '/projects/gm-crypto-rs/' | relative_url }}">here</a>.
@@ -25,6 +25,9 @@ alternate: /zh/projects/gm-crypto-rs/releases/
 <section class="section wrap reveal">
     <article class="project-detail prose">
         <dl class="version-grid">
+            <dt>v1.18.0</dt>
+            <dd>2026-11-22 — Adds HKDF-SM3, SM2 key generation, and streaming SM2 hashing with pre-hashed signing and verification. Improves internal SM4 batching and wipes temporary buffers. The C ABI still has 112 entry points, and the minimum Rust version remains 1.87. The Rust API changes are additive and runtime dependencies are unchanged. See the <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.18.0/CHANGELOG.md" rel="noopener noreferrer">v1.18.0 changelog</a>.</dd>
+
             <dt>v1.17.0</dt>
             <dd>2026-10-26 — dependency security fix for <a href="https://rustsec.org/advisories/RUSTSEC-2026-0387.html" rel="noopener noreferrer">RUSTSEC-2026-0387</a> and <a href="https://rustsec.org/advisories/RUSTSEC-2026-0385.html" rel="noopener noreferrer">RUSTSEC-2026-0385</a>. <code>crypto-bigint</code> is now floored at 0.7.6, which moves the <strong>MSRV from 1.85 to 1.87</strong>. The new field arithmetic makes SM2 slower: in one local run on a shared x86_64 Linux host, signing measured about 60% slower (about 92 → 148 µs); a formal CI benchmark is still pending. Wire output is unchanged. <code>sm2::mul_var</code> (encryption, decryption, key exchange, and signature verification) now lifts the scalar to <code>k + n</code> or <code>k + 2n</code> before the window loop, so the accumulator is never the point at infinity; this adds four doublings per call (about +1.5%). After the dependency upgrade, the <code>ct_mul_var</code> dudect target read a median |tau| of 0.05–0.35 on the EPYC 7763 runner class (0.01 before). With the lifted loop and <code>crypto-bigint</code> 0.7.10, a scheduled CI run on 2026-10-27 read a five-pass median of 0.0105 on an EPYC 7763, below the 0.20 gate; these are routine CI runs, not a dedicated study (source: <a href="https://github.com/frankxue831/gm-crypto-rs/releases/tag/v1.17.0" rel="noopener noreferrer">the v1.17.0 release notes</a> and <a href="https://github.com/frankxue831/gm-crypto-rs/blob/v1.17.0/SECURITY.md" rel="noopener noreferrer">SECURITY.md</a>). C ABI surface stays 112.</dd>
 
